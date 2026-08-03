@@ -1226,7 +1226,6 @@ export interface LocaleResources {
     generateFailed: string;
     followUpFailed: string;
     saveFailed: string;
-    followUpRegeneratePrefix: (goal: string) => string;
     revisionInstructionLabel: string;
     reviseDraft: string;
     revisionFailed: string;
@@ -1310,7 +1309,9 @@ export interface LocaleResources {
     level: string;
     programmingLanguage: string;
     topicPreferences: string;
-    additionalThoughts: string;
+    objective: string;
+    additionalConstraints: string;
+    personalizationEnabled: string;
     validationPositiveIntegers: string;
     validationTopicRequired: string;
     confirmDiscard: string;
@@ -1319,15 +1320,6 @@ export interface LocaleResources {
     easyPercent: (value: number) => string;
     mediumPercent: (value: number) => string;
     hardPercent: (value: number) => string;
-    goalIntent: (value: string) => string;
-    goalDuration: (value: number) => string;
-    goalWeeklyHours: (value: number) => string;
-    goalLevel: (value: string) => string;
-    goalLanguage: (value: string) => string;
-    goalDifficulty: (label: string, easy: number, medium: number, hard: number) => string;
-    goalTopics: (topics: string) => string;
-    goalTopicsAuto: string;
-    goalAdditionalThoughts: (value: string) => string;
     draftQuestion: string;
     followUpAnswer: string;
     sendFollowUp: string;
@@ -2664,7 +2656,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       generateFailed: '训练方案生成失败',
       followUpFailed: '训练方案追问提交失败',
       saveFailed: '训练方案保存失败',
-      followUpRegeneratePrefix: (goal) => `请按新的目标摘要重新生成训练方案：${goal}`,
       revisionInstructionLabel: '对当前计划不满意？输入调整要求',
       reviseDraft: '按要求调整计划',
       revisionFailed: '调整学习计划失败，请稍后重试。',
@@ -2766,7 +2757,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       level: '当前水平',
       programmingLanguage: '编程语言',
       topicPreferences: '主题偏好',
-      additionalThoughts: '补充想法',
+      objective: '具体目标（可选）',
+      additionalConstraints: '其他限制（可选）',
+      personalizationEnabled: '参考我的学习数据',
       validationPositiveIntegers: '周期和每周投入必须是正整数。',
       validationTopicRequired: '专项突破需要至少选择一个主题。',
       confirmDiscard: '放弃当前填写的方案问卷？',
@@ -2775,15 +2768,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       easyPercent: (value) => `简单 ${value}%`,
       mediumPercent: (value) => `中等 ${value}%`,
       hardPercent: (value) => `困难 ${value}%`,
-      goalIntent: (value) => `训练场景：${value}`,
-      goalDuration: (value) => `周期：${value} 周`,
-      goalWeeklyHours: (value) => `每周投入：${value} 小时`,
-      goalLevel: (value) => `当前水平：${value}`,
-      goalLanguage: (value) => `编程语言：${value}`,
-      goalDifficulty: (label, easy, medium, hard) => `难度分布：${label}（简单 ${easy}%，中等 ${medium}%，困难 ${hard}%）`,
-      goalTopics: (topics) => `主题偏好：${topics}`,
-      goalTopicsAuto: '主题偏好：由系统根据训练场景安排',
-      goalAdditionalThoughts: (value) => `补充想法：${value}`,
       draftQuestion: 'Agent 追问',
       followUpAnswer: '补充回答',
       sendFollowUp: '发送补充',
@@ -3897,7 +3881,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       stepReviewDescription: 'Revisit by plan so solved problems do not disappear.',
       ctaLabel: 'Start learning',
       ctaTitle: 'Start today from one plan',
-      ctaDescription: 'Set your goal and time first, then let the system propose phases, problems, and review points.',
+      ctaDescription: 'Set your learning objective and time first, then let the system propose phases, problems, and review points.',
       enterPlans: 'Open Plans',
       workspaceAriaLabel: 'Learning workbench',
       workspaceKicker: 'WORKBENCH',
@@ -4191,11 +4175,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       generateFailed: 'Failed to generate learning plan',
       followUpFailed: 'Failed to submit follow-up',
       saveFailed: 'Failed to save learning plan',
-      followUpRegeneratePrefix: (goal) => `Regenerate the learning plan from this updated goal summary: ${goal}`,
       revisionInstructionLabel: 'Want changes? Describe how to revise this plan',
       reviseDraft: 'Revise Plan',
       revisionFailed: 'Failed to revise the learning plan. Try again later.',
-      extensionEntryLabel: 'Want to keep learning? Describe your next goal',
+      extensionEntryLabel: 'Want to keep learning? Describe your next objective',
       generateExtension: 'Generate Extension',
       pendingExtensionTitle: 'Pending Extension',
       reviseExtensionLabel: 'Want changes to this extension? Describe the adjustment',
@@ -4297,7 +4280,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       level: 'Current Level',
       programmingLanguage: 'Programming Language',
       topicPreferences: 'Topic Preferences',
-      additionalThoughts: 'Additional Notes',
+      objective: 'Specific objective (optional)',
+      additionalConstraints: 'Additional constraints (optional)',
+      personalizationEnabled: 'Use my learning data as reference',
       validationPositiveIntegers: 'Duration and weekly hours must be positive integers.',
       validationTopicRequired: 'Topic breakthrough requires at least one selected topic.',
       confirmDiscard: 'Discard the current plan questionnaire?',
@@ -4306,15 +4291,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       easyPercent: (value) => `Easy ${value}%`,
       mediumPercent: (value) => `Medium ${value}%`,
       hardPercent: (value) => `Hard ${value}%`,
-      goalIntent: (value) => `Scenario: ${value}`,
-      goalDuration: (value) => `Duration: ${value} weeks`,
-      goalWeeklyHours: (value) => `Weekly hours: ${value}`,
-      goalLevel: (value) => `Current level: ${value}`,
-      goalLanguage: (value) => `Programming language: ${value}`,
-      goalDifficulty: (label, easy, medium, hard) => `Difficulty distribution: ${label} (Easy ${easy}%, Medium ${medium}%, Hard ${hard}%)`,
-      goalTopics: (topics) => `Topic preferences: ${topics}`,
-      goalTopicsAuto: 'Topic preferences: Let the system choose based on the scenario',
-      goalAdditionalThoughts: (value) => `Additional notes: ${value}`,
       draftQuestion: 'Agent Follow-up',
       followUpAnswer: 'Follow-up Answer',
       sendFollowUp: 'Send Follow-up',

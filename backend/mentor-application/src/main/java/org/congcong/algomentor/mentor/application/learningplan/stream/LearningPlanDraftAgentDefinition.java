@@ -20,6 +20,7 @@ import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationMetadataKeys;
 
 /** 使用受管理 Prompt 和题库工具的学习计划草案 Definition。 */
 public final class LearningPlanDraftAgentDefinition implements AgentDefinition<LearningPlanDraftAgentInput> {
@@ -72,24 +73,48 @@ public final class LearningPlanDraftAgentDefinition implements AgentDefinition<L
     metadata.put(AgentRuntimeMetadataKeys.TITLE, LearningPlanStreamConstants.DRAFT_AGENT_TITLE);
     metadata.put(
         LearningPlanDraftMetadataKeys.CONTENT_LOCALE,
-        candidate.command().contentLocale().languageTag());
+        candidate.brief().contentLocale().languageTag());
+    metadata.put(LearningPlanPersonalizationMetadataKeys.ENABLED, candidate.personalizationSnapshot().enabled());
+    metadata.put(
+        LearningPlanPersonalizationMetadataKeys.SOURCE_OUTCOMES,
+        candidate.personalizationSnapshot().sourceOutcomes().entrySet().stream()
+            .collect(java.util.stream.Collectors.toMap(
+                entry -> entry.getKey().name(),
+                entry -> entry.getValue().name(),
+                (left, right) -> left,
+                LinkedHashMap::new)));
+    metadata.put(LearningPlanPersonalizationMetadataKeys.ENTRY_COUNT, personalizationEntryCount(candidate));
+    metadata.put(
+        LearningPlanPersonalizationMetadataKeys.TOKEN_ESTIMATE,
+        candidate.personalizationSnapshot().tokenEstimate());
+    metadata.put(LearningPlanPersonalizationMetadataKeys.TRIMMED, candidate.personalizationSnapshot().trimmed());
     return new AgentPreparedRequest(
-        promptBuilder.build(candidate.command(), snapshot),
+        promptBuilder.build(candidate.brief(), snapshot, candidate.personalizationSnapshot()),
         Map.copyOf(metadata),
         executionOptions());
+  }
+
+  private int personalizationEntryCount(LearningPlanDraftAgentInput input) {
+    var context = input.personalizationSnapshot().context();
+    return context.declaredFacts().size()
+        + context.generalObservations().size()
+        + context.weakTags().size()
+        + context.strongTags().size()
+        + (context.activePlan() == null ? 0 : 1)
+        + (context.reviewLoad() == null ? 0 : 1);
   }
 
   private AgentExecutionOptions executionOptions() {
     return new AgentExecutionOptions(
         LlmGenerationOptions.defaults(),
         new LlmResponseFormat.JsonSchema(
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanDraftJsonSchema.schema(),
+            LearningPlanStreamConstants.INITIAL_GENERATION_SCHEMA_NAME,
+            LearningPlanGeneratedContentJsonSchema.schema(),
             true),
         new AgentStructuredOutputOptions(
             StructuredOutputStrategy.PROVIDER_NATIVE,
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanStreamConstants.SCHEMA_VERSION,
+            LearningPlanStreamConstants.INITIAL_GENERATION_SCHEMA_NAME,
+            LearningPlanStreamConstants.INITIAL_GENERATION_SCHEMA_VERSION,
             true));
   }
 }

@@ -40,14 +40,12 @@ public class LearningPlanDraftService {
     if (!normalizedMessage.isEmpty()) {
       messages.add(normalizedMessage);
     }
-    LearningPlanDraftCommand command = draft.command();
-    String regeneratedGoal = extractRegeneratedGoal(normalizedMessage);
-    if (regeneratedGoal != null) {
-      command = command.withGoal(regeneratedGoal);
-    } else if (command.goal() == null && !normalizedMessage.isEmpty()) {
-      command = command.withGoal(normalizedMessage);
+    LearningPlanBrief brief = draft.brief();
+    String regeneratedObjective = extractRegeneratedObjective(normalizedMessage);
+    if (regeneratedObjective != null) {
+      brief = withObjective(brief, regeneratedObjective);
     }
-    LearningPlanDraft updated = draftRepository.save(draft.withCommandAndMessages(command, messages, clock.instant()));
+    LearningPlanDraft updated = draftRepository.save(draft.withBriefAndMessages(brief, messages, clock.instant()));
     return LearningPlanDraftResult.fromDraft(advance(updated));
   }
 
@@ -61,7 +59,7 @@ public class LearningPlanDraftService {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_GENERATED", "只有已生成的学习计划草案可以确认保存。");
     }
     LearningPlanDraftPlan confirmablePlan = loadService.withLoadMetadata(
-        draft.draftPlan().withContentLocale(draft.command().contentLocale()),
+        draft.draftPlan().withContentLocale(draft.brief().contentLocale()),
         null);
     validator.validateConfirmablePlan(confirmablePlan);
     Instant now = clock.instant();
@@ -77,8 +75,8 @@ public class LearningPlanDraftService {
   }
 
   private LearningPlanDraft advance(LearningPlanDraft draft) {
-    List<String> missingFields = validator.missingRequiredFields(draft.command());
-    LearningPlanAgentResult agentResult = agentService.run(draft.command(), missingFields);
+    List<String> missingFields = validator.missingRequiredFields(draft.brief());
+    LearningPlanAgentResult agentResult = agentService.run(draft.brief(), missingFields);
     Instant now = clock.instant();
     if (agentResult.action() == LearningPlanAgentAction.ASK_CLARIFICATION) {
       return draftRepository.save(draft.withState(
@@ -109,13 +107,29 @@ public class LearningPlanDraftService {
     }
   }
 
-  private String extractRegeneratedGoal(String normalizedMessage) {
+  private String extractRegeneratedObjective(String normalizedMessage) {
     for (String prefix : LearningPlanDraftMessagePrefixes.REGENERATE_PREFIXES) {
       if (normalizedMessage.startsWith(prefix)) {
-        String regeneratedGoal = normalizedMessage.substring(prefix.length()).trim();
-        return regeneratedGoal.isEmpty() ? null : regeneratedGoal;
+        String regeneratedObjective = normalizedMessage.substring(prefix.length()).trim();
+        return regeneratedObjective.isEmpty() ? null : regeneratedObjective;
       }
     }
     return null;
+  }
+
+  private LearningPlanBrief withObjective(LearningPlanBrief brief, String objective) {
+    return new LearningPlanBrief(
+        brief.intent(),
+        objective,
+        brief.durationWeeks(),
+        brief.level(),
+        brief.weeklyHours(),
+        brief.programmingLanguage(),
+        brief.difficultyDistribution(),
+        brief.interviewOriented(),
+        brief.topicPreferences(),
+        brief.additionalConstraints(),
+        brief.personalizationEnabled(),
+        brief.contentLocale());
   }
 }

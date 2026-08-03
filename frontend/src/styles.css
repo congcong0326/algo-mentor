@@ -3074,6 +3074,26 @@ a {
   gap: 8px;
 }
 
+.checkbox-field {
+  align-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.checkbox-field input {
+  accent-color: var(--text-primary);
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.checkbox-field input:disabled {
+  cursor: not-allowed;
+}
+
 .topic-field span,
 .filter-field span {
   color: var(--text-secondary);
@@ -3930,8 +3950,7 @@ a {
 .plan-workspace,
 .plan-list-card,
 .plan-list,
-.goal-editor,
-.goal-summary,
+.plan-summary,
 .draft-revision-panel,
 .learning-detail-area {
   display: grid;
@@ -4426,11 +4445,11 @@ a {
   font-weight: 650;
 }
 
-.goal-summary {
+.plan-summary {
   align-items: start;
 }
 
-.goal-summary p {
+.plan-summary p {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.65;

@@ -38,10 +38,10 @@ import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
@@ -142,10 +142,11 @@ class LearningPlanControllerTest {
             .content("""
                 {
                   "intent": "INTERVIEW_SPRINT",
-                  "goal": "准备 Java 后端算法面试",
+                  "objective": "准备 Java 后端算法面试",
                   "durationWeeks": 4,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6
+                  "weeklyHours": 6,
+                  "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10}
                 }
                 """))
         .andExpect(status().isMethodNotAllowed());
@@ -174,7 +175,7 @@ class LearningPlanControllerTest {
   }
 
   @Test
-  void streamDraftReturnsSseAndUsesStreamingGovernance() throws Exception {
+  void streamDraftDefaultsBlankObjectiveAndPersonalizationAndUsesStreamingGovernance() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
     when(draftStreamService.stream(eq(42L), any(), any(), any())).thenReturn(streamPublisher(new LearningPlanDraftResult(
@@ -191,12 +192,12 @@ class LearningPlanControllerTest {
             .content("""
                 {
                   "intent": "INTERVIEW_SPRINT",
-                  "goal": "准备 Java 后端算法面试",
+                  "objective": "  ",
                   "durationWeeks": 4,
                   "level": "INTERMEDIATE",
                   "weeklyHours": 6,
                   "programmingLanguage": "Java",
-                  "difficultyPreference": "MEDIUM",
+                  "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
                   "interviewOriented": true,
                   "topicPreferences": ["Array", "Hash Table"]
                 }
@@ -209,12 +210,78 @@ class LearningPlanControllerTest {
         .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
             .string(org.hamcrest.Matchers.containsString("event:draft_ready")));
 
-    ArgumentCaptor<LearningPlanDraftCommand> commandCaptor = ArgumentCaptor.forClass(LearningPlanDraftCommand.class);
-    verify(draftStreamService).stream(eq(42L), commandCaptor.capture(), any(), eq(Map.of()));
-    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().contentLocale())
+    ArgumentCaptor<LearningPlanBrief> briefCaptor = ArgumentCaptor.forClass(LearningPlanBrief.class);
+    verify(draftStreamService).stream(eq(42L), briefCaptor.capture(), any(), eq(Map.of()));
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().contentLocale())
         .isEqualTo(LearningPlanContentLocale.EN_US);
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().objective())
+        .isEqualTo("Improve problem-solving consistency for coding interviews");
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().personalizationEnabled()).isTrue();
     verifyNoInteractions(admissionService, lifecycleService);
     verify(sseProperties).learningPlanDraftTimeoutMillis();
+  }
+
+  @Test
+  void streamDraftPreservesExplicitObjectiveAndDisabledPersonalization() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
+    when(draftStreamService.stream(eq(42L), any(), any(), any())).thenReturn(streamPublisher(new LearningPlanDraftResult(
+        100L,
+        LearningPlanDraftStatus.GENERATED,
+        "已生成学习计划草案。",
+        List.of(),
+        draftPlan())));
+
+    MvcResult result = mockMvc.perform(post("/api/learning-plans/drafts/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .header("Accept-Language", "zh-CN")
+            .content("""
+                {
+                  "intent": "INTERVIEW_SPRINT",
+                  "objective": "为 Java 面试集中练习动态规划",
+                  "durationWeeks": 4,
+                  "level": "INTERMEDIATE",
+                  "weeklyHours": 6,
+                  "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
+                  "interviewOriented": true,
+                  "topicPreferences": ["Dynamic Programming"],
+                  "additionalConstraints": "每周复盘一次",
+                  "personalizationEnabled": false
+                }
+                """))
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk());
+
+    ArgumentCaptor<LearningPlanBrief> briefCaptor = ArgumentCaptor.forClass(LearningPlanBrief.class);
+    verify(draftStreamService).stream(eq(42L), briefCaptor.capture(), any(), eq(Map.of()));
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().objective())
+        .isEqualTo("为 Java 面试集中练习动态规划");
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().additionalConstraints()).isEqualTo("每周复盘一次");
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().personalizationEnabled()).isFalse();
+  }
+
+  @Test
+  void streamDraftRejectsUnknownRequestFields() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    mockMvc.perform(post("/api/learning-plans/drafts/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("""
+                {
+                  "intent": "INTERVIEW_SPRINT",
+                  "objective": "准备 Java 后端算法面试",
+                  "unexpectedInput": "不支持的字段",
+                  "durationWeeks": 4,
+                  "level": "INTERMEDIATE",
+                  "weeklyHours": 6,
+                  "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10}
+                }
+                """))
+        .andExpect(status().isBadRequest());
+
+    verifyNoInteractions(draftStreamService);
   }
 
   @Test
@@ -375,7 +442,13 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.draftId").value(101))
         .andExpect(jsonPath("$.data.status").value("GENERATED"))
         .andExpect(jsonPath("$.data.draftPlan.title").value("四周 Java 算法面试冲刺计划"))
+        .andExpect(jsonPath("$.data.draftPlan.objective").value("准备 Java 后端算法面试"))
+        .andExpect(jsonPath("$.data.draftPlan.difficultyDistribution.easyPercent").value(35))
+        .andExpect(jsonPath("$.data.draftPlan.difficultyDistribution.mediumPercent").value(55))
+        .andExpect(jsonPath("$.data.draftPlan.difficultyDistribution.hardPercent").value(10))
+        .andExpect(jsonPath("$.data.draftPlan.additionalConstraints").value("中级，每周 6 小时。"))
         .andExpect(jsonPath("$.data.draftPlan.metadata.dailyProblemCount").value(1))
+        .andExpect(jsonPath("$.data.draftPlan.metadata.personalizationEnabled").doesNotExist())
         .andExpect(jsonPath("$.data.draftPlan.metadata.template").doesNotExist())
         .andExpect(jsonPath("$.data.draftPlan.metadata.sourceCommit").doesNotExist())
         .andExpect(jsonPath("$.data.draftPlan.metadata.problemRefs").doesNotExist());
@@ -409,6 +482,7 @@ class LearningPlanControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.items[0].id").value(900))
         .andExpect(jsonPath("$.data.items[0].title").value("四周 Java 算法面试冲刺计划"))
+        .andExpect(jsonPath("$.data.items[0].objective").value("准备 Java 后端算法面试"))
         .andExpect(jsonPath("$.data.total").value(12))
         .andExpect(jsonPath("$.data.page").value(2))
         .andExpect(jsonPath("$.data.pageSize").value(5))
@@ -419,6 +493,11 @@ class LearningPlanControllerTest {
     mockMvc.perform(get("/api/learning-plans/900"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id").value(900))
+        .andExpect(jsonPath("$.data.objective").value("准备 Java 后端算法面试"))
+        .andExpect(jsonPath("$.data.difficultyDistribution.easyPercent").value(35))
+        .andExpect(jsonPath("$.data.difficultyDistribution.mediumPercent").value(55))
+        .andExpect(jsonPath("$.data.difficultyDistribution.hardPercent").value(10))
+        .andExpect(jsonPath("$.data.additionalConstraints").value("中级，每周 6 小时。"))
         .andExpect(jsonPath("$.data.phases[0].title").value("基础题型恢复"))
         .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("NOT_STARTED"))
         .andExpect(jsonPath("$.data.loadSummary.plannedProblemCount").value(1))
@@ -426,6 +505,7 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.rhythmSettings.dailyProblemCount").value(1))
         .andExpect(jsonPath("$.data.rhythmSettings.trainingDaysPerWeek").value(5))
         .andExpect(jsonPath("$.data.metadata.dailyProblemCount").value(1))
+        .andExpect(jsonPath("$.data.metadata.personalizationEnabled").doesNotExist())
         .andExpect(jsonPath("$.data.metadata.template").doesNotExist())
         .andExpect(jsonPath("$.data.metadata.sourceCommit").doesNotExist())
         .andExpect(jsonPath("$.data.metadata.problemRefs").doesNotExist())
@@ -585,7 +665,7 @@ class LearningPlanControllerTest {
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array", "Hash Table"),
         "中级，每周 6 小时。",
@@ -609,6 +689,8 @@ class LearningPlanControllerTest {
                 1)))),
         Map.of(
             "dailyProblemCount", 1,
+            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
+            LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true,
             "template", Map.of("sourceCommit", "internal-commit", "problemRefs", List.of("two-sum")),
             "sourceCommit", "internal-commit",
             "problemRefs", List.of("two-sum")));
@@ -624,7 +706,7 @@ class LearningPlanControllerTest {
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array", "Hash Table"),
         "中级，每周 6 小时。",

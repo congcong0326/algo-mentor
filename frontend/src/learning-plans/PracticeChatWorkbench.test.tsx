@@ -1370,15 +1370,15 @@ const planFixture: LearningPlanDetailResponse = {
   title: '数组训练',
   summary: '练习数组和哈希表。',
   intent: 'PRACTICE_GOAL',
-  goal: '系统训练数组题',
+  objective: '系统训练数组题',
   durationWeeks: 2,
   level: 'BEGINNER',
   weeklyHours: 5,
   programmingLanguage: 'Java',
-  difficultyPreference: 'MIXED',
+  difficultyDistribution: { easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
   interviewOriented: false,
   topicPreferences: ['Array'],
-  profileSummary: '初学者',
+  additionalConstraints: '每周留一天复盘。',
   metadata: {},
   phases: [
     {

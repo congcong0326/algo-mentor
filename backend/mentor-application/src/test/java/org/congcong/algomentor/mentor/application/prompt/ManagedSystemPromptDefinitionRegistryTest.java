@@ -114,7 +114,8 @@ class ManagedSystemPromptDefinitionRegistryTest {
         .contains("符合 JSON Schema 的完整结构化 JSON");
     assertThat(prompt(ManagedSystemPromptDefinitions.LEARNING_PLAN_REVISION))
         .contains("保留未被要求修改且仍然有效的内容")
-        .contains("返回完整替换版草案");
+        .contains("resolvedBrief")
+        .contains("完整替换版计划内容");
     assertThat(prompt(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION))
         .contains("当前计划是不可修改的事实")
         .contains("不能在新增阶段之间重复")

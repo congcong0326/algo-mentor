@@ -8,24 +8,36 @@ public class LearningPlanDraftValidator {
 
   private static final int MAX_AI_PROBLEMS_PER_PHASE = 5;
 
-  public List<String> missingRequiredFields(LearningPlanDraftCommand command) {
-    List<String> missingFields = new ArrayList<>();
-    if (command.intent() == null) {
-      missingFields.add("intent");
+  public List<String> missingRequiredFields(LearningPlanBrief brief) {
+    List<String> invalidFields = new ArrayList<>();
+    if (brief == null || brief.intent() == null) {
+      invalidFields.add("intent");
     }
-    if (command.goal() == null) {
-      missingFields.add("goal");
+    if (brief == null || brief.objective() == null || brief.objective().length() > 300) {
+      invalidFields.add("objective");
     }
-    if (command.durationWeeks() == null || command.durationWeeks() < 1) {
-      missingFields.add("durationWeeks");
+    if (brief == null || brief.durationWeeks() == null
+        || brief.durationWeeks() < 1 || brief.durationWeeks() > 52) {
+      invalidFields.add("durationWeeks");
     }
-    if (command.level() == null) {
-      missingFields.add("level");
+    if (brief == null || brief.level() == null) {
+      invalidFields.add("level");
     }
-    if (command.weeklyHours() == null || command.weeklyHours() < 1) {
-      missingFields.add("weeklyHours");
+    if (brief == null || brief.weeklyHours() == null
+        || brief.weeklyHours() < 1 || brief.weeklyHours() > 80) {
+      invalidFields.add("weeklyHours");
     }
-    return missingFields;
+    if (brief == null || brief.difficultyDistribution() == null) {
+      invalidFields.add("difficultyDistribution");
+    }
+    if (brief != null && brief.additionalConstraints() != null && brief.additionalConstraints().length() > 1000) {
+      invalidFields.add("additionalConstraints");
+    }
+    if (brief != null && brief.intent() == LearningPlanIntent.TOPIC_BREAKTHROUGH
+        && brief.topicPreferences().isEmpty()) {
+      invalidFields.add("topicPreferences");
+    }
+    return invalidFields;
   }
 
   public void validateGeneratedPlan(LearningPlanDraftPlan plan) {

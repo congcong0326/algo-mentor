@@ -2,16 +2,16 @@ package org.congcong.algomentor.mentor.application.learningplan.proposal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinition;
@@ -43,43 +43,6 @@ public class LearningPlanProposalPromptBuilder {
         : systemPromptResolver;
   }
 
-  public List<LlmMessage> buildDraftRevisionPrompt(
-      String instruction,
-      LearningPlanDraftCommand command,
-      LearningPlanDraftPlan currentPlan
-  ) {
-    return buildDraftRevisionPrompt(instruction, command, currentPlan, 1L);
-  }
-
-  public List<LlmMessage> buildDraftRevisionPrompt(
-      String instruction,
-      LearningPlanDraftCommand command,
-      LearningPlanDraftPlan currentPlan,
-      long userId
-  ) {
-    return List.of(
-        ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_REVISION, userId),
-            SystemPromptSectionKeys.LEARNING_PLAN_REVISION_BASE),
-        LlmMessage.user("""
-            用户修订要求：
-            %s
-
-            原始生成命令 JSON：
-            %s
-
-            outputLocale: %s
-            problemToolLocale: %s
-
-            当前学习计划草案 JSON：
-            %s
-            """.formatted(
-            instruction,
-            toJson(command),
-            command.contentLocale().languageTag(),
-            command.contentLocale().languageTag(),
-            toJson(currentPlan))));
-  }
-
   public List<LlmMessage> buildExtensionPrompt(
       String instruction,
       LearningPlan currentPlan,
@@ -94,11 +57,28 @@ public class LearningPlanProposalPromptBuilder {
       List<PracticeProgress> progress,
       long userId
   ) {
+    return buildExtensionPrompt(
+        instruction,
+        currentPlan,
+        progress,
+        snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
+        null);
+  }
+
+  public List<LlmMessage> buildExtensionPrompt(
+      String instruction,
+      LearningPlan currentPlan,
+      List<PracticeProgress> progress,
+      ResolvedSystemPromptSnapshot promptSnapshot,
+      LearningPlanPersonalizationSnapshot personalizationSnapshot
+  ) {
     LearningPlanContentLocale contentLocale = currentPlan.plan().contentLocale();
-    return List.of(
-        ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
-            SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE),
-        LlmMessage.user("""
+    List<LlmMessage> messages = new ArrayList<>();
+    messages.add(ManagedSystemMessageFactory.system(
+        Objects.requireNonNull(promptSnapshot, "promptSnapshot"),
+        SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE));
+    appendPersonalization(messages, personalizationSnapshot);
+    messages.add(LlmMessage.user("""
             请基于当前学习计划和练习进度生成学习计划扩展草案。
 
             用户扩展要求：
@@ -118,6 +98,7 @@ public class LearningPlanProposalPromptBuilder {
             contentLocale.languageTag(),
             toJson(currentPlan.plan()),
             toJson(progressSummary(progress)))));
+    return List.copyOf(messages);
   }
 
   public List<LlmMessage> buildExtensionRevisionPrompt(
@@ -136,15 +117,34 @@ public class LearningPlanProposalPromptBuilder {
       LearningPlanExtensionDraft previousExtension,
       long userId
   ) {
+    return buildExtensionRevisionPrompt(
+        instruction,
+        currentPlan,
+        progress,
+        previousExtension,
+        snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
+        null);
+  }
+
+  public List<LlmMessage> buildExtensionRevisionPrompt(
+      String instruction,
+      LearningPlan currentPlan,
+      List<PracticeProgress> progress,
+      LearningPlanExtensionDraft previousExtension,
+      ResolvedSystemPromptSnapshot promptSnapshot,
+      LearningPlanPersonalizationSnapshot personalizationSnapshot
+  ) {
     LearningPlanContentLocale contentLocale = currentPlan.plan().contentLocale();
-    return List.of(
-        ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
-            SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE),
-        LlmMessage.assistant("""
+    List<LlmMessage> messages = new ArrayList<>();
+    messages.add(ManagedSystemMessageFactory.system(
+        Objects.requireNonNull(promptSnapshot, "promptSnapshot"),
+        SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE));
+    appendPersonalization(messages, personalizationSnapshot);
+    messages.add(LlmMessage.assistant("""
             上一版扩展草案 JSON：
             %s
-            """.formatted(toJson(previousExtension))),
-        LlmMessage.user("""
+            """.formatted(toJson(previousExtension))));
+    messages.add(LlmMessage.user("""
             请基于当前学习计划、练习进度和上一版扩展草案，生成新的学习计划扩展草案。
 
             用户修订要求：
@@ -164,10 +164,20 @@ public class LearningPlanProposalPromptBuilder {
             contentLocale.languageTag(),
             toJson(currentPlan.plan()),
             toJson(progressSummary(progress)))));
+    return List.copyOf(messages);
   }
 
   public ResolvedSystemPromptSnapshot snapshot(ManagedSystemPromptDefinition definition, long userId) {
     return systemPromptResolver.resolve(definition, userId);
+  }
+
+  private static void appendPersonalization(
+      List<LlmMessage> messages,
+      LearningPlanPersonalizationSnapshot personalizationSnapshot
+  ) {
+    if (personalizationSnapshot != null && !personalizationSnapshot.promptText().isBlank()) {
+      messages.add(LlmMessage.system(personalizationSnapshot.promptText()));
+    }
   }
 
   private List<Map<String, Object>> progressSummary(List<PracticeProgress> progress) {

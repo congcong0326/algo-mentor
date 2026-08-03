@@ -27,7 +27,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
@@ -40,6 +40,14 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProbl
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemSearch;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanAbilityTagSummary;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanActiveProgressSummary;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationDataProvider;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSource;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSourceOutcome;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanReviewLoadSummary;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionResult;
@@ -57,6 +65,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -356,6 +365,94 @@ class LearningPlanExtensionProposalStreamServiceTest {
     assertThat(revision.status()).isEqualTo(LearningPlanProposalRevisionStatus.GENERATING);
   }
 
+  @org.junit.jupiter.api.Test
+  void enabledExtensionSnapshotsContextAfterProposalTransactionAndPassesItToAgent() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan(true, false)));
+    CountingPersonalizationProvider provider = new CountingPersonalizationProvider(locks);
+    CapturingAgentRuntime runner = new CapturingAgentRuntime(extensionJson("补充图论训练", "graph-valid-tree"));
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(
+        runner,
+        new RecordingTransactionOperations(locks),
+        new LearningPlanPersonalizationContextService(provider));
+
+    collect(service.streamFirstRevision(
+        plan.userId(), plan.id(), "追加图论阶段", "run-enabled-context", Map.of()));
+
+    assertThat(provider.totalCalls()).isEqualTo(4);
+    assertThat(locks).containsSubsequence(
+        "transaction:1:begin",
+        "plan:12",
+        "transaction:1:end",
+        "personalization:activeClaims");
+    assertThat(runner.invocations).hasSize(1);
+    LearningPlanExtensionAgentInput input = (LearningPlanExtensionAgentInput) runner.invocations.get(0).input();
+    assertThat(input.personalizationSnapshot().enabled()).isTrue();
+    assertThat(input.personalizationSnapshot().sourceOutcomes().values())
+        .containsOnly(LearningPlanPersonalizationSourceOutcome.EMPTY);
+  }
+
+  @org.junit.jupiter.api.Test
+  void disabledTemplateExtensionDoesNotReadPersonalizationProviders() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan(false, true)));
+    CountingPersonalizationProvider provider = new CountingPersonalizationProvider(locks);
+    CapturingAgentRuntime runner = new CapturingAgentRuntime(extensionJson("补充图论训练", "graph-valid-tree"));
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(
+        runner,
+        new LearningPlanPersonalizationContextService(provider));
+
+    collect(service.streamFirstRevision(
+        plan.userId(), plan.id(), "追加图论阶段", "run-template-context-disabled", Map.of()));
+
+    assertThat(provider.totalCalls()).isZero();
+    LearningPlanExtensionAgentInput input = (LearningPlanExtensionAgentInput) runner.invocation.get().input();
+    assertThat(input.personalizationSnapshot().enabled()).isFalse();
+    assertThat(input.personalizationSnapshot().sourceOutcomes().values())
+        .containsOnly(LearningPlanPersonalizationSourceOutcome.DISABLED);
+  }
+
+  @org.junit.jupiter.api.Test
+  void eachExtensionRunReadsOneFreshPersonalizationSnapshot() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan(true, false)));
+    CountingPersonalizationProvider provider = new CountingPersonalizationProvider(locks);
+    CapturingAgentRuntime runner = new CapturingAgentRuntime(extensionJson("补充图论训练", "graph-valid-tree"));
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(
+        runner,
+        new LearningPlanPersonalizationContextService(provider));
+
+    List<LearningPlanProposalStreamEvent> firstEvents = collect(service.streamFirstRevision(
+        plan.userId(), plan.id(), "追加图论阶段", "run-first-context", Map.of()));
+    long groupId = ((LearningPlanProposalEvent.PlanExtensionReady) ((LearningPlanProposalStreamEvent.Proposal)
+        firstEvents.get(firstEvents.size() - 1)).event()).result().proposalGroupId();
+    collect(service.streamNextRevision(
+        plan.userId(), plan.id(), groupId, "调整图论阶段", "run-second-context", Map.of()));
+
+    assertThat(provider.totalCalls()).isEqualTo(8);
+    assertThat(runner.invocations).hasSize(2);
+    assertThat(runner.invocations)
+        .extracting(invocation -> ((LearningPlanExtensionAgentInput) invocation.input()).personalizationSnapshot())
+        .allSatisfy(snapshot -> assertThat(snapshot.enabled()).isTrue());
+  }
+
+  @org.junit.jupiter.api.Test
+  void sourceFailureDoesNotPreventAnEnabledExtension() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan(true, false)));
+    CountingPersonalizationProvider provider = new CountingPersonalizationProvider(locks);
+    provider.claimFailure = new IllegalStateException("claim source unavailable");
+    CapturingAgentRuntime runner = new CapturingAgentRuntime(extensionJson("补充图论训练", "graph-valid-tree"));
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(
+        runner,
+        new LearningPlanPersonalizationContextService(provider));
+
+    List<LearningPlanProposalStreamEvent> events = collect(service.streamFirstRevision(
+        plan.userId(), plan.id(), "追加图论阶段", "run-partial-context-failure", Map.of()));
+
+    assertThat(events.get(events.size() - 1).eventName()).isEqualTo("plan_extension_ready");
+    assertThat(provider.totalCalls()).isEqualTo(4);
+    LearningPlanExtensionAgentInput input = (LearningPlanExtensionAgentInput) runner.invocation.get().input();
+    assertThat(input.personalizationSnapshot().sourceOutcomes())
+        .containsEntry(LearningPlanPersonalizationSource.ACTIVE_CLAIMS, LearningPlanPersonalizationSourceOutcome.ERROR);
+  }
+
   private LearningPlanExtensionProposalStreamService serviceWithAgent(String content) {
     return serviceWithAgent(new CapturingAgentRuntime(content));
   }
@@ -368,6 +465,24 @@ class LearningPlanExtensionProposalStreamServiceTest {
       AgentRuntime runtime,
       TransactionOperations transactionOperations
   ) {
+    return serviceWithAgent(
+        runtime,
+        transactionOperations,
+        new LearningPlanPersonalizationContextService(null));
+  }
+
+  private LearningPlanExtensionProposalStreamService serviceWithAgent(
+      AgentRuntime runtime,
+      LearningPlanPersonalizationContextService personalizationContextService
+  ) {
+    return serviceWithAgent(runtime, TransactionOperations.withoutTransaction(), personalizationContextService);
+  }
+
+  private LearningPlanExtensionProposalStreamService serviceWithAgent(
+      AgentRuntime runtime,
+      TransactionOperations transactionOperations,
+      LearningPlanPersonalizationContextService personalizationContextService
+  ) {
     return new LearningPlanExtensionProposalStreamService(
         learningPlanRepository,
         proposalRepository,
@@ -378,7 +493,8 @@ class LearningPlanExtensionProposalStreamServiceTest {
         new ObjectMapper(),
         problemCatalog,
         transactionOperations,
-        clock);
+        clock,
+        personalizationContextService);
   }
 
   private LearningPlan activePlan(LearningPlanDraftPlan draftPlan) {
@@ -402,6 +518,17 @@ class LearningPlanExtensionProposalStreamServiceTest {
   }
 
   private LearningPlanDraftPlan basePlan() {
+    return basePlan(true, false);
+  }
+
+  private LearningPlanDraftPlan basePlan(boolean personalizationEnabled, boolean templatePlan) {
+    Map<String, Object> metadata = new java.util.LinkedHashMap<>();
+    metadata.put("problemRecommendationIncomplete", false);
+    metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US");
+    metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, personalizationEnabled);
+    if (templatePlan) {
+      metadata.put(LearningPlanDraftMetadataKeys.DRAFT_SOURCE, LearningPlanDraftMetadataKeys.DRAFT_SOURCE_TEMPLATE);
+    }
     return new LearningPlanDraftPlan(
         "学习计划",
         "围绕数组和哈希表建立高频题能力。",
@@ -411,10 +538,10 @@ class LearningPlanExtensionProposalStreamServiceTest {
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
-        "当前水平：中级，每周 6 小时，语言：Java",
+        null,
         List.of(new LearningPlanPhaseDraft(
             1,
             "数组与哈希表基础",
@@ -433,9 +560,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
                 List.of("Array"),
                 "匹配数组训练目标。",
                 1)))),
-        Map.of(
-            "problemRecommendationIncomplete", false,
-            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US"));
+        metadata);
   }
 
   private LearningPlanExtensionDraft extensionDraft(String summary, String slug) {
@@ -556,6 +681,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
   private static class CapturingAgentRuntime implements AgentRuntime {
     private final String content;
     private final AtomicReference<AgentInvocation<?>> invocation = new AtomicReference<>();
+    private final List<AgentInvocation<?>> invocations = new CopyOnWriteArrayList<>();
 
     CapturingAgentRuntime(String content) {
       this.content = content;
@@ -569,6 +695,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
     @Override
     public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       this.invocation.set(invocation);
+      this.invocations.add(invocation);
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
@@ -694,6 +821,74 @@ class LearningPlanExtensionProposalStreamServiceTest {
         Thread.currentThread().interrupt();
         throw new AssertionError(exception);
       }
+    }
+  }
+
+  private static final class RecordingTransactionOperations implements TransactionOperations {
+    private final List<String> events;
+    private int transactionCount;
+
+    private RecordingTransactionOperations(List<String> events) {
+      this.events = events;
+    }
+
+    @Override
+    public <T> T execute(TransactionCallback<T> action) {
+      int transactionNo = ++transactionCount;
+      events.add("transaction:" + transactionNo + ":begin");
+      try {
+        return action.doInTransaction(null);
+      } finally {
+        events.add("transaction:" + transactionNo + ":end");
+      }
+    }
+  }
+
+  private static final class CountingPersonalizationProvider implements LearningPlanPersonalizationDataProvider {
+    private final List<String> events;
+    private RuntimeException claimFailure;
+    private int activeClaimCalls;
+    private int abilityTagCalls;
+    private int activePlanCalls;
+    private int reviewLoadCalls;
+
+    private CountingPersonalizationProvider(List<String> events) {
+      this.events = events;
+    }
+
+    @Override
+    public List<LearnerMemoryClaimRevision> findActiveClaims(long userId) {
+      events.add("personalization:activeClaims");
+      activeClaimCalls++;
+      if (claimFailure != null) {
+        throw claimFailure;
+      }
+      return List.of();
+    }
+
+    @Override
+    public List<LearningPlanAbilityTagSummary> findAbilityTagSummaries(long userId) {
+      events.add("personalization:abilityTags");
+      abilityTagCalls++;
+      return List.of();
+    }
+
+    @Override
+    public Optional<LearningPlanActiveProgressSummary> findActivePlanProgress(long userId) {
+      events.add("personalization:activePlan");
+      activePlanCalls++;
+      return Optional.empty();
+    }
+
+    @Override
+    public Optional<LearningPlanReviewLoadSummary> findReviewLoad(long userId) {
+      events.add("personalization:reviewLoad");
+      reviewLoadCalls++;
+      return Optional.empty();
+    }
+
+    private int totalCalls() {
+      return activeClaimCalls + abilityTagCalls + activePlanCalls + reviewLoadCalls;
     }
   }
 

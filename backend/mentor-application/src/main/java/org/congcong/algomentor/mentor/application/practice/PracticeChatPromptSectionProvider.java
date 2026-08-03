@@ -252,7 +252,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
     return """
         学习计划：
         - planId: %s
-        - goal: %s
+        - objective: %s
         - level: %s
         - programmingLanguage: %s
         - locale: %s
@@ -277,7 +277,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         </problem_statement>
         """.formatted(
         context.plan().id(),
-        blankToPlaceholder(plan.goal()),
+        blankToPlaceholder(plan.objective()),
         plan.level(),
         blankToPlaceholder(plan.programmingLanguage()),
         context.locale(),

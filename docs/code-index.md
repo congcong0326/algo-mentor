@@ -58,6 +58,8 @@
 - `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 完整闭环设计，说明 35 个多来源模板的源数据、聚合产物、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。
 - `docs/learning-plan-template-catalog-design.md`：学习计划模板一级分类与推荐展示研发设计，固定 4 个分类、6 个首批推荐顺序、公共 API 字段收口、前端索引交互和迁移测试方案。
+- `docs/learning-plan-personalized-generation-redesign.md`：AI 学习计划个性化生成输入与上下文重构设计，保留表单创建和聊天修订交互，重构 `goal` 语义、模型输出职责与聚合学习数据注入边界。
+- `docs/learning-plan-personalized-generation-redesign-tasks/`：上述重构的一把梭哈研发任务包，使用 `CURRENT.md` 恢复指针、`CONTRACTS.md` 固定契约和 `LPGR-00` 至 `LPGR-10` 分波次实施任务控制上下文、依赖与验收门禁。
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
 - `tools/learning_plan_template_seed/prepare_p1b_template_sources.py`：固定版本生成 TIH 核心专题、动态规划进阶、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75 和 LeetCode 面试经典 150 七个模板源目录。
@@ -109,6 +111,10 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/recall`：默认关闭的 Practice Chat claim 快照、1000 token bootstrap（上限 1500）及范围受限的记忆搜索/章节/证据工具。
 - `backend/persistent-queue`：独立持久化队列模块；存储/Publisher 与 consumer worker 分为两个有序自动配置，worker 仅在 `algo-mentor.queue.consumer.enabled=true` 时启动。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan`：学习计划领域与应用服务，以 `LearningPlanBrief` 作为 AI 创建和修订的唯一规划输入，`LearningPlanDraftPlan` 保存服务端已解析的 objective、难度分布、限制和内部 metadata。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/personalization`：四个聚合来源的有界个性化上下文、渲染/裁剪、低敏 metadata 与固定标签 Micrometer 指标；关闭时不读取来源，单来源失败独立降级。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/stream` 与 `learningplan/proposal/stream`：初次创建、草案修订和计划扩展的 Agent Definition/StreamService，分别使用生成内容 Schema 或 resolved Brief + 生成内容 Schema，并在每个 run 固定一次个性化 snapshot。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan`：学习计划 HTTP DTO、当前用户边界、SSE 映射、MyBatis repository 和个性化 adapter；`LearningPlanConfiguration` 负责在 Micrometer 可用时装配个性化指标。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/execution/ManagedAgentExecutor.java`：Spring 管理的 Agent 专用线程池，使用 `20/100 + SynchronousQueue + AbortPolicy`，负责 trace 透传、执行指标和限时优雅关闭。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentExecutorProperties.java`：绑定 `algo-mentor.agent.executor` 的线程数、空闲回收、关停超时和线程名前缀配置。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，包含 Agent executor 环境变量映射，默认不强制连接数据库。
@@ -180,6 +186,7 @@
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/legal`：`/terms` 服务条款和 `/privacy` 隐私政策公共页面，包含中英文简版正文和共用阅读布局。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态。
+- `frontend/src/learning-plans`：学习计划创建、草案预览与修订、列表详情、模板选择和扩展交互；AI 创建请求使用 `objective`、精确难度分布、`additionalConstraints` 和可关闭的 `personalizationEnabled`。
 - `frontend/src/problem-notes`：可复用的题目笔记折叠编辑器、结构化纲要表单和固定选项，按 `problemSlug` 读写同一份长期笔记并处理 revision 冲突。
 - `frontend/src/mistakes/MistakeNotebookPage.tsx`：复习中心列表和详情弹窗，展示到期状态、完整题面、折叠笔记与不可变评级历史。
 - `frontend/src/mistakes/ReviewSessionPage.tsx`：复习工作台，默认展示完整题面和四档 FSRS 评级，笔记与历史位于题面下方折叠区，并处理未保存笔记离开确认和评级幂等提交。

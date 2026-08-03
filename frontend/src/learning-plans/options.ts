@@ -1,5 +1,4 @@
 import type {
-  LearningPlanDifficultyPreference,
   LearningPlanIntent,
   LearningPlanLevel,
 } from '../types/api';
@@ -15,8 +14,6 @@ export const intentOptionValues: LearningPlanIntent[] = [
 ];
 
 export const levelOptionValues: LearningPlanLevel[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
-
-export const difficultyOptionValues: LearningPlanDifficultyPreference[] = ['EASY', 'MEDIUM', 'HARD', 'MIXED'];
 
 export const planScenarioOptions = [
   { labelKey: 'INTERVIEW_SPRINT', value: 'INTERVIEW_SPRINT', interviewOriented: true },
@@ -44,20 +41,18 @@ export const programmingLanguageOptions = [
 export const difficultyDistributionOptions: ReadonlyArray<{
   labelKey: keyof LocaleResources['labels']['difficultyDistribution'];
   value: number;
-  preference: LearningPlanDifficultyPreference;
   easyPercent: number;
   mediumPercent: number;
   hardPercent: number;
 }> = [
-  { labelKey: 'beginner', value: 0, preference: 'EASY', easyPercent: 60, mediumPercent: 35, hardPercent: 5 },
-  { labelKey: 'balanced', value: 50, preference: 'MIXED', easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
-  { labelKey: 'sprint', value: 100, preference: 'HARD', easyPercent: 10, mediumPercent: 55, hardPercent: 35 },
+  { labelKey: 'beginner', value: 0, easyPercent: 60, mediumPercent: 35, hardPercent: 5 },
+  { labelKey: 'balanced', value: 50, easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
+  { labelKey: 'sprint', value: 100, easyPercent: 10, mediumPercent: 55, hardPercent: 35 },
 ] as const;
 
 export interface DifficultyDistribution {
   labelKey: keyof LocaleResources['labels']['difficultyDistribution'];
   value: number;
-  preference: LearningPlanDifficultyPreference;
   easyPercent: number;
   mediumPercent: number;
   hardPercent: number;
@@ -100,7 +95,6 @@ export function getDifficultyDistribution(value: number): DifficultyDistribution
   return {
     labelKey: closest.labelKey,
     value: clampedValue,
-    preference: closest.preference,
     easyPercent,
     mediumPercent,
     hardPercent,
@@ -126,34 +120,3 @@ export const topicOptions = [
   { value: 'Backtracking' },
   { value: 'Bit Manipulation' },
 ] as const;
-
-export interface BuildGoalInput {
-  resources: LocaleResources;
-  intentLabel: string;
-  durationWeeks: number;
-  weeklyHours: number;
-  levelLabel: string;
-  programmingLanguage: string;
-  difficultyLabel: string;
-  easyPercent: number;
-  mediumPercent: number;
-  hardPercent: number;
-  topics: string[];
-  additionalThoughts: string;
-}
-
-export function buildLearningPlanGoal(input: BuildGoalInput): string {
-  const topics = input.topics.map((topic) => topic.trim()).filter(Boolean);
-  const resources = input.resources.learningPlans;
-
-  return [
-    resources.goalIntent(input.intentLabel),
-    resources.goalDuration(input.durationWeeks),
-    resources.goalWeeklyHours(input.weeklyHours),
-    resources.goalLevel(input.levelLabel),
-    resources.goalLanguage(input.programmingLanguage),
-    resources.goalDifficulty(input.difficultyLabel, input.easyPercent, input.mediumPercent, input.hardPercent),
-    topics.length > 0 ? resources.goalTopics(topics.join(', ')) : resources.goalTopicsAuto,
-    input.additionalThoughts.trim() ? resources.goalAdditionalThoughts(input.additionalThoughts.trim()) : undefined,
-  ].filter(Boolean).join('\n');
-}

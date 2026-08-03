@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
@@ -60,7 +61,7 @@ class LearningPlanExtensionApplyServiceTest {
 
   @Test
   void latestReadyRevisionAppliesAndMarksGroupAndRevisionApplied() {
-    learningPlanRepository.save(plan(phase(1, "two-sum")));
+    LearningPlan originalPlan = learningPlanRepository.save(plan(phase(1, "two-sum")));
     LearningPlanProposalGroup group = saveActiveGroup((Long) null);
     LearningPlanExtensionRevision revision = saveReadyRevision(group.id(), 1, 1, extension(phase(2, "graph-valid-tree")));
     saveActiveGroup(group.withLatestProposalId(revision.id(), NOW));
@@ -80,9 +81,22 @@ class LearningPlanExtensionApplyServiceTest {
     assertThat(appliedRevision.appliedAt()).isEqualTo(NOW);
     assertThat(appliedRevision.proposedExtension().newPhases()).extracting(LearningPlanPhaseDraft::phaseIndex)
         .containsExactly(2);
-    assertThat(learningPlanRepository.findPlanByIdForUser(PLAN_ID, USER_ID).orElseThrow().plan().phases())
+    LearningPlan updatedPlan = learningPlanRepository.findPlanByIdForUser(PLAN_ID, USER_ID).orElseThrow();
+    assertThat(updatedPlan.plan().phases())
         .extracting(LearningPlanPhaseDraft::phaseIndex)
         .containsExactly(1, 2);
+    assertThat(updatedPlan.plan().phases()).startsWith(originalPlan.plan().phases().toArray(LearningPlanPhaseDraft[]::new));
+    assertThat(updatedPlan.plan().objective()).isEqualTo(originalPlan.plan().objective());
+    assertThat(updatedPlan.plan().additionalConstraints()).isEqualTo(originalPlan.plan().additionalConstraints());
+    assertThat(updatedPlan.plan().difficultyDistribution()).isEqualTo(originalPlan.plan().difficultyDistribution());
+    assertThat(updatedPlan.plan().metadata()).isEqualTo(originalPlan.plan().metadata());
+    assertThat(updatedPlan.plan().metadata())
+        .containsEntry(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US")
+        .containsEntry(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true)
+        .containsEntry(LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT, 3)
+        .containsEntry(LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, 4)
+        .containsEntry(LearningPlanDraftMetadataKeys.LOAD_RISK, "NORMAL")
+        .containsEntry(LearningPlanDraftMetadataKeys.LOAD_SUMMARY, Map.of("problemCount", 1));
   }
 
   @Test
@@ -304,12 +318,18 @@ class LearningPlanExtensionApplyServiceTest {
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Graph"),
         "已有基础",
         phases,
-        Map.of());
+        Map.of(
+            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
+            LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true,
+            LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT, 3,
+            LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, 4,
+            LearningPlanDraftMetadataKeys.LOAD_RISK, "NORMAL",
+            LearningPlanDraftMetadataKeys.LOAD_SUMMARY, Map.of("problemCount", 1)));
   }
 
   private static LearningPlanPhaseDraft phase(int phaseIndex, String... slugs) {
@@ -400,11 +420,26 @@ class LearningPlanExtensionApplyServiceTest {
       List<LearningPlanPhaseDraft> mergedPhases = new ArrayList<>(existingPhases);
       mergedPhases.addAll(newPhases);
       assertThat(mergedPhases).startsWith(existingPhases.toArray(LearningPlanPhaseDraft[]::new));
+      LearningPlanDraftPlan snapshot = current.plan();
       LearningPlan updated = new LearningPlan(
           current.id(),
           current.userId(),
           current.status(),
-          draftPlan(mergedPhases),
+          new LearningPlanDraftPlan(
+              snapshot.title(),
+              snapshot.summary(),
+              snapshot.intent(),
+              snapshot.objective(),
+              snapshot.durationWeeks(),
+              snapshot.level(),
+              snapshot.weeklyHours(),
+              snapshot.programmingLanguage(),
+              snapshot.difficultyDistribution(),
+              snapshot.interviewOriented(),
+              snapshot.topicPreferences(),
+              snapshot.additionalConstraints(),
+              mergedPhases,
+              snapshot.metadata()),
           current.createdAt(),
           current.updatedAt());
       plans.put(planId, updated);

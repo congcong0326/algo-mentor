@@ -19,6 +19,7 @@ import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalPromptBuilder;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
@@ -78,14 +79,47 @@ public final class LearningPlanExtensionAgentDefinition implements AgentDefiniti
     metadata.put(
         LearningPlanDraftMetadataKeys.CONTENT_LOCALE,
         candidate.plan().plan().contentLocale().languageTag());
+    metadata.put(LearningPlanPersonalizationMetadataKeys.ENABLED, candidate.personalizationSnapshot().enabled());
+    metadata.put(
+        LearningPlanPersonalizationMetadataKeys.SOURCE_OUTCOMES,
+        candidate.personalizationSnapshot().sourceOutcomes().entrySet().stream()
+            .collect(java.util.stream.Collectors.toMap(
+                entry -> entry.getKey().name(),
+                entry -> entry.getValue().name(),
+                (left, right) -> left,
+                LinkedHashMap::new)));
+    metadata.put(LearningPlanPersonalizationMetadataKeys.ENTRY_COUNT, personalizationEntryCount(candidate));
+    metadata.put(
+        LearningPlanPersonalizationMetadataKeys.TOKEN_ESTIMATE,
+        candidate.personalizationSnapshot().tokenEstimate());
+    metadata.put(LearningPlanPersonalizationMetadataKeys.TRIMMED, candidate.personalizationSnapshot().trimmed());
     return new AgentPreparedRequest(
         candidate.previousExtension() == null
             ? promptBuilder.buildExtensionPrompt(
-                candidate.instruction(), candidate.plan(), candidate.progress(), candidate.userId())
+                candidate.instruction(),
+                candidate.plan(),
+                candidate.progress(),
+                snapshot,
+                candidate.personalizationSnapshot())
             : promptBuilder.buildExtensionRevisionPrompt(
-                candidate.instruction(), candidate.plan(), candidate.progress(), candidate.previousExtension(), candidate.userId()),
+                candidate.instruction(),
+                candidate.plan(),
+                candidate.progress(),
+                candidate.previousExtension(),
+                snapshot,
+                candidate.personalizationSnapshot()),
         Map.copyOf(metadata),
         executionOptions());
+  }
+
+  private int personalizationEntryCount(LearningPlanExtensionAgentInput input) {
+    var context = input.personalizationSnapshot().context();
+    return context.declaredFacts().size()
+        + context.generalObservations().size()
+        + context.weakTags().size()
+        + context.strongTags().size()
+        + (context.activePlan() == null ? 0 : 1)
+        + (context.reviewLoad() == null ? 0 : 1);
   }
 
   private AgentExecutionOptions executionOptions() {

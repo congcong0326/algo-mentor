@@ -8,34 +8,46 @@ afterEach(() => {
 });
 
 describe('LearningPlanCreateModal', () => {
-  it('submits a generated goal without a separate learning goal field', () => {
+  it('submits objective, constraints, and the exact default difficulty distribution', () => {
     const onSubmit = vi.fn();
 
     render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={onSubmit} />);
 
     expect(screen.getByRole('dialog', { name: '新建训练方案' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '面试冲刺' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.queryByRole('textbox', { name: '学习目标' })).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: '具体目标（可选）' })).toHaveAttribute('maxlength', '300');
+    expect(screen.getByRole('textbox', { name: '其他限制（可选）' })).toHaveAttribute('maxlength', '1000');
+    expect(screen.getByRole('checkbox', { name: '参考我的学习数据' })).toBeChecked();
     fireEvent.change(screen.getByRole('spinbutton', { name: '训练周期' }), { target: { value: '6' } });
     fireEvent.change(screen.getByRole('spinbutton', { name: '每周投入' }), { target: { value: '8' } });
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
     expect(screen.getByRole('button', { name: '动态规划' })).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.change(screen.getByRole('textbox', { name: '补充想法' }), {
+    fireEvent.change(screen.getByRole('textbox', { name: '具体目标（可选）' }), {
+      target: { value: '六周内建立动态规划面试题的稳定解题思路。' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: '其他限制（可选）' }), {
       target: { value: '希望每周留一天复盘。' },
     });
     fireEvent.click(screen.getByRole('button', { name: '生成方案草案' }));
 
-    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
+    expect(onSubmit).toHaveBeenCalledWith({
       intent: 'INTERVIEW_SPRINT',
+      objective: '六周内建立动态规划面试题的稳定解题思路。',
       durationWeeks: 6,
+      level: 'INTERMEDIATE',
       weeklyHours: 8,
       programmingLanguage: 'Python3',
-      difficultyPreference: 'MIXED',
+      difficultyDistribution: {
+        easyPercent: 25,
+        mediumPercent: 55,
+        hardPercent: 20,
+      },
       interviewOriented: true,
       topicPreferences: ['Dynamic Programming'],
-    }));
-    expect(onSubmit.mock.calls[0][0].goal).toContain('补充想法：希望每周留一天复盘。');
+      additionalConstraints: '希望每周留一天复盘。',
+      personalizationEnabled: true,
+    });
   });
 
   it('requires a topic for topic breakthrough scenario', () => {
@@ -151,16 +163,36 @@ describe('LearningPlanCreateModal', () => {
     expect(screen.queryByText('专项突破需要至少选择一个主题。')).not.toBeInTheDocument();
   });
 
-  it('confirms before closing after changing only the programming language', () => {
+  it('confirms before closing after changing an objective', () => {
     const onClose = vi.fn();
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
     render(<LearningPlanCreateModal loading={false} open onClose={onClose} onSubmit={vi.fn()} />);
 
-    fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
+    fireEvent.change(screen.getByRole('textbox', { name: '具体目标（可选）' }), {
+      target: { value: '集中练习图论。' },
+    });
     fireEvent.click(screen.getByRole('button', { name: '关闭' }));
 
     expect(confirm).toHaveBeenCalledWith('放弃当前填写的方案问卷？');
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('confirms before closing after changing constraints or personalization', () => {
+    const onClose = vi.fn();
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    render(<LearningPlanCreateModal loading={false} open onClose={onClose} onSubmit={vi.fn()} />);
+
+    fireEvent.change(screen.getByRole('textbox', { name: '其他限制（可选）' }), {
+      target: { value: '每周留一天复盘。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+    expect(confirm).toHaveBeenCalledWith('放弃当前填写的方案问卷？');
+
+    fireEvent.click(screen.getByRole('checkbox', { name: '参考我的学习数据' }));
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+    expect(confirm).toHaveBeenCalledTimes(2);
     expect(onClose).not.toHaveBeenCalled();
   });
 });

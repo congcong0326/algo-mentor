@@ -76,8 +76,8 @@ export default function LearningPlanDraftPanel({
           <FileText aria-hidden="true" />
           <h2>{resources.learningPlans.draftPreview}</h2>
         </div>
-        <div className="goal-summary">
-          <p>{draft.draftPlan.goal}</p>
+        <div className="plan-summary">
+          <p>{draft.draftPlan.objective}</p>
         </div>
         <PlanPreview plan={draft.draftPlan} />
         <div className="draft-revision-panel">

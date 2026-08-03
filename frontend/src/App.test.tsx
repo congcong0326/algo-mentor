@@ -1911,7 +1911,7 @@ describe('App', () => {
     const basePlan = learningPlanDetail();
     const revisedPlan = learningPlanDetail({
       title: '三周动态规划面试计划',
-      goal: '三周内集中突破动态规划面试题',
+      objective: '三周内集中突破动态规划面试题',
       phases: [{
         ...basePlan.phases[0],
         title: '动态规划基础强化',
@@ -2970,7 +2970,7 @@ function mockLearningPlanDeleteFetch() {
           learningPlanSummary({
             id: 901,
             title: '八周动态规划复盘计划',
-            goal: '系统复盘动态规划题型',
+            objective: '系统复盘动态规划题型',
           }),
         ] : [learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
@@ -3000,7 +3000,7 @@ function mockLearningPlanDeleteFetch() {
         data: learningPlanDetail({
           id: 901,
           title: '八周动态规划复盘计划',
-          goal: '系统复盘动态规划题型',
+          objective: '系统复盘动态规划题型',
           summary: '围绕动态规划建立复盘节奏。',
         }),
         timestamp: '2026-06-22T00:00:00Z',
@@ -3023,12 +3023,12 @@ function mockLearningPlanPaginationFetch() {
         ? learningPlanSummary({
           id: 902,
           title: '第二页计划',
-          goal: '第二页目标',
+          objective: '第二页目标',
         })
         : learningPlanSummary({
           id: 901,
           title: '第一页计划',
-          goal: '第一页目标',
+          objective: '第一页目标',
         });
 
       return Promise.resolve(jsonResponse({
@@ -3044,7 +3044,7 @@ function mockLearningPlanPaginationFetch() {
         data: learningPlanDetail({
           id: 901,
           title: '第一页计划',
-          goal: '第一页目标',
+          objective: '第一页目标',
           summary: '第一页详情。',
         }),
         timestamp: '2026-06-22T00:00:00Z',
@@ -3057,7 +3057,7 @@ function mockLearningPlanPaginationFetch() {
         data: learningPlanDetail({
           id: 902,
           title: '第二页计划',
-          goal: '第二页目标',
+          objective: '第二页目标',
           summary: '第二页详情。',
         }),
         timestamp: '2026-06-22T00:00:00Z',
@@ -3322,7 +3322,7 @@ function baseLearningPlanSummary() {
     contentLocale: 'zh-CN',
     title: '四周 Java 算法面试冲刺计划',
     intent: 'INTERVIEW_SPRINT',
-    goal: '准备 Java 后端算法面试',
+    objective: '准备 Java 后端算法面试',
     durationWeeks: 4,
     level: 'INTERMEDIATE',
     weeklyHours: 6,
@@ -3526,15 +3526,15 @@ function baseLearningPlanDetail() {
     title: '四周 Java 算法面试冲刺计划',
     summary: '围绕数组和哈希表建立高频题型能力。',
     intent: 'INTERVIEW_SPRINT',
-    goal: '准备 Java 后端算法面试',
+    objective: '准备 Java 后端算法面试',
     durationWeeks: 4,
     level: 'INTERMEDIATE',
     weeklyHours: 6,
     programmingLanguage: 'Java',
-    difficultyPreference: 'MEDIUM',
+    difficultyDistribution: { easyPercent: 35, mediumPercent: 55, hardPercent: 10 },
     interviewOriented: true,
     topicPreferences: ['Array', 'Hash Table'],
-    profileSummary: '中级，每周 6 小时。',
+    additionalConstraints: '每周留一天复盘。',
     status: 'ACTIVE',
     phases: [{
       phaseIndex: 1,

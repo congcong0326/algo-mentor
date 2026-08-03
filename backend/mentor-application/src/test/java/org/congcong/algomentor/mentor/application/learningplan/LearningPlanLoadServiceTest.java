@@ -115,10 +115,10 @@ class LearningPlanLoadServiceTest {
         LearningPlanLevel.INTERMEDIATE,
         weeklyHours,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array", "Graph"),
-        "profile",
+        null,
         List.of(new LearningPlanPhaseDraft(
             1,
             "基础阶段",

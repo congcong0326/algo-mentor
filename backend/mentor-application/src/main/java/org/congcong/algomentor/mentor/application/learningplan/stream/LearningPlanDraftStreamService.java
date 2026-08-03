@@ -21,7 +21,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
@@ -31,6 +31,9 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationScenario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +51,7 @@ public class LearningPlanDraftStreamService {
   private final LearningPlanLoadService loadService;
   private final ObjectMapper objectMapper;
   private final Clock clock;
+  private final LearningPlanPersonalizationContextService personalizationContextService;
 
   public LearningPlanDraftStreamService(
       LearningPlanDraftRepository draftRepository,
@@ -58,6 +62,27 @@ public class LearningPlanDraftStreamService {
       LearningPlanLoadService loadService,
       Clock clock
   ) {
+    this(
+        draftRepository,
+        validator,
+        agentRuntime,
+        objectMapper,
+        problemCatalog,
+        loadService,
+        clock,
+        new LearningPlanPersonalizationContextService(null));
+  }
+
+  public LearningPlanDraftStreamService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanDraftValidator validator,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
+      Clock clock,
+      LearningPlanPersonalizationContextService personalizationContextService
+  ) {
     this.draftRepository = draftRepository;
     this.validator = validator;
     this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
@@ -65,43 +90,47 @@ public class LearningPlanDraftStreamService {
     this.outputMapper = new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
     this.loadService = loadService;
     this.clock = clock;
+    this.personalizationContextService = Objects.requireNonNull(
+        personalizationContextService, "personalizationContextService");
   }
 
   public Flow.Publisher<LearningPlanDraftStreamEvent> stream(
       long userId,
-      LearningPlanDraftCommand command,
+      LearningPlanBrief brief,
       String runId,
       Map<String, Object> metadata
   ) {
-    Objects.requireNonNull(command, "command must not be null");
-    List<String> missingFields = validator.missingRequiredFields(command);
+    Objects.requireNonNull(brief, "brief must not be null");
+    List<String> missingFields = validator.missingRequiredFields(brief);
     if (!missingFields.isEmpty()) {
-      return immediateCollecting(userId, command, missingFields);
+      return immediateCollecting(userId, brief, missingFields);
     }
+    LearningPlanPersonalizationSnapshot personalizationSnapshot = personalizationContextService.snapshot(
+        userId, brief.personalizationEnabled(), LearningPlanPersonalizationScenario.DRAFT);
     // 第一次写库：先落一条空草案，拿到稳定 draft id；通用 Agent 只负责生成，不直接持有学习计划仓储。
-    LearningPlanDraft draft = createInitialDraft(userId, command);
+    LearningPlanDraft draft = createInitialDraft(userId, brief);
     return subscriber -> {
       SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
       AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
       // 从这里进入通用 Agent loop；学习计划草案的解析和持久化由下面的 StreamSubscriber 接管。
-      agentRuntime.stream(invocation(userId, command, runId)).subscribe(new StreamSubscriber(
+      agentRuntime.stream(invocation(userId, brief, runId, personalizationSnapshot)).subscribe(new StreamSubscriber(
           publisher,
           projector,
           draft,
-          command));
+          brief));
     };
   }
 
   private Flow.Publisher<LearningPlanDraftStreamEvent> immediateCollecting(
       long userId,
-      LearningPlanDraftCommand command,
+      LearningPlanBrief brief,
       List<String> missingFields
   ) {
     return subscriber -> {
       SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
-      LearningPlanDraft draft = createInitialDraft(userId, command).withState(
+      LearningPlanDraft draft = createInitialDraft(userId, brief).withState(
           LearningPlanDraftStatus.COLLECTING,
           missingFields,
           clarificationFor(missingFields.get(0)),
@@ -114,13 +143,13 @@ public class LearningPlanDraftStreamService {
     };
   }
 
-  private LearningPlanDraft createInitialDraft(long userId, LearningPlanDraftCommand command) {
+  private LearningPlanDraft createInitialDraft(long userId, LearningPlanBrief brief) {
     Instant now = clock.instant();
     return draftRepository.save(new LearningPlanDraft(
         null,
         userId,
         LearningPlanDraftStatus.COLLECTING,
-        command,
+        brief,
         List.of(),
         List.of(),
         null,
@@ -133,19 +162,20 @@ public class LearningPlanDraftStreamService {
 
   private AgentInvocation<LearningPlanDraftAgentInput> invocation(
       long userId,
-      LearningPlanDraftCommand command,
-      String idempotencyKey
+      LearningPlanBrief brief,
+      String idempotencyKey,
+      LearningPlanPersonalizationSnapshot personalizationSnapshot
   ) {
     return new AgentInvocation<>(
         LearningPlanDraftAgentDefinition.KEY,
-        new LearningPlanDraftAgentInput(userId, command, idempotencyKey),
+        new LearningPlanDraftAgentInput(userId, brief, idempotencyKey, personalizationSnapshot),
         new AgentInvocationContext(
             userId,
             AgentInvocationMode.USER_ENTRY,
             idempotencyKey,
             null,
             null,
-            requestSize(command),
+            requestSize(brief),
             true));
   }
 
@@ -165,7 +195,7 @@ public class LearningPlanDraftStreamService {
   private String clarificationFor(String field) {
     return switch (field) {
       case "intent" -> "你想创建哪类学习计划？例如面试冲刺、专题突破或长期学习。";
-      case "goal" -> "请补充这份计划的学习目标，例如准备 Java 后端算法面试。";
+      case "objective" -> "请补充这份计划的具体目标，例如准备 Java 后端算法面试。";
       case "durationWeeks" -> "你希望计划持续几周？";
       case "level" -> "你当前算法水平更接近入门、中级还是高级？";
       case "weeklyHours" -> "你每周大约可以投入几小时学习算法？";
@@ -173,20 +203,12 @@ public class LearningPlanDraftStreamService {
     };
   }
 
-  private int requestSize(LearningPlanDraftCommand command) {
-    int size = 0;
-    size += stringSize(command.intent() == null ? null : command.intent().name());
-    size += stringSize(command.goal());
-    size += stringSize(command.programmingLanguage());
-    size += stringSize(command.difficultyPreference() == null ? null : command.difficultyPreference().name());
-    if (command.topicPreferences() != null) {
-      size += command.topicPreferences().stream().mapToInt(this::stringSize).sum();
+  private int requestSize(LearningPlanBrief brief) {
+    try {
+      return objectMapper.writeValueAsBytes(brief).length;
+    } catch (com.fasterxml.jackson.core.JsonProcessingException exception) {
+      throw new LearningPlanException("LEARNING_PLAN_BRIEF_INVALID", "学习计划输入无法序列化。");
     }
-    return size;
-  }
-
-  private int stringSize(String value) {
-    return value == null ? 0 : value.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
   }
 
   private final class StreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
@@ -194,7 +216,7 @@ public class LearningPlanDraftStreamService {
     private final SubmissionPublisher<LearningPlanDraftStreamEvent> publisher;
     private final AgentWorkStatusProjector projector;
     private final LearningPlanDraft draft;
-    private final LearningPlanDraftCommand command;
+    private final LearningPlanBrief brief;
     private final AtomicReference<Flow.Subscription> subscription = new AtomicReference<>();
     private final StringBuilder stepContent = new StringBuilder();
     private String finalContent;
@@ -203,12 +225,12 @@ public class LearningPlanDraftStreamService {
         SubmissionPublisher<LearningPlanDraftStreamEvent> publisher,
         AgentWorkStatusProjector projector,
         LearningPlanDraft draft,
-        LearningPlanDraftCommand command
+        LearningPlanBrief brief
     ) {
       this.publisher = publisher;
       this.projector = projector;
       this.draft = draft;
-      this.command = command;
+      this.brief = brief;
     }
 
     @Override
@@ -258,7 +280,7 @@ public class LearningPlanDraftStreamService {
         }
         // AgentRunEnd 表示最后一个无工具调用 step 已完成，此时 finalContent 才是可落库的结构化计划。
         LearningPlanDraftPlan plan = loadService.withLoadMetadata(
-            outputMapper.map(objectMapper.readTree(finalContent), command),
+            outputMapper.map(objectMapper.readTree(finalContent), brief),
             LearningPlanCoveragePolicy.FIT_USER_BUDGET);
         validator.validateGeneratedPlan(plan);
         // 第二次写库：把模型最终 JSON 规范化后的领域计划写入 draft_plan_json，并把状态置为 GENERATED。

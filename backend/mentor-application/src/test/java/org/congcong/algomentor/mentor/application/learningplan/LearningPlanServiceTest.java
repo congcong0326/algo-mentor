@@ -84,7 +84,12 @@ class LearningPlanServiceTest {
 
     assertThat(updated.plan().metadata())
         .containsEntry("dailyProblemCount", 3)
-        .containsEntry("trainingDaysPerWeek", 4);
+        .containsEntry("trainingDaysPerWeek", 4)
+        .containsEntry(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US")
+        .containsEntry(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true);
+    assertThat(updated.plan().objective()).isEqualTo("Prepare for Java interviews");
+    assertThat(updated.plan().difficultyDistribution()).isEqualTo(new LearningPlanDifficultyDistribution(35, 55, 10));
+    assertThat(updated.plan().additionalConstraints()).isEqualTo("Reserve one weekly review session.");
     assertThat(updated.plan().phases()).hasSize(1);
     assertThat(updated.updatedAt()).isEqualTo(Instant.parse("2026-06-24T00:00:00Z"));
     assertThat(planRepository.plans.get(900L)).isSameAs(updated);
@@ -113,15 +118,15 @@ class LearningPlanServiceTest {
         "四周训练",
         "summary",
         LearningPlanIntent.INTERVIEW_SPRINT,
-        "准备算法面试",
+        "Prepare for Java interviews",
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
-        "profile",
+        "Reserve one weekly review session.",
         List.of(new LearningPlanPhaseDraft(
             1,
             "基础阶段",
@@ -140,7 +145,10 @@ class LearningPlanServiceTest {
                 List.of("Array"),
                 "训练数组。",
                 1)))),
-        Map.of("source", "test"));
+        Map.of(
+            "source", "test",
+            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
+            LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true));
   }
 
   private static class InMemoryPlanRepository implements LearningPlanRepository {

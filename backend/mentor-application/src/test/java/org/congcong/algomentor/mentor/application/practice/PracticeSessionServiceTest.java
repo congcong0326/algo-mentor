@@ -493,7 +493,7 @@ class PracticeSessionServiceTest {
           LearningPlanLevel.INTERMEDIATE,
           8,
           "Java",
-          LearningPlanDifficultyPreference.MEDIUM,
+          new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
           true,
           List.of("Hash Table"),
           "profile",

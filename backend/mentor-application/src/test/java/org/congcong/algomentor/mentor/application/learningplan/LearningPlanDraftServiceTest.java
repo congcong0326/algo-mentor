@@ -28,23 +28,26 @@ class LearningPlanDraftServiceTest {
       clock);
 
   @Test
-  void continueDraftCollectsMissingGoalAndGeneratesPlan() {
-    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanDraftCommand(
+  void continueDraftGeneratesPlanFromResolvedDefaultObjective() {
+    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanBrief(
         LearningPlanIntent.PRACTICE_GOAL,
         "",
         2,
         LearningPlanLevel.BEGINNER,
         4,
         null,
-        null,
+        new LearningPlanDifficultyDistribution(25, 55, 20),
         false,
-        List.of()));
+        List.of(),
+        null,
+        true,
+        LearningPlanContentLocale.ZH_CN));
 
-    LearningPlanDraftResult generated = service.continueDraft(7L, collecting.id(), "想用 Java 练习数组和哈希表");
+    LearningPlanDraftResult generated = service.continueDraft(7L, collecting.id(), "");
 
     assertThat(generated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
     assertThat(generated.draftPlan()).isNotNull();
-    assertThat(generated.draftPlan().goal()).isEqualTo("想用 Java 练习数组和哈希表");
+    assertThat(generated.draftPlan().objective()).isEqualTo("建立稳定的算法练习节奏");
     assertThat(generated.draftPlan().metadata()).containsKeys(
         LearningPlanDraftMetadataKeys.LOAD_SUMMARY,
         LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT,
@@ -56,8 +59,8 @@ class LearningPlanDraftServiceTest {
   }
 
   @Test
-  void continueDraftRegeneratesPlanFromEditedGoalPrefix() {
-    LearningPlanDraft original = saveGeneratedDraft(7L, completeCommand(4));
+  void continueDraftRegeneratesPlanFromEditedObjectivePrefix() {
+    LearningPlanDraft original = saveGeneratedDraft(7L, completeBrief(4));
 
     LearningPlanDraftResult regenerated = service.continueDraft(
         7L,
@@ -66,7 +69,7 @@ class LearningPlanDraftServiceTest {
 
     assertThat(regenerated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
     assertThat(regenerated.draftPlan()).isNotNull();
-    assertThat(regenerated.draftPlan().goal()).isEqualTo("三周内集中突破动态规划面试题");
+    assertThat(regenerated.draftPlan().objective()).isEqualTo("三周内集中突破动态规划面试题");
     assertThat(regenerated.draftPlan().summary()).contains("三周内集中突破动态规划面试题");
     assertThat(regenerated.draftPlan().phases())
         .flatExtracting(LearningPlanPhaseDraft::problems)
@@ -76,16 +79,18 @@ class LearningPlanDraftServiceTest {
 
   @Test
   void continueDraftGeneratesEnglishContentForAnEnglishDraft() {
-    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanDraftCommand(
+    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
-        null,
+        "Prepare for Java backend interviews",
         2,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
+        null,
+        true,
         LearningPlanContentLocale.EN_US));
 
     LearningPlanDraftResult generated = service.continueDraft(
@@ -98,7 +103,7 @@ class LearningPlanDraftServiceTest {
     assertThat(generated.draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
     assertThat(generated.draftPlan().title()).isEqualTo("2-Week Java Interview Sprint Plan");
     assertThat(generated.draftPlan().summary()).startsWith("Break Prepare for Java backend interviews");
-    assertThat(generated.draftPlan().profileSummary()).startsWith("Current level:");
+    assertThat(generated.draftPlan().additionalConstraints()).isNull();
     assertThat(generated.draftPlan().phases())
         .allSatisfy(phase -> {
           assertThat(phase.title()).startsWith("Phase ");
@@ -139,16 +144,18 @@ class LearningPlanDraftServiceTest {
         new LearningPlanDraftValidator(),
         new LearningPlanLoadService(clock),
         clock);
-    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanDraftCommand(
+    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         null,
         2,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
+        null,
+        true,
         LearningPlanContentLocale.EN_US));
 
     LearningPlanDraftResult generated = localizedService.continueDraft(
@@ -167,16 +174,18 @@ class LearningPlanDraftServiceTest {
 
   @Test
   void continueDraftRecognizesTheEnglishRegenerationPrefix() {
-    LearningPlanDraft original = saveGeneratedDraft(7L, new LearningPlanDraftCommand(
+    LearningPlanDraft original = saveGeneratedDraft(7L, new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "Prepare for Java interviews",
         2,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
+        null,
+        true,
         LearningPlanContentLocale.EN_US));
 
     LearningPlanDraftResult regenerated = service.continueDraft(
@@ -184,24 +193,26 @@ class LearningPlanDraftServiceTest {
         original.id(),
         LearningPlanDraftMessagePrefixes.REGENERATE_EN_US + " Focus on dynamic programming");
 
-    assertThat(regenerated.draftPlan().goal()).isEqualTo("Focus on dynamic programming");
+    assertThat(regenerated.draftPlan().objective()).isEqualTo("Focus on dynamic programming");
     assertThat(regenerated.draftPlan().summary()).contains("Focus on dynamic programming");
   }
 
   @Test
   void confirmDraftIsIdempotent() {
-    LearningPlanDraftCommand englishCommand = new LearningPlanDraftCommand(
+    LearningPlanBrief englishBrief = new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "Prepare for Java backend interviews",
         8,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array", "Hash Table"),
+        null,
+        true,
         LearningPlanContentLocale.EN_US);
-    LearningPlanDraft generated = saveGeneratedDraft(7L, englishCommand);
+    LearningPlanDraft generated = saveGeneratedDraft(7L, englishBrief);
 
     LearningPlanConfirmResult first = service.confirmDraft(7L, generated.id());
     LearningPlanConfirmResult second = service.confirmDraft(7L, generated.id());
@@ -210,39 +221,48 @@ class LearningPlanDraftServiceTest {
     assertThat(first.status()).isEqualTo(LearningPlanStatus.ACTIVE);
     assertThat(draftRepository.findDraftByIdForUser(generated.id(), 7L).orElseThrow().status())
         .isEqualTo(LearningPlanDraftStatus.CONFIRMED);
-    assertThat(planRepository.findPlanByIdForUser(first.planId(), 7L).orElseThrow().plan().contentLocale())
-        .isEqualTo(LearningPlanContentLocale.EN_US);
+    LearningPlanDraftPlan confirmedPlan = planRepository.findPlanByIdForUser(first.planId(), 7L).orElseThrow().plan();
+    assertThat(confirmedPlan.contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
+    assertThat(confirmedPlan.objective()).isEqualTo(generated.draftPlan().objective());
+    assertThat(confirmedPlan.difficultyDistribution()).isEqualTo(generated.draftPlan().difficultyDistribution());
+    assertThat(confirmedPlan.additionalConstraints()).isNull();
+    assertThat(confirmedPlan.metadata())
+        .containsEntry(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US")
+        .containsEntry(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true);
   }
 
   @Test
   void confirmDraftRejectsCollectingDraft() {
-    LearningPlanDraft collecting = saveDraft(7L, completeCommand(4));
+    LearningPlanDraft collecting = saveDraft(7L, completeBrief(4));
 
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.confirmDraft(7L, collecting.id()))
         .isInstanceOf(LearningPlanException.class)
         .hasMessage("只有已生成的学习计划草案可以确认保存。");
   }
 
-  private LearningPlanDraftCommand completeCommand(int durationWeeks) {
-    return new LearningPlanDraftCommand(
+  private LearningPlanBrief completeBrief(int durationWeeks) {
+    return new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备 Java 后端算法面试",
         durationWeeks,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
-        List.of("Array", "Hash Table"));
+        List.of("Array", "Hash Table"),
+        null,
+        true,
+        LearningPlanContentLocale.ZH_CN);
   }
 
-  private LearningPlanDraft saveDraft(long userId, LearningPlanDraftCommand command) {
+  private LearningPlanDraft saveDraft(long userId, LearningPlanBrief brief) {
     Instant now = clock.instant();
     return draftRepository.save(new LearningPlanDraft(
         null,
         userId,
         LearningPlanDraftStatus.COLLECTING,
-        command,
+        brief,
         List.of(),
         List.of(),
         null,
@@ -253,8 +273,8 @@ class LearningPlanDraftServiceTest {
         now));
   }
 
-  private LearningPlanDraft saveGeneratedDraft(long userId, LearningPlanDraftCommand command) {
-    LearningPlanDraft draft = saveDraft(userId, command);
+  private LearningPlanDraft saveGeneratedDraft(long userId, LearningPlanBrief brief) {
+    LearningPlanDraft draft = saveDraft(userId, brief);
     LearningPlanDraftResult generated = service.continueDraft(userId, draft.id(), "");
     return draftRepository.findDraftByIdForUser(generated.draftId(), userId).orElseThrow();
   }

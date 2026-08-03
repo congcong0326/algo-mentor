@@ -109,7 +109,7 @@ export default function LearningPlanExtensionPanel({
             <h2>{resources.learningPlans.pendingExtensionTitle}</h2>
           </div>
           {extension.extensionDraft.summary && (
-            <div className="goal-summary">
+            <div className="plan-summary">
               <p>{extension.extensionDraft.summary}</p>
             </div>
           )}

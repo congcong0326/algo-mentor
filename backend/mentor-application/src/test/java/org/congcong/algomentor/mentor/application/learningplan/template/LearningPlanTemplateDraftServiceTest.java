@@ -18,7 +18,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfi
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
@@ -84,8 +84,15 @@ class LearningPlanTemplateDraftServiceTest {
     assertThat(result.draftPlan().metadata())
         .containsEntry("dailyProblemCount", 2)
         .containsEntry("trainingDaysPerWeek", 5)
+        .containsEntry(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "zh-CN")
+        .containsEntry(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, false)
         .containsKey("loadSummary")
         .doesNotContainKeys("rhythmMode", "weeklyBuckets", "nextTrainingPackage");
+    assertThat(result.draftPlan().objective()).isEqualTo("准备算法面试");
+    assertThat(result.draftPlan().difficultyDistribution().easyPercent()).isEqualTo(35);
+    assertThat(result.draftPlan().difficultyDistribution().mediumPercent()).isEqualTo(55);
+    assertThat(result.draftPlan().difficultyDistribution().hardPercent()).isEqualTo(10);
+    assertThat(result.draftPlan().additionalConstraints()).isNull();
 
     LearningPlanConfirmResult confirmed = draftService.confirmDraft(7L, result.draftId());
 

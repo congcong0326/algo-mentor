@@ -65,15 +65,15 @@ public class LearningPlanService {
         snapshot.title(),
         snapshot.summary(),
         snapshot.intent(),
-        snapshot.goal(),
+        snapshot.objective(),
         snapshot.durationWeeks(),
         snapshot.level(),
         snapshot.weeklyHours(),
         snapshot.programmingLanguage(),
-        snapshot.difficultyPreference(),
+        snapshot.difficultyDistribution(),
         snapshot.interviewOriented(),
         snapshot.topicPreferences(),
-        snapshot.profileSummary(),
+        snapshot.additionalConstraints(),
         snapshot.phases(),
         metadata);
     return planRepository.save(new LearningPlan(

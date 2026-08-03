@@ -10,36 +10,46 @@ class LearningPlanContentLocaleTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void legacyCommandAndPlanWithoutContentLocaleDefaultToChinese() throws Exception {
-    LearningPlanDraftCommand command = objectMapper.readValue("""
+  void briefAndNewPlanWithoutContentLocaleDefaultToChinese() throws Exception {
+    LearningPlanBrief brief = objectMapper.readValue("""
         {
           "intent": "INTERVIEW_SPRINT",
-          "goal": "准备算法面试",
+          "objective": "准备算法面试",
           "durationWeeks": 4,
           "level": "INTERMEDIATE",
           "weeklyHours": 6,
+          "difficultyDistribution": {
+            "easyPercent": 35,
+            "mediumPercent": 55,
+            "hardPercent": 10
+          },
           "interviewOriented": true,
           "topicPreferences": ["Array"]
         }
-        """, LearningPlanDraftCommand.class);
+        """, LearningPlanBrief.class);
     LearningPlanDraftPlan plan = objectMapper.readValue("""
         {
           "title": "旧计划",
           "summary": "旧摘要",
           "intent": "INTERVIEW_SPRINT",
-          "goal": "准备算法面试",
+          "objective": "准备算法面试",
           "durationWeeks": 4,
           "level": "INTERMEDIATE",
           "weeklyHours": 6,
+          "difficultyDistribution": {
+            "easyPercent": 35,
+            "mediumPercent": 55,
+            "hardPercent": 10
+          },
           "interviewOriented": true,
           "topicPreferences": ["Array"],
-          "profileSummary": "旧画像摘要",
+          "additionalConstraints": null,
           "phases": [],
           "metadata": {}
         }
         """, LearningPlanDraftPlan.class);
 
-    assertThat(command.contentLocale()).isEqualTo(LearningPlanContentLocale.ZH_CN);
+    assertThat(brief.contentLocale()).isEqualTo(LearningPlanContentLocale.ZH_CN);
     assertThat(plan.contentLocale()).isEqualTo(LearningPlanContentLocale.ZH_CN);
   }
 

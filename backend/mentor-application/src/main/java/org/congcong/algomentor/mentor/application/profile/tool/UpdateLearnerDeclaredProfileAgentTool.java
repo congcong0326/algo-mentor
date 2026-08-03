@@ -23,7 +23,7 @@ public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
       LearnerDeclaredProfileToolContracts.TOOL_NAME,
       """
           Update the learner's long-term declared profile only when the current user explicitly states or corrects a
-          stable background, goal, time constraint, learning preference, or self-assessed ability. Use one batch for
+          stable background, learning objective, time constraint, learning preference, or self-assessed ability. Use one batch for
           all relevant dimensions. Do not use for one-off performance, transient emotions, guesses, or short-lived
           questions. The server derives user identity and profile scope; pass only updates with dimension, statement,
           and intent.

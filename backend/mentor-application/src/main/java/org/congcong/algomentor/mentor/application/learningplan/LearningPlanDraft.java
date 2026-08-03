@@ -7,7 +7,7 @@ public record LearningPlanDraft(
     Long id,
     long userId,
     LearningPlanDraftStatus status,
-    LearningPlanDraftCommand command,
+    LearningPlanBrief brief,
     List<String> messages,
     List<String> missingFields,
     String assistantMessage,
@@ -28,7 +28,7 @@ public record LearningPlanDraft(
         nextId,
         userId,
         status,
-        command,
+        brief,
         messages,
         missingFields,
         assistantMessage,
@@ -49,7 +49,7 @@ public record LearningPlanDraft(
         id,
         userId,
         nextStatus,
-        command,
+        brief,
         messages,
         nextMissingFields,
         nextAssistantMessage,
@@ -60,16 +60,37 @@ public record LearningPlanDraft(
         updatedAt);
   }
 
-  LearningPlanDraft withCommandAndMessages(LearningPlanDraftCommand nextCommand, List<String> nextMessages, Instant updatedAt) {
+  LearningPlanDraft withBriefAndMessages(LearningPlanBrief nextBrief, List<String> nextMessages, Instant updatedAt) {
     return new LearningPlanDraft(
         id,
         userId,
         status,
-        nextCommand,
+        nextBrief,
         nextMessages,
         missingFields,
         assistantMessage,
         draftPlan,
+        confirmedPlanId,
+        expiresAt,
+        createdAt,
+        updatedAt);
+  }
+
+  public LearningPlanDraft withGeneratedRevision(
+      LearningPlanBrief nextBrief,
+      List<String> nextMessages,
+      LearningPlanDraftPlan nextDraftPlan,
+      Instant updatedAt
+  ) {
+    return new LearningPlanDraft(
+        id,
+        userId,
+        LearningPlanDraftStatus.GENERATED,
+        nextBrief,
+        nextMessages,
+        List.of(),
+        "已生成学习计划修订草案。",
+        nextDraftPlan,
         confirmedPlanId,
         expiresAt,
         createdAt,
@@ -81,7 +102,7 @@ public record LearningPlanDraft(
         id,
         userId,
         LearningPlanDraftStatus.CONFIRMED,
-        command,
+        brief,
         messages,
         missingFields,
         assistantMessage,

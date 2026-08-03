@@ -22,12 +22,18 @@ public final class LearningPlanStreamConstants {
   /**
    * 学习计划草案结构化输出 schema 名。
    */
-  public static final String SCHEMA_NAME = "learning_plan_draft";
+  public static final String INITIAL_GENERATION_SCHEMA_NAME = "learning_plan_generated_content";
 
   /**
    * 学习计划草案结构化输出 schema 版本。
    */
-  public static final String SCHEMA_VERSION = "v1";
+  public static final String INITIAL_GENERATION_SCHEMA_VERSION = "v2";
+
+  /** 草案修订结构化输出 schema 名。 */
+  public static final String DRAFT_REVISION_SCHEMA_NAME = "learning_plan_draft_revision";
+
+  /** 草案修订结构化输出 schema 版本。 */
+  public static final String DRAFT_REVISION_SCHEMA_VERSION = "v2";
 
   /**
    * 草案已生成并保存。

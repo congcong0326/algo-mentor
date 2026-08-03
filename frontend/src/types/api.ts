@@ -1094,6 +1094,11 @@ export type LearningPlanTemplateCatalogCategory =
   | 'TOPIC_BREAKTHROUGH'
   | 'LANGUAGE_AND_ROLE';
 export type LearningPlanDifficultyPreference = 'EASY' | 'MEDIUM' | 'HARD' | 'MIXED';
+export interface LearningPlanDifficultyDistribution {
+  easyPercent: number;
+  mediumPercent: number;
+  hardPercent: number;
+}
 export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
 export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
 export type LearningPlanCoveragePolicy =
@@ -1114,14 +1119,16 @@ export type LearningPlanProposalRevisionStatus =
 
 export interface LearningPlanCreateDraftRequest {
   intent?: LearningPlanIntent;
-  goal: string;
+  objective?: string;
   durationWeeks?: number;
   level?: LearningPlanLevel;
   weeklyHours?: number;
   programmingLanguage?: string;
-  difficultyPreference?: LearningPlanDifficultyPreference;
+  difficultyDistribution: LearningPlanDifficultyDistribution;
   interviewOriented?: boolean;
   topicPreferences: string[];
+  additionalConstraints?: string;
+  personalizationEnabled?: boolean;
 }
 
 export interface LearningPlanLoadSummary {
@@ -1310,15 +1317,15 @@ export interface LearningPlanDraftPlan {
   title: string;
   summary: string;
   intent: LearningPlanIntent;
-  goal: string;
+  objective: string;
   durationWeeks: number;
   level: LearningPlanLevel;
   weeklyHours: number;
   programmingLanguage?: string;
-  difficultyPreference?: LearningPlanDifficultyPreference;
+  difficultyDistribution: LearningPlanDifficultyDistribution;
   interviewOriented: boolean;
   topicPreferences: string[];
-  profileSummary: string;
+  additionalConstraints?: string | null;
   phases: LearningPlanPhaseDraft[];
   metadata: Record<string, unknown>;
   loadSummary?: LearningPlanLoadSummary;
@@ -1351,7 +1358,7 @@ export interface LearningPlanSummaryResponse {
   contentLocale: LearningPlanContentLocale;
   title: string;
   intent: LearningPlanIntent;
-  goal: string;
+  objective: string;
   durationWeeks: number;
   level: LearningPlanLevel;
   programmingLanguage?: string;

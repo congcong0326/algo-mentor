@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type {
   LearningPlanCreateDraftRequest,
-  LearningPlanDifficultyPreference,
   LearningPlanIntent,
   LearningPlanLevel,
 } from '../types/api';
@@ -9,7 +8,6 @@ import { formatPlanLevel, formatTopicTag } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import DifficultyDistributionControl from './DifficultyDistributionControl';
 import {
-  buildLearningPlanGoal,
   getDifficultyDistribution,
   planScenarioOptions,
   programmingLanguageOptions,
@@ -50,15 +48,15 @@ export default function LearningPlanCreateForm({
   const [programmingLanguage, setProgrammingLanguage] = useState(DEFAULT_PROGRAMMING_LANGUAGE);
   const [difficultyValue, setDifficultyValue] = useState(DEFAULT_DIFFICULTY_VALUE);
   const [topicPreferences, setTopicPreferences] = useState<string[]>([]);
-  const [additionalThoughts, setAdditionalThoughts] = useState('');
+  const [objective, setObjective] = useState('');
+  const [additionalConstraints, setAdditionalConstraints] = useState('');
+  const [personalizationEnabled, setPersonalizationEnabled] = useState(true);
   const [validationError, setValidationError] = useState('');
 
   const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
     && Number.isInteger(weeklyHours) && weeklyHours > 0;
   const selectedScenario = planScenarioOptions.find((option) => option.value === intent) ?? planScenarioOptions[0];
-  const selectedLevelLabel = formatPlanLevel(level, resources);
   const selectedDifficulty = getDifficultyDistribution(difficultyValue);
-  const difficultyPreference: LearningPlanDifficultyPreference = selectedDifficulty.preference;
   const effectiveSubmitLabel = submitLabel ?? resources.learningPlans.generateDraft;
   const totalCapacityPoints = durationWeeks > 0 && weeklyHours > 0 ? durationWeeks * weeklyHours : 0;
 
@@ -70,13 +68,17 @@ export default function LearningPlanCreateForm({
       || programmingLanguage !== DEFAULT_PROGRAMMING_LANGUAGE
       || difficultyValue !== DEFAULT_DIFFICULTY_VALUE
       || topicPreferences.length > 0
-      || additionalThoughts.trim().length > 0,
+      || objective.trim().length > 0
+      || additionalConstraints.trim().length > 0
+      || !personalizationEnabled,
     [
-      additionalThoughts,
+      additionalConstraints,
       difficultyValue,
       durationWeeks,
       intent,
       level,
+      objective,
+      personalizationEnabled,
       programmingLanguage,
       topicPreferences.length,
       weeklyHours,
@@ -116,27 +118,20 @@ export default function LearningPlanCreateForm({
     setValidationError('');
     onSubmit({
       intent,
-      goal: buildLearningPlanGoal({
-        resources,
-        intentLabel: resources.labels.planScenarios[selectedScenario.labelKey],
-        durationWeeks,
-        weeklyHours,
-        levelLabel: selectedLevelLabel,
-        programmingLanguage,
-        difficultyLabel: resources.labels.difficultyDistribution[selectedDifficulty.labelKey],
-        easyPercent: selectedDifficulty.easyPercent,
-        mediumPercent: selectedDifficulty.mediumPercent,
-        hardPercent: selectedDifficulty.hardPercent,
-        topics: topicPreferences,
-        additionalThoughts,
-      }),
+      objective: objective || undefined,
       durationWeeks,
       level,
       weeklyHours,
       programmingLanguage,
-      difficultyPreference,
+      difficultyDistribution: {
+        easyPercent: selectedDifficulty.easyPercent,
+        mediumPercent: selectedDifficulty.mediumPercent,
+        hardPercent: selectedDifficulty.hardPercent,
+      },
       interviewOriented: selectedScenario.interviewOriented,
       topicPreferences,
+      additionalConstraints: additionalConstraints || undefined,
+      personalizationEnabled,
     });
   }
 
@@ -221,6 +216,18 @@ export default function LearningPlanCreateForm({
 
         <DifficultyDistributionControl disabled={loading} onChange={setDifficultyValue} value={difficultyValue} />
 
+        <label className="topic-field">
+          <span>{resources.learningPlans.objective}</span>
+          <textarea
+            aria-label={resources.learningPlans.objective}
+            disabled={loading}
+            maxLength={300}
+            onChange={(event) => setObjective(event.target.value)}
+            rows={3}
+            value={objective}
+          />
+        </label>
+
         <section className="question-block">
           <strong>{resources.learningPlans.topicPreferences}</strong>
           <div className="topic-option-grid">
@@ -240,14 +247,26 @@ export default function LearningPlanCreateForm({
         </section>
 
         <label className="topic-field">
-          <span>{resources.learningPlans.additionalThoughts}</span>
+          <span>{resources.learningPlans.additionalConstraints}</span>
           <textarea
-            aria-label={resources.learningPlans.additionalThoughts}
+            aria-label={resources.learningPlans.additionalConstraints}
             disabled={loading}
-            onChange={(event) => setAdditionalThoughts(event.target.value)}
+            maxLength={1000}
+            onChange={(event) => setAdditionalConstraints(event.target.value)}
             rows={4}
-            value={additionalThoughts}
+            value={additionalConstraints}
           />
+        </label>
+
+        <label className="checkbox-field">
+          <input
+            aria-label={resources.learningPlans.personalizationEnabled}
+            checked={personalizationEnabled}
+            disabled={loading}
+            onChange={(event) => setPersonalizationEnabled(event.target.checked)}
+            type="checkbox"
+          />
+          <span>{resources.learningPlans.personalizationEnabled}</span>
         </label>
       </div>
 

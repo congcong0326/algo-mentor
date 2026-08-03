@@ -123,7 +123,7 @@ class LearningPlanExtensionValidatorTest {
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Graph"),
         "已有基础",

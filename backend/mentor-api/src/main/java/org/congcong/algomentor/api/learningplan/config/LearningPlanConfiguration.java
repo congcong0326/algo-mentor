@@ -2,8 +2,11 @@ package org.congcong.algomentor.api.learningplan.config;
 
 import java.time.Clock;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
+import org.congcong.algomentor.api.learningplan.personalization.ApiLearningPlanPersonalizationDataProvider;
+import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationService;
@@ -15,6 +18,10 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadS
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationDataProvider;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationMetrics;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.MicrometerLearningPlanPersonalizationMetrics;
 import org.congcong.algomentor.mentor.application.learningplan.TodayPackService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionValidator;
@@ -33,6 +40,8 @@ import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPl
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -106,8 +115,44 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public LearningPlanPersonalizationDataProvider learningPlanPersonalizationDataProvider(
+      ObjectProvider<LearnerMemoryClaimQueryService> claimQueryService,
+      ObjectProvider<AbilityProfileService> abilityProfileService,
+      ObjectProvider<LearningPlanActivationService> activationService,
+      ObjectProvider<LearningPlanRepository> planRepository,
+      ObjectProvider<PracticeSessionRepository> practiceSessionRepository,
+      ObjectProvider<ReviewQueueService> reviewQueueService,
+      LearningPlanLoadService loadService,
+      LearningPlanContractService contractService) {
+    return new ApiLearningPlanPersonalizationDataProvider(
+        claimQueryService, abilityProfileService, activationService, planRepository,
+        practiceSessionRepository, reviewQueueService, loadService, contractService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanPersonalizationMetrics learningPlanPersonalizationMetrics(
+      ObjectProvider<MeterRegistry> meterRegistry
+  ) {
+    MeterRegistry registry = meterRegistry.getIfAvailable();
+    return registry == null
+        ? LearningPlanPersonalizationMetrics.NOOP
+        : new MicrometerLearningPlanPersonalizationMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanPersonalizationContextService learningPlanPersonalizationContextService(
+      LearningPlanPersonalizationDataProvider provider,
+      Clock learningPlanClock,
+      LearningPlanPersonalizationMetrics metrics) {
+    return new LearningPlanPersonalizationContextService(provider, null, learningPlanClock, metrics);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public LearningPlanDraftRevisionAgentDefinition learningPlanDraftRevisionAgentDefinition(
-      LearningPlanDraftPromptBuilder promptBuilder,
+      LearningPlanProposalPromptBuilder promptBuilder,
       ObjectMapper objectMapper
   ) {
     return new LearningPlanDraftRevisionAgentDefinition(promptBuilder, objectMapper);
@@ -131,7 +176,8 @@ public class LearningPlanConfiguration {
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
-      Clock learningPlanClock) {
+      Clock learningPlanClock,
+      LearningPlanPersonalizationContextService personalizationContextService) {
     return new LearningPlanDraftStreamService(
         draftRepository,
         validator,
@@ -139,7 +185,8 @@ public class LearningPlanConfiguration {
         objectMapper,
         problemCatalog,
         loadService,
-        learningPlanClock);
+        learningPlanClock,
+        personalizationContextService);
   }
 
   @Bean
@@ -183,7 +230,8 @@ public class LearningPlanConfiguration {
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
       TransactionOperations transactionOperations,
-      Clock learningPlanClock) {
+      Clock learningPlanClock,
+      LearningPlanPersonalizationContextService personalizationContextService) {
     return new LearningPlanDraftRevisionStreamService(
         draftRepository,
         proposalRepository,
@@ -194,7 +242,8 @@ public class LearningPlanConfiguration {
         problemCatalog,
         loadService,
         transactionOperations,
-        learningPlanClock);
+        learningPlanClock,
+        personalizationContextService);
   }
 
   @Bean
@@ -214,7 +263,8 @@ public class LearningPlanConfiguration {
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
       TransactionOperations transactionOperations,
-      Clock learningPlanClock) {
+      Clock learningPlanClock,
+      LearningPlanPersonalizationContextService personalizationContextService) {
     return new LearningPlanExtensionProposalStreamService(
         planRepository,
         proposalRepository,
@@ -225,7 +275,8 @@ public class LearningPlanConfiguration {
         objectMapper,
         problemCatalog,
         transactionOperations,
-        learningPlanClock);
+        learningPlanClock,
+        personalizationContextService);
   }
 
   @Bean

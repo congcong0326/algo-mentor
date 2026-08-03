@@ -3,6 +3,7 @@ package org.congcong.algomentor.mentor.application.learningplan.proposal.stream;
 import java.util.List;
 import java.util.Objects;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 
@@ -15,7 +16,8 @@ public record LearningPlanExtensionAgentInput(
     LearningPlan plan,
     List<PracticeProgress> progress,
     LearningPlanExtensionDraft previousExtension,
-    String idempotencyKey
+    String idempotencyKey,
+    LearningPlanPersonalizationSnapshot personalizationSnapshot
 ) {
 
   public LearningPlanExtensionAgentInput {
@@ -33,6 +35,8 @@ public record LearningPlanExtensionAgentInput(
     if (idempotencyKey == null || idempotencyKey.isBlank()) {
       throw new IllegalArgumentException("Learning plan extension idempotency key must not be blank");
     }
+    personalizationSnapshot = Objects.requireNonNull(
+        personalizationSnapshot, "Learning plan extension personalization snapshot must not be null");
     instruction = instruction.trim();
     idempotencyKey = idempotencyKey.trim();
   }

@@ -11,15 +11,15 @@ describe('LearningPlanDraftPanel', () => {
     title: '四周 Java 算法面试冲刺计划',
     summary: '围绕数组和哈希表建立高频题型能力。',
     intent: 'INTERVIEW_SPRINT',
-    goal: '准备 Java 后端算法面试',
+    objective: '准备 Java 后端算法面试',
     durationWeeks: 4,
     level: 'INTERMEDIATE',
     weeklyHours: 6,
     programmingLanguage: 'Java',
-    difficultyPreference: 'MEDIUM',
+    difficultyDistribution: { easyPercent: 35, mediumPercent: 55, hardPercent: 10 },
     interviewOriented: true,
     topicPreferences: ['Array', 'Hash Table'],
-    profileSummary: '中级，每周 6 小时。',
+    additionalConstraints: '每周留一天复盘。',
     phases: [{
       phaseIndex: 1,
       title: '基础题型恢复',
@@ -94,6 +94,8 @@ describe('LearningPlanDraftPanel', () => {
     );
 
     expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
+    expect(screen.getByText('准备 Java 后端算法面试')).toBeInTheDocument();
+    expect(screen.queryByText('中级，每周 6 小时。')).not.toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '保存方案' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '保存方案' }));

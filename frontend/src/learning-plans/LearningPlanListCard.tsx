@@ -38,14 +38,14 @@ function formatLatestDate(value: string | null | undefined, locale: SupportedLoc
 }
 
 function inferProgrammingLanguage(
-  plan: { programmingLanguage?: string; title: string; goal: string },
+  plan: { programmingLanguage?: string; title: string; objective: string },
   fallback: string,
 ): string {
   if (plan.programmingLanguage?.trim()) {
     return plan.programmingLanguage.trim();
   }
 
-  const searchable = `${plan.title} ${plan.goal}`.toLocaleLowerCase();
+  const searchable = `${plan.title} ${plan.objective}`.toLocaleLowerCase();
   return programmingLanguageOptions.find((language) => (
     language === 'C'
       ? /(^|[^a-z0-9+#])c($|[^a-z0-9+#])/.test(searchable)

@@ -363,15 +363,15 @@ public class LearningPlanLoadService {
         plan.title(),
         plan.summary(),
         plan.intent(),
-        plan.goal(),
+        plan.objective(),
         plan.durationWeeks(),
         plan.level(),
         plan.weeklyHours(),
         plan.programmingLanguage(),
-        plan.difficultyPreference(),
+        plan.difficultyDistribution(),
         plan.interviewOriented(),
         plan.topicPreferences(),
-        plan.profileSummary(),
+        plan.additionalConstraints(),
         plan.phases(),
         metadata);
   }

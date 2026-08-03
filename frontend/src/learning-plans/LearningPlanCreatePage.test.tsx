@@ -74,7 +74,7 @@ beforeEach(() => {
           assistantMessage: '已按要求调整训练方案。',
           draftPlan: learningPlanDraftPlan({
             title: '三周动态规划面试计划',
-            goal: '三周内集中突破动态规划面试题',
+            objective: '三周内集中突破动态规划面试题',
             phases: [{
               ...learningPlanDraftPlan().phases[0],
               title: '动态规划基础强化',
@@ -117,7 +117,7 @@ afterEach(() => {
 });
 
 describe('LearningPlanCreatePage', () => {
-  it('uses template creation as the default path and allows switching to AI generation', async () => {
+  it('uses template creation as the default path and submits the default AI request contract', async () => {
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
     expect(screen.getByRole('heading', { name: '新建方案' })).toBeInTheDocument();
@@ -140,11 +140,49 @@ describe('LearningPlanCreatePage', () => {
 
     await screen.findByText('请补充目标主题。');
     expect(streamLearningPlanDraftMock).toHaveBeenCalledWith(
-      expect.objectContaining({
+      {
         intent: 'INTERVIEW_SPRINT',
+        objective: undefined,
+        durationWeeks: 4,
+        level: 'INTERMEDIATE',
+        weeklyHours: 6,
+        programmingLanguage: 'Java',
+        difficultyDistribution: {
+          easyPercent: 25,
+          mediumPercent: 55,
+          hardPercent: 20,
+        },
+        interviewOriented: true,
         topicPreferences: ['Dynamic Programming'],
-      }),
+        additionalConstraints: undefined,
+        personalizationEnabled: true,
+      },
       expect.objectContaining({ onEvent: expect.any(Function) }),
+    );
+  });
+
+  it('keeps objective and constraints separate and sends personalizationEnabled false', async () => {
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    await screen.findByText('LeetCode 75');
+    fireEvent.click(screen.getByRole('button', { name: 'AI 个性化生成' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '具体目标（可选）' }), {
+      target: { value: '准备 Java 后端算法面试' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: '其他限制（可选）' }), {
+      target: { value: '每周留一天复盘' },
+    });
+    fireEvent.click(screen.getByRole('checkbox', { name: '参考我的学习数据' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
+
+    await screen.findByText('请补充目标主题。');
+    expect(streamLearningPlanDraftMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objective: '准备 Java 后端算法面试',
+        additionalConstraints: '每周留一天复盘',
+        personalizationEnabled: false,
+      }),
+      expect.any(Object),
     );
   });
 
@@ -469,15 +507,15 @@ function learningPlanDraftPlan(overrides: Partial<NonNullable<LearningPlanDraftR
     title: '四周 Java 算法面试冲刺计划',
     summary: '围绕数组和哈希表建立高频题型能力。',
     intent: 'INTERVIEW_SPRINT',
-    goal: '准备 Java 后端算法面试',
+    objective: '准备 Java 后端算法面试',
     durationWeeks: 4,
     level: 'INTERMEDIATE',
     weeklyHours: 8,
     programmingLanguage: 'Java',
-    difficultyPreference: 'MEDIUM',
+    difficultyDistribution: { easyPercent: 35, mediumPercent: 55, hardPercent: 10 },
     interviewOriented: true,
     topicPreferences: ['Array', 'Hash Table'],
-    profileSummary: '中级，每周 8 小时。',
+    additionalConstraints: '每周留一天复盘。',
     phases: [{
       phaseIndex: 1,
       title: '基础题型恢复',

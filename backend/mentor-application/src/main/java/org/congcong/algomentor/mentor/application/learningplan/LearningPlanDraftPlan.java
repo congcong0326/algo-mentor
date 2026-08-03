@@ -1,22 +1,22 @@
 package org.congcong.algomentor.mentor.application.learningplan;
 
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public record LearningPlanDraftPlan(
     String title,
     String summary,
     LearningPlanIntent intent,
-    String goal,
+    String objective,
     int durationWeeks,
     LearningPlanLevel level,
     int weeklyHours,
     String programmingLanguage,
-    LearningPlanDifficultyPreference difficultyPreference,
+    LearningPlanDifficultyDistribution difficultyDistribution,
     boolean interviewOriented,
     List<String> topicPreferences,
-    String profileSummary,
+    String additionalConstraints,
     List<LearningPlanPhaseDraft> phases,
     Map<String, Object> metadata
 ) {
@@ -39,15 +39,15 @@ public record LearningPlanDraftPlan(
         title,
         summary,
         intent,
-        goal,
+        objective,
         durationWeeks,
         level,
         weeklyHours,
         programmingLanguage,
-        difficultyPreference,
+        difficultyDistribution,
         interviewOriented,
         topicPreferences,
-        profileSummary,
+        additionalConstraints,
         phases,
         nextMetadata);
   }

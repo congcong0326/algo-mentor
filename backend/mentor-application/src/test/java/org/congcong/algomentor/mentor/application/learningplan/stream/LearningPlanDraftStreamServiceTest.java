@@ -21,10 +21,10 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
@@ -34,6 +34,13 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemSearch;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanAbilityTagSummary;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanActiveProgressSummary;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationDataProvider;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSource;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSourceOutcome;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanReviewLoadSummary;
 import org.junit.jupiter.api.Test;
 
 class LearningPlanDraftStreamServiceTest {
@@ -73,23 +80,85 @@ class LearningPlanDraftStreamServiceTest {
     FakeAgentRuntime runtime = new FakeAgentRuntime("{}");
     LearningPlanDraftStreamService service = serviceWithRuntime(runtime);
 
-    List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, new LearningPlanDraftCommand(
+    List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, new LearningPlanBrief(
         null,
         "",
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
-        List.of("Array")), "run-1", Map.of()));
+        List.of("Array"),
+        null,
+        true,
+        LearningPlanContentLocale.ZH_CN), "run-1", Map.of()));
 
     assertThat(events).extracting(LearningPlanDraftStreamEvent::eventName).containsExactly("draft_ready");
     LearningPlanDraftEvent.DraftReady ready = (LearningPlanDraftEvent.DraftReady)
         ((LearningPlanDraftStreamEvent.Draft) events.get(0)).event();
     assertThat(ready.draft().status()).isEqualTo(LearningPlanDraftStatus.COLLECTING);
-    assertThat(ready.draft().missingFields()).contains("intent", "goal");
+    assertThat(ready.draft().missingFields()).contains("intent", "objective");
     assertThat(runtime.streamCalls).isZero();
+  }
+
+  @Test
+  void snapshotsEnabledPersonalizationOncePerRunAndReadsItAgainForANewRun() {
+    FakePersonalizationProvider provider = new FakePersonalizationProvider();
+    FakeAgentRuntime runtime = new FakeAgentRuntime(finalJson("two-sum"));
+    LearningPlanDraftStreamService service = serviceWithRuntime(
+        runtime, new LearningPlanPersonalizationContextService(provider, null, clock));
+
+    collect(service.stream(7L, command(), "run-1", Map.of()));
+
+    assertThat(provider.totalCalls()).isEqualTo(4);
+    LearningPlanDraftAgentInput firstInput = (LearningPlanDraftAgentInput) runtime.invocations.get(0).input();
+    assertThat(firstInput.personalizationSnapshot().enabled()).isTrue();
+    assertThat(firstInput.personalizationSnapshot().sourceOutcomes().values())
+        .containsOnly(LearningPlanPersonalizationSourceOutcome.EMPTY);
+
+    collect(service.stream(7L, command(), "run-2", Map.of()));
+
+    assertThat(provider.totalCalls()).isEqualTo(8);
+    assertThat(runtime.invocations).hasSize(2);
+  }
+
+  @Test
+  void doesNotReadPersonalizationSourcesWhenBriefDisablesThem() {
+    FakePersonalizationProvider provider = new FakePersonalizationProvider();
+    FakeAgentRuntime runtime = new FakeAgentRuntime(finalJson("two-sum"));
+    LearningPlanDraftStreamService service = serviceWithRuntime(
+        runtime, new LearningPlanPersonalizationContextService(provider, null, clock));
+
+    collect(service.stream(7L, command(false), "run-disabled", Map.of()));
+
+    assertThat(provider.totalCalls()).isZero();
+    LearningPlanDraftAgentInput input = (LearningPlanDraftAgentInput) runtime.invocations.get(0).input();
+    assertThat(input.personalizationSnapshot().enabled()).isFalse();
+    assertThat(input.personalizationSnapshot().promptText()).isEmpty();
+    assertThat(input.personalizationSnapshot().sourceOutcomes().values())
+        .containsOnly(LearningPlanPersonalizationSourceOutcome.DISABLED);
+  }
+
+  @Test
+  void continuesDraftGenerationWhenOnePersonalizationSourceFails() {
+    FakePersonalizationProvider provider = new FakePersonalizationProvider();
+    provider.claimFailure = new IllegalStateException("exception-text-must-not-leak");
+    provider.reviewLoad = Optional.of(new LearningPlanReviewLoadSummary(2, 1, null));
+    FakeAgentRuntime runtime = new FakeAgentRuntime(finalJson("two-sum"));
+    LearningPlanDraftStreamService service = serviceWithRuntime(
+        runtime, new LearningPlanPersonalizationContextService(provider, null, clock));
+
+    List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, command(), "run-error", Map.of()));
+
+    assertThat(events).extracting(LearningPlanDraftStreamEvent::eventName).contains("draft_ready");
+    LearningPlanDraftAgentInput input = (LearningPlanDraftAgentInput) runtime.invocations.get(0).input();
+    assertThat(input.personalizationSnapshot().sourceOutcomes())
+        .containsEntry(LearningPlanPersonalizationSource.ACTIVE_CLAIMS,
+            LearningPlanPersonalizationSourceOutcome.ERROR)
+        .containsEntry(LearningPlanPersonalizationSource.REVIEW_LOAD,
+            LearningPlanPersonalizationSourceOutcome.SUCCESS);
+    assertThat(input.personalizationSnapshot().promptText()).doesNotContain("exception-text-must-not-leak");
   }
 
   private LearningPlanDraftStreamService serviceWithAgent(String content) {
@@ -107,17 +176,38 @@ class LearningPlanDraftStreamServiceTest {
         clock);
   }
 
-  private LearningPlanDraftCommand command() {
-    return new LearningPlanDraftCommand(
+  private LearningPlanDraftStreamService serviceWithRuntime(
+      AgentRuntime runtime,
+      LearningPlanPersonalizationContextService personalizationContextService
+  ) {
+    return new LearningPlanDraftStreamService(
+        draftRepository,
+        new LearningPlanDraftValidator(),
+        runtime,
+        new ObjectMapper(),
+        problemCatalog,
+        new LearningPlanLoadService(clock),
+        clock,
+        personalizationContextService);
+  }
+
+  private LearningPlanBrief command() {
+    return command(true);
+  }
+
+  private LearningPlanBrief command(boolean personalizationEnabled) {
+    return new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备 Java 后端算法面试",
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
+        null,
+        personalizationEnabled,
         LearningPlanContentLocale.EN_US);
   }
 
@@ -141,16 +231,6 @@ class LearningPlanDraftStreamServiceTest {
         {
           "title": "四周 Java 算法面试冲刺计划",
           "summary": "围绕数组和哈希表建立高频题能力。",
-          "intent": "INTERVIEW_SPRINT",
-          "goal": "准备 Java 后端算法面试",
-          "durationWeeks": 4,
-          "level": "INTERMEDIATE",
-          "weeklyHours": 6,
-          "programmingLanguage": "Java",
-          "difficultyPreference": "MEDIUM",
-          "interviewOriented": true,
-          "topicPreferences": ["Array"],
-          "profileSummary": "当前水平：中级，每周 6 小时，语言：Java",
           "phases": [
             {
               "phaseIndex": 1,
@@ -202,6 +282,7 @@ class LearningPlanDraftStreamServiceTest {
 
   private static class FakeAgentRuntime implements AgentRuntime {
     private final String content;
+    private final List<AgentInvocation<?>> invocations = new ArrayList<>();
     private int streamCalls;
 
     FakeAgentRuntime(String content) {
@@ -216,6 +297,7 @@ class LearningPlanDraftStreamServiceTest {
     @Override
     public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       streamCalls++;
+      invocations.add(invocation);
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
@@ -227,6 +309,50 @@ class LearningPlanDraftStreamServiceTest {
         publisher.submit(new AgentStreamEvent.AgentRunEnd(runId, 1, LlmFinishReason.STOP, Map.of()));
         publisher.close();
       };
+    }
+  }
+
+  private static final class FakePersonalizationProvider implements LearningPlanPersonalizationDataProvider {
+
+    private List<LearningPlanAbilityTagSummary> tags = List.of();
+    private Optional<LearningPlanActiveProgressSummary> activePlan = Optional.empty();
+    private Optional<LearningPlanReviewLoadSummary> reviewLoad = Optional.empty();
+    private RuntimeException claimFailure;
+    private int claimCalls;
+    private int tagCalls;
+    private int activePlanCalls;
+    private int reviewLoadCalls;
+
+    @Override
+    public List<org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision>
+        findActiveClaims(long userId) {
+      claimCalls++;
+      if (claimFailure != null) {
+        throw claimFailure;
+      }
+      return List.of();
+    }
+
+    @Override
+    public List<LearningPlanAbilityTagSummary> findAbilityTagSummaries(long userId) {
+      tagCalls++;
+      return tags;
+    }
+
+    @Override
+    public Optional<LearningPlanActiveProgressSummary> findActivePlanProgress(long userId) {
+      activePlanCalls++;
+      return activePlan;
+    }
+
+    @Override
+    public Optional<LearningPlanReviewLoadSummary> findReviewLoad(long userId) {
+      reviewLoadCalls++;
+      return reviewLoad;
+    }
+
+    private int totalCalls() {
+      return claimCalls + tagCalls + activePlanCalls + reviewLoadCalls;
     }
   }
 

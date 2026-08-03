@@ -24,6 +24,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
@@ -41,6 +42,9 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationScenario;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
@@ -69,6 +73,7 @@ public class LearningPlanExtensionProposalStreamService {
   private final LearningPlanExtensionStructuredOutputMapper outputMapper;
   private final TransactionOperations transactionOperations;
   private final Clock clock;
+  private final LearningPlanPersonalizationContextService personalizationContextService;
 
   public LearningPlanExtensionProposalStreamService(
       LearningPlanRepository learningPlanRepository,
@@ -82,6 +87,33 @@ public class LearningPlanExtensionProposalStreamService {
       TransactionOperations transactionOperations,
       Clock clock
   ) {
+    this(
+        learningPlanRepository,
+        proposalRepository,
+        groupService,
+        practiceSessionRepository,
+        validator,
+        agentRuntime,
+        objectMapper,
+        problemCatalog,
+        transactionOperations,
+        clock,
+        new LearningPlanPersonalizationContextService(null));
+  }
+
+  public LearningPlanExtensionProposalStreamService(
+      LearningPlanRepository learningPlanRepository,
+      LearningPlanProposalRepository proposalRepository,
+      LearningPlanProposalGroupService groupService,
+      PracticeSessionRepository practiceSessionRepository,
+      LearningPlanExtensionValidator validator,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      TransactionOperations transactionOperations,
+      Clock clock,
+      LearningPlanPersonalizationContextService personalizationContextService
+  ) {
     this.learningPlanRepository = Objects.requireNonNull(learningPlanRepository, "learningPlanRepository");
     this.proposalRepository = Objects.requireNonNull(proposalRepository, "proposalRepository");
     this.groupService = Objects.requireNonNull(groupService, "groupService");
@@ -92,6 +124,8 @@ public class LearningPlanExtensionProposalStreamService {
     this.outputMapper = new LearningPlanExtensionStructuredOutputMapper(objectMapper, problemCatalog);
     this.transactionOperations = Objects.requireNonNull(transactionOperations, "transactionOperations");
     this.clock = Objects.requireNonNull(clock, "clock");
+    this.personalizationContextService = Objects.requireNonNull(
+        personalizationContextService, "personalizationContextService");
   }
 
   public Flow.Publisher<LearningPlanProposalStreamEvent> streamFirstRevision(
@@ -102,7 +136,7 @@ public class LearningPlanExtensionProposalStreamService {
       Map<String, Object> metadata
   ) {
     String normalizedInstruction = requireInstruction(instruction);
-    return singleUsePublisher(() -> createFirstRevision(userId, planId, normalizedInstruction, runId, metadata));
+    return singleUsePublisher(() -> prepareFirstRevision(userId, planId, normalizedInstruction, runId, metadata));
   }
 
   public Flow.Publisher<LearningPlanProposalStreamEvent> streamNextRevision(
@@ -114,7 +148,7 @@ public class LearningPlanExtensionProposalStreamService {
       Map<String, Object> metadata
   ) {
     String normalizedInstruction = requireInstruction(instruction);
-    return singleUsePublisher(() -> createNextRevision(
+    return singleUsePublisher(() -> prepareNextRevision(
         userId,
         planId,
         proposalGroupId,
@@ -143,9 +177,13 @@ public class LearningPlanExtensionProposalStreamService {
       publisher.subscribe(subscriber);
       SubscriptionRevisionContext context = null;
       try {
-        context = transactionOperations.execute(status -> factory.create());
+        context = factory.create();
         AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
-        agentRuntime.stream(context.invocation()).subscribe(new StreamSubscriber(
+        LearningPlanPersonalizationSnapshot personalizationSnapshot = personalizationContextService.snapshot(
+            context.plan().userId(),
+            personalizationEnabled(context.plan()),
+            LearningPlanPersonalizationScenario.EXTENSION);
+        agentRuntime.stream(invocation(context, personalizationSnapshot)).subscribe(new StreamSubscriber(
             publisher,
             projector,
             context.revision()));
@@ -192,15 +230,27 @@ public class LearningPlanExtensionProposalStreamService {
     return instruction.trim();
   }
 
-  private SubscriptionRevisionContext createFirstRevision(
+  private SubscriptionRevisionContext prepareFirstRevision(
       long userId,
       long planId,
       String instruction,
       String runId,
       Map<String, Object> metadata
   ) {
-    LearningPlan lockedPlan = lockActivePlan(userId, planId);
     List<PracticeProgress> progress = practiceSessionRepository.findProgressByPlan(userId, planId);
+    return transactionOperations.execute(status -> createFirstRevision(
+        userId, planId, instruction, runId, metadata, progress));
+  }
+
+  private SubscriptionRevisionContext createFirstRevision(
+      long userId,
+      long planId,
+      String instruction,
+      String runId,
+      Map<String, Object> metadata,
+      List<PracticeProgress> progress
+  ) {
+    LearningPlan lockedPlan = lockActivePlan(userId, planId);
     LearningPlanProposalGroup group = latestActiveGroup(userId, planId)
         .orElseGet(() -> groupService.createGroup(
             userId,
@@ -215,8 +265,26 @@ public class LearningPlanExtensionProposalStreamService {
         progress,
         null);
     return new SubscriptionRevisionContext(
-        revision,
-        invocation(lockedPlan, group.id(), instruction, progress, null, runId));
+        lockedPlan,
+        group.id(),
+        instruction,
+        progress,
+        null,
+        runId,
+        revision);
+  }
+
+  private SubscriptionRevisionContext prepareNextRevision(
+      long userId,
+      long planId,
+      long proposalGroupId,
+      String instruction,
+      String runId,
+      Map<String, Object> metadata
+  ) {
+    List<PracticeProgress> progress = practiceSessionRepository.findProgressByPlan(userId, planId);
+    return transactionOperations.execute(status -> createNextRevision(
+        userId, planId, proposalGroupId, instruction, runId, metadata, progress));
   }
 
   private SubscriptionRevisionContext createNextRevision(
@@ -225,7 +293,8 @@ public class LearningPlanExtensionProposalStreamService {
       long proposalGroupId,
       String instruction,
       String runId,
-      Map<String, Object> metadata
+      Map<String, Object> metadata,
+      List<PracticeProgress> progress
   ) {
     LearningPlan lockedPlan = lockActivePlan(userId, planId);
     LearningPlanProposalGroup group = proposalRepository.findGroupForUserForUpdate(proposalGroupId, userId)
@@ -238,7 +307,6 @@ public class LearningPlanExtensionProposalStreamService {
             "LEARNING_PLAN_EXTENSION_READY_REVISION_NOT_FOUND",
             "没有可修订的学习计划扩展提案。"));
     validateRevisionOwner(latestReady, userId, planId);
-    List<PracticeProgress> progress = practiceSessionRepository.findProgressByPlan(userId, planId);
     LearningPlanExtensionRevision revision = createGeneratingRevision(
         lockedPlan,
         group,
@@ -246,8 +314,13 @@ public class LearningPlanExtensionProposalStreamService {
         progress,
         latestReady.proposedExtension());
     return new SubscriptionRevisionContext(
-        revision,
-        invocation(lockedPlan, group.id(), instruction, progress, latestReady.proposedExtension(), runId));
+        lockedPlan,
+        group.id(),
+        instruction,
+        progress,
+        latestReady.proposedExtension(),
+        runId,
+        revision);
   }
 
   private LearningPlan lockActivePlan(long userId, long planId) {
@@ -353,25 +426,33 @@ public class LearningPlanExtensionProposalStreamService {
   }
 
   private AgentInvocation<LearningPlanExtensionAgentInput> invocation(
-      LearningPlan plan,
-      long proposalGroupId,
-      String instruction,
-      List<PracticeProgress> progress,
-      LearningPlanExtensionDraft previousExtension,
-      String idempotencyKey
+      SubscriptionRevisionContext context,
+      LearningPlanPersonalizationSnapshot personalizationSnapshot
   ) {
     return new AgentInvocation<>(
         LearningPlanExtensionAgentDefinition.KEY,
         new LearningPlanExtensionAgentInput(
-            plan.userId(), plan.id(), proposalGroupId, instruction, plan, progress, previousExtension, idempotencyKey),
+            context.plan().userId(),
+            context.plan().id(),
+            context.proposalGroupId(),
+            context.instruction(),
+            context.plan(),
+            context.progress(),
+            context.previousExtension(),
+            context.idempotencyKey(),
+            personalizationSnapshot),
         new AgentInvocationContext(
-            plan.userId(),
+            context.plan().userId(),
             AgentInvocationMode.USER_ENTRY,
-            idempotencyKey,
+            context.idempotencyKey(),
             null,
             null,
-            instruction.getBytes(java.nio.charset.StandardCharsets.UTF_8).length,
+            context.instruction().getBytes(java.nio.charset.StandardCharsets.UTF_8).length,
             true));
+  }
+
+  private static boolean personalizationEnabled(LearningPlan plan) {
+    return Boolean.TRUE.equals(plan.plan().metadata().get(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED));
   }
 
   private AgentWorkStatusProfile learningPlanProfile() {
@@ -388,8 +469,13 @@ public class LearningPlanExtensionProposalStreamService {
   }
 
   private record SubscriptionRevisionContext(
-      LearningPlanExtensionRevision revision,
-      AgentInvocation<LearningPlanExtensionAgentInput> invocation
+      LearningPlan plan,
+      long proposalGroupId,
+      String instruction,
+      List<PracticeProgress> progress,
+      LearningPlanExtensionDraft previousExtension,
+      String idempotencyKey,
+      LearningPlanExtensionRevision revision
   ) {
   }
 

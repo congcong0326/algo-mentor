@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.application.learningplan;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +37,32 @@ class LearningPlanDraftValidatorTest {
         .hasMessage("模板学习计划草案必须包含所有本地匹配题。");
   }
 
+  @Test
+  void briefValidationReturnsStableInvalidFieldNames() {
+    LearningPlanBrief brief = new LearningPlanBrief(
+        LearningPlanIntent.TOPIC_BREAKTHROUGH,
+        "x".repeat(301),
+        53,
+        null,
+        81,
+        null,
+        null,
+        null,
+        List.of(),
+        "x".repeat(1001),
+        true,
+        LearningPlanContentLocale.ZH_CN);
+
+    assertThat(validator.missingRequiredFields(brief)).containsExactly(
+        "objective",
+        "durationWeeks",
+        "level",
+        "weeklyHours",
+        "difficultyDistribution",
+        "additionalConstraints",
+        "topicPreferences");
+  }
+
   private LearningPlanDraftPlan plan(int phaseCount, int problemsPerPhase, Map<String, Object> metadata) {
     return new LearningPlanDraftPlan(
         "模板计划",
@@ -46,10 +73,10 @@ class LearningPlanDraftValidatorTest {
         LearningPlanLevel.INTERMEDIATE,
         8,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
-        "profile",
+        null,
         List.of(phase(1, phaseCount, problemsPerPhase)),
         metadata);
   }

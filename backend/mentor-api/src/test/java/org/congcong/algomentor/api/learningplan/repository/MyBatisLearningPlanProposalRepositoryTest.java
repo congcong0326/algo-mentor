@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
@@ -16,8 +17,8 @@ import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -73,6 +74,10 @@ class MyBatisLearningPlanProposalRepositoryTest {
     ArgumentCaptor<LearningPlanDraftRevisionRow> row = ArgumentCaptor.forClass(LearningPlanDraftRevisionRow.class);
     verify(mapper).insertDraftRevision(row.capture());
     assertThat(row.getValue().revisionNo()).isEqualTo(5);
+    assertSnapshotJson(row.getValue().basePlanJson(), "Base plan", "Prepare for Java interviews");
+    assertSnapshotJson(row.getValue().proposedPlanJson(), "Proposed plan", "Refine Java interview practice");
+    assertThat(saved.basePlan().objective()).isEqualTo("Prepare for Java interviews");
+    assertThat(saved.proposedPlan().objective()).isEqualTo("Refine Java interview practice");
   }
 
   @Test
@@ -96,6 +101,10 @@ class MyBatisLearningPlanProposalRepositoryTest {
         ArgumentCaptor.forClass(LearningPlanExtensionRevisionRow.class);
     verify(mapper).insertExtensionRevision(row.capture());
     assertThat(row.getValue().revisionNo()).isEqualTo(6);
+    assertSnapshotJson(row.getValue().basePlanJson(), "Extension base plan", "Prepare for Java interviews");
+    assertThat(saved.basePlan().objective()).isEqualTo("Prepare for Java interviews");
+    assertThat(saved.basePlan().difficultyDistribution()).isEqualTo(
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(25, 55, 20));
   }
 
   @Test
@@ -217,8 +226,8 @@ class MyBatisLearningPlanProposalRepositoryTest {
         revisionNo,
         LearningPlanProposalRevisionStatus.GENERATING,
         "revise",
-        plan(),
-        null,
+        plan("Base plan", "Prepare for Java interviews"),
+        plan("Proposed plan", "Refine Java interview practice"),
         null,
         null,
         CREATED_AT,
@@ -234,7 +243,7 @@ class MyBatisLearningPlanProposalRepositoryTest {
         revisionNo,
         LearningPlanProposalRevisionStatus.GENERATING,
         "extend",
-        plan(),
+        plan("Extension base plan", "Prepare for Java interviews"),
         Map.of(),
         2,
         null,
@@ -280,8 +289,8 @@ class MyBatisLearningPlanProposalRepositoryTest {
         revisionNo,
         LearningPlanProposalRevisionStatus.GENERATING.name(),
         "revise",
-        objectMapper.valueToTree(plan()),
-        null,
+        objectMapper.valueToTree(plan("Base plan", "Prepare for Java interviews")),
+        objectMapper.valueToTree(plan("Proposed plan", "Refine Java interview practice")),
         null,
         null,
         CREATED_AT,
@@ -297,7 +306,7 @@ class MyBatisLearningPlanProposalRepositoryTest {
         revisionNo,
         LearningPlanProposalRevisionStatus.GENERATING.name(),
         "extend",
-        objectMapper.valueToTree(plan()),
+        objectMapper.valueToTree(plan("Extension base plan", "Prepare for Java interviews")),
         objectMapper.valueToTree(Map.of()),
         2,
         null,
@@ -309,21 +318,37 @@ class MyBatisLearningPlanProposalRepositoryTest {
         UPDATED_AT);
   }
 
-  private LearningPlanDraftPlan plan() {
+  private LearningPlanDraftPlan plan(String title, String objective) {
     return new LearningPlanDraftPlan(
-        "Plan",
+        title,
         "summary",
         LearningPlanIntent.PRACTICE_GOAL,
-        "goal",
+        objective,
         4,
         LearningPlanLevel.INTERMEDIATE,
         8,
         "java",
-        LearningPlanDifficultyPreference.MIXED,
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(25, 55, 20),
         true,
         List.of("array"),
-        "profile",
+        "Reserve one weekly review session.",
         List.of(new LearningPlanPhaseDraft(1, "phase", 1, "focus", List.of(), List.of(), List.of(), "review", List.of())),
-        null);
+        Map.of(
+            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
+            LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true));
+  }
+
+  private void assertSnapshotJson(JsonNode snapshot, String title, String objective) {
+    assertThat(snapshot.has("objective")).isTrue();
+    assertThat(snapshot.path("title").asText()).isEqualTo(title);
+    assertThat(snapshot.path("objective").asText()).isEqualTo(objective);
+    assertThat(snapshot.has("difficultyDistribution")).isTrue();
+    assertThat(snapshot.path("difficultyDistribution").path("easyPercent").asInt()).isEqualTo(25);
+    assertThat(snapshot.path("difficultyDistribution").path("mediumPercent").asInt()).isEqualTo(55);
+    assertThat(snapshot.path("difficultyDistribution").path("hardPercent").asInt()).isEqualTo(20);
+    assertThat(snapshot.has("additionalConstraints")).isTrue();
+    assertThat(snapshot.path("additionalConstraints").asText()).isEqualTo("Reserve one weekly review session.");
+    assertThat(snapshot.path("metadata").path(LearningPlanDraftMetadataKeys.CONTENT_LOCALE).asText()).isEqualTo("en-US");
+    assertThat(snapshot.path("metadata").path(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED).asBoolean()).isTrue();
   }
 }

@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLivingContractSummary;
@@ -21,15 +21,15 @@ public record LearningPlanDetailResponse(
     String title,
     String summary,
     LearningPlanIntent intent,
-    String goal,
+    String objective,
     int durationWeeks,
     LearningPlanLevel level,
     int weeklyHours,
     String programmingLanguage,
-    LearningPlanDifficultyPreference difficultyPreference,
+    LearningPlanDifficultyDistribution difficultyDistribution,
     boolean interviewOriented,
     List<String> topicPreferences,
-    String profileSummary,
+    String additionalConstraints,
     LearningPlanStatus status,
     List<LearningPlanDetailPhaseResponse> phases,
     Map<String, Object> metadata,

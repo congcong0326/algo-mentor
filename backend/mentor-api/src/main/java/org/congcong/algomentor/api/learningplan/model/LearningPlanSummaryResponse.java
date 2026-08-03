@@ -11,7 +11,7 @@ public record LearningPlanSummaryResponse(
     LearningPlanContentLocale contentLocale,
     String title,
     LearningPlanIntent intent,
-    String goal,
+    String objective,
     int durationWeeks,
     LearningPlanLevel level,
     String programmingLanguage,

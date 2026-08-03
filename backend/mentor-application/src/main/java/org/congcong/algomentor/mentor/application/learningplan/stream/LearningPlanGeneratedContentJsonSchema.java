@@ -5,12 +5,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-/**
- * 学习计划草案 provider-native structured output JSON Schema。
- */
-public final class LearningPlanDraftJsonSchema {
+/** 初次学习计划生成内容的 provider-native 严格 JSON Schema。 */
+public final class LearningPlanGeneratedContentJsonSchema {
 
-  private LearningPlanDraftJsonSchema() {
+  private LearningPlanGeneratedContentJsonSchema() {
   }
 
   public static JsonNode schema() {
@@ -19,22 +17,9 @@ public final class LearningPlanDraftJsonSchema {
     ObjectNode properties = root.putObject("properties");
     properties.set("title", string());
     properties.set("summary", string());
-    properties.set("intent", enumString("PRACTICE_GOAL", "ABILITY_DIAGNOSIS", "INTERVIEW_SPRINT",
-        "TOPIC_BREAKTHROUGH", "MISTAKE_REVIEW", "LONG_TERM_LEARNING"));
-    properties.set("goal", string());
-    properties.set("durationWeeks", integer(1, 52));
-    properties.set("level", enumString("BEGINNER", "INTERMEDIATE", "ADVANCED"));
-    properties.set("weeklyHours", integer(1, 80));
-    properties.set("programmingLanguage", nullableString());
-    properties.set("difficultyPreference", nullableEnumString("EASY", "MEDIUM", "HARD", "MIXED"));
-    properties.set("interviewOriented", bool());
-    properties.set("topicPreferences", stringArray());
-    properties.set("profileSummary", string());
     properties.set("phases", phases());
     properties.set("metadata", metadata());
-    require(root, "title", "summary", "intent", "goal", "durationWeeks", "level", "weeklyHours",
-        "programmingLanguage", "difficultyPreference", "interviewOriented", "topicPreferences",
-        "profileSummary", "phases", "metadata");
+    require(root, "title", "summary", "phases", "metadata");
     return root;
   }
 
@@ -144,15 +129,6 @@ public final class LearningPlanDraftJsonSchema {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "array");
     node.set("items", string());
-    return node;
-  }
-
-  private static ObjectNode enumString(String... values) {
-    ObjectNode node = string();
-    ArrayNode enums = node.putArray("enum");
-    for (String value : values) {
-      enums.add(value);
-    }
     return node;
   }
 

@@ -162,7 +162,7 @@ public class LearningPlanController {
       requiredDraftStreamService()
           .stream(
               userId,
-              request.toCommand(LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage)),
+              request.toBrief(LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage)),
               runId,
               Map.of())
           .subscribe(subscriber);

@@ -21,7 +21,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActiv
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
@@ -184,15 +184,15 @@ public class MyBatisLearningPlanRepository
         current.plan().title(),
         current.plan().summary(),
         current.plan().intent(),
-        current.plan().goal(),
+        current.plan().objective(),
         current.plan().durationWeeks(),
         current.plan().level(),
         current.plan().weeklyHours(),
         current.plan().programmingLanguage(),
-        current.plan().difficultyPreference(),
+        current.plan().difficultyDistribution(),
         current.plan().interviewOriented(),
         current.plan().topicPreferences(),
-        current.plan().profileSummary(),
+        current.plan().additionalConstraints(),
         phases,
         current.plan().metadata());
 
@@ -257,7 +257,7 @@ public class MyBatisLearningPlanRepository
         draft.id(),
         draft.userId(),
         draft.status().name(),
-        json(draft.command()),
+        json(draft.brief()),
         json(draft.messages()),
         json(draft.missingFields()),
         draft.assistantMessage(),
@@ -284,7 +284,7 @@ public class MyBatisLearningPlanRepository
         row.id(),
         row.userId(),
         LearningPlanDraftStatus.valueOf(row.status()),
-        read(row.commandJson(), LearningPlanDraftCommand.class),
+        read(row.commandJson(), LearningPlanBrief.class),
         read(row.messagesJson(), STRING_LIST),
         read(row.missingFieldsJson(), STRING_LIST),
         row.assistantMessage(),

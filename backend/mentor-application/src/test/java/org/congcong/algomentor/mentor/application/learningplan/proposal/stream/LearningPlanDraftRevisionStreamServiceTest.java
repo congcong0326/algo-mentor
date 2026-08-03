@@ -25,10 +25,10 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
@@ -50,6 +50,12 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanAbilityTagSummary;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanActiveProgressSummary;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationDataProvider;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSourceOutcome;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanReviewLoadSummary;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -82,7 +88,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
         clock.instant(),
         clock.instant())).withReady(basePlan("旧修订计划"), clock.instant());
     previous = proposalRepository.saveDraftRevision(previous);
-    LearningPlanDraftRevisionStreamService service = serviceWithAgent(finalJson("修订后计划"));
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(
+        finalJsonWithObjective("修订后计划", "掌握图论基础"));
 
     List<LearningPlanProposalStreamEvent> events = collect(service.stream(
         draft.userId(),
@@ -105,10 +112,13 @@ class LearningPlanDraftRevisionStreamServiceTest {
     assertThat(proposalRepository.draftRevisions.get(ready.result().proposalId()).status())
         .isEqualTo(LearningPlanProposalRevisionStatus.READY);
     assertThat(proposalRepository.groups.get(group.id()).latestProposalId()).isEqualTo(ready.result().proposalId());
-    assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow().draftPlan().title())
-        .isEqualTo("修订后计划");
-    assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow()
-        .draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
+    LearningPlanDraft savedDraft = draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow();
+    LearningPlanDraftRevision savedRevision = proposalRepository.draftRevisions.get(ready.result().proposalId());
+    assertThat(savedDraft.draftPlan().title()).isEqualTo("修订后计划");
+    assertThat(savedDraft.brief().objective()).isEqualTo("掌握图论基础");
+    assertThat(savedDraft.draftPlan().objective()).isEqualTo(savedDraft.brief().objective());
+    assertThat(savedRevision.proposedPlan().objective()).isEqualTo(savedDraft.brief().objective());
+    assertThat(savedDraft.draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
     assertThat(lockOrder()).containsExactly("draft:100", "draft:100", "group:10");
   }
 
@@ -130,7 +140,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
         .findFirst()
         .orElseThrow();
     assertThat(failed.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
-    assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_INVALID");
+    assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID");
     assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow().draftPlan().title())
         .isEqualTo("原计划");
   }
@@ -339,6 +349,25 @@ class LearningPlanDraftRevisionStreamServiceTest {
     assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED");
   }
 
+  @org.junit.jupiter.api.Test
+  void assemblesOnePersonalizationSnapshotPerRevisionRunAndPassesItToTheAgent() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    FakePersonalizationProvider provider = new FakePersonalizationProvider();
+    FakeAgentRuntime runtime = new FakeAgentRuntime(finalJson("修订后计划"));
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(
+        runtime,
+        TransactionOperations.withoutTransaction(),
+        new LearningPlanPersonalizationContextService(provider, null, clock));
+
+    collect(service.stream(draft.userId(), draft.id(), "减少动态规划题", "run-context", Map.of()));
+
+    assertThat(provider.totalCalls()).isEqualTo(4);
+    LearningPlanDraftRevisionAgentInput input = (LearningPlanDraftRevisionAgentInput) runtime.invocation.input();
+    assertThat(input.personalizationSnapshot().enabled()).isTrue();
+    assertThat(input.personalizationSnapshot().sourceOutcomes().values())
+        .containsOnly(LearningPlanPersonalizationSourceOutcome.EMPTY);
+  }
+
   private LearningPlanDraftRevisionStreamService serviceWithAgent(String content) {
     return serviceWithAgent(new FakeAgentRuntime(content));
   }
@@ -362,6 +391,25 @@ class LearningPlanDraftRevisionStreamServiceTest {
         new LearningPlanLoadService(clock),
         transactionOperations,
         clock);
+  }
+
+  private LearningPlanDraftRevisionStreamService serviceWithAgent(
+      AgentRuntime runtime,
+      TransactionOperations transactionOperations,
+      LearningPlanPersonalizationContextService personalizationContextService
+  ) {
+    return new LearningPlanDraftRevisionStreamService(
+        draftRepository,
+        proposalRepository,
+        new LearningPlanProposalGroupService(proposalRepository, clock),
+        new LearningPlanDraftValidator(),
+        runtime,
+        new ObjectMapper(),
+        problemCatalog,
+        new LearningPlanLoadService(clock),
+        transactionOperations,
+        clock,
+        personalizationContextService);
   }
 
   private LearningPlanDraft generatedDraft(LearningPlanDraftPlan plan) {
@@ -400,17 +448,19 @@ class LearningPlanDraftRevisionStreamServiceTest {
         now);
   }
 
-  private LearningPlanDraftCommand command() {
-    return new LearningPlanDraftCommand(
+  private LearningPlanBrief command() {
+    return new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备 Java 后端算法面试",
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
+        "当前水平：中级，每周 6 小时，语言：Java",
+        true,
         LearningPlanContentLocale.EN_US);
   }
 
@@ -424,7 +474,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Array"),
         "当前水平：中级，每周 6 小时，语言：Java",
@@ -459,19 +509,28 @@ class LearningPlanDraftRevisionStreamServiceTest {
   private String finalJson(String title) {
     return """
         {
-          "title": "%s",
-          "summary": "围绕数组和哈希表建立高频题能力。",
-          "intent": "INTERVIEW_SPRINT",
-          "goal": "准备 Java 后端算法面试",
-          "durationWeeks": 4,
-          "level": "INTERMEDIATE",
-          "weeklyHours": 6,
-          "programmingLanguage": "Java",
-          "difficultyPreference": "MEDIUM",
-          "interviewOriented": true,
-          "topicPreferences": ["Array"],
-          "profileSummary": "当前水平：中级，每周 6 小时，语言：Java",
-          "phases": [
+          "resolvedBrief": {
+            "intent": "INTERVIEW_SPRINT",
+            "objective": "准备 Java 后端算法面试",
+            "durationWeeks": 4,
+            "level": "INTERMEDIATE",
+            "weeklyHours": 6,
+            "programmingLanguage": "Java",
+            "difficultyDistribution": {
+              "easyPercent": 35,
+              "mediumPercent": 55,
+              "hardPercent": 10
+            },
+            "interviewOriented": true,
+            "topicPreferences": ["Array"],
+            "additionalConstraints": "当前水平：中级，每周 6 小时，语言：Java",
+            "personalizationEnabled": true,
+            "contentLocale": "en-US"
+          },
+          "generatedContent": {
+            "title": "%s",
+            "summary": "围绕数组和哈希表建立高频题能力。",
+            "phases": [
             {
               "phaseIndex": 1,
               "title": "数组与哈希表基础",
@@ -516,12 +575,19 @@ class LearningPlanDraftRevisionStreamServiceTest {
               "reviewAdvice": "复盘状态设计。",
               "problems": []
             }
-          ],
-          "metadata": {
-            "problemRecommendationIncomplete": false
+            ],
+            "metadata": {
+              "problemRecommendationIncomplete": false
+            }
           }
         }
         """.formatted(title);
+  }
+
+  private String finalJsonWithObjective(String title, String objective) {
+    return finalJson(title).replace(
+        "\"objective\": \"准备 Java 后端算法面试\"",
+        "\"objective\": \"%s\"".formatted(objective));
   }
 
   private List<LearningPlanProposalStreamEvent> collect(Flow.Publisher<LearningPlanProposalStreamEvent> publisher) {
@@ -542,7 +608,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
         draft.id(),
         draft.userId(),
         LearningPlanDraftStatus.GENERATED,
-        draft.command(),
+        draft.brief(),
         draft.messages(),
         List.of(),
         "已生成学习计划修订草案。",
@@ -581,6 +647,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
 
   private static class FakeAgentRuntime implements AgentRuntime {
     private final String content;
+    private AgentInvocation<?> invocation;
 
     FakeAgentRuntime(String content) {
       this.content = content;
@@ -593,6 +660,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
 
     @Override
     public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      this.invocation = invocation;
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
@@ -603,6 +671,43 @@ class LearningPlanDraftRevisionStreamServiceTest {
         publisher.submit(new AgentStreamEvent.AgentRunEnd(runId, 1, LlmFinishReason.STOP, Map.of()));
         publisher.close();
       };
+    }
+  }
+
+  private static final class FakePersonalizationProvider implements LearningPlanPersonalizationDataProvider {
+
+    private int claimCalls;
+    private int tagCalls;
+    private int activePlanCalls;
+    private int reviewLoadCalls;
+
+    @Override
+    public List<org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision>
+        findActiveClaims(long userId) {
+      claimCalls++;
+      return List.of();
+    }
+
+    @Override
+    public List<LearningPlanAbilityTagSummary> findAbilityTagSummaries(long userId) {
+      tagCalls++;
+      return List.of();
+    }
+
+    @Override
+    public Optional<LearningPlanActiveProgressSummary> findActivePlanProgress(long userId) {
+      activePlanCalls++;
+      return Optional.empty();
+    }
+
+    @Override
+    public Optional<LearningPlanReviewLoadSummary> findReviewLoad(long userId) {
+      reviewLoadCalls++;
+      return Optional.empty();
+    }
+
+    private int totalCalls() {
+      return claimCalls + tagCalls + activePlanCalls + reviewLoadCalls;
     }
   }
 

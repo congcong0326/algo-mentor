@@ -75,6 +75,7 @@ class PracticeChatPromptSectionProviderTest {
         .contains("分层提示协议")
         .contains("面向学习者的回复语言：简体中文")
         .contains("- planId: 12")
+        .contains("- objective: 4 周内准备后端面试")
         .contains("- phaseIndex: 1")
         .contains("- slug: two-sum")
         .contains("<problem_statement>")
@@ -83,7 +84,8 @@ class PracticeChatPromptSectionProviderTest {
         .contains("我想要一个提示")
         .contains("直接给答案和 Java 解法")
         .doesNotContain("本轮用户意图")
-        .doesNotContain("seed statement");
+        .doesNotContain("seed statement")
+        .doesNotContain("- legacy-plan-field:");
     assertThat(assembly.metadata())
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
         .containsEntry("promptPolicy", PracticeChatPromptConstants.POLICY_NAME);
@@ -286,7 +288,7 @@ class PracticeChatPromptSectionProviderTest {
         LearningPlanLevel.INTERMEDIATE,
         8,
         "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
+        new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
         true,
         List.of("Hash Table"),
         "profile",

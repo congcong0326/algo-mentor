@@ -16,26 +16,26 @@ public class LearningPlanAgentService {
     this.problemCatalog = problemCatalog;
   }
 
-  public LearningPlanAgentResult run(LearningPlanDraftCommand command, List<String> missingFields) {
+  public LearningPlanAgentResult run(LearningPlanBrief brief, List<String> missingFields) {
     if (!missingFields.isEmpty()) {
       return LearningPlanAgentResult.askClarification(
-          clarificationFor(missingFields.get(0), command.contentLocale()),
+          clarificationFor(missingFields.get(0), brief.contentLocale()),
           missingFields);
     }
-    LearningPlanDraftPlan draftPlan = generateDraftPlan(command);
-    String message = isEnglish(command)
+    LearningPlanDraftPlan draftPlan = generateDraftPlan(brief);
+    String message = isEnglish(brief)
         ? "All required information is available. The learning plan draft has been generated."
         : "信息已齐全，已生成学习计划草案。";
     return LearningPlanAgentResult.generated(message, draftPlan);
   }
 
-  private LearningPlanDraftPlan generateDraftPlan(LearningPlanDraftCommand command) {
-    int durationWeeks = command.durationWeeks();
+  private LearningPlanDraftPlan generateDraftPlan(LearningPlanBrief brief) {
+    int durationWeeks = brief.durationWeeks();
     int phaseCount = validator.expectedPhaseCount(durationWeeks);
     List<Integer> phaseWeeks = splitWeeks(durationWeeks, phaseCount);
-    List<String> preferredTags = command.topicPreferences().isEmpty()
+    List<String> preferredTags = brief.topicPreferences().isEmpty()
         ? List.of("Array", "Hash Table", "Two Pointers", "Dynamic Programming")
-        : command.topicPreferences();
+        : brief.topicPreferences();
     List<LearningPlanPhaseDraft> phases = new ArrayList<>();
     boolean incomplete = false;
 
@@ -43,11 +43,11 @@ public class LearningPlanAgentService {
       String tag = preferredTags.get(index % preferredTags.size());
       List<LearningPlanProblemCandidate> candidates = problemCatalog.searchProblems(new LearningPlanProblemSearch(
           tag,
-          command.difficultyPreference() == null ? null : command.difficultyPreference().name(),
+          preferredDifficulty(brief.difficultyDistribution()),
           PROBLEMS_PER_PHASE)).stream()
           .map(candidate -> problemCatalog.findBySlug(
                   candidate.slug(),
-                  command.contentLocale().languageTag())
+                  brief.contentLocale().languageTag())
               .orElse(candidate))
           .toList();
       List<LearningPlanProblemDraft> problems = candidates.stream()
@@ -55,30 +55,31 @@ public class LearningPlanAgentService {
           .map(candidate -> LearningPlanProblemDraft.fromCandidate(
               candidate,
               candidates.indexOf(candidate) + 1,
-              problemReason(command, tag)))
+              problemReason(brief, tag)))
           .toList();
       incomplete = incomplete || problems.size() < 3;
       int phaseIndex = index + 1;
-      phases.add(phase(command, phaseIndex, phaseWeeks.get(index), tag, problems));
+      phases.add(phase(brief, phaseIndex, phaseWeeks.get(index), tag, problems));
     }
 
     Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, incomplete);
-    metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, command.contentLocale().languageTag());
+    metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, brief.contentLocale().languageTag());
+    metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, brief.personalizationEnabled());
 
     return new LearningPlanDraftPlan(
-        titleFor(command),
-        summaryFor(command),
-        command.intent(),
-        command.goal(),
-        durationWeeks,
-        command.level(),
-        command.weeklyHours(),
-        command.programmingLanguage(),
-        command.difficultyPreference(),
-        command.interviewOriented(),
-        command.topicPreferences(),
-        profileSummary(command),
+        titleFor(brief),
+        summaryFor(brief),
+        brief.intent(),
+        brief.objective(),
+        brief.durationWeeks(),
+        brief.level(),
+        brief.weeklyHours(),
+        brief.programmingLanguage(),
+        brief.difficultyDistribution(),
+        brief.interviewOriented(),
+        brief.topicPreferences(),
+        brief.additionalConstraints(),
         phases,
         metadata);
   }
@@ -93,24 +94,13 @@ public class LearningPlanAgentService {
     return weeks;
   }
 
-  private String titleFor(LearningPlanDraftCommand command) {
-    if (isEnglish(command)) {
-      String language = command.programmingLanguage() == null ? "" : command.programmingLanguage() + " ";
-      return command.durationWeeks() + "-Week " + language + intentLabelEn(command.intent()) + " Plan";
+  private String titleFor(LearningPlanBrief brief) {
+    if (isEnglish(brief)) {
+      String language = brief.programmingLanguage() == null ? "" : brief.programmingLanguage() + " ";
+      return brief.durationWeeks() + "-Week " + language + intentLabelEn(brief.intent()) + " Plan";
     }
-    String language = command.programmingLanguage() == null ? "" : command.programmingLanguage() + " ";
-    return command.durationWeeks() + " 周" + language + intentLabel(command.intent()) + "计划";
-  }
-
-  private String profileSummary(LearningPlanDraftCommand command) {
-    if (isEnglish(command)) {
-      return "Current level: " + command.level()
-          + ", " + command.weeklyHours() + " hours per week"
-          + (command.programmingLanguage() == null ? "" : ", language: " + command.programmingLanguage());
-    }
-    return "当前水平：" + command.level()
-        + "，每周 " + command.weeklyHours() + " 小时"
-        + (command.programmingLanguage() == null ? "" : "，语言：" + command.programmingLanguage());
+    String language = brief.programmingLanguage() == null ? "" : brief.programmingLanguage() + " ";
+    return brief.durationWeeks() + " 周" + language + intentLabel(brief.intent()) + "计划";
   }
 
   private String intentLabel(LearningPlanIntent intent) {
@@ -152,13 +142,13 @@ public class LearningPlanAgentService {
   }
 
   private LearningPlanPhaseDraft phase(
-      LearningPlanDraftCommand command,
+      LearningPlanBrief brief,
       int phaseIndex,
       int durationWeeks,
       String tag,
       List<LearningPlanProblemDraft> problems
   ) {
-    if (isEnglish(command)) {
+    if (isEnglish(brief)) {
       return new LearningPlanPhaseDraft(
           phaseIndex,
           "Phase " + phaseIndex + ": " + tag + " Practice",
@@ -186,27 +176,38 @@ public class LearningPlanAgentService {
         problems);
   }
 
-  private String summaryFor(LearningPlanDraftCommand command) {
-    return isEnglish(command)
-        ? "Break " + command.goal() + " into focused training phases and recommend problems from the local catalog."
-        : "围绕 " + command.goal() + " 拆分阶段训练，并使用本地题库推荐题目。";
+  private String summaryFor(LearningPlanBrief brief) {
+    return isEnglish(brief)
+        ? "Break " + brief.objective() + " into focused training phases and recommend problems from the local catalog."
+        : "围绕 " + brief.objective() + " 拆分阶段训练，并使用本地题库推荐题目。";
   }
 
-  private String problemReason(LearningPlanDraftCommand command, String tag) {
-    return isEnglish(command)
-        ? "Practice " + tag + " to support the current goal: " + command.goal()
-        : "围绕 " + tag + " 训练，匹配当前目标：" + command.goal();
+  private String problemReason(LearningPlanBrief brief, String tag) {
+    return isEnglish(brief)
+        ? "Practice " + tag + " to support the current objective: " + brief.objective()
+        : "围绕 " + tag + " 训练，匹配当前目标：" + brief.objective();
   }
 
-  private boolean isEnglish(LearningPlanDraftCommand command) {
-    return command.contentLocale() == LearningPlanContentLocale.EN_US;
+  private String preferredDifficulty(LearningPlanDifficultyDistribution distribution) {
+    if (distribution.hardPercent() > distribution.mediumPercent()
+        && distribution.hardPercent() >= distribution.easyPercent()) {
+      return "HARD";
+    }
+    if (distribution.easyPercent() > distribution.mediumPercent()) {
+      return "EASY";
+    }
+    return "MEDIUM";
+  }
+
+  private boolean isEnglish(LearningPlanBrief brief) {
+    return brief.contentLocale() == LearningPlanContentLocale.EN_US;
   }
 
   private String clarificationFor(String field, LearningPlanContentLocale locale) {
     if (locale == LearningPlanContentLocale.EN_US) {
       return switch (field) {
         case "intent" -> "What kind of learning plan do you want, such as an interview sprint, topic breakthrough, or long-term learning plan?";
-        case "goal" -> "What is the learning goal for this plan, such as preparing for Java backend algorithm interviews?";
+        case "objective" -> "What is the concrete objective for this plan?";
         case "durationWeeks" -> "How many weeks should the plan cover?";
         case "level" -> "Is your current algorithm level closer to beginner, intermediate, or advanced?";
         case "weeklyHours" -> "About how many hours per week can you spend studying algorithms?";
@@ -215,7 +216,7 @@ public class LearningPlanAgentService {
     }
     return switch (field) {
       case "intent" -> "你想创建哪类学习计划？例如面试冲刺、专题突破或长期学习。";
-      case "goal" -> "请补充这份计划的学习目标，例如准备 Java 后端算法面试。";
+      case "objective" -> "请补充这份计划的具体目标，例如准备 Java 后端算法面试。";
       case "durationWeeks" -> "你希望计划持续几周？";
       case "level" -> "你当前算法水平更接近入门、中级还是高级？";
       case "weeklyHours" -> "你每周大约可以投入几小时学习算法？";

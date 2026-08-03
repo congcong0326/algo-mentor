@@ -23,12 +23,15 @@ import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
+import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftJsonSchema;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalPromptBuilder;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 
 /** 保留既有草案 Prompt 上下文顺序的学习计划修订 Definition。 */
 public final class LearningPlanDraftRevisionAgentDefinition
@@ -41,14 +44,14 @@ public final class LearningPlanDraftRevisionAgentDefinition
   private static final AgentLoopPolicy LOOP_POLICY = new AgentLoopPolicy(MAX_STEPS);
   private static final AgentOutputContract OUTPUT_CONTRACT = AgentOutputContract.defaults();
 
-  private final LearningPlanDraftPromptBuilder promptBuilder;
+  private final LearningPlanProposalPromptBuilder promptBuilder;
   private final ObjectMapper objectMapper;
 
   public LearningPlanDraftRevisionAgentDefinition(
-      LearningPlanDraftPromptBuilder promptBuilder,
+      LearningPlanProposalPromptBuilder promptBuilder,
       ObjectMapper objectMapper
   ) {
-    this.promptBuilder = Objects.requireNonNull(promptBuilder, "Learning plan draft prompt builder must not be null");
+    this.promptBuilder = Objects.requireNonNull(promptBuilder, "Learning plan proposal prompt builder must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "Object mapper must not be null");
   }
 
@@ -82,12 +85,27 @@ public final class LearningPlanDraftRevisionAgentDefinition
     if (!candidate.idempotencyKey().equals(invocation.idempotencyKey())) {
       throw new IllegalArgumentException("Learning plan draft revision idempotency key does not match the invocation");
     }
-    ResolvedSystemPromptSnapshot snapshot = promptBuilder.snapshot(candidate.userId());
+    ResolvedSystemPromptSnapshot snapshot = promptBuilder.snapshot(
+        ManagedSystemPromptDefinitions.LEARNING_PLAN_REVISION, candidate.userId());
     Map<String, Object> metadata = new LinkedHashMap<>(SystemPromptMetadataKeys.from(snapshot));
     metadata.put(AgentRuntimeMetadataKeys.TITLE, LearningPlanStreamConstants.DRAFT_REVISION_AGENT_TITLE);
     metadata.put(
         LearningPlanDraftMetadataKeys.CONTENT_LOCALE,
-        candidate.command().contentLocale().languageTag());
+        candidate.brief().contentLocale().languageTag());
+    metadata.put(LearningPlanPersonalizationMetadataKeys.ENABLED, candidate.personalizationSnapshot().enabled());
+    metadata.put(
+        LearningPlanPersonalizationMetadataKeys.SOURCE_OUTCOMES,
+        candidate.personalizationSnapshot().sourceOutcomes().entrySet().stream()
+            .collect(java.util.stream.Collectors.toMap(
+                entry -> entry.getKey().name(),
+                entry -> entry.getValue().name(),
+                (left, right) -> left,
+                LinkedHashMap::new)));
+    metadata.put(LearningPlanPersonalizationMetadataKeys.ENTRY_COUNT, personalizationEntryCount(candidate));
+    metadata.put(
+        LearningPlanPersonalizationMetadataKeys.TOKEN_ESTIMATE,
+        candidate.personalizationSnapshot().tokenEstimate());
+    metadata.put(LearningPlanPersonalizationMetadataKeys.TRIMMED, candidate.personalizationSnapshot().trimmed());
     return new AgentPreparedRequest(messages(candidate, snapshot), Map.copyOf(metadata), executionOptions());
   }
 
@@ -95,18 +113,36 @@ public final class LearningPlanDraftRevisionAgentDefinition
       LearningPlanDraftRevisionAgentInput input,
       ResolvedSystemPromptSnapshot snapshot
   ) {
-    List<LlmMessage> messages = new ArrayList<>(promptBuilder.build(input.command(), snapshot));
+    List<LlmMessage> messages = new ArrayList<>();
+    messages.add(ManagedSystemMessageFactory.system(snapshot, SystemPromptSectionKeys.LEARNING_PLAN_REVISION_BASE));
+    if (!input.personalizationSnapshot().promptText().isBlank()) {
+      messages.add(LlmMessage.system(input.personalizationSnapshot().promptText()));
+    }
     messages.add(LlmMessage.assistant("""
+        当前服务端校验后的学习计划 Brief JSON：
+        %s
+
         当前学习计划草案 JSON：
         %s
-        """.formatted(toJson(input.currentPlan()))));
+        """.formatted(toJson(input.brief()), toJson(input.currentPlan()))));
     messages.add(LlmMessage.user("""
-        请基于当前学习计划草案和用户修订要求，输出一份完整的新学习计划草案 JSON。
+        请基于当前 Brief、当前学习计划草案和用户修订要求，输出 resolvedBrief 与 generatedContent。
+        未被用户明确修改的 Brief 字段必须保持当前值；contentLocale 与 personalizationEnabled 不得修改。
 
         用户修订要求：
         %s
         """.formatted(input.instruction())));
     return List.copyOf(messages);
+  }
+
+  private int personalizationEntryCount(LearningPlanDraftRevisionAgentInput input) {
+    var context = input.personalizationSnapshot().context();
+    return context.declaredFacts().size()
+        + context.generalObservations().size()
+        + context.weakTags().size()
+        + context.strongTags().size()
+        + (context.activePlan() == null ? 0 : 1)
+        + (context.reviewLoad() == null ? 0 : 1);
   }
 
   private String toJson(Object value) {
@@ -121,13 +157,13 @@ public final class LearningPlanDraftRevisionAgentDefinition
     return new AgentExecutionOptions(
         LlmGenerationOptions.defaults(),
         new LlmResponseFormat.JsonSchema(
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanDraftJsonSchema.schema(),
+            LearningPlanStreamConstants.DRAFT_REVISION_SCHEMA_NAME,
+            LearningPlanDraftRevisionJsonSchema.schema(),
             true),
         new AgentStructuredOutputOptions(
             StructuredOutputStrategy.PROVIDER_NATIVE,
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanStreamConstants.SCHEMA_VERSION,
+            LearningPlanStreamConstants.DRAFT_REVISION_SCHEMA_NAME,
+            LearningPlanStreamConstants.DRAFT_REVISION_SCHEMA_VERSION,
             true));
   }
 }

@@ -24,6 +24,7 @@ import {
   requireApiData,
   setApiLocale,
   createLearningPlanDraftFromTemplate,
+  streamLearningPlanDraft,
   streamLearningPlanDraftRevision,
   streamLearningPlanExtensionProposal,
   streamLearningPlanExtensionProposalRevision,
@@ -893,6 +894,50 @@ describe('learning plan template api', () => {
       code: 'LEARNING_PLAN_TEMPLATE_NOT_FOUND',
       messageKey: 'api.error.LEARNING_PLAN_TEMPLATE_NOT_FOUND',
       message: '学习计划模板不存在。',
+    });
+  });
+});
+
+describe('learning plan draft api', () => {
+  it('streams the new AI create request body without legacy fields', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
+      'event:draft_ready',
+      'data:{"draftId":101,"status":"GENERATED","missingFields":[],"draftPlan":null}',
+      '',
+      '',
+    ])));
+    vi.stubGlobal('fetch', fetchMock);
+    const onEvent = vi.fn();
+    const request = {
+      intent: 'INTERVIEW_SPRINT' as const,
+      objective: '准备 Java 后端算法面试',
+      durationWeeks: 4,
+      level: 'INTERMEDIATE' as const,
+      weeklyHours: 6,
+      programmingLanguage: 'Java',
+      difficultyDistribution: { easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
+      interviewOriented: true,
+      topicPreferences: ['Array'],
+      additionalConstraints: '每周留一天复盘',
+      personalizationEnabled: true,
+    };
+
+    await streamLearningPlanDraft(request, { onEvent });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/stream',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify(request),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('text/event-stream, application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(onEvent).toHaveBeenCalledWith({
+      eventName: 'draft_ready',
+      data: { draftId: 101, status: 'GENERATED', missingFields: [], draftPlan: null },
     });
   });
 });
