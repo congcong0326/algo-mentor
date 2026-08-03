@@ -1065,6 +1065,15 @@ export interface LocaleResources {
     refreshCards: string;
     loadingCards: string;
     emptyCards: string;
+    codeReviewTimelineAriaLabel: string;
+    codeReviewTimelinePointAriaLabel: (version: number, score: string, language: string, time: string) => string;
+    codeReviewTimelineScore: (version: number, score: string) => string;
+    codeReviewTimelineFeedback: (feedback: string) => string;
+    codeReviewTimelineFallbackFeedback: string;
+    codeReviewTimelineManualAriaLabel: string;
+    codeReviewTimelineManualTitle: string;
+    codeReviewTimelineManualDescription: string;
+    codeReviewTimelineUnavailable: string;
     lastRating: (rating: string) => string;
     forgottenCount: (count: number) => string;
     viewCardDetail: (title: string) => string;
@@ -2484,6 +2493,15 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       refreshCards: '刷新复习卡',
       loadingCards: '正在加载复习卡...',
       emptyCards: '暂无复习卡。',
+      codeReviewTimelineAriaLabel: '代码 Review 时间线',
+      codeReviewTimelinePointAriaLabel: (version, score, language, time) => `查看代码 Review V${version}，${score} / 10，${language}，${time}`,
+      codeReviewTimelineScore: (version, score) => `V${version} · ${score} / 10`,
+      codeReviewTimelineFeedback: (feedback) => `主要反馈：${feedback}`,
+      codeReviewTimelineFallbackFeedback: '未发现明显问题',
+      codeReviewTimelineManualAriaLabel: '手动标记，尚无代码 Review',
+      codeReviewTimelineManualTitle: '尚无代码 Review',
+      codeReviewTimelineManualDescription: '该题由手动标记加入复习中心，尚未产生代码 Review',
+      codeReviewTimelineUnavailable: 'Review 记录暂不可用',
       lastRating: (rating) => `上次 ${rating}`,
       forgottenCount: (count) => `忘记 ${count} 次`,
       viewCardDetail: (title) => `查看复习卡详情 ${title}`,
@@ -4003,6 +4021,15 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       refreshCards: 'Refresh review cards',
       loadingCards: 'Loading review cards...',
       emptyCards: 'No review cards.',
+      codeReviewTimelineAriaLabel: 'Code review timeline',
+      codeReviewTimelinePointAriaLabel: (version, score, language, time) => `View code review V${version}, ${score} / 10, ${language}, ${time}`,
+      codeReviewTimelineScore: (version, score) => `V${version} · ${score} / 10`,
+      codeReviewTimelineFeedback: (feedback) => `Primary feedback: ${feedback}`,
+      codeReviewTimelineFallbackFeedback: 'No clear issues found',
+      codeReviewTimelineManualAriaLabel: 'Manually added, no code review yet',
+      codeReviewTimelineManualTitle: 'No code review yet',
+      codeReviewTimelineManualDescription: 'This problem was added manually and has no code review yet',
+      codeReviewTimelineUnavailable: 'Review records are temporarily unavailable',
       lastRating: (rating) => `Last: ${rating}`,
       forgottenCount: (count) => `Forgotten ${count} ${count === 1 ? 'time' : 'times'}`,
       viewCardDetail: (title) => `View review card details for ${title}`,

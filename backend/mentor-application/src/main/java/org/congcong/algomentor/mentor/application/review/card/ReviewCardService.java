@@ -171,6 +171,6 @@ public class ReviewCardService {
   }
 
   private int clampLimit(int limit) {
-    return limit <= 0 ? 20 : Math.min(limit, 100);
+    return limit <= 0 ? 20 : Math.min(limit, 80);
   }
 }

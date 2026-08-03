@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewInsertRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewIndexRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSessionLockRow;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewEvidence;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewIndexEntry;
 import org.junit.jupiter.api.Test;
 
 class MyBatisPracticeCodeReviewRepositoryTest {
@@ -110,6 +112,25 @@ class MyBatisPracticeCodeReviewRepositoryTest {
     assertThatThrownBy(() -> repository.save(draft()))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Practice code review session was not found or is not writable");
+  }
+
+  @Test
+  void mapsTheRecentPerProblemIndexAndNormalizesPrimaryFeedback() {
+    PracticeCodeReviewMapper mapper = mock(PracticeCodeReviewMapper.class);
+    when(mapper.findRecentByProblemSlugs(7L, List.of("two-sum"), 10)).thenReturn(List.of(
+        new PracticeCodeReviewIndexRow(
+            90L, 12L, 1, "two-sum", 50L, 2, "java", "en-US", new BigDecimal("7.0"), true,
+            "  边界条件\n处理不完整  ", CREATED_AT)));
+    MyBatisPracticeCodeReviewIndexRepository repository = new MyBatisPracticeCodeReviewIndexRepository(mapper);
+
+    List<PracticeCodeReviewIndexEntry> entries = repository.findRecentByProblemSlugs(7L, List.of("two-sum"), 99);
+
+    assertThat(entries).singleElement().satisfies(entry -> {
+      assertThat(entry.reviewId()).isEqualTo(90L);
+      assertThat(entry.planId()).isEqualTo(12L);
+      assertThat(entry.contentLocale()).isEqualTo("en-US");
+      assertThat(entry.primaryFeedback()).isEqualTo("边界条件 处理不完整");
+    });
   }
 
   private PracticeCodeReviewDraft draft() {

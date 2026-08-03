@@ -18,8 +18,10 @@
   --accent-warm-text: #8a5a00;
   --success: #16a34a;
   --success-soft: #ecfdf3;
+  --warning: #d97706;
   --danger: #dc2626;
   --danger-soft: #fef2f2;
+  --focus-ring: #2563eb;
   --radius-card: 20px;
   --radius-control: 10px;
   --radius-overlay: 14px;
@@ -615,8 +617,10 @@
   --accent-warm-text: #ffd166;
   --success: #5eead4;
   --success-soft: rgb(20 184 166 / 15%);
+  --warning: #fbbf24;
   --danger: #fca5a5;
   --danger-soft: rgb(248 113 113 / 14%);
+  --focus-ring: #93c5fd;
   --shadow-subtle: 0 18px 36px rgb(0 0 0 / 24%);
   --shadow-hover: 0 24px 44px rgb(0 0 0 / 34%);
   --shadow-cta: 0 14px 32px -16px rgb(255 192 30 / 52%);
@@ -979,7 +983,7 @@ a {
 
 .mistake-note-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 198px auto;
   align-items: center;
   gap: 12px;
   min-height: 64px;
@@ -1048,6 +1052,109 @@ a {
   align-items: center;
   gap: 4px;
   justify-content: flex-end;
+}
+
+.review-card-timeline {
+  position: relative;
+  display: flex;
+  width: 198px;
+  min-width: 198px;
+  min-height: 18px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.review-card-timeline-points {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.review-card-timeline-point {
+  display: grid;
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  place-items: center;
+  background: transparent;
+  cursor: pointer;
+}
+
+.review-card-timeline-point::after {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  content: "";
+}
+
+.review-card-timeline-point-success::after {
+  background: var(--success);
+}
+
+.review-card-timeline-point-warning::after {
+  background: var(--warning);
+}
+
+.review-card-timeline-point-danger::after {
+  background: var(--danger);
+}
+
+.review-card-timeline-point-neutral {
+  cursor: default;
+}
+
+.review-card-timeline-point-neutral::after {
+  background: var(--text-muted);
+}
+
+.review-card-timeline-point:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.review-card-timeline-tooltip {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  bottom: calc(100% + 7px);
+  display: grid;
+  width: 248px;
+  gap: 3px;
+  padding: 8px 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-card);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 16%);
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.review-card-timeline-tooltip span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.review-card-timeline-unavailable {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-card-timeline-placeholder {
+  gap: 4px;
 }
 
 .mistake-list > .loading-panel {
@@ -1744,9 +1851,16 @@ a {
   }
 
   .mistake-note-card {
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 8px;
     min-height: 60px;
     padding: 9px 10px;
+  }
+
+  .review-card-timeline {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: end;
   }
 
   .mistake-note-meta .mistake-note-rating {

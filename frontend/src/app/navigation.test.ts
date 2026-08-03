@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   LEARNER_PROFILE_REVIEW_ORIGIN,
+  REVIEW_CENTER_REVIEW_ORIGIN,
   learnerProfileAnchorFromSearch,
   learnerProfilePath,
   learningPlanTodayPackPath,
   learningPlanPracticeSubmissionsPath,
   learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
+  reviewCenterPath,
+  reviewCenterReturnTo,
   pathForView,
   viewFromPath,
 } from './navigation';
@@ -21,6 +24,7 @@ describe('learning plan practice submissions navigation', () => {
       reviewId: 42,
       from: LEARNER_PROFILE_REVIEW_ORIGIN,
       profileAnchor: 'learner-profile-statement-100',
+      returnTo: undefined,
     });
 
     expect(path).toBe('/learning-plans/900/phases/1/problems/two%20sum/submissions?review=42&from=learner-profile&profileAnchor=learner-profile-statement-100');
@@ -51,8 +55,29 @@ describe('learning plan practice submissions navigation', () => {
       reviewId: undefined,
       from: undefined,
       profileAnchor: undefined,
+      returnTo: undefined,
     });
     expect(learnerProfileAnchorFromSearch(`?profileAnchor=learner-profile-statement-${'a'.repeat(200)}`)).toBeUndefined();
+  });
+
+  it('keeps review-center return paths internal and restores its filters', () => {
+    const returnTo = reviewCenterPath({ keyword: 'two-sum', mistakeOnly: true, focusCard: 88 });
+    const path = learningPlanPracticeSubmissionsPath(900, 1, 'two-sum', {
+      reviewId: 42,
+      from: REVIEW_CENTER_REVIEW_ORIGIN,
+      returnTo,
+    });
+
+    expect(path).toContain('from=review-center');
+    expect(learningPlanPracticeSubmissionsOptionsFromSearch(new URL(path, 'https://app.test').search)).toEqual({
+      reviewId: 42,
+      from: REVIEW_CENTER_REVIEW_ORIGIN,
+      profileAnchor: undefined,
+      returnTo: '/mistakes?q=two-sum&mistakeOnly=true&focusCard=88',
+    });
+    expect(reviewCenterReturnTo('https://example.test/mistakes')).toBeUndefined();
+    expect(reviewCenterReturnTo('//example.test/mistakes')).toBeUndefined();
+    expect(reviewCenterReturnTo('/me')).toBeUndefined();
   });
 
   it('builds a learner profile return route only from a valid anchor', () => {

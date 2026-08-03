@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +28,8 @@ import org.congcong.algomentor.mentor.application.review.attempt.ReviewSchedulin
 import org.congcong.algomentor.mentor.application.review.card.ProblemReviewCard;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardContext;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardService;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverview;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverviewService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.congcong.algomentor.mentor.application.review.catalog.ReviewProblemSnapshot;
@@ -34,6 +37,7 @@ import org.congcong.algomentor.mentor.application.review.note.UserProblemNote;
 import org.congcong.algomentor.mentor.application.review.schedule.FsrsState;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewRating;
 import org.congcong.algomentor.mentor.application.review.schedule.SchedulingState;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewIndexEntry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.MediaType;
@@ -44,14 +48,35 @@ class ReviewCardControllerTest {
 
   private static final UUID ATTEMPT_ID = UUID.fromString("d42b6f40-5535-4fc4-bc07-6004bd758b25");
   private final ReviewAttemptService attemptService = mock(ReviewAttemptService.class);
+  private final ReviewCardService cardService = mock(ReviewCardService.class);
+  private final ReviewCardOverviewService cardOverviewService = mock(ReviewCardOverviewService.class);
   private final ReviewQueueService queueService = mock(ReviewQueueService.class);
   private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new ReviewCardController(
-          provider(mock(ReviewCardService.class)),
+          provider(cardService),
+          provider(cardOverviewService),
           provider(queueService),
           provider(attemptService),
           currentUserIdProvider()))
       .setControllerAdvice(new LocalizedApiExceptionHandler())
       .build();
+
+  @Test
+  void listsCardsWithRecentCodeReviewIndexEntries() throws Exception {
+    when(cardOverviewService.list(42L, null, true, "two", 80, 2)).thenReturn(List.of(overview()));
+
+    mockMvc.perform(get("/api/review-cards")
+            .queryParam("mistakeOnly", "true")
+            .queryParam("keyword", "two")
+            .queryParam("limit", "80")
+            .queryParam("offset", "2"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data[0].card.id").value(88))
+        .andExpect(jsonPath("$.data[0].recentCodeReviews[0].reviewId").value(301))
+        .andExpect(jsonPath("$.data[0].recentCodeReviews[0].planId").value(12))
+        .andExpect(jsonPath("$.data[0].recentCodeReviews[0].primaryFeedback").value("边界条件处理不完整"));
+
+    verify(cardOverviewService).list(42L, null, true, "two", 80, 2);
+  }
 
   @Test
   void submitsDirectRatingWithClientAttemptId() throws Exception {
@@ -104,6 +129,23 @@ class ReviewCardControllerTest {
         1, 3, 0, FsrsState.REVIEW, null, null, null,
         reviewedAt.plusSeconds(3L * 24 * 60 * 60), reviewedAt, ReviewRating.GOOD);
     return new ProblemReviewAttempt(501L, 88L, 42L, ATTEMPT_ID, ReviewRating.GOOD, before, after, reviewedAt);
+  }
+
+  private ReviewCardOverview overview() {
+    Instant now = Instant.parse("2026-07-24T08:00:00Z");
+    return new ReviewCardOverview(context().card(), List.of(new PracticeCodeReviewIndexEntry(
+        301L,
+        12L,
+        1,
+        "two-sum",
+        50L,
+        3,
+        "java",
+        "zh-CN",
+        new BigDecimal("7.5"),
+        true,
+        "边界条件处理不完整",
+        now)));
   }
 
   private ReviewCardContext context() {

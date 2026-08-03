@@ -6,6 +6,7 @@ import org.congcong.algomentor.mentor.application.review.ReviewContractConstants
 import org.congcong.algomentor.mentor.application.review.attempt.ProblemReviewAttempt;
 import org.congcong.algomentor.mentor.application.review.attempt.ReviewAttemptResult;
 import org.congcong.algomentor.mentor.application.review.card.ProblemReviewCard;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverview;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardContext;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueue;
 import org.congcong.algomentor.mentor.application.review.card.ReviewSummary;
@@ -40,6 +41,24 @@ public final class ReviewResponseMapper {
         card.archived(),
         card.createdAt(),
         card.updatedAt());
+  }
+
+  public static ReviewCardOverviewResponse toCardOverviewResponse(ReviewCardOverview overview) {
+    return new ReviewCardOverviewResponse(
+        toCardResponse(overview.card()),
+        overview.recentCodeReviews().stream().map(entry -> new PracticeCodeReviewIndexEntryResponse(
+            entry.reviewId(),
+            entry.planId(),
+            entry.phaseIndex(),
+            entry.problemSlug(),
+            entry.practiceSessionId(),
+            entry.versionNo(),
+            entry.language(),
+            entry.contentLocale(),
+            entry.totalScore(),
+            entry.passed(),
+            entry.primaryFeedback(),
+            entry.createdAt())).toList());
   }
 
   public static ReviewQueueResponse toQueueResponse(ReviewQueue queue) {

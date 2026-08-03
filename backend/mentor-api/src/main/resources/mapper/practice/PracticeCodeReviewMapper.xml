@@ -53,6 +53,24 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="PracticeCodeReviewIndexRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewIndexRow">
+    <constructor>
+      <arg column="review_id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="phase_index" javaType="_int"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="practice_session_id" javaType="_long"/>
+      <arg column="version_no" javaType="_int"/>
+      <arg column="language" javaType="string"/>
+      <arg column="content_locale" javaType="string"/>
+      <arg column="total_score" javaType="java.math.BigDecimal"/>
+      <arg column="passed" javaType="_boolean"/>
+      <arg column="primary_feedback" javaType="string"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <resultMap id="PracticeCodeReviewSessionLockRowMap"
       type="org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSessionLockRow">
     <constructor>
@@ -207,6 +225,51 @@
     WHERE user_id = #{userId}
       AND practice_session_id = #{sessionId}
     ORDER BY version_no DESC
+  </select>
+
+  <select id="findRecentByProblemSlugs" resultMap="PracticeCodeReviewIndexRowMap">
+    WITH ranked_review AS (
+      SELECT
+        review.id AS review_id,
+        review.plan_id,
+        review.phase_index,
+        review.problem_slug,
+        review.practice_session_id,
+        review.version_no,
+        review.language,
+        review.content_locale,
+        review.total_score,
+        review.passed,
+        COALESCE(
+          NULLIF(BTRIM(review.deduction_reasons_json -&gt;&gt; 0), ''),
+          NULLIF(BTRIM(review.improvement_suggestions_json -&gt;&gt; 0), '')
+        ) AS primary_feedback,
+        review.created_at,
+        ROW_NUMBER() OVER (
+          PARTITION BY review.problem_slug
+          ORDER BY review.created_at DESC, review.id DESC
+        ) AS row_number
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+        AND review.problem_slug IN
+        <foreach collection="problemSlugs" item="problemSlug" open="(" separator="," close=")">#{problemSlug}</foreach>
+    )
+    SELECT
+      review_id,
+      plan_id,
+      phase_index,
+      problem_slug,
+      practice_session_id,
+      version_no,
+      language,
+      content_locale,
+      total_score,
+      passed,
+      primary_feedback,
+      created_at
+    FROM ranked_review
+    WHERE row_number &lt;= #{perProblemLimit}
+    ORDER BY problem_slug ASC, created_at ASC, review_id ASC
   </select>
 
   <select id="findById" resultMap="PracticeCodeReviewRowMap">

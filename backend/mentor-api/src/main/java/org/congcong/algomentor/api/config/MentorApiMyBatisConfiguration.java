@@ -15,6 +15,7 @@ import org.congcong.algomentor.api.preference.repository.MyBatisUserAiPreference
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
+import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
 import org.congcong.algomentor.api.profile.mapper.LearnerMemoryMapper;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryClaimRepository;
@@ -47,6 +48,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.profile.claim.repository.LearnerMemoryClaimRepository;
 import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentProjectionRepository;
@@ -263,6 +265,12 @@ public class MentorApiMyBatisConfiguration {
       ObjectMapper objectMapper
   ) {
     return new MyBatisPracticeCodeReviewRepository(mapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(PracticeCodeReviewIndexRepository.class)
+  public PracticeCodeReviewIndexRepository practiceCodeReviewIndexRepository(PracticeCodeReviewMapper mapper) {
+    return new MyBatisPracticeCodeReviewIndexRepository(mapper);
   }
 
   @Bean

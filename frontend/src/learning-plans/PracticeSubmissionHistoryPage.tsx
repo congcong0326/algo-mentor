@@ -63,6 +63,7 @@ export default function PracticeSubmissionHistoryPage({
   problemSlug,
   requestedReviewId,
   returnProfileAnchor,
+  returnToReviewCenter = false,
 }: {
   onBack: () => void;
   phaseIndex: number;
@@ -70,6 +71,7 @@ export default function PracticeSubmissionHistoryPage({
   problemSlug: string;
   requestedReviewId?: number;
   returnProfileAnchor?: string;
+  returnToReviewCenter?: boolean;
 }) {
   const { locale, resources } = useI18n();
   const phase = plan.phases.find((candidate) => candidate.phaseIndex === phaseIndex);
@@ -195,7 +197,9 @@ export default function PracticeSubmissionHistoryPage({
         <div className="practice-toolbar-main">
           <button className="secondary-button compact detail-back-button" onClick={onBack} type="button">
             <ArrowLeft aria-hidden="true" />
-            <span>{returningToProfile
+            <span>{returnToReviewCenter
+              ? resources.reviewCenter.backToReviewCenter
+              : returningToProfile
               ? resources.learningPlans.backToLearnerProfile
               : resources.learningPlans.backToPracticeChat}
             </span>

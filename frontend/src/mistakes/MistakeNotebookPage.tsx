@@ -1,6 +1,12 @@
 import { Archive, ArchiveRestore, BookOpenCheck, Eye, RefreshCw, Search, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { APP_ROUTES } from '../app/navigation';
+import {
+  APP_ROUTES,
+  REVIEW_CENTER_REVIEW_ORIGIN,
+  learningPlanPracticeSubmissionsPath,
+  reviewCenterPath,
+  reviewCenterSearchOptionsFromSearch,
+} from '../app/navigation';
 import MarkdownView from '../components/MarkdownView';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LocaleResources, SupportedLocale } from '../i18n/locales';
@@ -15,23 +21,27 @@ import {
 import type {
   ReviewCard,
   ReviewCardContext,
+  ReviewCardOverview,
   ReviewSummaryResponse,
 } from '../types/api';
 import { formatUpcomingReviewTime } from '../utils/time';
+import ReviewCardTimeline from './ReviewCardTimeline';
 
 interface MistakeNotebookPageProps {
-  onNavigate: (path: string) => void;
+  onNavigate: (path: string, options?: { replace?: boolean }) => void;
+  search?: string;
 }
 
 const dayMs = 24 * 60 * 60 * 1000;
 
-export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageProps) {
+export default function MistakeNotebookPage({ onNavigate, search = '' }: MistakeNotebookPageProps) {
   const { locale, resources } = useI18n();
-  const [items, setItems] = useState<ReviewCard[]>([]);
+  const initialFilters = reviewCenterSearchOptionsFromSearch(search);
+  const [items, setItems] = useState<ReviewCardOverview[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [keyword, setKeyword] = useState('');
-  const [mistakeOnly, setMistakeOnly] = useState(false);
+  const [keyword, setKeyword] = useState(initialFilters.keyword ?? '');
+  const [mistakeOnly, setMistakeOnly] = useState(initialFilters.mistakeOnly ?? false);
   const [actionError, setActionError] = useState('');
   const [detailCard, setDetailCard] = useState<ReviewCard>();
   const [context, setContext] = useState<ReviewCardContext>();
@@ -41,9 +51,11 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
   const detailRequestId = useRef(0);
   const detailTriggerButtonRef = useRef<HTMLButtonElement | null>(null);
   const detailCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const cardRefs = useRef(new Map<number, HTMLElement>());
 
   const stats = useMemo(() => {
-    const active = items.filter((item) => !item.archived);
+    const cards = items.map((item) => item.card);
+    const active = cards.filter((item) => !item.archived);
     const due = active.filter((item) => new Date(item.dueAt).getTime() <= Date.now());
     const mistakes = active.filter((item) => item.source === 'REVIEW_FAILED' || item.lapses > 0);
     return { active: active.length, due: due.length, mistakes: mistakes.length };
@@ -65,6 +77,31 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
   }, [keyword, locale, mistakeOnly]);
 
   useEffect(() => {
+    const filters = reviewCenterSearchOptionsFromSearch(search);
+    setKeyword(filters.keyword ?? '');
+    setMistakeOnly(filters.mistakeOnly ?? false);
+  }, [search]);
+
+  useEffect(() => {
+    const filters = reviewCenterSearchOptionsFromSearch(search);
+    const focusCard = filters.focusCard;
+    if (
+      !focusCard
+      || loading
+      || keyword !== (filters.keyword ?? '')
+      || mistakeOnly !== (filters.mistakeOnly ?? false)
+    ) {
+      return;
+    }
+    const card = cardRefs.current.get(focusCard);
+    if (card) {
+      card.scrollIntoView({ block: 'center' });
+      card.focus();
+    }
+    onNavigate(reviewCenterPath({ keyword, mistakeOnly }), { replace: true });
+  }, [items, keyword, loading, mistakeOnly, onNavigate, search]);
+
+  useEffect(() => {
     const controller = new AbortController();
     void loadSummary(controller.signal);
     return () => controller.abort();
@@ -83,7 +120,7 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
       const response = await listReviewCards({ keyword, mistakeOnly, limit: 80 }, signal);
       const cards = requireApiData(response, resources.reviewCenter.cardLoadFailed);
       setItems(cards);
-      if (detailCard && !cards.some((item) => item.id === detailCard.id)) {
+      if (detailCard && !cards.some((item) => item.card.id === detailCard.id)) {
         closeDetail();
       }
     } catch (loadError) {
@@ -113,7 +150,9 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     try {
       const response = await archiveReviewCard(card.id, !card.archived);
       const updated = requireApiData(response, resources.reviewCenter.archiveUpdateFailed);
-      setItems((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      setItems((current) => current.map((item) => (
+        item.card.id === updated.id ? { ...item, card: updated } : item
+      )));
       void loadSummary();
     } catch (archiveError) {
       setActionError(archiveError instanceof Error ? archiveError.message : resources.reviewCenter.archiveUpdateFailed);
@@ -156,6 +195,25 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     detailTriggerButtonRef.current = null;
   }
 
+  function updateFilters(nextKeyword: string, nextMistakeOnly: boolean) {
+    setKeyword(nextKeyword);
+    setMistakeOnly(nextMistakeOnly);
+    onNavigate(reviewCenterPath({ keyword: nextKeyword, mistakeOnly: nextMistakeOnly }), { replace: true });
+  }
+
+  function openReview(card: ReviewCard, review: ReviewCardOverview['recentCodeReviews'][number]) {
+    onNavigate(learningPlanPracticeSubmissionsPath(
+      review.planId,
+      review.phaseIndex,
+      review.problemSlug,
+      {
+        reviewId: review.reviewId,
+        from: REVIEW_CENTER_REVIEW_ORIGIN,
+        returnTo: reviewCenterPath({ keyword, mistakeOnly, focusCard: card.id }),
+      },
+    ));
+  }
+
   return (
     <section className="mistake-page" aria-labelledby="mistake-title">
       <header className="mistake-header">
@@ -181,13 +239,17 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
         <label className="search-field">
           <Search aria-hidden="true" />
           <input
-            onChange={(event) => setKeyword(event.target.value)}
+            onChange={(event) => updateFilters(event.target.value, mistakeOnly)}
             placeholder={resources.reviewCenter.searchPlaceholder}
             value={keyword}
           />
         </label>
         <label className="checkbox-control">
-          <input checked={mistakeOnly} onChange={(event) => setMistakeOnly(event.target.checked)} type="checkbox" />
+          <input
+            checked={mistakeOnly}
+            onChange={(event) => updateFilters(keyword, event.target.checked)}
+            type="checkbox"
+          />
           <span>{resources.reviewCenter.mistakesOnly}</span>
         </label>
         <button aria-label={resources.reviewCenter.refreshCards} className="icon-button" onClick={() => void load()} type="button">
@@ -202,8 +264,18 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
           <div className="loading-panel">{resources.reviewCenter.loadingCards}</div>
         ) : items.length === 0 ? (
           <div className="loading-panel">{resources.reviewCenter.emptyCards}</div>
-        ) : items.map((card) => (
-          <article className="mistake-note-card" key={card.id}>
+        ) : items.map((overview) => {
+          const card = overview.card;
+          return (
+          <article
+            className="mistake-note-card"
+            key={card.id}
+            ref={(element) => {
+              if (element) cardRefs.current.set(card.id, element);
+              else cardRefs.current.delete(card.id);
+            }}
+            tabIndex={-1}
+          >
             <div className="mistake-note-main">
               <h2>{reviewCardTitle(card, locale)}</h2>
               <div className="mistake-note-meta">
@@ -219,6 +291,13 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
                 )}
               </div>
             </div>
+            <ReviewCardTimeline
+              locale={locale}
+              onOpenReview={(review) => openReview(card, review)}
+              resources={resources.reviewCenter}
+              reviews={overview.recentCodeReviews}
+              source={card.source}
+            />
             <div className="mistake-note-actions">
               <button
                 aria-label={resources.reviewCenter.viewCardDetail(reviewCardTitle(card, locale))}
@@ -240,7 +319,8 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
               </button>
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       {detailCard && (

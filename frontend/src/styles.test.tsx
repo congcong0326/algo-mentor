@@ -112,11 +112,13 @@ describe('LeetReviewer-inspired visual system', () => {
   it('keeps the review center compact and list-oriented', () => {
     expect(styles).toMatch(/\.mistake-page \{[^}]*align-content: start;[^}]*gap: 16px;[^}]*width: min\(920px, 100%\);/);
     expect(styles).toMatch(/\.mistake-stat-grid \{[^}]*border-top: 1px solid var\(--border-subtle\);[^}]*border-bottom: 1px solid var\(--border-subtle\);/);
-    expect(styles).toMatch(/\.mistake-note-card \{[^}]*grid-template-columns: minmax\(0, 1fr\) auto;[^}]*min-height: 64px;[^}]*padding: 10px 12px;/);
+    expect(styles).toMatch(/\.mistake-note-card \{[^}]*grid-template-columns: minmax\(0, 1fr\) 198px auto;[^}]*min-height: 64px;[^}]*padding: 10px 12px;/);
+    expect(styles).toMatch(/\.review-card-timeline \{[^}]*width: 198px;[^}]*min-width: 198px;[^}]*justify-content: flex-end;/);
     expect(styles).toMatch(/\.mistake-note-actions \.icon-button \{[^}]*width: 34px;[^}]*height: 34px;[^}]*border-radius: 7px;/);
     expect(styles).toMatch(/\.mistake-header \.mistake-review-button \{[^}]*min-height: 38px;[^}]*border-radius: 7px;/);
     expect(styles).toMatch(/\.mistake-list > \.loading-panel \{[^}]*min-height: 152px;[^}]*box-shadow: none;/);
     expect(styles).toMatch(/@media \(max-width: 720px\) \{[\s\S]*?\.mistake-note-meta \.mistake-note-rating \{[^}]*display: none;/);
+    expect(styles).toMatch(/@media \(max-width: 720px\) \{[\s\S]*?\.review-card-timeline \{[^}]*grid-column: 1 \/ -1;[^}]*grid-row: 2;/);
   });
 
   it('uses theme tokens for the public home surfaces and text', () => {

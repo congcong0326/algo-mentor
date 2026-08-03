@@ -9,6 +9,7 @@ import org.congcong.algomentor.api.review.model.ArchiveReviewCardRequest;
 import org.congcong.algomentor.api.review.model.CreateReviewCardRequest;
 import org.congcong.algomentor.api.review.model.ReviewAttemptResponse;
 import org.congcong.algomentor.api.review.model.ReviewCardContextResponse;
+import org.congcong.algomentor.api.review.model.ReviewCardOverviewResponse;
 import org.congcong.algomentor.api.review.model.ReviewCardResponse;
 import org.congcong.algomentor.api.review.model.ReviewResponseMapper;
 import org.congcong.algomentor.api.review.model.SubmitReviewAttemptRequest;
@@ -19,6 +20,7 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
 import org.congcong.algomentor.mentor.application.review.attempt.ReviewAttemptService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardService;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverviewService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewRating;
@@ -37,37 +39,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewCardController {
 
   private final ObjectProvider<ReviewCardService> cardService;
+  private final ObjectProvider<ReviewCardOverviewService> cardOverviewService;
   private final ObjectProvider<ReviewQueueService> queueService;
   private final ObjectProvider<ReviewAttemptService> attemptService;
   private final CurrentUserIdProvider currentUserIdProvider;
 
   public ReviewCardController(
       ObjectProvider<ReviewCardService> cardService,
+      ObjectProvider<ReviewCardOverviewService> cardOverviewService,
       ObjectProvider<ReviewQueueService> queueService,
       ObjectProvider<ReviewAttemptService> attemptService,
       CurrentUserIdProvider currentUserIdProvider
   ) {
     this.cardService = cardService;
+    this.cardOverviewService = cardOverviewService;
     this.queueService = queueService;
     this.attemptService = attemptService;
     this.currentUserIdProvider = currentUserIdProvider;
   }
 
   @GetMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH)
-  public ApiResponse<List<ReviewCardResponse>> list(
+  public ApiResponse<List<ReviewCardOverviewResponse>> list(
       @RequestParam(required = false) String source,
       @RequestParam(defaultValue = "false") boolean mistakeOnly,
       @RequestParam(required = false) String keyword,
       @RequestParam(defaultValue = "50") int limit,
       @RequestParam(defaultValue = "0") int offset
   ) {
-    return ApiResponse.success(requiredCardService().list(
+    return ApiResponse.success(requiredCardOverviewService().list(
         requireCurrentUserId(),
         parseSource(source),
         mistakeOnly,
         keyword,
         limit,
-        offset).stream().map(ReviewResponseMapper::toCardResponse).toList());
+        offset).stream().map(ReviewResponseMapper::toCardOverviewResponse).toList());
   }
 
   @PostMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH)
@@ -140,6 +145,12 @@ public class ReviewCardController {
   private ReviewCardService requiredCardService() {
     return cardService.getIfAvailable(() -> {
       throw new ReviewException("REVIEW_CARD_SERVICE_UNAVAILABLE", "复习卡服务不可用。");
+    });
+  }
+
+  private ReviewCardOverviewService requiredCardOverviewService() {
+    return cardOverviewService.getIfAvailable(() -> {
+      throw new ReviewException("REVIEW_CARD_OVERVIEW_SERVICE_UNAVAILABLE", "复习卡列表服务不可用。");
     });
   }
 

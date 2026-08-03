@@ -10,9 +10,11 @@ import org.congcong.algomentor.mentor.application.review.card.MicrometerReviewMe
 import org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardService;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverviewService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewMetrics;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.congcong.algomentor.mentor.application.review.catalog.ReviewProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteService;
 import org.congcong.algomentor.mentor.application.review.preference.ReviewPreferenceRepository;
@@ -107,6 +109,20 @@ public class ReviewApiAutoConfiguration {
         metrics.getIfAvailable(() -> ReviewMetrics.NOOP),
         problemCatalog,
         Clock.systemUTC());
+  }
+
+  @Bean
+  @ConditionalOnBean({ReviewCardService.class, PracticeCodeReviewIndexRepository.class})
+  @ConditionalOnMissingBean
+  public ReviewCardOverviewService reviewCardOverviewService(
+      ReviewCardService cardService,
+      PracticeCodeReviewIndexRepository reviewIndexRepository,
+      ObjectProvider<ReviewMetrics> metrics
+  ) {
+    return new ReviewCardOverviewService(
+        cardService,
+        reviewIndexRepository,
+        metrics.getIfAvailable(() -> ReviewMetrics.NOOP));
   }
 
   @Bean

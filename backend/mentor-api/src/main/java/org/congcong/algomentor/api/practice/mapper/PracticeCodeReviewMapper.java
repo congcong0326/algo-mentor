@@ -7,6 +7,7 @@ import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewInser
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSessionLockRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSummaryRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewIndexRow;
 import org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow;
 import org.congcong.algomentor.api.practice.mapper.model.CodeReviewHistoryRow;
 import org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetailRow;
@@ -37,6 +38,12 @@ public interface PracticeCodeReviewMapper {
   PracticeCodeReviewSummaryRow findLatestSummary(@Param("userId") long userId, @Param("sessionId") long sessionId);
 
   List<PracticeCodeReviewSummaryRow> findSummaries(@Param("userId") long userId, @Param("sessionId") long sessionId);
+
+  List<PracticeCodeReviewIndexRow> findRecentByProblemSlugs(
+      @Param("userId") long userId,
+      @Param("problemSlugs") List<String> problemSlugs,
+      @Param("perProblemLimit") int perProblemLimit
+  );
 
   PracticeCodeReviewRow findById(
       @Param("userId") long userId,

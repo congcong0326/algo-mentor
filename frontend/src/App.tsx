@@ -35,10 +35,12 @@ import {
   APP_ROUTES,
   LEARNER_PROFILE_QUERY_KEYS,
   LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS,
+  REVIEW_CENTER_QUERY_KEYS,
   isAdminPath,
   learnerProfileAnchorFromSearch,
   learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
+  reviewCenterSearchOptionsFromSearch,
   LEGACY_FEEDBACK_ROUTE,
   pathForView,
   type AppView,
@@ -155,6 +157,9 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
     if (submissionsOptions.profileAnchor) {
       normalized.set(LEARNER_PROFILE_QUERY_KEYS.profileAnchor, submissionsOptions.profileAnchor);
     }
+    if (submissionsOptions.returnTo) {
+      normalized.set(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.returnTo, submissionsOptions.returnTo);
+    }
     if (params.get('pack') === 'today') {
       normalized.set('pack', 'today');
     }
@@ -164,6 +169,21 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
   if (pathname === APP_ROUTES.my) {
     const anchor = learnerProfileAnchorFromSearch(search);
     return anchor ? `?${LEARNER_PROFILE_QUERY_KEYS.profileAnchor}=${encodeURIComponent(anchor)}` : '';
+  }
+  if (pathname === APP_ROUTES.mistakes) {
+    const reviewCenterOptions = reviewCenterSearchOptionsFromSearch(search);
+    const normalized = new URLSearchParams();
+    if (reviewCenterOptions.keyword) {
+      normalized.set(REVIEW_CENTER_QUERY_KEYS.query, reviewCenterOptions.keyword);
+    }
+    if (reviewCenterOptions.mistakeOnly) {
+      normalized.set(REVIEW_CENTER_QUERY_KEYS.mistakeOnly, 'true');
+    }
+    if (reviewCenterOptions.focusCard) {
+      normalized.set(REVIEW_CENTER_QUERY_KEYS.focusCard, String(reviewCenterOptions.focusCard));
+    }
+    const serialized = normalized.toString();
+    return serialized ? `?${serialized}` : '';
   }
   if (/^\/learning-plans\/\d+/.test(pathname) && params.get('pack') === 'today') {
     return '?pack=today';
@@ -798,7 +818,7 @@ export default function App() {
     : activeView === 'mistakes'
       ? pathname === APP_ROUTES.reviewSession
         ? <ReviewSessionPage onNavigate={navigateToPath} />
-        : <MistakeNotebookPage onNavigate={navigateToPath} />
+        : <MistakeNotebookPage onNavigate={navigateToPath} search={search} />
       : activeView === 'learningPlans'
       ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
       : <HomeDashboard onNavigate={navigateToView} />;

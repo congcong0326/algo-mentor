@@ -1668,6 +1668,26 @@ export interface ReviewCard {
   updatedAt: string;
 }
 
+export interface ReviewCardCodeReviewIndexEntry {
+  reviewId: number;
+  planId: number;
+  phaseIndex: number;
+  problemSlug: string;
+  practiceSessionId: number;
+  versionNo: number;
+  language: string;
+  contentLocale: 'zh-CN' | 'en-US';
+  totalScore: number;
+  passed: boolean;
+  primaryFeedback?: string | null;
+  createdAt: string;
+}
+
+export interface ReviewCardOverview {
+  card: ReviewCard;
+  recentCodeReviews: ReviewCardCodeReviewIndexEntry[];
+}
+
 export interface ReviewProblem {
   slug: string;
   title: string;

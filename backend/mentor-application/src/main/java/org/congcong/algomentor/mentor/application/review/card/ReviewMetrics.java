@@ -10,6 +10,12 @@ public interface ReviewMetrics {
 
   void recordSeed(ReviewSeedBucket bucket);
 
+  default void recordCodeReviewIndexQuery(int cardCount, int reviewCount, long elapsedNanos) {
+  }
+
+  default void recordCodeReviewIndexMissingHistory() {
+  }
+
   ReviewMetrics NOOP = new ReviewMetrics() {
     @Override
     public void recordAttemptSubmit() {

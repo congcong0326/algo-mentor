@@ -39,6 +39,7 @@ class PracticeCodeReviewMapperXmlTest {
     assertThat(configuration.hasStatement(namespace + "findSummaries")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findById")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findByUserMessage")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "findRecentByProblemSlugs")).isTrue();
   }
 
   @Test
@@ -72,5 +73,23 @@ class PracticeCodeReviewMapperXmlTest {
             + "FROM practice_code_review WHERE practice_session_id = #{sessionId} )");
     assertThat(normalizedMapperXml).doesNotContain("locked_session AS");
     assertThat(normalizedMapperXml).doesNotContain("FROM locked_session");
+  }
+
+  @Test
+  void definesTheReviewCenterIndexWithPerProblemWindowAndJsonbFirstItems() throws Exception {
+    String mapperXml;
+    try (Reader reader = Resources.getResourceAsReader("mapper/practice/PracticeCodeReviewMapper.xml");
+        BufferedReader bufferedReader = new BufferedReader(reader)) {
+      mapperXml = bufferedReader.lines().collect(Collectors.joining("\n"));
+    }
+    String normalizedMapperXml = mapperXml.replaceAll("\\s+", " ");
+
+    assertThat(normalizedMapperXml)
+        .contains("<select id=\"findRecentByProblemSlugs\" resultMap=\"PracticeCodeReviewIndexRowMap\">")
+        .contains("PARTITION BY review.problem_slug ORDER BY review.created_at DESC, review.id DESC")
+        .contains("review.deduction_reasons_json -&gt;&gt; 0")
+        .contains("review.improvement_suggestions_json -&gt;&gt; 0")
+        .contains("WHERE row_number &lt;= #{perProblemLimit}")
+        .contains("ORDER BY problem_slug ASC, created_at ASC, review_id ASC");
   }
 }

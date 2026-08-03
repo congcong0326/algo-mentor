@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import {
   APP_ROUTES,
   LEARNER_PROFILE_REVIEW_ORIGIN,
+  REVIEW_CENTER_REVIEW_ORIGIN,
   learnerProfilePath,
   learningPlanDetailPath,
   learningPlanIdFromPath,
@@ -238,6 +239,10 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
                     onNavigate(learnerProfilePath({ anchor: practiceSubmissionsOptions.profileAnchor }));
                     return;
                   }
+                  if (practiceSubmissionsOptions.from === REVIEW_CENTER_REVIEW_ORIGIN) {
+                    onNavigate(practiceSubmissionsOptions.returnTo ?? APP_ROUTES.mistakes);
+                    return;
+                  }
                   const chatPath = learningPlanPracticeChatPath(
                     planDetail.id,
                     practiceSubmissionsRoute.phaseIndex,
@@ -252,6 +257,7 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
                 returnProfileAnchor={practiceSubmissionsOptions.from === LEARNER_PROFILE_REVIEW_ORIGIN
                   ? practiceSubmissionsOptions.profileAnchor
                   : undefined}
+                returnToReviewCenter={practiceSubmissionsOptions.from === REVIEW_CENTER_REVIEW_ORIGIN}
               />
             </Suspense>
           ) : isTodayPackMode && planDetail.active ? (

@@ -7,7 +7,7 @@ import {
   getReviewSummary,
   listReviewCards,
 } from '../services/api';
-import type { ApiResponse, ReviewCard, ReviewCardContext, UserProblemNote } from '../types/api';
+import type { ApiResponse, ReviewCard, ReviewCardContext, ReviewCardOverview, UserProblemNote } from '../types/api';
 import { emptyProblemSolutionOutline } from '../problem-notes/problemNoteOptions';
 import MistakeNotebookPage from './MistakeNotebookPage';
 
@@ -29,7 +29,7 @@ beforeEach(() => {
     remainingTodayCount: 1,
     nextDueAt: null,
   }));
-  vi.mocked(listReviewCards).mockResolvedValue(apiResponse([reviewCard()]));
+  vi.mocked(listReviewCards).mockResolvedValue(apiResponse([reviewCardOverview()]));
   vi.mocked(getReviewCardContext).mockResolvedValue(apiResponse(reviewContext()));
   vi.mocked(getProblemNote).mockResolvedValue(apiResponse(problemNote()));
   vi.mocked(archiveReviewCard).mockResolvedValue(apiResponse(reviewCard({ archived: true })));
@@ -119,6 +119,14 @@ function reviewCard(overrides: Partial<ReviewCard> = {}): ReviewCard {
     archived: false,
     createdAt: '2026-07-22T00:00:00Z',
     updatedAt: '2026-07-23T00:00:00Z',
+    ...overrides,
+  };
+}
+
+function reviewCardOverview(overrides: Partial<ReviewCardOverview> = {}): ReviewCardOverview {
+  return {
+    card: reviewCard(),
+    recentCodeReviews: [],
     ...overrides,
   };
 }

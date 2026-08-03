@@ -38,6 +38,8 @@ const ADMIN_USER_GROUP_DETAIL_PATTERN = /^\/admin\/user-groups\/(\d+)$/;
 
 /** Query contract for a code review opened from an evidence citation. */
 export const LEARNER_PROFILE_REVIEW_ORIGIN = 'learner-profile';
+/** Query contract for a code review opened from the review center timeline. */
+export const REVIEW_CENTER_REVIEW_ORIGIN = 'review-center';
 export const LEARNER_PROFILE_STATEMENT_ANCHOR_PREFIX = 'learner-profile-statement-';
 export const LEARNER_PROFILE_QUERY_KEYS = {
   profileAnchor: 'profileAnchor',
@@ -45,9 +47,17 @@ export const LEARNER_PROFILE_QUERY_KEYS = {
 export const LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS = {
   from: 'from',
   review: 'review',
+  returnTo: 'returnTo',
+} as const;
+export const REVIEW_CENTER_QUERY_KEYS = {
+  focusCard: 'focusCard',
+  mistakeOnly: 'mistakeOnly',
+  query: 'q',
 } as const;
 
 const MAX_LEARNER_PROFILE_ANCHOR_LENGTH = 128;
+const MAX_REVIEW_CENTER_QUERY_LENGTH = 120;
+const MAX_REVIEW_CENTER_RETURN_TO_LENGTH = 512;
 const LEARNER_PROFILE_STATEMENT_ANCHOR_PATTERN = new RegExp(
   `^${LEARNER_PROFILE_STATEMENT_ANCHOR_PREFIX}[A-Za-z0-9_-]+$`,
 );
@@ -66,8 +76,19 @@ export interface LearningPlanPracticeSubmissionsRoute {
 
 export interface LearningPlanPracticeSubmissionsOptions {
   reviewId?: number;
-  from?: typeof LEARNER_PROFILE_REVIEW_ORIGIN;
+  from?: LearningPlanPracticeSubmissionsOrigin;
   profileAnchor?: string;
+  returnTo?: string;
+}
+
+export type LearningPlanPracticeSubmissionsOrigin =
+  | typeof LEARNER_PROFILE_REVIEW_ORIGIN
+  | typeof REVIEW_CENTER_REVIEW_ORIGIN;
+
+export interface ReviewCenterSearchOptions {
+  focusCard?: number;
+  keyword?: string;
+  mistakeOnly?: boolean;
 }
 
 export type AppView =
@@ -341,6 +362,9 @@ export function learningPlanPracticeSubmissionsPath(
   if (normalizedOptions.profileAnchor) {
     query.set(LEARNER_PROFILE_QUERY_KEYS.profileAnchor, normalizedOptions.profileAnchor);
   }
+  if (normalizedOptions.returnTo) {
+    query.set(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.returnTo, normalizedOptions.returnTo);
+  }
   const search = query.toString();
   return search ? `${path}?${search}` : path;
 }
@@ -367,27 +391,87 @@ export function learnerProfileAnchorFromSearch(search: string): string | undefin
   return learnerProfileAnchor(new URLSearchParams(search).get(LEARNER_PROFILE_QUERY_KEYS.profileAnchor));
 }
 
+export function reviewCenterSearchOptionsFromSearch(search: string): ReviewCenterSearchOptions {
+  const params = new URLSearchParams(search);
+  return normalizeReviewCenterSearchOptions({
+    focusCard: positiveSafeInteger(params.get(REVIEW_CENTER_QUERY_KEYS.focusCard)),
+    keyword: params.get(REVIEW_CENTER_QUERY_KEYS.query) ?? undefined,
+    mistakeOnly: params.get(REVIEW_CENTER_QUERY_KEYS.mistakeOnly) === 'true',
+  });
+}
+
+export function reviewCenterPath(options: ReviewCenterSearchOptions = {}): string {
+  const normalized = normalizeReviewCenterSearchOptions(options);
+  const query = new URLSearchParams();
+  if (normalized.keyword) {
+    query.set(REVIEW_CENTER_QUERY_KEYS.query, normalized.keyword);
+  }
+  if (normalized.mistakeOnly) {
+    query.set(REVIEW_CENTER_QUERY_KEYS.mistakeOnly, 'true');
+  }
+  if (normalized.focusCard) {
+    query.set(REVIEW_CENTER_QUERY_KEYS.focusCard, String(normalized.focusCard));
+  }
+  const search = query.toString();
+  return search ? `${APP_ROUTES.mistakes}?${search}` : APP_ROUTES.mistakes;
+}
+
+/** 仅允许复习中心自身作为代码 Review 深链的返回地址。 */
+export function reviewCenterReturnTo(value: string | null | undefined): string | undefined {
+  if (!value || value.length > MAX_REVIEW_CENTER_RETURN_TO_LENGTH || !value.startsWith('/') || value.startsWith('//')) {
+    return undefined;
+  }
+  try {
+    const baseUrl = new URL('https://algo-mentor.local');
+    const url = new URL(value, baseUrl);
+    if (url.origin !== baseUrl.origin || url.pathname !== APP_ROUTES.mistakes) {
+      return undefined;
+    }
+    return reviewCenterPath(reviewCenterSearchOptionsFromSearch(url.search));
+  } catch {
+    return undefined;
+  }
+}
+
 export function learningPlanPracticeSubmissionsOptionsFromSearch(
   search: string,
 ): LearningPlanPracticeSubmissionsOptions {
   const params = new URLSearchParams(search);
   return normalizeLearningPlanPracticeSubmissionsOptions({
     reviewId: positiveSafeInteger(params.get(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.review)),
-    from: params.get(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.from) === LEARNER_PROFILE_REVIEW_ORIGIN
-      ? LEARNER_PROFILE_REVIEW_ORIGIN
-      : undefined,
+    from: submissionOrigin(params.get(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.from)),
     profileAnchor: learnerProfileAnchor(params.get(LEARNER_PROFILE_QUERY_KEYS.profileAnchor)),
+    returnTo: params.get(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.returnTo) ?? undefined,
   });
 }
 
 function normalizeLearningPlanPracticeSubmissionsOptions(
   options: LearningPlanPracticeSubmissionsOptions,
 ): LearningPlanPracticeSubmissionsOptions {
+  const from = submissionOrigin(options.from);
   return {
     reviewId: positiveSafeInteger(options.reviewId),
-    from: options.from === LEARNER_PROFILE_REVIEW_ORIGIN ? LEARNER_PROFILE_REVIEW_ORIGIN : undefined,
-    profileAnchor: learnerProfileAnchor(options.profileAnchor),
+    from,
+    profileAnchor: from === LEARNER_PROFILE_REVIEW_ORIGIN ? learnerProfileAnchor(options.profileAnchor) : undefined,
+    returnTo: from === REVIEW_CENTER_REVIEW_ORIGIN
+      ? reviewCenterReturnTo(options.returnTo) ?? APP_ROUTES.mistakes
+      : undefined,
   };
+}
+
+function normalizeReviewCenterSearchOptions(options: ReviewCenterSearchOptions): ReviewCenterSearchOptions {
+  const keyword = options.keyword?.trim();
+  return {
+    focusCard: positiveSafeInteger(options.focusCard),
+    keyword: keyword && keyword.length <= MAX_REVIEW_CENTER_QUERY_LENGTH ? keyword : undefined,
+    mistakeOnly: options.mistakeOnly === true,
+  };
+}
+
+function submissionOrigin(value: unknown): LearningPlanPracticeSubmissionsOrigin | undefined {
+  return value === LEARNER_PROFILE_REVIEW_ORIGIN || value === REVIEW_CENTER_REVIEW_ORIGIN
+    ? value
+    : undefined;
 }
 
 function positiveSafeInteger(value: number | string | null | undefined): number | undefined {
