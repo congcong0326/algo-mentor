@@ -396,7 +396,8 @@ public class LearningPlanController {
         proposalStreamSseMapper,
         SseStreamType.LEARNING_PLAN_PROPOSAL,
         sseOpsRecorder,
-        opsLogger);
+        opsLogger,
+        runId);
     emitter.onCompletion(() -> subscriber.clientDisconnected(null));
     emitter.onTimeout(subscriber::timeout);
     emitter.onError(subscriber::clientDisconnected);

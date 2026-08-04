@@ -95,15 +95,18 @@ public final class AgentToolPermissionHookChain {
       AgentToolPermissionCheck check,
       AgentToolPermissionDecisionPlan plan
   ) {
-    if (!log.isInfoEnabled()) {
+    if (!log.isDebugEnabled()) {
       return;
     }
-    log.info(
-        "Agent tool permission hook decision runId={} toolName={} toolCallId={} decision={} reason={}",
+    log.debug(
+        "Agent tool permission hook decision runId={} stepIndex={} toolName={} toolCallId={} decision={} "
+            + "policySource={} reason={}",
         check.context().runId(),
+        check.stepIndex(),
         check.toolCall().name(),
         check.toolCall().id(),
         plan.behavior(),
+        plan.policySource(),
         plan.reason());
   }
 

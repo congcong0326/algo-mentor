@@ -64,6 +64,8 @@
 - `docs/learning-plan-template-catalog-design.md`：学习计划模板一级分类与推荐展示研发设计，固定 4 个分类、6 个首批推荐顺序、公共 API 字段收口、前端索引交互和迁移测试方案。
 - `docs/learning-plan-personalized-generation-redesign.md`：AI 学习计划个性化生成输入与上下文重构设计，保留表单创建和聊天修订交互，重构 `goal` 语义、模型输出职责与聚合学习数据注入边界。
 - `docs/learning-plan-personalized-generation-redesign-tasks/`：上述重构的一把梭哈研发任务包，使用 `CURRENT.md` 恢复指针、`CONTRACTS.md` 固定契约和 `LPGR-00` 至 `LPGR-10` 分波次实施任务控制上下文、依赖与验收门禁。
+- `docs/learning-plan-revision-performance-incident-2026-08-04.md`：学习计划草案修订 Agent 性能问题记录，包含 Provider 默认与 `low` 的单样本 A/B、LLM/Tool 耗时归因和后续优化基线。
+- `docs/learning-plan-revision-plan-compiler-design.md`：学习计划草案修订 Plan Compiler 研发设计，定义候选蓝图、确定性编译、单次 Child Review、协议预算、canonical artifact 和未来 Workflow 迁移边界。
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
 - `tools/learning_plan_template_seed/prepare_p1b_template_sources.py`：固定版本生成 TIH 核心专题、动态规划进阶、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75 和 LeetCode 面试经典 150 七个模板源目录。

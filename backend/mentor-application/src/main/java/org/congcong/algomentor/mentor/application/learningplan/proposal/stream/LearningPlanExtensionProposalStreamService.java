@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -47,6 +46,7 @@ import org.congcong.algomentor.mentor.application.learningplan.personalization.L
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationScenario;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
+import org.congcong.algomentor.mentor.application.learningplan.stream.SingleSubscriberSynchronousPublisher;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -173,7 +173,8 @@ public class LearningPlanExtensionProposalStreamService {
         subscriber.onError(new IllegalStateException("Learning plan extension stream publisher is single-use"));
         return;
       }
-      SubmissionPublisher<LearningPlanProposalStreamEvent> publisher = new SubmissionPublisher<>();
+      SingleSubscriberSynchronousPublisher<LearningPlanProposalStreamEvent> publisher =
+          new SingleSubscriberSynchronousPublisher<>();
       publisher.subscribe(subscriber);
       SubscriptionRevisionContext context = null;
       try {
@@ -189,7 +190,7 @@ public class LearningPlanExtensionProposalStreamService {
             context.revision()));
       } catch (RuntimeException exception) {
         if (context == null) {
-          publisher.closeExceptionally(exception);
+          publisher.fail(exception);
           return;
         }
         failStartupRevisionAndEmit(publisher, context.revision(), exception);
@@ -198,7 +199,7 @@ public class LearningPlanExtensionProposalStreamService {
   }
 
   private void failStartupRevisionAndEmit(
-      SubmissionPublisher<LearningPlanProposalStreamEvent> publisher,
+      SingleSubscriberSynchronousPublisher<LearningPlanProposalStreamEvent> publisher,
       LearningPlanExtensionRevision revision,
       RuntimeException exception
   ) {
@@ -216,10 +217,10 @@ public class LearningPlanExtensionProposalStreamService {
           code,
           message,
           false));
-      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
-      publisher.close();
+      publisher.emit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.complete();
     } catch (RuntimeException persistenceFailure) {
-      publisher.closeExceptionally(persistenceFailure);
+      publisher.fail(persistenceFailure);
     }
   }
 
@@ -486,7 +487,7 @@ public class LearningPlanExtensionProposalStreamService {
 
   private final class StreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
 
-    private final SubmissionPublisher<LearningPlanProposalStreamEvent> publisher;
+    private final SingleSubscriberSynchronousPublisher<LearningPlanProposalStreamEvent> publisher;
     private final AgentWorkStatusProjector projector;
     private final LearningPlanExtensionRevision revision;
     private final AtomicReference<Flow.Subscription> subscription = new AtomicReference<>();
@@ -495,7 +496,7 @@ public class LearningPlanExtensionProposalStreamService {
     private String finalContent;
 
     private StreamSubscriber(
-        SubmissionPublisher<LearningPlanProposalStreamEvent> publisher,
+        SingleSubscriberSynchronousPublisher<LearningPlanProposalStreamEvent> publisher,
         AgentWorkStatusProjector projector,
         LearningPlanExtensionRevision revision
     ) {
@@ -515,7 +516,7 @@ public class LearningPlanExtensionProposalStreamService {
       captureContent(event);
       projector.project(event)
           .map(LearningPlanProposalStreamEvent.Work::new)
-          .ifPresent(publisher::submit);
+          .ifPresent(publisher::emit);
       if (event instanceof AgentStreamEvent.AgentRunEnd) {
         completeWithRevision();
         return;
@@ -539,7 +540,7 @@ public class LearningPlanExtensionProposalStreamService {
     @Override
     public void onComplete() {
       if (terminalProposalEmitted.get()) {
-        publisher.close();
+        publisher.complete();
         return;
       }
       failRevisionAndEmit(
@@ -643,7 +644,7 @@ public class LearningPlanExtensionProposalStreamService {
             retryable,
             cause);
       } catch (RuntimeException persistenceFailure) {
-        publisher.closeExceptionally(persistenceFailure);
+        publisher.fail(persistenceFailure);
       }
     }
 
@@ -651,8 +652,8 @@ public class LearningPlanExtensionProposalStreamService {
       if (!terminalProposalEmitted.compareAndSet(false, true)) {
         return;
       }
-      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
-      publisher.close();
+      publisher.emit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.complete();
     }
 
     private void emitError(
@@ -671,8 +672,8 @@ public class LearningPlanExtensionProposalStreamService {
             cause.getMessage(),
             cause);
       }
-      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
-      publisher.close();
+      publisher.emit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.complete();
     }
   }
 }

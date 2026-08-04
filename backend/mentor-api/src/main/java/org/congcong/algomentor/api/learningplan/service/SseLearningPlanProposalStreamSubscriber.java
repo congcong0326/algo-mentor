@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.learningplan.service;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Flow;
@@ -26,10 +27,12 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   private final SseStreamType streamType;
   private final SseOpsRecorder sseOpsRecorder;
   private final StructuredOpsLogger opsLogger;
+  private final String agentRunId;
   private final AtomicBoolean terminal = new AtomicBoolean(false);
   private final AtomicBoolean sseTerminalRecorded = new AtomicBoolean(false);
   private final AtomicBoolean clientDisconnectedRecorded = new AtomicBoolean(false);
   private final AtomicBoolean timeoutRecorded = new AtomicBoolean(false);
+  private volatile long openedAtNanos = -1L;
   private Flow.Subscription subscription;
 
   public SseLearningPlanProposalStreamSubscriber(
@@ -39,16 +42,29 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
       SseOpsRecorder sseOpsRecorder,
       StructuredOpsLogger opsLogger
   ) {
+    this(emitter, mapper, streamType, sseOpsRecorder, opsLogger, null);
+  }
+
+  public SseLearningPlanProposalStreamSubscriber(
+      SseEmitter emitter,
+      LearningPlanProposalStreamSseMapper mapper,
+      SseStreamType streamType,
+      SseOpsRecorder sseOpsRecorder,
+      StructuredOpsLogger opsLogger,
+      String agentRunId
+  ) {
     this.emitter = Objects.requireNonNull(emitter, "emitter must not be null");
     this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
     this.streamType = Objects.requireNonNull(streamType, "streamType must not be null");
     this.sseOpsRecorder = Objects.requireNonNull(sseOpsRecorder, "sseOpsRecorder must not be null");
     this.opsLogger = Objects.requireNonNull(opsLogger, "opsLogger must not be null");
+    this.agentRunId = agentRunId;
   }
 
   @Override
   public void onSubscribe(Flow.Subscription subscription) {
     this.subscription = subscription;
+    openedAtNanos = System.nanoTime();
     sseOpsRecorder.opened(streamType);
     opsLogger.info(log, OpsLogEventType.SSE_CONNECTION_OPENED, logFields(null));
     subscription.request(1);
@@ -100,7 +116,11 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
     }
     if (timeoutRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.timeout(streamType);
-      opsLogger.warn(log, OpsLogEventType.SSE_CONNECTION_TIMEOUT, logFields(SseFailureType.TIMEOUT), null);
+      opsLogger.warn(
+          log,
+          OpsLogEventType.SSE_CONNECTION_TIMEOUT,
+          terminalLogFields(SseFailureType.TIMEOUT, null),
+          null);
     }
     recordSseFailed(SseFailureType.TIMEOUT, null);
     cancel();
@@ -151,7 +171,7 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   private void recordSseCompleted() {
     if (sseTerminalRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.completed(streamType);
-      opsLogger.info(log, OpsLogEventType.SSE_CONNECTION_COMPLETED, logFields(null));
+      opsLogger.info(log, OpsLogEventType.SSE_CONNECTION_COMPLETED, terminalLogFields(null, null));
     }
   }
 
@@ -162,33 +182,53 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   private void recordSseFailed(SseFailureType failureType, Throwable throwable) {
     if (sseTerminalRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.failed(streamType, failureType);
-      opsLogger.warn(log, OpsLogEventType.SSE_CONNECTION_FAILED, logFields(failureType, throwable), null);
+      opsLogger.warn(
+          log,
+          OpsLogEventType.SSE_CONNECTION_FAILED,
+          terminalLogFields(failureType, throwable),
+          null);
     }
   }
 
   private void recordClientDisconnected(Throwable throwable) {
     if (clientDisconnectedRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.clientDisconnected(streamType);
-      opsLogger.warn(log, OpsLogEventType.SSE_CONNECTION_FAILED, logFields(SseFailureType.SEND_FAILURE, throwable), null);
+      opsLogger.warn(
+          log,
+          OpsLogEventType.SSE_CONNECTION_FAILED,
+          terminalLogFields(SseFailureType.SEND_FAILURE, throwable),
+          null);
     }
   }
 
   private Map<String, ?> logFields(SseFailureType failureType) {
-    if (failureType == null) {
-      return Map.of(OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue());
-    }
-    return Map.of(
-        OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue(),
-        OpsLogFields.FAILURE_TYPE, failureType.tagValue());
+    return logFields(failureType, null, false);
   }
 
-  private Map<String, ?> logFields(SseFailureType failureType, Throwable throwable) {
-    if (throwable == null) {
-      return logFields(failureType);
+  private Map<String, ?> terminalLogFields(SseFailureType failureType, Throwable throwable) {
+    return logFields(failureType, throwable, true);
+  }
+
+  private Map<String, ?> logFields(
+      SseFailureType failureType,
+      Throwable throwable,
+      boolean includeDuration
+  ) {
+    Map<String, Object> fields = new LinkedHashMap<>();
+    fields.put(OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue());
+    if (agentRunId != null && !agentRunId.isBlank()) {
+      fields.put(OpsLogFields.AGENT_RUN_ID, agentRunId);
     }
-    return Map.of(
-        OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue(),
-        OpsLogFields.FAILURE_TYPE, failureType.tagValue(),
-        OpsLogFields.EXCEPTION_TYPE, throwable.getClass().getSimpleName());
+    if (failureType != null) {
+      fields.put(OpsLogFields.FAILURE_TYPE, failureType.tagValue());
+    }
+    if (throwable != null) {
+      fields.put(OpsLogFields.EXCEPTION_TYPE, throwable.getClass().getSimpleName());
+    }
+    if (includeDuration && openedAtNanos >= 0L) {
+      fields.put(OpsLogFields.DURATION_MS, Math.max(0L,
+          java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - openedAtNanos)));
+    }
+    return Map.copyOf(fields);
   }
 }

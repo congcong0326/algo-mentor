@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusEvent;
@@ -110,7 +109,8 @@ public class LearningPlanDraftStreamService {
     // 第一次写库：先落一条空草案，拿到稳定 draft id；通用 Agent 只负责生成，不直接持有学习计划仓储。
     LearningPlanDraft draft = createInitialDraft(userId, brief);
     return subscriber -> {
-      SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
+      SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher =
+          new SingleSubscriberSynchronousPublisher<>();
       publisher.subscribe(subscriber);
       AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
       // 从这里进入通用 Agent loop；学习计划草案的解析和持久化由下面的 StreamSubscriber 接管。
@@ -128,7 +128,8 @@ public class LearningPlanDraftStreamService {
       List<String> missingFields
   ) {
     return subscriber -> {
-      SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
+      SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher =
+          new SingleSubscriberSynchronousPublisher<>();
       publisher.subscribe(subscriber);
       LearningPlanDraft draft = createInitialDraft(userId, brief).withState(
           LearningPlanDraftStatus.COLLECTING,
@@ -137,9 +138,9 @@ public class LearningPlanDraftStreamService {
           null,
           clock.instant());
       LearningPlanDraft saved = draftRepository.save(draft);
-      publisher.submit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftReady(
+      publisher.emit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftReady(
           LearningPlanDraftResult.fromDraft(saved))));
-      publisher.close();
+      publisher.complete();
     };
   }
 
@@ -213,7 +214,7 @@ public class LearningPlanDraftStreamService {
 
   private final class StreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
 
-    private final SubmissionPublisher<LearningPlanDraftStreamEvent> publisher;
+    private final SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher;
     private final AgentWorkStatusProjector projector;
     private final LearningPlanDraft draft;
     private final LearningPlanBrief brief;
@@ -222,7 +223,7 @@ public class LearningPlanDraftStreamService {
     private String finalContent;
 
     private StreamSubscriber(
-        SubmissionPublisher<LearningPlanDraftStreamEvent> publisher,
+        SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher,
         AgentWorkStatusProjector projector,
         LearningPlanDraft draft,
         LearningPlanBrief brief
@@ -244,7 +245,7 @@ public class LearningPlanDraftStreamService {
       captureContent(event);
       projector.project(event)
           .map(LearningPlanDraftStreamEvent.Work::new)
-          .ifPresent(publisher::submit);
+          .ifPresent(publisher::emit);
       if (event instanceof AgentStreamEvent.AgentRunEnd) {
         completeWithDraft(event);
         return;
@@ -267,7 +268,7 @@ public class LearningPlanDraftStreamService {
 
     @Override
     public void onComplete() {
-      publisher.close();
+      publisher.complete();
     }
 
     private void completeWithDraft(AgentStreamEvent event) {
@@ -290,9 +291,9 @@ public class LearningPlanDraftStreamService {
             "已生成学习计划草案。",
             plan,
             clock.instant()));
-        publisher.submit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftReady(
+        publisher.emit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftReady(
             LearningPlanDraftResult.fromDraft(saved))));
-        publisher.close();
+        publisher.complete();
       } catch (com.fasterxml.jackson.core.JsonProcessingException exception) {
         failDraft("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID", "学习计划结构化结果解析失败。", true, exception);
       } catch (LearningPlanException exception) {
@@ -337,11 +338,11 @@ public class LearningPlanDraftStreamService {
           message,
           null,
           clock.instant()));
-      publisher.submit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftError(
+      publisher.emit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftError(
           code,
           message,
           retryable)));
-      publisher.close();
+      publisher.complete();
     }
   }
 }

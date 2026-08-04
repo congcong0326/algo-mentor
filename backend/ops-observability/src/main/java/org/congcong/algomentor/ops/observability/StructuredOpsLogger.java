@@ -28,7 +28,27 @@ public class StructuredOpsLogger {
       OpsLogFields.SSE_STREAM_TYPE,
       OpsLogFields.AGENT_RUN_ID,
       OpsLogFields.AGENT_SOURCE,
+      OpsLogFields.AGENT_KEY,
+      OpsLogFields.STEP_INDEX,
+      OpsLogFields.MAX_STEPS,
+      OpsLogFields.PROVIDER,
+      OpsLogFields.MODEL,
+      OpsLogFields.CONTEXT_PREPARATION_MS,
+      OpsLogFields.TIME_TO_FIRST_EVENT_MS,
+      OpsLogFields.FINISH_REASON,
+      OpsLogFields.MESSAGE_COUNT,
+      OpsLogFields.DECLARED_TOOL_COUNT,
+      OpsLogFields.TOOL_CALL_COUNT,
+      OpsLogFields.OUTPUT_CHAR_COUNT,
+      OpsLogFields.INPUT_TOKENS,
+      OpsLogFields.OUTPUT_TOKENS,
+      OpsLogFields.CACHED_TOKENS,
+      OpsLogFields.REASONING_TOKENS,
+      OpsLogFields.TOTAL_TOKENS,
       OpsLogFields.TOOL_NAME,
+      OpsLogFields.TOOL_CALL_ID,
+      OpsLogFields.TOOL_ARGUMENTS,
+      OpsLogFields.TOOL_RESULT,
       OpsLogFields.FAILURE_TYPE);
   private static final List<String> SENSITIVE_KEY_PARTS = List.of(
       "authorization",
@@ -45,6 +65,13 @@ public class StructuredOpsLogger {
       "prompt",
       "completion",
       "aioutput");
+  /** Token 用量是成本诊断所需的计数，不是认证凭证。 */
+  private static final Set<String> SAFE_TOKEN_COUNT_KEYS = Set.of(
+      "inputtokens",
+      "outputtokens",
+      "cachedtokens",
+      "reasoningtokens",
+      "totaltokens");
 
   public String format(OpsLogEventType eventType, Map<String, ?> fields) {
     Objects.requireNonNull(eventType, "eventType must not be null");
@@ -125,12 +152,18 @@ public class StructuredOpsLogger {
   private static boolean isSensitiveKey(String key) {
     String normalizedKey = key.toLowerCase(Locale.ROOT)
         .replaceAll("[^a-z0-9]", "");
+    if (SAFE_TOKEN_COUNT_KEYS.contains(normalizedKey)) {
+      return false;
+    }
     return SENSITIVE_KEY_PARTS.stream().anyMatch(normalizedKey::contains);
   }
 
   private static String stringValue(Object value) {
+    if (value instanceof Map<?, ?> map) {
+      return mapValue(map);
+    }
     if (value instanceof Collection<?> collection) {
-      return collection.toString();
+      return collectionValue(collection);
     }
     Class<?> valueClass = value.getClass();
     if (!valueClass.isArray()) {
@@ -140,9 +173,35 @@ public class StructuredOpsLogger {
     int length = Array.getLength(value);
     List<String> items = new ArrayList<>(length);
     for (int index = 0; index < length; index += 1) {
-      items.add(String.valueOf(Array.get(value, index)));
+      items.add(nestedStringValue(Array.get(value, index)));
     }
-    return items.toString();
+    return "[" + String.join(",", items) + "]";
+  }
+
+  private static String mapValue(Map<?, ?> map) {
+    List<String> entries = new ArrayList<>(map.size());
+    map.entrySet().stream()
+        .sorted(Comparator.comparing(entry -> String.valueOf(entry.getKey())))
+        .forEach(entry -> {
+          String key = String.valueOf(entry.getKey());
+          String value = isSensitiveKey(key)
+              ? REDACTED_VALUE
+              : nestedStringValue(entry.getValue());
+          entries.add(sanitizeKey(key) + "=" + value);
+        });
+    return "{" + String.join(",", entries) + "}";
+  }
+
+  private static String collectionValue(Collection<?> collection) {
+    List<String> items = new ArrayList<>(collection.size());
+    for (Object item : collection) {
+      items.add(nestedStringValue(item));
+    }
+    return "[" + String.join(",", items) + "]";
+  }
+
+  private static String nestedStringValue(Object value) {
+    return value == null ? "null" : stringValue(value);
   }
 
   private static String truncate(String value) {

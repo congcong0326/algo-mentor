@@ -116,6 +116,32 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
     verifyNoInteractions(lifecycleService);
   }
 
+  @Test
+  void includesAgentRunIdOnSseLifecycleLogs() {
+    RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
+    RecordingStructuredOpsLogger opsLogger = new RecordingStructuredOpsLogger();
+    SseLearningPlanProposalStreamSubscriber subscriber = new SseLearningPlanProposalStreamSubscriber(
+        new RecordingSseEmitter(),
+        new LearningPlanProposalStreamSseMapper(),
+        SseStreamType.LEARNING_PLAN_PROPOSAL,
+        sseRecorder,
+        opsLogger,
+        "agent-run-1");
+
+    subscriber.onSubscribe(new RecordingSubscription());
+    subscriber.onNext(readyEvent());
+
+    assertThat(opsLogger.infoEvents).anySatisfy(message -> assertThat(message).contains(
+        "eventType=sse_connection_opened",
+        "sseStreamType=learning_plan_proposal",
+        "agentRunId=agent-run-1"));
+    assertThat(opsLogger.infoEvents).anySatisfy(message -> assertThat(message).contains(
+        "eventType=sse_connection_completed",
+        "durationMs=",
+        "sseStreamType=learning_plan_proposal",
+        "agentRunId=agent-run-1"));
+  }
+
   private SseLearningPlanProposalStreamSubscriber subscriber(
       SseEmitter emitter,
       AiRunLifecycleService lifecycleService,
@@ -227,6 +253,19 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
     @Override
     public void clientDisconnected(SseStreamType streamType) {
       events.add("clientDisconnected:" + streamType.tagValue());
+    }
+  }
+
+  private static final class RecordingStructuredOpsLogger extends StructuredOpsLogger {
+
+    private final List<String> infoEvents = new ArrayList<>();
+
+    @Override
+    public void info(
+        org.slf4j.Logger log,
+        org.congcong.algomentor.ops.observability.OpsLogEventType eventType,
+        Map<String, ?> fields) {
+      infoEvents.add(format(eventType, fields));
     }
   }
 

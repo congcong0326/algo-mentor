@@ -70,6 +70,20 @@ class StructuredOpsLoggerTest {
   }
 
   @Test
+  void keepsTokenUsageCountsAndRedactsNestedSensitiveMapValues() {
+    String message = opsLogger.format(
+        OpsLogEventType.AGENT_LLM_STEP_COMPLETED,
+        Map.of(
+            OpsLogFields.INPUT_TOKENS, 800,
+            OpsLogFields.OUTPUT_TOKENS, 120,
+            "toolResult", Map.of("accessToken", "secret-1", "total", 12)));
+
+    assertThat(message)
+        .contains("inputTokens=800", "outputTokens=120", "toolResult={accessToken=[REDACTED],total=12}")
+        .doesNotContain("secret-1");
+  }
+
+  @Test
   void ignoresSuppliedEventTypeField() {
     String message = opsLogger.format(
         OpsLogEventType.SSE_CONNECTION_FAILED,
