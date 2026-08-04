@@ -12,8 +12,20 @@ public record LlmGenerationOptions(
     Integer maxOutputTokens,
     List<String> stop,
     Long seed,
-    Duration timeout
+    Duration timeout,
+    LlmReasoningEffort reasoningEffort
 ) {
+
+  public LlmGenerationOptions(
+      Double temperature,
+      Double topP,
+      Integer maxOutputTokens,
+      List<String> stop,
+      Long seed,
+      Duration timeout
+  ) {
+    this(temperature, topP, maxOutputTokens, stop, seed, timeout, null);
+  }
 
   public LlmGenerationOptions {
     if (temperature != null && (temperature < 0 || temperature > 2)) {
@@ -35,6 +47,14 @@ public record LlmGenerationOptions(
   }
 
   public static LlmGenerationOptions defaults() {
-    return new LlmGenerationOptions(null, null, null, List.of(), null, null);
+    return new LlmGenerationOptions(null, null, null, List.of(), null, null, null);
+  }
+
+  public LlmGenerationOptions withReasoningEffort(LlmReasoningEffort reasoningEffort) {
+    if (this.reasoningEffort == reasoningEffort) {
+      return this;
+    }
+    return new LlmGenerationOptions(
+        temperature, topP, maxOutputTokens, stop, seed, timeout, reasoningEffort);
   }
 }

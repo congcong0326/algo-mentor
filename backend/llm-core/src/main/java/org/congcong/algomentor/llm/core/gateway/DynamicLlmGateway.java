@@ -11,6 +11,7 @@ import org.congcong.algomentor.llm.core.provider.LlmCapability;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmContentPart;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffortResolver;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
@@ -24,15 +25,17 @@ public class DynamicLlmGateway implements LlmGateway {
   @Override
   public LlmCompletionResult complete(LlmCompletionRequest request) {
     LlmInvocationTarget target = requireTarget(request);
-    ensureSupported(target, requiredCapabilities(request, false));
-    return target.client().complete(target.upstreamModelId(), request);
+    LlmCompletionRequest effectiveRequest = LlmReasoningEffortResolver.apply(request);
+    ensureSupported(target, requiredCapabilities(effectiveRequest, false));
+    return target.client().complete(target.upstreamModelId(), effectiveRequest);
   }
 
   @Override
   public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
     LlmInvocationTarget target = requireTarget(request);
-    ensureSupported(target, requiredCapabilities(request, true));
-    return target.client().stream(target.upstreamModelId(), request);
+    LlmCompletionRequest effectiveRequest = LlmReasoningEffortResolver.apply(request);
+    ensureSupported(target, requiredCapabilities(effectiveRequest, true));
+    return target.client().stream(target.upstreamModelId(), effectiveRequest);
   }
 
   private LlmInvocationTarget requireTarget(LlmCompletionRequest request) {
@@ -92,6 +95,9 @@ public class DynamicLlmGateway implements LlmGateway {
     }
     if (streaming) {
       capabilities.add(LlmCapability.STREAMING);
+    }
+    if (request.options().reasoningEffort() != null) {
+      capabilities.add(LlmCapability.REASONING_EFFORT);
     }
     return Set.copyOf(capabilities);
   }

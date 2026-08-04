@@ -1,9 +1,11 @@
 package org.congcong.algomentor.llm.core.stream;
 
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -81,10 +83,18 @@ public sealed interface LlmStreamEvent
   /**
    * Marks the end of a streamed model response.
    */
-  record MessageEnd(LlmFinishReason finishReason, Map<String, Object> metadata) implements LlmStreamEvent {
+  record MessageEnd(
+      LlmFinishReason finishReason,
+      Map<String, Object> metadata,
+      @JsonIgnore LlmProviderContinuation providerContinuation
+  ) implements LlmStreamEvent {
     public MessageEnd {
       finishReason = finishReason == null ? LlmFinishReason.UNKNOWN : finishReason;
       metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    }
+
+    public MessageEnd(LlmFinishReason finishReason, Map<String, Object> metadata) {
+      this(finishReason, metadata, null);
     }
   }
 

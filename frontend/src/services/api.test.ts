@@ -33,6 +33,8 @@ import {
   createAdminPolicy,
   updateAdminPolicy,
   deleteAdminPolicy,
+  getAdminAiEffectiveRoute,
+  getAdminAiProviderTypes,
   updateUserAiPreference,
 } from './api';
 
@@ -83,6 +85,23 @@ function createFakeStorage(initialValues: Record<string, string> = {}): Storage 
 }
 
 describe('api service', () => {
+  it('requests provider types and route simulation through the admin AI endpoints', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({ success: true, data: { items: [] } })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getAdminAiProviderTypes();
+    await getAdminAiEffectiveRoute('practice/chat', 42);
+
+    expect(fetchMock).toHaveBeenNthCalledWith(1,
+      '/api/admin/ai/provider-types',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(2,
+      '/api/admin/ai/model-routing/scenarios/practice%2Fchat/effective?userId=42',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+  });
+
   it('requests the review summary in the browser timezone', async () => {
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x11, 0x12, 0x13, 0x14, 0x15, 0x16]) });
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({

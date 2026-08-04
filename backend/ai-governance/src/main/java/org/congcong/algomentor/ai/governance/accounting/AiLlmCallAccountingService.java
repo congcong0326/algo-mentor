@@ -13,6 +13,8 @@ import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffortResolver;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.slf4j.Logger;
@@ -54,18 +56,22 @@ public class AiLlmCallAccountingService {
       log.warn("AI accounting request metadata is incomplete. callId={}", context.callId());
       increment(MISSING_CONTEXT_TOTAL);
     }
-    org.congcong.algomentor.llm.core.model.LlmInvocationTarget target = request.invocationTarget();
+    org.congcong.algomentor.llm.core.model.LlmInvocationTarget target = request == null
+        ? null
+        : request.invocationTarget();
     String provider = target == null
-        ? request.modelSelector().providerId().map(value -> value.value()).orElse(null)
+        ? requestProvider(request)
         : target.providerType().value();
     String model = target == null
-        ? request.modelSelector().modelId().map(value -> value.value()).orElse(null)
+        ? requestModel(request)
         : target.upstreamModelId().value();
+    LlmReasoningEffort reasoningEffort = request == null ? null : LlmReasoningEffortResolver.resolve(request);
     AiLlmCallUsage usage = new AiLlmCallUsage(
         context,
         AiLlmCallStatus.RUNNING,
         provider,
         model,
+        reasoningEffort,
         null,
         AiUsage.zero(),
         Instant.now(clock),
@@ -84,6 +90,7 @@ public class AiLlmCallAccountingService {
         AiLlmCallStatus.COMPLETED,
         result.provider().value(),
         result.model().value(),
+        call.reasoningEffort(),
         null,
         toAiUsage(result.usage()),
         call.startedAt(),
@@ -96,6 +103,7 @@ public class AiLlmCallAccountingService {
         AiLlmCallStatus.COMPLETED,
         provider == null ? call.provider() : provider,
         model == null ? call.model() : model,
+        call.reasoningEffort(),
         null,
         toAiUsage(usage),
         call.startedAt(),
@@ -116,6 +124,7 @@ public class AiLlmCallAccountingService {
         AiLlmCallStatus.FAILED,
         provider,
         model,
+        call.reasoningEffort(),
         errorCode,
         AiUsage.zero(),
         call.startedAt(),
@@ -128,6 +137,7 @@ public class AiLlmCallAccountingService {
         AiLlmCallStatus.CANCELLED,
         provider == null ? call.provider() : provider,
         model == null ? call.model() : model,
+        call.reasoningEffort(),
         LlmErrorCode.CANCELLED.name(),
         toAiUsage(usage),
         call.startedAt(),
@@ -163,6 +173,7 @@ public class AiLlmCallAccountingService {
         call.context().stepIndex(),
         call.provider(),
         call.model(),
+        call.reasoningEffort() == null ? null : call.reasoningEffort().wireValue(),
         call.context().providerInstanceId(),
         call.context().configuredModelId(),
         call.status(),
@@ -193,6 +204,14 @@ public class AiLlmCallAccountingService {
         usage.cachedTokens(),
         usage.reasoningTokens(),
         usage.totalTokens());
+  }
+
+  private static String requestProvider(LlmCompletionRequest request) {
+    return request == null ? null : request.modelSelector().providerId().map(value -> value.value()).orElse(null);
+  }
+
+  private static String requestModel(LlmCompletionRequest request) {
+    return request == null ? null : request.modelSelector().modelId().map(value -> value.value()).orElse(null);
   }
 
   private void persistFailure(String callId, String operation, RuntimeException exception) {

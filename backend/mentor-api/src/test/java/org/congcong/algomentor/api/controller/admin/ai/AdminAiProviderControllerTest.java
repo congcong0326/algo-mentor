@@ -12,6 +12,7 @@ import java.util.List;
 import org.congcong.algomentor.ai.governance.provider.model.AiConfiguredModel;
 import org.congcong.algomentor.ai.governance.provider.model.AiProviderInstance;
 import org.congcong.algomentor.ai.governance.provider.service.AiProviderManagementService;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -43,6 +44,16 @@ class AdminAiProviderControllerTest {
         Instant.parse("2026-07-27T00:00:00Z"),
         Instant.parse("2026-07-27T00:00:00Z"));
     when(managementService.listProviders()).thenReturn(List.of(provider));
+    when(managementService.supportedProviderTypes()).thenReturn(List.of(
+        new AiProviderManagementService.AiProviderTypeDescriptor(
+            "openai",
+            "OpenAI",
+            List.of(LlmReasoningEffort.NONE, LlmReasoningEffort.MAX),
+            JsonNodeFactory.instance.objectNode()
+                .put("apiKey", "")
+                .put("baseUrl", "https://api.openai.com/v1")
+                .put("timeoutSeconds", 300)
+                .put("maxRetries", 2))));
     when(managementService.getProvider(1L)).thenReturn(provider);
     when(managementService.listModels(1L)).thenReturn(List.of(new AiConfiguredModel(
         101L,
@@ -73,5 +84,16 @@ class AdminAiProviderControllerTest {
         .andExpect(jsonPath("$.data.baseUrl").value("https://api.openai.com/v1"))
         .andExpect(jsonPath("$.data.config.apiKey").value("sk-full-key"))
         .andExpect(jsonPath("$.data.config.baseUrl").value("https://api.openai.com/v1"));
+  }
+
+  @Test
+  void providerTypeDirectoryReturnsAdapterOwnedEffortsAndSafeTemplate() throws Exception {
+    mockMvc.perform(get("/api/admin/ai/provider-types"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.items[0].code").value("openai"))
+        .andExpect(jsonPath("$.data.items[0].reasoningEfforts[0]").value("none"))
+        .andExpect(jsonPath("$.data.items[0].reasoningEfforts[1]").value("max"))
+        .andExpect(jsonPath("$.data.items[0].defaultConfig.apiKey").value(""))
+        .andExpect(jsonPath("$.data.items[0].defaultConfig.baseUrl").value("https://api.openai.com/v1"));
   }
 }

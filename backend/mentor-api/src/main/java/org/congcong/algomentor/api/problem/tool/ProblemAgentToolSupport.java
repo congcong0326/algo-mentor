@@ -27,6 +27,7 @@ final class ProblemAgentToolSupport {
   private static final String ADDITIONAL_PROPERTIES = "additionalProperties";
   private static final String MINIMUM = "minimum";
   private static final String MAXIMUM = "maximum";
+  private static final String TEXTUAL_NULL = "null";
 
   private ProblemAgentToolSupport() {
   }
@@ -109,7 +110,7 @@ final class ProblemAgentToolSupport {
       throw toolFailure(toolName, fieldName + " must be a string.", null);
     }
     String text = value.asText().trim();
-    return text.isBlank() ? null : text;
+    return text.isBlank() || isTextualNull(text) ? null : text;
   }
 
   static boolean optionalBoolean(JsonNode arguments, String fieldName, boolean defaultValue, String toolName) {
@@ -118,10 +119,22 @@ final class ProblemAgentToolSupport {
     if (value == null || value.isNull()) {
       return defaultValue;
     }
-    if (!value.isBoolean()) {
-      throw toolFailure(toolName, fieldName + " must be a boolean.", null);
+    if (value.isBoolean()) {
+      return value.asBoolean();
     }
-    return value.asBoolean();
+    if (value.isTextual()) {
+      String text = value.asText().trim();
+      if (isTextualNull(text)) {
+        return defaultValue;
+      }
+      if ("true".equalsIgnoreCase(text)) {
+        return true;
+      }
+      if ("false".equalsIgnoreCase(text)) {
+        return false;
+      }
+    }
+    throw toolFailure(toolName, fieldName + " must be a boolean.", null);
   }
 
   static int optionalInt(JsonNode arguments, String fieldName, int defaultValue, String toolName) {
@@ -130,10 +143,21 @@ final class ProblemAgentToolSupport {
     if (value == null || value.isNull()) {
       return defaultValue;
     }
-    if (!value.canConvertToInt()) {
-      throw toolFailure(toolName, fieldName + " must be an integer.", null);
+    if (value.isIntegralNumber() && value.canConvertToInt()) {
+      return value.intValue();
     }
-    return value.asInt();
+    if (value.isTextual()) {
+      String text = value.asText().trim();
+      if (isTextualNull(text)) {
+        return defaultValue;
+      }
+      try {
+        return Integer.parseInt(text);
+      } catch (NumberFormatException ignored) {
+        // Fall through to the shared validation error.
+      }
+    }
+    throw toolFailure(toolName, fieldName + " must be an integer.", null);
   }
 
   static void putNullable(ObjectNode node, String fieldName, String value) {
@@ -169,5 +193,9 @@ final class ProblemAgentToolSupport {
         .put(DESCRIPTION, description);
     node.putArray(TYPE).add(type).add(NULL);
     return node;
+  }
+
+  private static boolean isTextualNull(String value) {
+    return TEXTUAL_NULL.equalsIgnoreCase(value);
   }
 }

@@ -15,6 +15,7 @@ public record AiLlmCallUsageRow(
     Integer stepIndex,
     String provider,
     String model,
+    String reasoningEffort,
     Long providerInstanceId,
     Long aiModelId,
     AiLlmCallStatus status,

@@ -1,6 +1,5 @@
 package org.congcong.algomentor.llm.openai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -21,6 +20,11 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleConnectionConfig;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleExceptionMapper;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleResponsesClient;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleResponsesMapper;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleStreamPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,26 +38,31 @@ public class OpenAiLlmProvider implements LlmProvider {
       LlmCapability.TOOL_CALLING,
       LlmCapability.STRUCTURED_OUTPUT,
       LlmCapability.JSON_SCHEMA_OUTPUT,
+      LlmCapability.REASONING_EFFORT,
       LlmCapability.TOKEN_USAGE,
       LlmCapability.CACHED_TOKEN_USAGE);
 
   private final OpenAiLlmProperties properties;
-  private final OpenAiResponsesClient client;
-  private final OpenAiResponsesMapper mapper;
+  private final OpenAiCompatibleResponsesClient client;
+  private final OpenAiCompatibleResponsesMapper mapper;
 
-  public OpenAiLlmProvider(OpenAiLlmProperties properties, OpenAiResponsesClient client) {
-    this(properties, client, new ObjectMapper());
-  }
-
-  public OpenAiLlmProvider(OpenAiLlmProperties properties, OpenAiResponsesClient client, ObjectMapper objectMapper) {
+  public OpenAiLlmProvider(OpenAiLlmProperties properties, OpenAiCompatibleResponsesClient client) {
     this.properties = Objects.requireNonNull(properties, "properties must not be null");
     this.properties.validate();
     this.client = Objects.requireNonNull(client, "client must not be null");
-    this.mapper = new OpenAiResponsesMapper(Objects.requireNonNull(objectMapper, "objectMapper must not be null"), PROVIDER_ID);
+    this.mapper = new OpenAiCompatibleResponsesMapper(
+        new com.fasterxml.jackson.databind.ObjectMapper(),
+        OpenAiProviderProfile.INSTANCE);
   }
 
   public static OpenAiLlmProvider create(OpenAiLlmProperties properties) {
-    return new OpenAiLlmProvider(properties, OpenAiResponsesClient.fromProperties(properties));
+    properties.validate();
+    return new OpenAiLlmProvider(
+        properties,
+        OpenAiCompatibleResponsesClient.fromConnectionConfig(
+            toConnectionConfig(properties),
+            properties.getTimeout(),
+            properties.getStreamTimeout()));
   }
 
   @Override
@@ -98,7 +107,7 @@ public class OpenAiLlmProvider implements LlmProvider {
           result.usage().totalTokens());
       return result;
     } catch (Throwable error) {
-      LlmException mapped = OpenAiLlmExceptionMapper.map(error, PROVIDER_ID, modelId);
+      LlmException mapped = OpenAiCompatibleExceptionMapper.map(error, OpenAiProviderProfile.INSTANCE, modelId);
       log.warn(
           "OpenAI completion request failed. provider={} model={} elapsedMs={} code={} retryable={} causeType={}",
           PROVIDER_ID.value(),
@@ -128,9 +137,13 @@ public class OpenAiLlmProvider implements LlmProvider {
           request.tools().size(),
           request.toolChoice().mode(),
           responseFormatName(request.responseFormat()));
-      return new OpenAiStreamPublisher(client.createStreaming(mapper.toParams(request, modelId)), mapper, PROVIDER_ID, modelId);
+      return new OpenAiCompatibleStreamPublisher(
+          client.createStreaming(mapper.toParams(request, modelId)),
+          mapper,
+          OpenAiProviderProfile.INSTANCE,
+          modelId);
     } catch (Throwable error) {
-      LlmException mapped = OpenAiLlmExceptionMapper.map(error, PROVIDER_ID, modelId);
+      LlmException mapped = OpenAiCompatibleExceptionMapper.map(error, OpenAiProviderProfile.INSTANCE, modelId);
       log.warn(
           "OpenAI stream request failed before subscription. provider={} model={} elapsedMs={} code={} retryable={} causeType={}",
           PROVIDER_ID.value(),
@@ -186,6 +199,15 @@ public class OpenAiLlmProvider implements LlmProvider {
   private String causeType(Throwable error) {
     Throwable cause = error.getCause();
     return cause == null ? "none" : cause.getClass().getName();
+  }
+
+  private static OpenAiCompatibleConnectionConfig toConnectionConfig(OpenAiLlmProperties properties) {
+    long timeoutSeconds = Math.max(1L, properties.getTimeout().toSeconds());
+    return new OpenAiCompatibleConnectionConfig(
+        properties.getApiKey(),
+        properties.getBaseUrl(),
+        Math.toIntExact(timeoutSeconds),
+        properties.getMaxRetries());
   }
 
 }

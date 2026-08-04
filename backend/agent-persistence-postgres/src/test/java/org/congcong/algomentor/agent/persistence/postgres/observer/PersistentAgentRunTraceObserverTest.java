@@ -25,6 +25,8 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallS
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
+import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
@@ -54,6 +56,9 @@ class PersistentAgentRunTraceObserverTest {
     JsonNode result = JsonNodeFactory.instance.objectNode()
         .put("summary", "data")
         .put("password", "secret");
+    LlmProviderContinuation continuation = new LlmProviderContinuation(
+        LlmProviderType.of("compatible-test"),
+        JsonNodeFactory.instance.objectNode().put("secret", "run-trace-continuation-sentinel"));
 
     observer.onRunStart(context);
     observer.onStepStart(context, 1);
@@ -61,11 +66,17 @@ class PersistentAgentRunTraceObserverTest {
         LlmProviderId.of("openai"),
         LlmModelId.of("gpt-test")));
     observer.onLlmEvent(context, 1, new LlmStreamEvent.Usage(new LlmUsage(10, 5, 0, 0, 15)));
+    observer.onLlmEvent(context, 1, new LlmStreamEvent.MessageEnd(
+        LlmFinishReason.TOOL_CALLS,
+        Map.of(),
+        continuation));
     observer.onToolStart(context, 1, toolCall);
     observer.onToolEnd(context, 1, toolCall, result);
     observer.onStepEnd(context, 1, new AgentStepResult(
         java.util.List.of(toolCall),
-        LlmFinishReason.TOOL_CALLS));
+        LlmFinishReason.TOOL_CALLS,
+        "",
+        continuation));
 
     assertThat(mapper.stepStart).isEqualTo(new RunStepStartRow(
         11L,
@@ -89,6 +100,7 @@ class PersistentAgentRunTraceObserverTest {
     assertThat(mapper.stepEnd.model()).isEqualTo("gpt-test");
     assertThat(mapper.stepEnd.finishReason()).isEqualTo("TOOL_CALLS");
     assertThat(mapper.stepEnd.usage().get("totalTokens").asInt()).isEqualTo(15);
+    assertThat(mapper.stepEnd.toString()).doesNotContain("run-trace-continuation-sentinel", "providerContinuation");
   }
 
   @Test

@@ -103,7 +103,8 @@ public class DefaultAiModelRouteResolver implements AiModelRouteResolver {
           provider.providerType(),
           provider.updatedAt(),
           handle.client(),
-          adapter.supportedCapabilities());
+          adapter.supportedCapabilities(),
+          policy.content().reasoningEffort());
       metrics.record(scenario, "success", startedAtNanos);
       return snapshot;
     } catch (AiModelRouteException exception) {

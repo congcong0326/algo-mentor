@@ -19,7 +19,9 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
@@ -44,9 +46,27 @@ class AiProviderCallMetricsLlmGatewayTest {
     assertThat(registry.get(AiProviderCallMetricsLlmGateway.CALLS_ACTIVE)
         .tag("provider_type", "openai").gauge().value()).isZero();
     assertThat(registry.get(AiProviderCallMetricsLlmGateway.CALLS_TOTAL)
-        .tags("provider_type", "openai", "status", "success").counter().count()).isEqualTo(1d);
+        .tags("provider_type", "openai", "reasoning_effort", "provider_default", "status", "success")
+        .counter().count()).isEqualTo(1d);
     assertThat(registry.get(AiProviderCallMetricsLlmGateway.CALLS_TOTAL)
-        .tags("provider_type", "openai", "status", "failure").counter().count()).isEqualTo(1d);
+        .tags("provider_type", "openai", "reasoning_effort", "provider_default", "status", "failure")
+        .counter().count()).isEqualTo(1d);
+  }
+
+  @Test
+  void recordsTheResolvedEffortWithAFixedLowCardinalityTag() {
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    AiProviderCallMetricsLlmGateway gateway = new AiProviderCallMetricsLlmGateway(new CompletionGateway(), registry);
+
+    gateway.complete(request(LlmReasoningEffort.NONE, LlmReasoningEffort.HIGH));
+    gateway.complete(request(null, LlmReasoningEffort.HIGH));
+
+    assertThat(registry.get(AiProviderCallMetricsLlmGateway.CALLS_TOTAL)
+        .tags("provider_type", "openai", "reasoning_effort", "none", "status", "success")
+        .counter().count()).isEqualTo(1d);
+    assertThat(registry.get(AiProviderCallMetricsLlmGateway.CALLS_TOTAL)
+        .tags("provider_type", "openai", "reasoning_effort", "high", "status", "success")
+        .counter().count()).isEqualTo(1d);
   }
 
   @Test
@@ -89,6 +109,13 @@ class AiProviderCallMetricsLlmGatewayTest {
   }
 
   private static LlmCompletionRequest request() {
+    return request(null, null);
+  }
+
+  private static LlmCompletionRequest request(
+      LlmReasoningEffort requestReasoningEffort,
+      LlmReasoningEffort routeReasoningEffort
+  ) {
     return LlmCompletionRequest.builder()
         .modelSelector(LlmModelSelector.requiring(Set.of()))
         .messages(List.of(LlmMessage.user("hello")))
@@ -98,8 +125,10 @@ class AiProviderCallMetricsLlmGatewayTest {
             17L,
             MODEL,
             Instant.parse("2026-07-27T00:00:00Z"),
-            Set.of(LlmCapability.CHAT_COMPLETION),
-            new NoopClient()))
+            Set.of(LlmCapability.CHAT_COMPLETION, LlmCapability.REASONING_EFFORT),
+            new NoopClient(),
+            routeReasoningEffort))
+        .options(LlmGenerationOptions.defaults().withReasoningEffort(requestReasoningEffort))
         .build();
   }
 

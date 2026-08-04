@@ -1,9 +1,11 @@
-package org.congcong.algomentor.llm.openai;
+package org.congcong.algomentor.llm.openai.compatible;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.core.JsonValue;
+import com.openai.models.Reasoning;
+import com.openai.models.ReasoningEffort;
 import com.openai.models.ResponseFormatJsonObject;
 import com.openai.models.responses.EasyInputMessage;
 import com.openai.models.responses.FunctionTool;
@@ -15,6 +17,7 @@ import com.openai.models.responses.ResponseFunctionToolCall;
 import com.openai.models.responses.ResponseInputItem;
 import com.openai.models.responses.ResponseOutputMessage;
 import com.openai.models.responses.ResponseOutputText;
+import com.openai.models.responses.ResponseReasoningItem;
 import com.openai.models.responses.ResponseStatus;
 import com.openai.models.responses.ResponseTextConfig;
 import com.openai.models.responses.ResponseUsage;
@@ -29,7 +32,6 @@ import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
@@ -41,20 +43,20 @@ import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
-final class OpenAiResponsesMapper {
+public final class OpenAiCompatibleResponsesMapper {
 
   private final ObjectMapper objectMapper;
-  private final LlmProviderId providerId;
+  private final OpenAiCompatibleProviderProfile profile;
 
-  OpenAiResponsesMapper(ObjectMapper objectMapper, LlmProviderId providerId) {
-    this.objectMapper = objectMapper;
-    this.providerId = providerId;
+  public OpenAiCompatibleResponsesMapper(ObjectMapper objectMapper, OpenAiCompatibleProviderProfile profile) {
+    this.objectMapper = java.util.Objects.requireNonNull(objectMapper, "objectMapper must not be null");
+    this.profile = java.util.Objects.requireNonNull(profile, "profile must not be null");
   }
 
-  ResponseCreateParams toParams(LlmCompletionRequest request, LlmModelId modelId) {
+  public ResponseCreateParams toParams(LlmCompletionRequest request, LlmModelId modelId) {
     ResponseCreateParams.Builder builder = ResponseCreateParams.builder()
         .model(modelId.value())
-        .inputOfResponse(toInput(request.messages()));
+        .inputOfResponse(toInput(request.messages(), modelId));
 
     if (request.options().temperature() != null) {
       builder.temperature(request.options().temperature());
@@ -65,6 +67,11 @@ final class OpenAiResponsesMapper {
     if (request.options().maxOutputTokens() != null) {
       builder.maxOutputTokens(request.options().maxOutputTokens().longValue());
     }
+    if (request.options().reasoningEffort() != null) {
+      builder.reasoning(Reasoning.builder()
+          .effort(ReasoningEffort.of(request.options().reasoningEffort().wireValue()))
+          .build());
+    }
     if (!request.tools().isEmpty()) {
       builder.tools(toTools(request.tools()));
       applyToolChoice(builder, request.toolChoice());
@@ -73,7 +80,7 @@ final class OpenAiResponsesMapper {
     return builder.build();
   }
 
-  LlmCompletionResult toResult(Response response) {
+  public LlmCompletionResult toResult(Response response) {
     LlmModelId modelId = LlmModelId.of(response.model().asString());
     String text = extractText(response);
     List<LlmToolCall> toolCalls = extractToolCalls(response);
@@ -81,18 +88,26 @@ final class OpenAiResponsesMapper {
     Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LlmMetadataKeys.RESPONSE_ID, response.id());
     response.status().ifPresent(status -> metadata.put(LlmMetadataKeys.STATUS, status.asString()));
+    LlmFinishReason finishReason = finishReason(response, toolCalls);
+    var continuation = profile.requiresReasoningContinuationForToolCalls()
+        && finishReason == LlmFinishReason.TOOL_CALLS
+        && response.status().filter(ResponseStatus.COMPLETED::equals).isPresent()
+        ? new OpenAiCompatibleReasoningContinuationCodec(profile, modelId)
+            .create(extractReasoningItems(response))
+        : null;
     return new LlmCompletionResult(
         text.isEmpty() ? LlmMessage.assistant() : LlmMessage.assistant(text),
         toolCalls,
         structuredOutput,
-        finishReason(response, toolCalls),
+        finishReason,
         toUsage(response.usage().orElse(null)),
-        providerId,
+        profile.providerId(),
         modelId,
-        metadata);
+        metadata,
+        continuation);
   }
 
-  LlmUsage toUsage(ResponseUsage usage) {
+  public LlmUsage toUsage(ResponseUsage usage) {
     if (usage == null) {
       return LlmUsage.empty();
     }
@@ -104,15 +119,15 @@ final class OpenAiResponsesMapper {
         toInt(usage.totalTokens()));
   }
 
-  LlmToolCall toToolCall(ResponseFunctionToolCall call) {
+  public LlmToolCall toToolCall(ResponseFunctionToolCall call) {
     return new LlmToolCall(call.callId(), call.name(), parseArguments(call.arguments()));
   }
 
-  LlmFinishReason finishReason(Response response) {
+  public LlmFinishReason finishReason(Response response) {
     return finishReason(response, extractToolCalls(response));
   }
 
-  LlmFinishReason finishReason(Response response, List<LlmToolCall> toolCalls) {
+  public LlmFinishReason finishReason(Response response, List<LlmToolCall> toolCalls) {
     if (toolCalls != null && !toolCalls.isEmpty()) {
       return LlmFinishReason.TOOL_CALLS;
     }
@@ -121,7 +136,7 @@ final class OpenAiResponsesMapper {
         .orElse(LlmFinishReason.UNKNOWN);
   }
 
-  LlmFinishReason finishReason(ResponseStatus status) {
+  public LlmFinishReason finishReason(ResponseStatus status) {
     if (ResponseStatus.COMPLETED.equals(status)) {
       return LlmFinishReason.STOP;
     }
@@ -137,7 +152,7 @@ final class OpenAiResponsesMapper {
     return LlmFinishReason.UNKNOWN;
   }
 
-  private List<ResponseInputItem> toInput(List<LlmMessage> messages) {
+  private List<ResponseInputItem> toInput(List<LlmMessage> messages, LlmModelId modelId) {
     List<ResponseInputItem> items = new ArrayList<>();
     for (LlmMessage message : messages) {
       if (message.role() == LlmMessage.Role.TOOL) {
@@ -146,6 +161,8 @@ final class OpenAiResponsesMapper {
             .output(toText(message))
             .build()));
       } else if (message.role() == LlmMessage.Role.ASSISTANT && !message.toolCalls().isEmpty()) {
+        items.addAll(new OpenAiCompatibleReasoningContinuationCodec(profile, modelId)
+            .toInputItems(message.providerContinuation()));
         message.toolCalls().stream()
             .map(this::toFunctionCallInput)
             .map(ResponseInputItem::ofFunctionCall)
@@ -178,8 +195,8 @@ final class OpenAiResponsesMapper {
       } else if (part instanceof LlmContentPart.Image || part instanceof LlmContentPart.File) {
         throw new LlmException(
             LlmErrorCode.UNSUPPORTED_CAPABILITY,
-            "OpenAI Responses mapper does not support image or file content in this version",
-            providerId,
+            profile.displayName() + " Responses mapper does not support image or file content in this version",
+            profile.providerId(),
             null,
             false,
             Map.of(),
@@ -187,8 +204,8 @@ final class OpenAiResponsesMapper {
       } else {
         throw new LlmException(
             LlmErrorCode.UNSUPPORTED_CAPABILITY,
-            "OpenAI Responses mapper does not support custom content in this version",
-            providerId,
+            profile.displayName() + " Responses mapper does not support custom content in this version",
+            profile.providerId(),
             null,
             false,
             Map.of(),
@@ -271,6 +288,14 @@ final class OpenAiResponsesMapper {
     return List.copyOf(calls);
   }
 
+  private List<ResponseReasoningItem> extractReasoningItems(Response response) {
+    List<ResponseReasoningItem> items = new ArrayList<>();
+    for (var item : response.output()) {
+      item.reasoning().ifPresent(items::add);
+    }
+    return List.copyOf(items);
+  }
+
   private JsonNode parseStructuredOutput(String text) {
     if (text == null || text.isBlank()) {
       return null;
@@ -288,8 +313,8 @@ final class OpenAiResponsesMapper {
     } catch (JsonProcessingException ex) {
       throw new LlmException(
           LlmErrorCode.RESPONSE_PARSE_FAILED,
-          "Failed to parse OpenAI tool call arguments",
-          providerId,
+          "Failed to parse " + profile.displayName() + " tool call arguments",
+          profile.providerId(),
           null,
           false,
           Map.of(),

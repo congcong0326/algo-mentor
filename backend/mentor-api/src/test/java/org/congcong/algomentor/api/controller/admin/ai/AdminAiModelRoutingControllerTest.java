@@ -18,6 +18,7 @@ import org.congcong.algomentor.ai.governance.provider.model.AiProviderInstance;
 import org.congcong.algomentor.ai.governance.provider.repository.AiConfiguredModelRepository;
 import org.congcong.algomentor.ai.governance.provider.repository.AiProviderInstanceRepository;
 import org.congcong.algomentor.ai.governance.routing.AiModelRoutePolicyContent;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.ai.governance.routing.AiModelRoutePolicyTypeContributor;
 import org.congcong.algomentor.ai.governance.provider.service.AiProviderManagementService;
 import org.congcong.algomentor.policy.model.GenericPolicyStatus;
@@ -93,7 +94,7 @@ class AdminAiModelRoutingControllerTest {
         "ai.model-route.practice-chat.v1",
         "Disabled model",
         2,
-        new AiModelRoutePolicyContent(101L),
+        new AiModelRoutePolicyContent(101L, LlmReasoningEffort.NONE),
         PolicyMatchSource.GROUP,
         9L,
         3L)));
@@ -120,6 +121,7 @@ class AdminAiModelRoutingControllerTest {
         .andExpect(jsonPath("$.data.matched").value(true))
         .andExpect(jsonPath("$.data.priority").value(2))
         .andExpect(jsonPath("$.data.matchSource").value("GROUP"))
+        .andExpect(jsonPath("$.data.reasoningEffort").value("none"))
         .andExpect(jsonPath("$.data.reason").value("AI_MODEL_UNAVAILABLE"))
         .andExpect(jsonPath("$.data.model.id").value(101))
         .andExpect(jsonPath("$.data.model.enabled").value(false))

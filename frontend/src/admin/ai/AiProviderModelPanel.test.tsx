@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AiProviderModelPanel from './AiProviderModelPanel';
 import {
+  createAdminAiProvider,
   getAdminAiProvider,
   getAdminAiProviderModels,
   getAdminAiProviders,
@@ -32,10 +33,27 @@ const provider = {
 };
 
 describe('AiProviderModelPanel', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getAdminAiProviders).mockResolvedValue({ data: { items: [provider] } } as never);
-    vi.mocked(getAdminAiProviderTypes).mockResolvedValue({ data: { items: [{ code: 'openai', displayName: 'OpenAI' }] } } as never);
+    vi.mocked(getAdminAiProviderTypes).mockResolvedValue({ data: { items: [
+      {
+        code: 'openai',
+        displayName: 'OpenAI',
+        reasoningEfforts: ['none', 'high'],
+        defaultConfig: { apiKey: '', baseUrl: 'https://api.openai.com/v1', timeoutSeconds: 300, maxRetries: 2 },
+      },
+      {
+        code: 'deepseek',
+        displayName: 'DeepSeek',
+        reasoningEfforts: ['none', 'low'],
+        defaultConfig: { apiKey: '', baseUrl: 'https://api.deepseek.com', timeoutSeconds: 300, maxRetries: 2 },
+      },
+    ] } } as never);
     vi.mocked(getAdminAiProvider).mockResolvedValue({ data: {
       ...provider,
       config: { apiKey: 'sk-current', baseUrl: provider.baseUrl, timeoutSeconds: 300, maxRetries: 2 },
@@ -60,5 +78,20 @@ describe('AiProviderModelPanel', () => {
     await waitFor(() => expect(getAdminAiProvider).toHaveBeenCalledWith(1));
     expect(await screen.findByDisplayValue(/sk-current/)).toBeInTheDocument();
     expect(screen.getByText('gpt-5.6-sol')).toBeInTheDocument();
+  });
+
+  it('uses the selected type template for a new provider and preserves manually edited config on later type changes', async () => {
+    render(<AiProviderModelPanel />);
+
+    await screen.findByText('https://api.openai.com/v1');
+    fireEvent.click(screen.getByRole('button', { name: 'New provider' }));
+    expect((screen.getByRole('textbox', { name: 'Configuration' }) as HTMLTextAreaElement).value).toContain('api.openai.com');
+    fireEvent.change(screen.getByRole('combobox', { name: 'Provider type' }), { target: { value: 'deepseek' } });
+    expect((screen.getByRole('textbox', { name: 'Configuration' }) as HTMLTextAreaElement).value).toContain('api.deepseek.com');
+    fireEvent.change(screen.getByRole('textbox', { name: 'Configuration' }), { target: { value: '{"apiKey":""}' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Provider type' }), { target: { value: 'openai' } });
+
+    expect(screen.getByRole('textbox', { name: 'Configuration' })).toHaveValue('{"apiKey":""}');
+    expect(createAdminAiProvider).not.toHaveBeenCalled();
   });
 });

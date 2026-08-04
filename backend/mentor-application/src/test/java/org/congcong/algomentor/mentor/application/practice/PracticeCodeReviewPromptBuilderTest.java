@@ -19,7 +19,11 @@ class PracticeCodeReviewPromptBuilderTest {
         .contains("total<=8；不得给 9 分或 10 分")
         .contains("basis=USER_REPORTED_EXECUTION")
         .contains("n 最大为 100000")
-        .contains("expectedTimeComplexity");
+        .contains("expectedTimeComplexity")
+        .contains("codeQuality 只可取 [0, 0.5, 0.75, 1]")
+        .contains("problemFit 只可取 [0, 0.5, 1]")
+        .contains("题目显式要求的符合程度")
+        .contains("scoreExplanations 的五个字段必须分别说明对应维度为什么得到当前分数");
   }
 
   @Test

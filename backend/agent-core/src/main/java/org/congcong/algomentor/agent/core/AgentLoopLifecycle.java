@@ -17,6 +17,7 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
 import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -111,6 +112,31 @@ public final class AgentLoopLifecycle {
 
   public void finalOutput(AgentLoopContext context, AgentOutput output) {
     notifyObserver(observer -> observer.onFinalOutput(context, output), "onFinalOutput");
+  }
+
+  public void structuredOutputRepair(
+      AgentLoopContext context,
+      StructuredOutputRepairEvent event
+  ) {
+    Objects.requireNonNull(context, "context must not be null");
+    Objects.requireNonNull(event, "structured output repair event must not be null");
+    if (event.outcome() == StructuredOutputRepairEvent.Outcome.TRIGGERED) {
+      AgentStructuredOutputOptions structuredOutput = context.request().executionOptions().structuredOutput();
+      log.warn(
+          "Agent structured output validation failed; invoking bounded repair. "
+              + "runId={} repairStepIndex={} repairAttempt={} maxRepairAttempts={} "
+              + "schemaName={} schemaVersion={} failureType={}",
+          context.runId(),
+          event.stepIndex(),
+          event.repairAttempt(),
+          event.maxRepairAttempts(),
+          structuredOutput.schemaName(),
+          structuredOutput.schemaVersion(),
+          event.failureType());
+    }
+    notifyObserver(
+        observer -> observer.onStructuredOutputRepair(context, event),
+        "onStructuredOutputRepair");
   }
 
   public LlmToolCall beforeToolCall(

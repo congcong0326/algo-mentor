@@ -16,7 +16,9 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
@@ -77,6 +79,19 @@ class LlmStreamSseMapperTest {
     assertThat(serializedData(end)).contains("\"finishReason\":\"STOP\"", "\"responseId\":\"resp_1\"");
     assertThat(sseText(heartbeat)).contains("event:heartbeat");
     assertThat(serializedData(heartbeat)).isEqualTo("{}");
+  }
+
+  @Test
+  void excludesContinuationFromMessageEndSsePayload() throws Exception {
+    String sentinel = "sse-continuation-sentinel";
+    LlmProviderContinuation continuation = new LlmProviderContinuation(
+        LlmProviderType.of("compatible-test"),
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("secret", sentinel));
+
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(AgentStreamEvent.fromLlm(
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of("responseId", "resp_1"), continuation)));
+
+    assertThat(serializedData(event)).doesNotContain(sentinel, "providerContinuation", "payload");
   }
 
   @Test

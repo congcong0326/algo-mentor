@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Set;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleConnectionConfig;
 
 /** OpenAI provider instance 的固定 JSON 配置契约。 */
 public record OpenAiProviderConfig(
@@ -49,6 +50,10 @@ public record OpenAiProviderConfig(
         uri(requiredText(config, "baseUrl")),
         requiredInt(config, "timeoutSeconds"),
         requiredInt(config, "maxRetries"));
+  }
+
+  public OpenAiCompatibleConnectionConfig toConnectionConfig() {
+    return new OpenAiCompatibleConnectionConfig(apiKey, baseUrl, timeoutSeconds, maxRetries);
   }
 
   @Override

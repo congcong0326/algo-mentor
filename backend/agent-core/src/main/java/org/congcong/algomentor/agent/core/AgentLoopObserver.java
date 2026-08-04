@@ -5,6 +5,7 @@ import java.time.Instant;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -22,6 +23,11 @@ public interface AgentLoopObserver {
   default void onStepEnd(AgentLoopContext context, int stepIndex, AgentStepResult result) {}
 
   default void onFinalOutput(AgentLoopContext context, AgentOutput output) {}
+
+  default void onStructuredOutputRepair(
+      AgentLoopContext context,
+      StructuredOutputRepairEvent event
+  ) {}
 
   default void onToolStart(AgentLoopContext context, int stepIndex, LlmToolCall toolCall) {}
 

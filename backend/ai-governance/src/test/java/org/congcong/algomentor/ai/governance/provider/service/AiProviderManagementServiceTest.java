@@ -30,6 +30,7 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderInstanceSpec;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.junit.jupiter.api.Test;
@@ -96,6 +97,39 @@ class AiProviderManagementServiceTest {
     assertThat(missing.code()).isEqualTo(AiGovernanceErrorCode.AI_MODEL_NOT_FOUND);
   }
 
+  @Test
+  void validatesRouteReasoningEffortAgainstProviderCapabilityAndAcceptedSubset() {
+    Fixture unsupported = new Fixture();
+    AiProviderInstance unsupportedProvider = unsupported.service.createProvider(
+        "OpenAI", "openai", false, config("key"));
+    AiConfiguredModel unsupportedModel = unsupported.service.createModel(
+        unsupportedProvider.id(), "Fast", "gpt-fast", false);
+
+    unsupported.service.validateModelRoute(unsupportedModel.id(), null);
+    AiGovernanceAdminException noCapability = catchThrowableOfType(
+        () -> unsupported.service.validateModelRoute(unsupportedModel.id(), LlmReasoningEffort.NONE),
+        AiGovernanceAdminException.class);
+    assertThat(noCapability.code()).isEqualTo(AiGovernanceErrorCode.AI_MODEL_INVALID);
+
+    Fixture supported = new Fixture(new RecordingAdapter(
+        Set.of(LlmCapability.CHAT_COMPLETION, LlmCapability.REASONING_EFFORT),
+        Set.of(LlmReasoningEffort.NONE, LlmReasoningEffort.MAX)));
+    AiProviderInstance supportedProvider = supported.service.createProvider(
+        "OpenAI", "openai", false, config("key"));
+    AiConfiguredModel supportedModel = supported.service.createModel(
+        supportedProvider.id(), "Fast", "gpt-fast", false);
+
+    supported.service.validateModelRoute(supportedModel.id(), LlmReasoningEffort.NONE);
+    supported.service.validateModelRoute(supportedModel.id(), LlmReasoningEffort.MAX);
+    AiGovernanceAdminException rejected = catchThrowableOfType(
+        () -> supported.service.validateModelRoute(supportedModel.id(), LlmReasoningEffort.HIGH),
+        AiGovernanceAdminException.class);
+
+    assertThat(rejected.code()).isEqualTo(AiGovernanceErrorCode.AI_MODEL_INVALID);
+    assertThat(supported.service.supportedProviderTypes().get(0).reasoningEfforts())
+        .containsExactly(LlmReasoningEffort.NONE, LlmReasoningEffort.MAX);
+  }
+
   private static JsonNode config(String apiKey) {
     return JsonNodeFactory.instance.objectNode()
         .put("apiKey", apiKey)
@@ -105,12 +139,21 @@ class AiProviderManagementServiceTest {
   }
 
   private static final class Fixture {
-    private final RecordingAdapter adapter = new RecordingAdapter();
-    private final AiProviderManagementService service = new AiProviderManagementService(
-        new InMemoryProviderRepository(),
-        new InMemoryModelRepository(),
-        new LlmProviderAdapterRegistry(List.of(adapter)),
-        Clock.fixed(Instant.parse("2026-07-27T00:00:00Z"), ZoneOffset.UTC));
+    private final RecordingAdapter adapter;
+    private final AiProviderManagementService service;
+
+    private Fixture() {
+      this(new RecordingAdapter());
+    }
+
+    private Fixture(RecordingAdapter adapter) {
+      this.adapter = adapter;
+      this.service = new AiProviderManagementService(
+          new InMemoryProviderRepository(),
+          new InMemoryModelRepository(),
+          new LlmProviderAdapterRegistry(List.of(adapter)),
+          Clock.fixed(Instant.parse("2026-07-27T00:00:00Z"), ZoneOffset.UTC));
+    }
   }
 
   private static final class InMemoryProviderRepository implements AiProviderInstanceRepository {
@@ -196,6 +239,20 @@ class AiProviderManagementServiceTest {
 
   private static final class RecordingAdapter implements LlmProviderAdapter {
     private int createdClients;
+    private final Set<LlmCapability> capabilities;
+    private final Set<LlmReasoningEffort> reasoningEfforts;
+
+    private RecordingAdapter() {
+      this(Set.of(LlmCapability.CHAT_COMPLETION), Set.of());
+    }
+
+    private RecordingAdapter(
+        Set<LlmCapability> capabilities,
+        Set<LlmReasoningEffort> reasoningEfforts
+    ) {
+      this.capabilities = Set.copyOf(capabilities);
+      this.reasoningEfforts = Set.copyOf(reasoningEfforts);
+    }
 
     @Override
     public LlmProviderType providerType() {
@@ -209,7 +266,12 @@ class AiProviderManagementServiceTest {
 
     @Override
     public Set<LlmCapability> supportedCapabilities() {
-      return Set.of(LlmCapability.CHAT_COMPLETION);
+      return capabilities;
+    }
+
+    @Override
+    public Set<LlmReasoningEffort> acceptedReasoningEfforts() {
+      return reasoningEfforts;
     }
 
     @Override

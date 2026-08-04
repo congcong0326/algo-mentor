@@ -9,6 +9,7 @@ import org.congcong.algomentor.llm.core.model.LlmInvocationTarget;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.policy.model.PolicyMatchSource;
 
 /** 一次业务执行固定持有的模型、provider 版本与 SDK Client 快照。 */
@@ -24,8 +25,39 @@ public record ResolvedAiModelSnapshot(
     String providerType,
     Instant providerUpdatedAt,
     LlmProviderClient client,
-    java.util.Set<org.congcong.algomentor.llm.core.provider.LlmCapability> supportedCapabilities
+    java.util.Set<org.congcong.algomentor.llm.core.provider.LlmCapability> supportedCapabilities,
+    LlmReasoningEffort routeReasoningEffort
 ) {
+
+  public ResolvedAiModelSnapshot(
+      AiBusinessScenario scenario,
+      long routePolicyId,
+      long routePolicyVersion,
+      PolicyMatchSource matchSource,
+      Long matchedSubjectId,
+      long aiModelId,
+      String upstreamModelId,
+      long providerInstanceId,
+      String providerType,
+      Instant providerUpdatedAt,
+      LlmProviderClient client,
+      java.util.Set<org.congcong.algomentor.llm.core.provider.LlmCapability> supportedCapabilities
+  ) {
+    this(
+        scenario,
+        routePolicyId,
+        routePolicyVersion,
+        matchSource,
+        matchedSubjectId,
+        aiModelId,
+        upstreamModelId,
+        providerInstanceId,
+        providerType,
+        providerUpdatedAt,
+        client,
+        supportedCapabilities,
+        null);
+  }
 
   public ResolvedAiModelSnapshot {
     if (scenario == null || routePolicyId < 1 || routePolicyVersion < 1 || matchSource == null
@@ -45,7 +77,8 @@ public record ResolvedAiModelSnapshot(
         LlmModelId.of(upstreamModelId),
         providerUpdatedAt,
         supportedCapabilities,
-        client);
+        client,
+        routeReasoningEffort);
   }
 
   /** 仅返回允许进入 trace、SSE 与调用台账的低敏 metadata。 */
@@ -63,6 +96,9 @@ public record ResolvedAiModelSnapshot(
     metadata.put(AiGovernanceMetadataKeys.PROVIDER_TYPE, providerType);
     metadata.put(AiGovernanceMetadataKeys.UPSTREAM_MODEL_ID, upstreamModelId);
     metadata.put(AiGovernanceMetadataKeys.PROVIDER_CONFIG_REVISION, providerUpdatedAt.toString());
+    if (routeReasoningEffort != null) {
+      metadata.put(AiGovernanceMetadataKeys.ROUTE_REASONING_EFFORT, routeReasoningEffort.wireValue());
+    }
     return Map.copyOf(metadata);
   }
 }

@@ -461,7 +461,14 @@ export interface AdminAiModelPricePage {
   unpricedModels: AdminAiUnpricedModel[];
 }
 
-export interface AdminAiProviderType { code: string; displayName: string; }
+export const LLM_REASONING_EFFORT_VALUES = ['none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'] as const;
+export type LlmReasoningEffort = typeof LLM_REASONING_EFFORT_VALUES[number];
+export interface AdminAiProviderType {
+  code: string;
+  displayName: string;
+  reasoningEfforts?: LlmReasoningEffort[];
+  defaultConfig?: Record<string, unknown>;
+}
 export interface AdminAiProvider {
   id: number;
   name: string;
@@ -494,7 +501,10 @@ export interface AdminAiConfiguredModel {
   updatedAt?: string | null;
 }
 export interface AdminAiModelWriteRequest { displayName: string; modelId: string; enabled: boolean; }
-export interface AiModelRoutePolicyContent { modelId: number; }
+export interface AiModelRoutePolicyContent {
+  modelId: number;
+  reasoningEffort?: LlmReasoningEffort | null;
+}
 export interface AdminAiRoutingScenario {
   scenarioCode: string;
   categoryCode: string;
@@ -526,6 +536,7 @@ export interface AdminAiEffectiveRoute {
   matchSource?: string | null;
   matchedSubjectId?: number | null;
   reason?: string | null;
+  reasoningEffort?: LlmReasoningEffort | null;
   model?: AdminAiRouteModel | null;
 }
 

@@ -1,11 +1,14 @@
-package org.congcong.algomentor.llm.openai;
+package org.congcong.algomentor.llm.openai.compatible;
 
 import com.openai.core.http.StreamResponse;
 import com.openai.models.responses.ResponseFunctionToolCall;
+import com.openai.models.responses.ResponseReasoningItem;
 import com.openai.models.responses.ResponseStreamEvent;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
@@ -18,38 +21,40 @@ import java.util.stream.Stream;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在订阅线程中同步消费 OpenAI SDK 的阻塞流。
+ * 在订阅线程中同步消费 SDK 的阻塞流。
  *
  * <p>Agent loop 已经运行在独立工作线程中，并且下一步必须等待当前模型流结束。这里不再额外创建
- * OpenAI worker，而是让 Agent 工作线程顺序完成网络读取、事件投递和后续工具编排。</p>
+ * transport worker，而是让 Agent 工作线程顺序完成网络读取、事件投递和后续工具编排。</p>
  */
-final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
+public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
 
-  private static final Logger log = LoggerFactory.getLogger(OpenAiStreamPublisher.class);
+  private static final Logger log = LoggerFactory.getLogger(OpenAiCompatibleStreamPublisher.class);
 
   private final StreamResponse<ResponseStreamEvent> stream;
-  private final OpenAiResponsesMapper mapper;
-  private final LlmProviderId providerId;
+  private final OpenAiCompatibleResponsesMapper mapper;
+  private final OpenAiCompatibleProviderProfile profile;
   private final LlmModelId modelId;
   private final Map<String, StringBuilder> toolArgumentDeltas = new HashMap<>();
+  private final List<ResponseReasoningItem> reasoningItems = new ArrayList<>();
+  private final List<LlmToolCall> completedToolCalls = new ArrayList<>();
   private final AtomicBoolean subscribed = new AtomicBoolean(false);
 
-  OpenAiStreamPublisher(
+  public OpenAiCompatibleStreamPublisher(
       StreamResponse<ResponseStreamEvent> stream,
-      OpenAiResponsesMapper mapper,
-      LlmProviderId providerId,
+      OpenAiCompatibleResponsesMapper mapper,
+      OpenAiCompatibleProviderProfile profile,
       LlmModelId modelId
   ) {
     this.stream = Objects.requireNonNull(stream, "stream must not be null");
     this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
-    this.providerId = Objects.requireNonNull(providerId, "providerId must not be null");
+    this.profile = Objects.requireNonNull(profile, "profile must not be null");
     this.modelId = Objects.requireNonNull(modelId, "modelId must not be null");
   }
 
@@ -58,7 +63,7 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
     Objects.requireNonNull(subscriber, "subscriber must not be null");
     if (!subscribed.compareAndSet(false, true)) {
       subscriber.onSubscribe(EmptySubscription.INSTANCE);
-      subscriber.onError(new IllegalStateException("OpenAI stream supports only one subscriber"));
+      subscriber.onError(new IllegalStateException(profile.displayName() + " stream supports only one subscriber"));
       return;
     }
     subscriber.onSubscribe(new OpenAiStreamSubscription(subscriber));
@@ -66,7 +71,7 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
 
   private void publishEvent(ResponseStreamEvent event, Consumer<LlmStreamEvent> sink) {
     if (event.isCreated()) {
-      sink.accept(new LlmStreamEvent.MessageStart(providerId, modelId));
+      sink.accept(new LlmStreamEvent.MessageStart(profile.providerId(), modelId));
       return;
     }
     if (event.isOutputTextDelta()) {
@@ -85,22 +90,33 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
       return;
     }
     if (event.isOutputItemDone()) {
-      event.asOutputItemDone().item().functionCall()
+      var item = event.asOutputItemDone().item();
+      item.reasoning().ifPresent(reasoningItems::add);
+      item.functionCall()
           .map(this::withAccumulatedArguments)
           .map(mapper::toToolCall)
-          .ifPresent(call -> sink.accept(new LlmStreamEvent.ToolCallEnd(call)));
+          .ifPresent(call -> {
+            completedToolCalls.add(call);
+            sink.accept(new LlmStreamEvent.ToolCallEnd(call));
+          });
       return;
     }
     if (event.isCompleted()) {
       var response = event.asCompleted().response();
       response.usage().map(mapper::toUsage).ifPresent(usage -> sink.accept(new LlmStreamEvent.Usage(usage)));
+      var continuation = profile.requiresReasoningContinuationForToolCalls() && !completedToolCalls.isEmpty()
+          ? new OpenAiCompatibleReasoningContinuationCodec(profile, modelId).create(reasoningItems)
+          : null;
       sink.accept(new LlmStreamEvent.MessageEnd(
-          mapper.finishReason(response),
-          Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
+          mapper.finishReason(response, completedToolCalls),
+          Map.of(LlmMetadataKeys.RESPONSE_ID, response.id()),
+          continuation));
+      clearCollectedState();
       return;
     }
     if (event.isIncomplete()) {
       var response = event.asIncomplete().response();
+      clearCollectedState();
       sink.accept(new LlmStreamEvent.MessageEnd(
           LlmFinishReason.LENGTH,
           Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
@@ -108,23 +124,26 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
     }
     if (event.isFailed()) {
       var response = event.asFailed().response();
+      clearCollectedState();
       sink.accept(new LlmStreamEvent.MessageEnd(
           LlmFinishReason.ERROR,
           Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isError()) {
+      clearCollectedState();
       var error = event.asError();
-      LlmException mapped = OpenAiLlmExceptionMapper.streamError(
+      LlmException mapped = OpenAiCompatibleExceptionMapper.streamError(
           error.message(),
-          providerId,
+          profile,
           modelId,
           Map.of(
-              LlmMetadataKeys.PROVIDER, providerId.value(),
+              LlmMetadataKeys.PROVIDER, profile.providerId().value(),
               LlmMetadataKeys.SEQUENCE_NUMBER, error.sequenceNumber()));
       log.warn(
-          "OpenAI stream returned error event. provider={} model={} sequenceNumber={} code={} retryable={} message={}",
-          providerId.value(),
+          "{} stream returned error event. provider={} model={} sequenceNumber={} code={} retryable={} message={}",
+          profile.displayName(),
+          profile.providerId().value(),
           modelId.value(),
           error.sequenceNumber(),
           mapped.code(),
@@ -135,10 +154,12 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
   }
 
   private LlmStreamEvent mapStreamFailure(Throwable error) {
-    LlmException mapped = OpenAiLlmExceptionMapper.map(error, providerId, modelId);
+    clearCollectedState();
+    LlmException mapped = OpenAiCompatibleExceptionMapper.map(error, profile, modelId);
     log.warn(
-        "OpenAI stream failed while consuming events. provider={} model={} code={} retryable={} causeType={}",
-        providerId.value(),
+        "{} stream failed while consuming events. provider={} model={} code={} retryable={} causeType={}",
+        profile.displayName(),
+        profile.providerId().value(),
         modelId.value(),
         mapped.code(),
         mapped.retryable(),
@@ -160,6 +181,12 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
       return call;
     }
     return call.toBuilder().arguments(arguments.toString()).build();
+  }
+
+  private void clearCollectedState() {
+    toolArgumentDeltas.clear();
+    reasoningItems.clear();
+    completedToolCalls.clear();
   }
 
   private final class OpenAiStreamSubscription implements Flow.Subscription {
@@ -194,6 +221,7 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
       if (!cancelled.compareAndSet(false, true)) {
         return;
       }
+      clearCollectedState();
       closeResources();
       Thread thread = consumerThread;
       if (thread != null && thread != Thread.currentThread()) {
@@ -297,13 +325,13 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
         try {
           responseEvents.close();
         } catch (RuntimeException error) {
-          log.debug("Failed to close OpenAI response event stream", error);
+          log.debug("Failed to close {} response event stream", profile.displayName(), error);
         }
       }
       try {
         stream.close();
       } catch (RuntimeException error) {
-        log.debug("Failed to close OpenAI SDK stream response", error);
+        log.debug("Failed to close {} SDK stream response", profile.displayName(), error);
       }
     }
 

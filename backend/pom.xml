@@ -24,7 +24,9 @@
     <module>cache</module>
     <module>domain</module>
     <module>llm-core</module>
+    <module>llm-openai-compatible</module>
     <module>llm-openai</module>
+    <module>llm-deepseek</module>
     <module>agent-core</module>
     <module>agent-persistence-postgres</module>
     <module>identity</module>
@@ -44,6 +46,7 @@
     <openai-java.version>4.39.1</openai-java.version>
     <fsrs.version>1.0.0</fsrs.version>
     <java-diff-utils.version>4.15</java-diff-utils.version>
+    <json-schema-validator.version>1.5.9</json-schema-validator.version>
     <mybatis.version>3.5.19</mybatis.version>
     <mybatis-spring.version>3.0.5</mybatis-spring.version>
     <surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
@@ -75,6 +78,11 @@
         <groupId>io.github.java-diff-utils</groupId>
         <artifactId>java-diff-utils</artifactId>
         <version>${java-diff-utils.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${json-schema-validator.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

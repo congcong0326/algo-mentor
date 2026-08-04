@@ -1,9 +1,11 @@
 package org.congcong.algomentor.llm.core.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 /**
@@ -14,7 +16,8 @@ public record LlmMessage(
     List<LlmContentPart> content,
     String name,
     String toolCallId,
-    Map<String, Object> metadata
+    Map<String, Object> metadata,
+    @JsonIgnore LlmProviderContinuation providerContinuation
 ) {
 
   private static final String TOOL_CALLS_METADATA_KEY = "toolCalls";
@@ -34,10 +37,17 @@ public record LlmMessage(
     }
     content = List.copyOf(content);
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    if (providerContinuation != null && (role != Role.ASSISTANT || !hasToolCalls(metadata))) {
+      throw new IllegalArgumentException("provider continuation is only allowed on assistant tool-call messages");
+    }
+  }
+
+  public LlmMessage(Role role, List<LlmContentPart> content, String name, String toolCallId, Map<String, Object> metadata) {
+    this(role, content, name, toolCallId, metadata, null);
   }
 
   public LlmMessage(Role role, String text) {
-    this(role, List.of(new LlmContentPart.Text(text)), null, null, Map.of());
+    this(role, List.of(new LlmContentPart.Text(text)), null, null, Map.of(), null);
   }
 
   public static LlmMessage system(String text) {
@@ -53,10 +63,17 @@ public record LlmMessage(
   }
 
   public static LlmMessage assistant() {
-    return new LlmMessage(Role.ASSISTANT, List.of(), null, null, Map.of());
+    return new LlmMessage(Role.ASSISTANT, List.of(), null, null, Map.of(), null);
   }
 
   public static LlmMessage assistantToolCalls(List<LlmToolCall> toolCalls) {
+    return assistantToolCalls(toolCalls, null);
+  }
+
+  public static LlmMessage assistantToolCalls(
+      List<LlmToolCall> toolCalls,
+      LlmProviderContinuation providerContinuation
+  ) {
     if (toolCalls == null || toolCalls.isEmpty()) {
       throw new IllegalArgumentException("LLM assistant tool calls must not be empty");
     }
@@ -65,14 +82,15 @@ public record LlmMessage(
         List.of(),
         null,
         null,
-        Map.of(TOOL_CALLS_METADATA_KEY, List.copyOf(toolCalls)));
+        Map.of(TOOL_CALLS_METADATA_KEY, List.copyOf(toolCalls)),
+        providerContinuation);
   }
 
   public static LlmMessage toolResult(String toolCallId, JsonNode result) {
     if (toolCallId == null || toolCallId.isBlank()) {
       throw new IllegalArgumentException("LLM tool call id must not be blank");
     }
-    return new LlmMessage(Role.TOOL, List.of(new LlmContentPart.ToolResult(result)), null, toolCallId, Map.of());
+    return new LlmMessage(Role.TOOL, List.of(new LlmContentPart.ToolResult(result)), null, toolCallId, Map.of(), null);
   }
 
   public String text() {
@@ -92,6 +110,11 @@ public record LlmMessage(
         .filter(LlmToolCall.class::isInstance)
         .map(LlmToolCall.class::cast)
         .toList();
+  }
+
+  private static boolean hasToolCalls(Map<String, Object> metadata) {
+    Object value = metadata.get(TOOL_CALLS_METADATA_KEY);
+    return value instanceof List<?> items && !items.isEmpty();
   }
 
   /**

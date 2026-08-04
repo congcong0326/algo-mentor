@@ -68,4 +68,17 @@ class AiGovernanceMigrationResourceTest {
         .contains("ADD COLUMN ai_model_id BIGINT NULL")
         .contains("ON DELETE RESTRICT");
   }
+
+  @Test
+  void reasoningEffortMigrationKeepsHistoricCallsNullableAndConstrainsWireValues() throws IOException {
+    Resource resource = new PathMatchingResourcePatternResolver()
+        .getResource("classpath:db/migration/ai/V54__ai_llm_call_usage_reasoning_effort.sql");
+
+    assertThat(resource.exists()).isTrue();
+    String sql = resource.getContentAsString(StandardCharsets.UTF_8);
+    assertThat(sql)
+        .contains("ADD COLUMN reasoning_effort VARCHAR(16) NULL")
+        .contains("ck_ai_llm_call_usage_reasoning_effort")
+        .contains("'none', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'");
+  }
 }

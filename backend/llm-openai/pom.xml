@@ -25,12 +25,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.openai</groupId>
-      <artifactId>openai-java</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>org.congcong.algomentor</groupId>
+      <artifactId>llm-openai-compatible</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

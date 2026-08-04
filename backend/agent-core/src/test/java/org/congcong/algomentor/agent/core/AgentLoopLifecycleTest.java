@@ -2,8 +2,13 @@ package org.congcong.algomentor.agent.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +25,14 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChai
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputValidationError;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 class AgentLoopLifecycleTest {
 
@@ -150,6 +159,60 @@ class AgentLoopLifecycleTest {
         .containsExactly(AgentStreamEventNames.TOOL_PERMISSION_REQUEST);
   }
 
+  @Test
+  void structuredOutputRepairWritesLowSensitivityWarnAndNotifiesObservers() {
+    List<StructuredOutputRepairEvent> observed = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onStructuredOutputRepair(
+          AgentLoopContext context,
+          StructuredOutputRepairEvent event
+      ) {
+        observed.add(event);
+      }
+    };
+    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(event -> true, List.of(observer), List.of());
+    Logger logger = (Logger) LoggerFactory.getLogger(AgentLoopLifecycle.class);
+    ListAppender<ILoggingEvent> appender = new ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    StructuredOutputRepairEvent triggered = new StructuredOutputRepairEvent(
+        3,
+        1,
+        1,
+        StructuredOutputValidationError.Type.JSON_PARSE,
+        StructuredOutputRepairEvent.Outcome.TRIGGERED);
+    StructuredOutputRepairEvent succeeded = new StructuredOutputRepairEvent(
+        3,
+        1,
+        1,
+        StructuredOutputValidationError.Type.JSON_PARSE,
+        StructuredOutputRepairEvent.Outcome.SUCCEEDED);
+
+    try {
+      lifecycle.structuredOutputRepair(structuredOutputContext(), triggered);
+      lifecycle.structuredOutputRepair(structuredOutputContext(), succeeded);
+    } finally {
+      logger.detachAppender(appender);
+      appender.stop();
+    }
+
+    assertThat(observed).containsExactly(triggered, succeeded);
+    assertThat(appender.list).singleElement().satisfies(event -> {
+      assertThat(event.getLevel()).isEqualTo(Level.WARN);
+      assertThat(event.getFormattedMessage())
+          .contains(
+              "runId=run-structured-output",
+              "repairStepIndex=3",
+              "repairAttempt=1",
+              "maxRepairAttempts=1",
+              "schemaName=learning_plan_draft_revision",
+              "schemaVersion=v2",
+              "failureType=JSON_PARSE")
+          .doesNotContain("previousResponse", "invalid-json");
+    });
+  }
+
   private static AgentLoopContext context() {
     AgentRequest request = new AgentRequest(
         "run-1",
@@ -157,6 +220,26 @@ class AgentLoopLifecycleTest {
         List.of(LlmMessage.user("review my code")),
         Map.of(AgentRuntimeMetadataKeys.USER_ID, 7L));
     return new AgentLoopContext("run-1", request, 4, request.metadata());
+  }
+
+  private static AgentLoopContext structuredOutputContext() {
+    AgentRequest request = new AgentRequest(
+        "run-structured-output",
+        "request-structured-output",
+        List.of(LlmMessage.user("revise plan")),
+        Map.of(),
+        new AgentExecutionOptions(
+            null,
+            new LlmResponseFormat.JsonSchema(
+                "learning_plan_draft_revision",
+                JsonNodeFactory.instance.objectNode().put("type", "object"),
+                true),
+            new AgentStructuredOutputOptions(
+                StructuredOutputStrategy.PROVIDER_NATIVE,
+                "learning_plan_draft_revision",
+                "v2",
+                true)));
+    return new AgentLoopContext("run-structured-output", request, 4, request.metadata());
   }
 
   private static AgentToolPermissionRequest request() {

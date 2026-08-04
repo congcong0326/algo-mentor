@@ -49,6 +49,7 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleResponsesClient;
 import org.junit.jupiter.api.Test;
 
 class OpenAiLlmProviderTest {
@@ -61,7 +62,11 @@ class OpenAiLlmProviderTest {
     assertThat(provider.models()).hasSize(1);
     assertThat(provider.capabilities().models()).containsKey("gpt-5.2");
     assertThat(provider.models().get(0).supportedCapabilities())
-        .contains(LlmCapability.CHAT_COMPLETION, LlmCapability.STREAMING, LlmCapability.TOOL_CALLING);
+        .contains(
+            LlmCapability.CHAT_COMPLETION,
+            LlmCapability.STREAMING,
+            LlmCapability.TOOL_CALLING,
+            LlmCapability.REASONING_EFFORT);
   }
 
   @Test
@@ -414,7 +419,7 @@ class OpenAiLlmProviderTest {
         .build();
   }
 
-  private static final class FakeResponsesClient implements OpenAiResponsesClient {
+  private static final class FakeResponsesClient implements OpenAiCompatibleResponsesClient {
     private final Response response;
     private final List<ResponseStreamEvent> streamEvents;
     private final StreamResponse<ResponseStreamEvent> streamResponse;

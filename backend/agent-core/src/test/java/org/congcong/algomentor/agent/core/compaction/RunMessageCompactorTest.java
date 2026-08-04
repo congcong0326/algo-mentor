@@ -11,6 +11,8 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
+import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.junit.jupiter.api.Test;
 
@@ -62,6 +64,51 @@ class RunMessageCompactorTest {
     assertThat(result.messages()).anySatisfy(message -> assertThat(message.text()).contains("run_context_snip"));
     assertThat(result.messages().get(result.messages().size() - 1).text()).isEqualTo("recent user");
     assertThat(result.metadata()).containsKey("runContextCompaction");
+  }
+
+  @Test
+  void keepsContinuationBearingToolGroupWhenSnippingOlderContext() {
+    LlmProviderContinuation continuation = continuation();
+    LlmToolCall toolCall = new LlmToolCall("call_1", "lookup", JsonNodeFactory.instance.objectNode());
+    RunMessageCompactor compactor = compactor(policy(10_000, 0, 100, 4, 1, 2));
+    List<LlmMessage> messages = new ArrayList<>(List.of(
+        LlmMessage.system("system"),
+        LlmMessage.user("first older context that should be removed"),
+        LlmMessage.user("second older context that should be removed"),
+        LlmMessage.assistantToolCalls(List.of(toolCall), continuation),
+        LlmMessage.toolResult("call_1", JsonNodeFactory.instance.objectNode().put("result", "data")),
+        LlmMessage.user("recent context")));
+
+    RunMessageCompactionResult result = compactor.compactBeforeRequest(context(), 2, messages);
+
+    assertThat(result.messages())
+        .filteredOn(message -> !message.toolCalls().isEmpty())
+        .singleElement()
+        .satisfies(message -> assertThat(message.providerContinuation()).isSameAs(continuation));
+    assertThat(result.messages().toString()).doesNotContain("compactor-continuation-sentinel");
+  }
+
+  @Test
+  void failsInsteadOfSnippingContinuationBearingToolGroup() {
+    LlmToolCall toolCall = new LlmToolCall("call_1", "lookup", JsonNodeFactory.instance.objectNode());
+    RunMessageCompactor compactor = compactor(policy(10_000, 0, 100, 4, 1, 1));
+    List<LlmMessage> messages = new ArrayList<>(List.of(
+        LlmMessage.system("system"),
+        LlmMessage.user("first older context"),
+        LlmMessage.user("second older context"),
+        LlmMessage.assistantToolCalls(List.of(toolCall), continuation()),
+        LlmMessage.toolResult("call_1", JsonNodeFactory.instance.objectNode().put("result", "data")),
+        LlmMessage.user("recent context")));
+
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> compactor.compactBeforeRequest(context(), 2, messages))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Cannot snip a provider continuation tool interaction group");
+  }
+
+  private LlmProviderContinuation continuation() {
+    return new LlmProviderContinuation(
+        LlmProviderType.of("compatible-test"),
+        JsonNodeFactory.instance.objectNode().put("secret", "compactor-continuation-sentinel"));
   }
 
   private RunMessageCompactor compactor(ToolResultCompactionPolicy policy) {

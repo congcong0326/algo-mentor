@@ -38,7 +38,7 @@ class MicrometerOpsRecordersTest {
   }
 
   @Test
-  void activeSseGaugeOnlyDropsOnTerminalCompletionOrFailure() {
+  void activeSseGaugeDropsOnEveryTerminalConnectionOutcome() {
     sse.opened(SseStreamType.PRACTICE_MESSAGE);
     sse.opened(SseStreamType.PRACTICE_MESSAGE);
     sse.completed(SseStreamType.PRACTICE_MESSAGE);
@@ -48,7 +48,7 @@ class MicrometerOpsRecordersTest {
     assertThat(registry.get(OpsMetricNames.SSE_CONNECTIONS_ACTIVE)
         .tag("stream_type", "practice_message")
         .gauge()
-        .value()).isEqualTo(1.0);
+        .value()).isEqualTo(0.0);
 
     sse.failed(SseStreamType.PRACTICE_MESSAGE, SseFailureType.TIMEOUT);
     sse.failed(SseStreamType.PRACTICE_MESSAGE, SseFailureType.SEND_FAILURE);

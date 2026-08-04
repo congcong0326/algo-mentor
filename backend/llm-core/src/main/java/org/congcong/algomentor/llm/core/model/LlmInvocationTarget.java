@@ -5,6 +5,7 @@ import java.util.Set;
 import org.congcong.algomentor.llm.core.provider.LlmCapability;
 import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 
 /** 单次业务执行已解析且不可变的动态 provider 调用目标。 */
 public record LlmInvocationTarget(
@@ -14,8 +15,29 @@ public record LlmInvocationTarget(
     LlmModelId upstreamModelId,
     Instant providerUpdatedAt,
     Set<LlmCapability> supportedCapabilities,
-    LlmProviderClient client
+    LlmProviderClient client,
+    LlmReasoningEffort routeReasoningEffort
 ) {
+
+  public LlmInvocationTarget(
+      LlmProviderType providerType,
+      long providerInstanceId,
+      long configuredModelId,
+      LlmModelId upstreamModelId,
+      Instant providerUpdatedAt,
+      Set<LlmCapability> supportedCapabilities,
+      LlmProviderClient client
+  ) {
+    this(
+        providerType,
+        providerInstanceId,
+        configuredModelId,
+        upstreamModelId,
+        providerUpdatedAt,
+        supportedCapabilities,
+        client,
+        null);
+  }
 
   public LlmInvocationTarget {
     if (providerType == null) {

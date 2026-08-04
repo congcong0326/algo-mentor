@@ -16,6 +16,7 @@ import org.congcong.algomentor.policy.model.ResolvedPolicy;
 import org.congcong.algomentor.policy.repository.GenericPolicySearchQuery;
 import org.congcong.algomentor.policy.service.GenericPolicyManagementService;
 import org.congcong.algomentor.policy.service.GenericPolicyQueryService;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,6 +79,7 @@ public class AdminAiModelRoutingController {
         matched.priority(),
         matched.matchSource().name(),
         matched.matchedSubjectId(),
+        matched.content().reasoningEffort(),
         routeModel(matched.content().modelId())));
   }
 
@@ -143,13 +145,14 @@ public class AdminAiModelRoutingController {
       Integer priority,
       String matchSource,
       Long matchedSubjectId,
+      LlmReasoningEffort reasoningEffort,
       String reason,
       RouteModelResponse model
   ) {
     static EffectiveRouteResponse notMatched(String scenarioCode, boolean configured) {
       return new EffectiveRouteResponse(
           scenarioCode, configured, false, null, null, null, null, null,
-          AdminAiApiContractConstants.AI_MODEL_ROUTE_NOT_CONFIGURED, null);
+          null, AdminAiApiContractConstants.AI_MODEL_ROUTE_NOT_CONFIGURED, null);
     }
 
     static EffectiveRouteResponse matched(
@@ -159,11 +162,12 @@ public class AdminAiModelRoutingController {
         int priority,
         String matchSource,
         Long matchedSubjectId,
+        LlmReasoningEffort reasoningEffort,
         RouteModelResponse model
     ) {
       return new EffectiveRouteResponse(
           scenarioCode, true, true, policyId, policyVersion, priority, matchSource, matchedSubjectId,
-          model.reason(), model);
+          reasoningEffort, model.reason(), model);
     }
   }
 

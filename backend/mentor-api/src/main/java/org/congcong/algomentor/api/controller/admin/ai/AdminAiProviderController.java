@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.controller.admin.ai;
 
 import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.congcong.algomentor.ai.governance.provider.model.AiConfiguredModel;
 import org.congcong.algomentor.ai.governance.provider.model.AiProviderInstance;
 import org.congcong.algomentor.ai.governance.provider.service.AiProviderManagementService;
@@ -35,7 +36,11 @@ public class AdminAiProviderController {
   @GetMapping(AdminAiApiContractConstants.PROVIDER_TYPES_PATH)
   public ApiResponse<ProviderTypeListResponse> providerTypes() {
     return ApiResponse.success(new ProviderTypeListResponse(managementService.supportedProviderTypes().stream()
-        .map(type -> new ProviderTypeResponse(type.code(), type.displayName()))
+        .map(type -> new ProviderTypeResponse(
+            type.code(),
+            type.displayName(),
+            type.reasoningEfforts().stream().map(effort -> effort.wireValue()).toList(),
+            type.defaultConfig()))
         .toList()));
   }
 
@@ -147,7 +152,23 @@ public class AdminAiProviderController {
   public record ProviderTypeListResponse(List<ProviderTypeResponse> items) {
   }
 
-  public record ProviderTypeResponse(String code, String displayName) {
+  public record ProviderTypeResponse(
+      String code,
+      String displayName,
+      List<String> reasoningEfforts,
+      JsonNode defaultConfig
+  ) {
+    public ProviderTypeResponse {
+      reasoningEfforts = reasoningEfforts == null ? List.of() : List.copyOf(reasoningEfforts);
+      defaultConfig = defaultConfig == null
+          ? com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode()
+          : defaultConfig.deepCopy();
+    }
+
+    @Override
+    public JsonNode defaultConfig() {
+      return defaultConfig.deepCopy();
+    }
   }
 
   public record ProviderListResponse(List<AdminAiProviderResponse> items) {

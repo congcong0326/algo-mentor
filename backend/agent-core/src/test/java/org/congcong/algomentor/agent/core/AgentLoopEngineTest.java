@@ -22,6 +22,8 @@ import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
+import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -172,6 +174,43 @@ class AgentLoopEngineTest {
   }
 
   @Test
+  void carriesOpaqueContinuationToTheNextToolStepWithoutRetainingItInFinalOutput() throws Exception {
+    String sentinel = "agent-continuation-sentinel";
+    LlmProviderContinuation continuation = new LlmProviderContinuation(
+        LlmProviderType.of("compatible-test"),
+        JsonNodeFactory.instance.objectNode().put("secret", sentinel));
+    RecordingGateway gateway = new RecordingGateway();
+    gateway.steps.add(toolCallStep("lookup", "call_1", continuation));
+    gateway.steps.add(List.of(new LlmStreamEvent.MessageEnd(
+        LlmFinishReason.STOP,
+        Map.of(),
+        new LlmProviderContinuation(
+            LlmProviderType.of("compatible-test"),
+            JsonNodeFactory.instance.objectNode().put("secret", "final-" + sentinel)))));
+    AgentLoopEngine engine = engine(gateway);
+
+    AgentRunResult result = engine.run(
+        new AgentRequest(List.of(LlmMessage.user("lookup"))),
+        AgentLoopExecution.forRuntime(AgentToolRegistry.of(List.of(tool("lookup"))), List.of("lookup"), 3),
+        event -> true,
+        new AgentCancellationToken());
+
+    assertThat(gateway.requests).hasSize(2);
+    assertThat(gateway.requests.get(1).messages())
+        .filteredOn(message -> !message.toolCalls().isEmpty())
+        .singleElement()
+        .satisfies(message -> assertThat(message.providerContinuation()).isSameAs(continuation));
+    assertThat(new ObjectMapper().writeValueAsString(gateway.requests.get(1).messages()))
+        .doesNotContain(sentinel, "providerContinuation", "payload");
+    assertThat(new ObjectMapper().writeValueAsString(new AgentStepResult(
+        List.of(),
+        LlmFinishReason.TOOL_CALLS,
+        "",
+        continuation))).doesNotContain(sentinel, "providerContinuation", "payload");
+    assertThat(new ObjectMapper().writeValueAsString(result)).doesNotContain("final-" + sentinel);
+  }
+
+  @Test
   void validatesDefinitionMaxStepsAgainstTheRuntimeHardLimit() {
     assertThatThrownBy(() -> AgentLoopExecution.validateMaxSteps(0, 4))
         .isInstanceOf(IllegalArgumentException.class)
@@ -201,12 +240,20 @@ class AgentLoopEngineTest {
   }
 
   private static List<LlmStreamEvent> toolCallStep(String toolName, String callId) {
+    return toolCallStep(toolName, callId, null);
+  }
+
+  private static List<LlmStreamEvent> toolCallStep(
+      String toolName,
+      String callId,
+      LlmProviderContinuation continuation
+  ) {
     return List.of(
         new LlmStreamEvent.ToolCallEnd(new LlmToolCall(
             callId,
             toolName,
             JsonNodeFactory.instance.objectNode())),
-        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of()));
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of(), continuation));
   }
 
   private static TestTool tool(String name) {

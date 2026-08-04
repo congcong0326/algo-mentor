@@ -31,7 +31,9 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
@@ -98,6 +100,25 @@ class AiAccountingLlmGatewayTest {
   }
 
   @Test
+  void persistsTheStartEffortAfterRequestOverrideOfRouteEffort() {
+    RecordingMapper mapper = new RecordingMapper();
+    AiAccountingLlmGateway gateway = new AiAccountingLlmGateway(
+        new CompletionGateway(result()),
+        accountingService(mapper, new RecordingUsageStore()));
+    LlmCompletionRequest request = dynamicRequest(trustedMetadata(), LlmReasoningEffort.HIGH)
+        .withOptions(LlmGenerationOptions.defaults().withReasoningEffort(LlmReasoningEffort.NONE));
+
+    gateway.complete(request);
+
+    assertThat(mapper.rows).singleElement()
+        .extracting(AiLlmCallUsageRow::reasoningEffort)
+        .isEqualTo("none");
+    assertThat(mapper.updates).singleElement()
+        .extracting(AiLlmCallUsageUpdate::status)
+        .isEqualTo(AiLlmCallStatus.COMPLETED);
+  }
+
+  @Test
   void completeFailureKeepsOriginalExceptionAndRecordsFailedCall() {
     RecordingMapper mapper = new RecordingMapper();
     AiAccountingLlmGateway gateway = new AiAccountingLlmGateway(
@@ -111,10 +132,13 @@ class AiAccountingLlmGatewayTest {
             null)),
         accountingService(mapper, new RecordingUsageStore()));
 
-    assertThatThrownBy(() -> gateway.complete(request(trustedMetadata())))
+    assertThatThrownBy(() -> gateway.complete(effortRequest()))
         .isInstanceOfSatisfying(LlmException.class,
             exception -> assertThat(exception.code()).isEqualTo(LlmErrorCode.TIMEOUT));
 
+    assertThat(mapper.rows).singleElement()
+        .extracting(AiLlmCallUsageRow::reasoningEffort)
+        .isEqualTo("none");
     assertThat(mapper.updates).singleElement()
         .extracting(AiLlmCallUsageUpdate::status, AiLlmCallUsageUpdate::errorCode)
         .containsExactly(AiLlmCallStatus.FAILED, "TIMEOUT");
@@ -128,7 +152,7 @@ class AiAccountingLlmGatewayTest {
         new StreamingGateway(),
         accountingService(mapper, usageStore));
 
-    gateway.stream(request(trustedMetadata())).subscribe(new Flow.Subscriber<>() {
+    gateway.stream(effortRequest()).subscribe(new Flow.Subscriber<>() {
       @Override
       public void onSubscribe(Flow.Subscription subscription) {
         subscription.request(Long.MAX_VALUE);
@@ -149,10 +173,82 @@ class AiAccountingLlmGatewayTest {
     });
 
     assertThat(mapper.rows).hasSize(1);
+    assertThat(mapper.rows.get(0).reasoningEffort()).isEqualTo("none");
     assertThat(mapper.updates).singleElement()
         .extracting(AiLlmCallUsageUpdate::status, update -> update.usage().totalTokens())
         .containsExactly(AiLlmCallStatus.COMPLETED, 21L);
     assertThat(usageStore.usages).singleElement().extracting(AiUsage::totalTokens).isEqualTo(21L);
+  }
+
+  @Test
+  void streamErrorEventPreservesTheStartEffort() {
+    RecordingMapper mapper = new RecordingMapper();
+    AiAccountingLlmGateway gateway = new AiAccountingLlmGateway(
+        new StreamingErrorGateway(),
+        accountingService(mapper, new RecordingUsageStore()));
+
+    gateway.stream(effortRequest()).subscribe(discardingSubscriber());
+
+    assertThat(mapper.rows).singleElement()
+        .extracting(AiLlmCallUsageRow::reasoningEffort)
+        .isEqualTo("none");
+    assertThat(mapper.updates).singleElement()
+        .extracting(AiLlmCallUsageUpdate::status)
+        .isEqualTo(AiLlmCallStatus.FAILED);
+  }
+
+  @Test
+  void streamSubscriptionFailurePreservesTheStartEffort() {
+    RecordingMapper mapper = new RecordingMapper();
+    AiAccountingLlmGateway gateway = new AiAccountingLlmGateway(
+        new ThrowingStreamGateway(),
+        accountingService(mapper, new RecordingUsageStore()));
+
+    gateway.stream(effortRequest()).subscribe(discardingSubscriber());
+
+    assertThat(mapper.rows).singleElement()
+        .extracting(AiLlmCallUsageRow::reasoningEffort)
+        .isEqualTo("none");
+    assertThat(mapper.updates).singleElement()
+        .extracting(AiLlmCallUsageUpdate::status)
+        .isEqualTo(AiLlmCallStatus.FAILED);
+  }
+
+  @Test
+  void streamCancellationPreservesTheStartEffort() {
+    RecordingMapper mapper = new RecordingMapper();
+    AiAccountingLlmGateway gateway = new AiAccountingLlmGateway(
+        new PendingStreamingGateway(),
+        accountingService(mapper, new RecordingUsageStore()));
+    java.util.concurrent.atomic.AtomicReference<Flow.Subscription> subscription = new java.util.concurrent.atomic.AtomicReference<>();
+
+    gateway.stream(effortRequest()).subscribe(new Flow.Subscriber<>() {
+      @Override
+      public void onSubscribe(Flow.Subscription value) {
+        subscription.set(value);
+      }
+
+      @Override
+      public void onNext(LlmStreamEvent item) {
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throw new AssertionError(throwable);
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
+    subscription.get().cancel();
+
+    assertThat(mapper.rows).singleElement()
+        .extracting(AiLlmCallUsageRow::reasoningEffort)
+        .isEqualTo("none");
+    assertThat(mapper.updates).singleElement()
+        .extracting(AiLlmCallUsageUpdate::status)
+        .isEqualTo(AiLlmCallStatus.CANCELLED);
   }
 
   @Test
@@ -202,6 +298,39 @@ class AiAccountingLlmGatewayTest {
   }
 
   private static LlmCompletionRequest dynamicRequest(Map<String, Object> metadata) {
+    return dynamicRequest(metadata, null);
+  }
+
+  private static LlmCompletionRequest effortRequest() {
+    return dynamicRequest(trustedMetadata(), LlmReasoningEffort.HIGH)
+        .withOptions(LlmGenerationOptions.defaults().withReasoningEffort(LlmReasoningEffort.NONE));
+  }
+
+  private static Flow.Subscriber<LlmStreamEvent> discardingSubscriber() {
+    return new Flow.Subscriber<>() {
+      @Override
+      public void onSubscribe(Flow.Subscription subscription) {
+        subscription.request(Long.MAX_VALUE);
+      }
+
+      @Override
+      public void onNext(LlmStreamEvent item) {
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    };
+  }
+
+  private static LlmCompletionRequest dynamicRequest(
+      Map<String, Object> metadata,
+      LlmReasoningEffort routeReasoningEffort
+  ) {
     return LlmCompletionRequest.builder()
         .modelSelector(LlmModelSelector.requiring(Set.of()))
         .messages(List.of(LlmMessage.user("hello")))
@@ -213,7 +342,8 @@ class AiAccountingLlmGatewayTest {
             MODEL,
             Instant.parse("2026-07-27T00:00:00Z"),
             Set.of(LlmCapability.CHAT_COMPLETION),
-            mock(LlmProviderClient.class)))
+            mock(LlmProviderClient.class),
+            routeReasoningEffort))
         .build();
   }
 
@@ -328,6 +458,70 @@ class AiAccountingLlmGatewayTest {
           subscriber.onNext(new LlmStreamEvent.MessageStart(PROVIDER, MODEL));
           subscriber.onNext(new LlmStreamEvent.Usage(new LlmUsage(12, 6, 2, 0, 21)));
           subscriber.onComplete();
+        }
+
+        @Override
+        public void cancel() {
+        }
+      });
+    }
+  }
+
+  private static final class StreamingErrorGateway implements LlmGateway {
+
+    @Override
+    public LlmCompletionResult complete(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
+        @Override
+        public void request(long count) {
+          subscriber.onNext(new LlmStreamEvent.Error(new LlmException(
+              LlmErrorCode.TIMEOUT,
+              "timeout",
+              PROVIDER,
+              MODEL,
+              true,
+              Map.of(),
+              null)));
+          subscriber.onComplete();
+        }
+
+        @Override
+        public void cancel() {
+        }
+      });
+    }
+  }
+
+  private static final class ThrowingStreamGateway implements LlmGateway {
+
+    @Override
+    public LlmCompletionResult complete(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      throw new IllegalStateException("stream unavailable");
+    }
+  }
+
+  private static final class PendingStreamingGateway implements LlmGateway {
+
+    @Override
+    public LlmCompletionResult complete(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
+        @Override
+        public void request(long count) {
         }
 
         @Override

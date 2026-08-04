@@ -170,6 +170,21 @@ public final class RunMessageCompactor {
     }
     int keepHead = Math.min(policy.snipKeepHeadGroups(), groups.size());
     int keepTailStart = Math.max(keepHead, groups.size() - policy.snipKeepTailGroups());
+    if (keepHead >= keepTailStart) {
+      if (groups.stream().anyMatch(group -> containsProviderContinuation(messages, group))) {
+        throw new IllegalStateException("Cannot preserve provider continuation within the configured context budget");
+      }
+      return 0;
+    }
+    List<RunMessageGroup> continuationGroups = groups.stream()
+        .filter(group -> containsProviderContinuation(messages, group))
+        .toList();
+    boolean continuationWouldBeSnipped = continuationGroups.stream()
+        .anyMatch(group -> group.startIndex() >= groups.get(keepHead).startIndex()
+            && group.endIndex() <= groups.get(keepTailStart).startIndex());
+    if (continuationWouldBeSnipped) {
+      throw new IllegalStateException("Cannot snip a provider continuation tool interaction group");
+    }
     List<RunMessageGroup> candidates = groups.subList(keepHead, keepTailStart)
         .stream()
         .filter(group -> !group.missingToolResult() && !group.orphanToolResult())
@@ -198,7 +213,21 @@ public final class RunMessageCompactor {
     }
     messages.clear();
     messages.addAll(rebuilt);
+    if (!continuationGroups.isEmpty()
+        && (visibleCharCount(messages) > policy.estimatedInputCharBudget()
+        || parseGroups(messages).size() > policy.maxMessageGroups())) {
+      throw new IllegalStateException("Cannot preserve provider continuation within the configured context budget");
+    }
     return candidates.size();
+  }
+
+  private boolean containsProviderContinuation(List<LlmMessage> messages, RunMessageGroup group) {
+    for (int index = group.startIndex(); index < group.endIndex(); index++) {
+      if (messages.get(index).providerContinuation() != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean isCompactMarker(LlmMessage message) {

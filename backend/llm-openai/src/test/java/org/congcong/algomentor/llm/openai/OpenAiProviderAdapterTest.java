@@ -6,7 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
+import org.congcong.algomentor.llm.core.provider.LlmCapability;
 import org.congcong.algomentor.llm.core.provider.LlmProviderInstanceSpec;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleConnectionConfig;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleResponsesClient;
 import org.junit.jupiter.api.Test;
 
 class OpenAiProviderAdapterTest {
@@ -23,7 +27,17 @@ class OpenAiProviderAdapterTest {
     adapter.validateConfig(config);
 
     assertThat(adapter.providerType().value()).isEqualTo("openai");
-    assertThat(adapter.supportedCapabilities()).isNotEmpty();
+    assertThat(adapter.supportedCapabilities()).contains(LlmCapability.REASONING_EFFORT);
+    assertThat(adapter.acceptedReasoningEfforts()).containsExactly(
+        LlmReasoningEffort.NONE,
+        LlmReasoningEffort.MINIMAL,
+        LlmReasoningEffort.LOW,
+        LlmReasoningEffort.MEDIUM,
+        LlmReasoningEffort.HIGH,
+        LlmReasoningEffort.XHIGH,
+        LlmReasoningEffort.MAX);
+    assertThatThrownBy(() -> adapter.acceptedReasoningEfforts().add(LlmReasoningEffort.NONE))
+        .isInstanceOf(UnsupportedOperationException.class);
     assertThatThrownBy(() -> adapter.validateConfig(config.deepCopy().put("unknown", true)))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("unsupported field");
@@ -31,7 +45,7 @@ class OpenAiProviderAdapterTest {
 
   @Test
   void createsClientFromTheInstanceConfigWithoutLeakingIt() {
-    AtomicReference<OpenAiProviderConfig> captured = new AtomicReference<>();
+    AtomicReference<OpenAiCompatibleConnectionConfig> captured = new AtomicReference<>();
     OpenAiProviderAdapter adapter = new OpenAiProviderAdapter(config -> {
       captured.set(config);
       return unsupportedClient();
@@ -49,8 +63,8 @@ class OpenAiProviderAdapterTest {
     assertThat(captured.get().toString()).doesNotContain("sk-test", "gateway.example.test");
   }
 
-  private static OpenAiResponsesClient unsupportedClient() {
-    return new OpenAiResponsesClient() {
+  private static OpenAiCompatibleResponsesClient unsupportedClient() {
+    return new OpenAiCompatibleResponsesClient() {
       @Override
       public com.openai.models.responses.Response create(com.openai.models.responses.ResponseCreateParams params) {
         throw new UnsupportedOperationException();

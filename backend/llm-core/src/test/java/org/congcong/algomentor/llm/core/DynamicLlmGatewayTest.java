@@ -20,7 +20,9 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -79,15 +81,72 @@ class DynamicLlmGatewayTest {
     assertThat(client.completedWith).isNull();
   }
 
+  @Test
+  void appliesRouteEffortBeforeCheckingCapabilitiesAndDispatchingCompletion() {
+    RecordingClient client = new RecordingClient();
+    DynamicLlmGateway gateway = new DynamicLlmGateway();
+    LlmCompletionRequest request = request(
+        client,
+        Set.of(LlmCapability.CHAT_COMPLETION, LlmCapability.REASONING_EFFORT),
+        LlmReasoningEffort.HIGH);
+
+    gateway.complete(request);
+
+    assertThat(client.completedRequest.options().reasoningEffort()).isEqualTo(LlmReasoningEffort.HIGH);
+  }
+
+  @Test
+  void requestEffortOverridesRouteForStreaming() {
+    RecordingClient client = new RecordingClient();
+    DynamicLlmGateway gateway = new DynamicLlmGateway();
+    LlmCompletionRequest request = request(
+        client,
+        Set.of(LlmCapability.CHAT_COMPLETION, LlmCapability.STREAMING, LlmCapability.REASONING_EFFORT),
+        LlmReasoningEffort.HIGH)
+        .withOptions(LlmGenerationOptions.defaults().withReasoningEffort(LlmReasoningEffort.NONE));
+
+    gateway.stream(request);
+
+    assertThat(client.streamedRequest.options().reasoningEffort()).isEqualTo(LlmReasoningEffort.NONE);
+  }
+
+  @Test
+  void rejectsEffectiveReasoningEffortBeforeCallingClientWhenUnsupported() {
+    RecordingClient client = new RecordingClient();
+    DynamicLlmGateway gateway = new DynamicLlmGateway();
+
+    assertThatThrownBy(() -> gateway.complete(request(
+        client, Set.of(LlmCapability.CHAT_COMPLETION), LlmReasoningEffort.HIGH)))
+        .isInstanceOfSatisfying(LlmException.class,
+            exception -> assertThat(exception.code()).isEqualTo(LlmErrorCode.UNSUPPORTED_CAPABILITY));
+    assertThat(client.completedWith).isNull();
+  }
+
   private static LlmCompletionRequest request(RecordingClient client, Set<LlmCapability> capabilities) {
+    return request(client, capabilities, null);
+  }
+
+  private static LlmCompletionRequest request(
+      RecordingClient client,
+      Set<LlmCapability> capabilities,
+      LlmReasoningEffort routeReasoningEffort
+  ) {
     return LlmCompletionRequest.builder()
         .modelSelector(new LlmModelSelector(null, null, Set.of(), "test"))
         .messages(List.of(LlmMessage.user("hello")))
-        .invocationTarget(target(client, capabilities))
+        .invocationTarget(target(client, capabilities, routeReasoningEffort))
         .build();
   }
 
   private static LlmInvocationTarget target(RecordingClient client, Set<LlmCapability> capabilities) {
+    return target(client, capabilities, null);
+  }
+
+  private static LlmInvocationTarget target(
+      RecordingClient client,
+      Set<LlmCapability> capabilities,
+      LlmReasoningEffort routeReasoningEffort
+  ) {
     return new LlmInvocationTarget(
         OPENAI,
         11L,
@@ -95,16 +154,20 @@ class DynamicLlmGatewayTest {
         MODEL,
         Instant.parse("2026-07-27T00:00:00Z"),
         capabilities,
-        client);
+        client,
+        routeReasoningEffort);
   }
 
   private static final class RecordingClient implements LlmProviderClient {
 
     private LlmModelId completedWith;
+    private LlmCompletionRequest completedRequest;
+    private LlmCompletionRequest streamedRequest;
 
     @Override
     public LlmCompletionResult complete(LlmModelId upstreamModelId, LlmCompletionRequest request) {
       completedWith = upstreamModelId;
+      completedRequest = request;
       return new LlmCompletionResult(
           LlmMessage.assistant("ok"),
           List.of(),
@@ -118,7 +181,9 @@ class DynamicLlmGatewayTest {
 
     @Override
     public Flow.Publisher<LlmStreamEvent> stream(LlmModelId upstreamModelId, LlmCompletionRequest request) {
-      throw new UnsupportedOperationException();
+      streamedRequest = request;
+      return subscriber -> {
+      };
     }
   }
 }

@@ -25,7 +25,8 @@ public final class AiModelRoutePolicyTypeContributor implements GenericPolicyTyp
       values.put(scenario, GenericPolicyType.of(
           AiModelRoutingContract.policyTypeCode(scenario),
           AiModelRoutePolicyContent.class,
-          (json, content) -> providerManagementService.validateModelReference(content.modelId()),
+          (json, content) -> providerManagementService.validateModelRoute(
+              content.modelId(), content.reasoningEffort()),
           GenericPolicyTypeExposure.INTERNAL_ONLY));
     }
     this.types = Collections.unmodifiableMap(values);

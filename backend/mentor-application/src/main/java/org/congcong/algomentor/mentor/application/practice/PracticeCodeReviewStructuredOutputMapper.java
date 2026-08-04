@@ -41,6 +41,9 @@ public class PracticeCodeReviewStructuredOutputMapper {
       BigDecimal problemFit = score(scores, "problemFit", BigDecimal.ONE);
 
       List<PracticeCodeReviewEvidence> evidence = new ArrayList<>(evidence(structuredOutput.path("evidence")));
+      addScoreExplanationEvidence(
+          evidence,
+          requiredObject(structuredOutput, PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS));
       addJudgeEvidence(evidence, judgeAssessment);
 
       boolean judgeBlocking = judgeAssessment.blockingIssue()
@@ -61,25 +64,28 @@ public class PracticeCodeReviewStructuredOutputMapper {
         total = PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP;
       }
       if (judgeBlocking) {
-        evidence.add(new PracticeCodeReviewEvidence(
+        replaceEvidence(
+            evidence,
             PracticeCodeReviewConstants.EVIDENCE_JUDGE_BLOCKING_CAP,
             judgeBlockingCapEvidence(responseLanguage).formatted(
                 judgeAssessment.verdict().name(),
                 PracticeCodeReviewConstants.BLOCKING_CORRECTNESS_CAP.toPlainString(),
-                PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP.toPlainString())));
+                PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP.toPlainString()));
       } else if (correctness.compareTo(PracticeCodeReviewConstants.BLOCKING_CORRECTNESS_CAP) <= 0
           && total.compareTo(PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP) > 0) {
         total = PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP;
-        evidence.add(new PracticeCodeReviewEvidence(
+        replaceEvidence(
+            evidence,
             PracticeCodeReviewConstants.EVIDENCE_CORRECTNESS_BLOCKING_CAP,
-            correctnessBlockingCapEvidence(responseLanguage)));
+            correctnessBlockingCapEvidence(responseLanguage));
       } else if (!judgeAssessment.meetsExpectedComplexity()) {
         if (total.compareTo(PracticeCodeReviewConstants.SUBOPTIMAL_TOTAL_CAP) > 0) {
           total = PracticeCodeReviewConstants.SUBOPTIMAL_TOTAL_CAP;
         }
-        evidence.add(new PracticeCodeReviewEvidence(
+        replaceEvidence(
+            evidence,
             PracticeCodeReviewConstants.EVIDENCE_SUBOPTIMAL_COMPLEXITY_CAP,
-            suboptimalComplexityCapEvidence(responseLanguage)));
+            suboptimalComplexityCapEvidence(responseLanguage));
       }
 
       boolean passed = !judgeBlocking
@@ -173,21 +179,68 @@ public class PracticeCodeReviewStructuredOutputMapper {
       List<PracticeCodeReviewEvidence> evidence,
       JudgeAssessment judgeAssessment
   ) {
-    evidence.add(new PracticeCodeReviewEvidence(
+    replaceEvidence(
+        evidence,
         PracticeCodeReviewConstants.EVIDENCE_JUDGE_VERDICT,
-        "%s (%s)".formatted(judgeAssessment.verdict().name(), judgeAssessment.basis().name())));
-    evidence.add(new PracticeCodeReviewEvidence(
+        "%s (%s)".formatted(judgeAssessment.verdict().name(), judgeAssessment.basis().name()));
+    replaceEvidence(
+        evidence,
         PracticeCodeReviewConstants.EVIDENCE_TIME_COMPLEXITY,
-        judgeAssessment.timeComplexity()));
-    evidence.add(new PracticeCodeReviewEvidence(
+        judgeAssessment.timeComplexity());
+    replaceEvidence(
+        evidence,
         PracticeCodeReviewConstants.EVIDENCE_SPACE_COMPLEXITY,
-        judgeAssessment.spaceComplexity()));
-    evidence.add(new PracticeCodeReviewEvidence(
+        judgeAssessment.spaceComplexity());
+    replaceEvidence(
+        evidence,
         PracticeCodeReviewConstants.EVIDENCE_EXPECTED_TIME_COMPLEXITY,
-        judgeAssessment.expectedTimeComplexity()));
-    evidence.add(new PracticeCodeReviewEvidence(
+        judgeAssessment.expectedTimeComplexity());
+    replaceEvidence(
+        evidence,
         PracticeCodeReviewConstants.EVIDENCE_CONSTRAINT_ANALYSIS,
-        judgeAssessment.constraintAnalysis()));
+        judgeAssessment.constraintAnalysis());
+  }
+
+  private void addScoreExplanationEvidence(List<PracticeCodeReviewEvidence> evidence, JsonNode explanations) {
+    addScoreExplanation(
+        evidence,
+        PracticeCodeReviewConstants.EVIDENCE_SCORE_CORRECTNESS,
+        explanations,
+        PracticeCodeReviewConstants.JSON_SCORE_CORRECTNESS);
+    addScoreExplanation(
+        evidence,
+        PracticeCodeReviewConstants.EVIDENCE_SCORE_COMPLEXITY,
+        explanations,
+        PracticeCodeReviewConstants.JSON_SCORE_COMPLEXITY);
+    addScoreExplanation(
+        evidence,
+        PracticeCodeReviewConstants.EVIDENCE_SCORE_EDGE_CASES,
+        explanations,
+        PracticeCodeReviewConstants.JSON_SCORE_EDGE_CASES);
+    addScoreExplanation(
+        evidence,
+        PracticeCodeReviewConstants.EVIDENCE_SCORE_CODE_QUALITY,
+        explanations,
+        PracticeCodeReviewConstants.JSON_SCORE_CODE_QUALITY);
+    addScoreExplanation(
+        evidence,
+        PracticeCodeReviewConstants.EVIDENCE_SCORE_PROBLEM_FIT,
+        explanations,
+        PracticeCodeReviewConstants.JSON_SCORE_PROBLEM_FIT);
+  }
+
+  private void addScoreExplanation(
+      List<PracticeCodeReviewEvidence> evidence,
+      String evidenceType,
+      JsonNode explanations,
+      String field
+  ) {
+    replaceEvidence(evidence, evidenceType, requiredText(explanations, field));
+  }
+
+  private void replaceEvidence(List<PracticeCodeReviewEvidence> evidence, String type, String value) {
+    evidence.removeIf(item -> item.type().equals(type));
+    evidence.add(new PracticeCodeReviewEvidence(type, value));
   }
 
   private List<String> deductionReasons(

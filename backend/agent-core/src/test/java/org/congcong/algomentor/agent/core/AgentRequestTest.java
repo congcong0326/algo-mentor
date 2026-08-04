@@ -45,5 +45,6 @@ class AgentRequestTest {
     assertThat(request.executionOptions().structuredOutput().schemaName()).isEqualTo("learning_plan_draft");
     assertThat(request.executionOptions().structuredOutput().schemaVersion()).isEqualTo("v1");
     assertThat(request.executionOptions().structuredOutput().required()).isTrue();
+    assertThat(request.executionOptions().structuredOutput().maxRepairAttempts()).isEqualTo(1);
   }
 }

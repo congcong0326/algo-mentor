@@ -18,19 +18,23 @@
 ## 设计目标
 
 - `AgentRequest` 能携带通用执行配置，并由 `AgentLlmRequestFactory` 原样映射到 `LlmCompletionRequest`。
-- 支持 provider-native structured output，第一阶段复用 `llm-core` 已有的 `LlmResponseFormat.JsonSchema`。
+- 支持 provider-native structured output，复用 `llm-core` 已有的 `LlmResponseFormat.JsonSchema`。
+- 在 Agent Core 对最终结果执行严格 JSON 解析和本地 JSON Schema 校验，不把 Provider 声明的 strict 当作绝对保证。
+- required 结构化输出校验失败时，允许执行有明确上限的隔离 repair，不重新执行原 Agent 工具链。
 - `AgentLoopRunner` 在流式转发 token 的同时，聚合最终 assistant 输出，并在 run 成功时暴露 `AgentOutput`。
 - 应用层可以从 `AgentRunResult` 或 observer 生命周期中拿到最终文本和结构化 JSON。
 - 保持 `agent-core` 业务无关，不引入 `LearningPlan`、用户画像、学习目标等领域模型。
 - 保持现有 SSE 事件兼容；新增结果捕获能力不要求客户端改变现有 token 消费方式。
-- 为后续 `AUTO` 或 `TOOL_CALL` 结构化输出策略预留接口，但第一阶段不实现 ToolStrategy。
+- 为后续 `AUTO` 或 `TOOL_CALL` 结构化输出策略预留接口，但当前不实现 ToolStrategy。
 
 ## 非目标
 
-- 第一阶段不实现 LangChain 式 ToolStrategy。
-- 第一阶段不实现结构化输出自动纠错 loop，例如 schema 校验失败后把错误作为 tool result 回填给模型。
-- 第一阶段不引入复杂 artifact 存储模型；学习计划业务产物由 `mentor-application` 和业务表处理。
-- 第一阶段不改变 provider SDK 的具体适配方式，只使用 `llm-core` 已有的 `LlmResponseFormat` 抽象。
+- 当前不实现 LangChain 式 ToolStrategy。
+- 不对业务语义校验失败做通用自动修复；学习计划负载、阶段数量等仍由业务层校验。
+- 不通过截取第一个 `{`、最后一个 `}` 等宽松启发式提取 JSON，避免把解释文本或多个对象误判为合法结果。
+- 不引入无限重试；required 输出默认最多 repair 一次，并允许通过强类型选项关闭或调整有限次数。
+- 不引入复杂 artifact 存储模型；学习计划业务产物由 `mentor-application` 和业务表处理。
+- 不改变 provider SDK 的具体适配方式，只使用 `llm-core` 已有的 `LlmResponseFormat` 抽象。
 - 不把结构化输出 schema 放入 `metadata` 作为隐式约定。
 
 ## 核心原则
@@ -102,7 +106,8 @@ public record AgentStructuredOutputOptions(
     StructuredOutputStrategy strategy,
     String schemaName,
     String schemaVersion,
-    boolean required
+    boolean required,
+    int maxRepairAttempts
 ) {
 
   public static AgentStructuredOutputOptions none() {
@@ -124,7 +129,7 @@ public enum StructuredOutputStrategy {
 }
 ```
 
-第一阶段约束：
+当前约束：
 
 - `NONE`：普通文本输出。
 - `PROVIDER_NATIVE`：要求 `responseFormat` 是 `LlmResponseFormat.JsonObject` 或 `LlmResponseFormat.JsonSchema`。
@@ -283,17 +288,41 @@ Text response format
   -> AgentOutput.structured = null
 
 JsonObject / JsonSchema response format
-  -> parse finalContent as JsonNode
+  -> 严格解析 finalContent，拒绝尾随解释文本
+  -> JsonObject 校验根节点必须为 object
+  -> JsonSchema 在客户端再次执行 Draft 2020-12 校验
   -> AgentOutput.text = finalContent
   -> AgentOutput.structured = parsed JsonNode
 ```
 
 解析失败策略：
 
-- 如果 `structuredOutput.required == true`，抛出 `AgentException`，错误码建议新增 `STRUCTURED_OUTPUT_INVALID`。
+- 如果 `structuredOutput.required == true` 且 `maxRepairAttempts > 0`，进入有限 repair 流程。
+- repair 使用同一 response format 和路由，但发送隔离上下文，关闭工具、停止序列和 reasoning，温度固定为 `0`。
+- repair 只携带上次非法输出和具体解析/Schema 错误，不重新执行搜索题库等原 Agent 工具。
+- repair 结果仍需经过相同的 JSON 和 Schema 校验；次数耗尽后抛出 `STRUCTURED_OUTPUT_INVALID`。
 - 如果 `required == false`，保留 `text`，`structured` 为空，并在 metadata 记录解析失败原因。
 
-第一阶段可以先不在 core 做完整 JSON Schema 校验，因为 provider-native strict schema 已经在 provider 侧约束。业务层仍需要做业务校验，例如学习计划天数、阶段数量、每日任务为空等。
+Provider-native strict schema 是第一层约束，本地校验是第二层确认。业务层仍需要继续做学习计划天数、阶段数量、每日任务为空等业务语义校验。
+
+### 有限 repair 状态机
+
+```text
+agent/tool loop
+  -> final candidate
+  -> strict JSON parse + local schema validation
+     -> valid: finish
+     -> invalid and attempts remain:
+          isolated repair step
+          tools=[]
+          tool_choice=none
+          reasoning_effort=none
+          same response_format
+     -> validate again
+     -> still invalid: fail
+```
+
+repair step 使用新的 step index，正常进入 interceptor、observer、调用计费和 trace。`maxSteps` 的运行态预算包含可用 repair 次数，但原 Agent 工具循环的步数上限保持不变。
 
 ### 与工具调用 step 的关系
 
@@ -404,11 +433,37 @@ AUTO：作为未来策略，由模型/provider capability 决定 provider-native
 - `STRUCTURED_OUTPUT_UNSUPPORTED`：请求了 `PROVIDER_NATIVE`，但当前 provider/model 不支持对应 response format。
 - `STRUCTURED_OUTPUT_SCHEMA_INVALID`：业务传入的 schema 自身不合法。
 
-第一阶段推荐失败策略：
+当前失败策略：
 
 - 学习计划生成请求使用 `required=true`。
-- 解析失败直接让 run failed，不保存业务计划。
-- API 返回可重试错误；后续可以补自动重试或降级文本解释。
+- required 输出默认先做一次隔离 repair，repair 不占用原工具循环预算。
+- repair 后仍失败则让 run failed，不保存业务计划，也不触发整条 Agent run 自动重跑。
+- HTTP/Provider 重试、结构化输出 repair、业务校验失败分别计数，不能合并成同一个无限重试机制。
+
+## 可观测性
+
+required 结构化输出首次校验失败并准备进入有限 repair 时，`AgentLoopLifecycle` 输出一条 `WARN`：
+
+- 包含 `runId`、repair step、attempt、最大次数、schema name/version 和固定 failure type。
+- 不包含原始模型输出、用户内容或完整校验错误，避免非法 JSON 中的敏感内容进入日志。
+- repair 成功不会把 run 标记为失败；repair 耗尽后仍由统一 `Agent run failed` 日志记录终态异常。
+
+`agent-core` 通过 observer 发布 `TRIGGERED / SUCCEEDED / FAILED` repair 事件，不直接依赖 Micrometer。
+`ai-governance` 的 `AiRunMetricsObserver` 将事件记录为：
+
+```text
+ai.structured.output.repairs{
+  purpose,
+  source,
+  failure_type,
+  outcome,
+  attempt
+}
+```
+
+所有标签均来自固定枚举或 `0-2` 的有界 attempt，不包含 `runId`、用户 ID、模型输出、schema 正文或其他高基数字段。
+Prometheus 暴露名称为 `ai_structured_output_repairs_total`。其中 `outcome=TRIGGERED` 用于统计兜底触发次数，
+`SUCCEEDED / FAILED` 用于计算 repair 成功率。
 
 ## 测试建议
 
@@ -418,7 +473,9 @@ AUTO：作为未来策略，由模型/provider capability 决定 provider-native
 - `AgentLlmRequestFactory` 正确透传 `generationOptions` 和 `responseFormat`。
 - 文本输出 run 产生 `AgentOutput.text`。
 - JSON schema 输出 run 产生 `AgentOutput.structured`。
-- 结构化输出 required 且 JSON 非法时抛出 `AgentException`。
+- JSON 围栏、自然语言前缀和尾随文本会触发一次无工具 repair。
+- JSON 语法合法但不符合 Schema 时会把校验错误回灌给 repair step。
+- repair 次数耗尽后抛出 `STRUCTURED_OUTPUT_INVALID`，并记录 failure type、错误摘要和 attempt 数。
 - 工具调用 step 的 content 不会成为最终 output。
 - `onFinalOutput` 在 `onRunEnd` 前触发。
 
@@ -469,6 +526,5 @@ AUTO：作为未来策略，由模型/provider capability 决定 provider-native
 
 - 根据 provider capabilities 自动选择 `PROVIDER_NATIVE` 或 `TOOL_CALL`。
 - 增加 schema hash、schema registry 或 artifact 引用，避免大 schema 重复写入 snapshot。
-- 增加结构化输出自动修复策略，例如 JSON 解析失败后用一次轻量 repair prompt。
 - 增加 `final_output` SSE 事件，让前端在流末端直接收到结构化产物摘要。
 - 如果引入弱模型或多 provider 混跑，再实现 ToolStrategy 作为兼容路径。

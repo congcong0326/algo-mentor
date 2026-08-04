@@ -39,6 +39,8 @@ public final class AiGovernanceMetadataKeys {
   public static final String UPSTREAM_MODEL_ID = "aiUpstreamModelId";
   /** provider instance 的低敏配置版本标识。 */
   public static final String PROVIDER_CONFIG_REVISION = "aiProviderConfigRevision";
+  /** 路由规则配置的 reasoning effort wire value。 */
+  public static final String ROUTE_REASONING_EFFORT = "aiRouteReasoningEffort";
 
   private AiGovernanceMetadataKeys() {
   }

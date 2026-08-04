@@ -242,6 +242,33 @@ public final class AgentRuntimeMetadataKeys {
    */
   public static final String PARSE_ERROR = "parseError";
 
+  /** 结构化输出 JSON 或 Schema 校验的失败类型。 */
+  public static final String STRUCTURED_OUTPUT_FAILURE_TYPE = "structuredOutputFailureType";
+
+  /** 结构化输出校验失败摘要。 */
+  public static final String STRUCTURED_OUTPUT_VALIDATION_ERROR = "structuredOutputValidationError";
+
+  /** 结构化输出校验失败明细。 */
+  public static final String STRUCTURED_OUTPUT_VALIDATION_ERRORS = "structuredOutputValidationErrors";
+
+  /** 当前结构化输出 repair 的正序 attempt。 */
+  public static final String STRUCTURED_OUTPUT_REPAIR_ATTEMPT = "structuredOutputRepairAttempt";
+
+  /** 结构化输出实际执行的 repair 次数。 */
+  public static final String STRUCTURED_OUTPUT_REPAIR_ATTEMPTS = "structuredOutputRepairAttempts";
+
+  /** 结构化输出允许的最大 repair 次数。 */
+  public static final String STRUCTURED_OUTPUT_MAX_REPAIR_ATTEMPTS = "structuredOutputMaxRepairAttempts";
+
+  /** 最终结构化输出是否经过模型 repair。 */
+  public static final String STRUCTURED_OUTPUT_REPAIRED = "structuredOutputRepaired";
+
+  /** repair 前首次结构化输出的失败类型。 */
+  public static final String STRUCTURED_OUTPUT_INITIAL_FAILURE_TYPE = "structuredOutputInitialFailureType";
+
+  /** 客户端结构化输出校验状态。 */
+  public static final String STRUCTURED_OUTPUT_VALIDATION_STATUS = "structuredOutputValidationStatus";
+
   private AgentRuntimeMetadataKeys() {
   }
 }

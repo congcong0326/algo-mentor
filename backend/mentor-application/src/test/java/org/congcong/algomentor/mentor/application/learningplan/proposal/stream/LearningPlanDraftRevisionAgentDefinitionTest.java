@@ -80,6 +80,30 @@ class LearningPlanDraftRevisionAgentDefinitionTest {
         .containsExactly(LlmMessage.Role.SYSTEM, LlmMessage.Role.ASSISTANT, LlmMessage.Role.USER);
   }
 
+  @Test
+  void requiresWorkloadReductionsToPreserveThePeriodPhaseStructure() {
+    LearningPlanDraftRevisionAgentDefinition definition = new LearningPlanDraftRevisionAgentDefinition(
+        new LearningPlanProposalPromptBuilder(new ObjectMapper()), new ObjectMapper());
+    LearningPlanDraftRevisionAgentInput input = new LearningPlanDraftRevisionAgentInput(
+        7L,
+        11L,
+        "题目有点多了，把当前工作量减少一半，但是保留核心题目",
+        brief(),
+        currentPlan(),
+        "revision-workload-reduction",
+        LearningPlanPersonalizationSnapshot.disabled(Instant.EPOCH));
+
+    var prepared = definition.prepare(input, context("revision-workload-reduction"));
+
+    assertThat(prepared.messages().get(0).text())
+        .contains("阶段数按 resolvedBrief 的 durationWeeks 规划：1 周 1 阶段，2 周 2 阶段，3-6 周 3 阶段，7 周及以上 4 阶段")
+        .contains("当前模板阶段数不符合该规则时，应重组为目标阶段数")
+        .contains("当前草案已经符合第 4 条阶段数时")
+        .contains("一般、普通、合理工作量")
+        .contains("sort=COMPANY_FREQUENCY_DESC")
+        .contains("不得使用字符串 \"null\"");
+  }
+
   private LearningPlanBrief brief() {
     return new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
@@ -115,10 +139,14 @@ class LearningPlanDraftRevisionAgentDefinitionTest {
   }
 
   private AgentInvocationContext context() {
+    return context("revision-1");
+  }
+
+  private AgentInvocationContext context(String idempotencyKey) {
     return new AgentInvocationContext(
         7L,
         AgentInvocationMode.USER_ENTRY,
-        "revision-1",
+        idempotencyKey,
         null,
         null,
         20,

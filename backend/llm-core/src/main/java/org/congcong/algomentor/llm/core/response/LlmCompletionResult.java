@@ -1,10 +1,12 @@
 package org.congcong.algomentor.llm.core.response;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
@@ -19,7 +21,8 @@ public record LlmCompletionResult(
     LlmUsage usage,
     LlmProviderId provider,
     LlmModelId model,
-    Map<String, Object> metadata
+    Map<String, Object> metadata,
+    @JsonIgnore LlmProviderContinuation providerContinuation
 ) {
 
   public LlmCompletionResult {
@@ -36,5 +39,18 @@ public record LlmCompletionResult(
       throw new IllegalArgumentException("LLM completion result model must not be null");
     }
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+  }
+
+  public LlmCompletionResult(
+      LlmMessage message,
+      List<LlmToolCall> toolCalls,
+      JsonNode structuredOutput,
+      LlmFinishReason finishReason,
+      LlmUsage usage,
+      LlmProviderId provider,
+      LlmModelId model,
+      Map<String, Object> metadata
+  ) {
+    this(message, toolCalls, structuredOutput, finishReason, usage, provider, model, metadata, null);
   }
 }

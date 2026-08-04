@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmInvocationTarget;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffortResolver;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 
@@ -20,10 +22,13 @@ public final class AiProviderCallMetricsLlmGateway implements LlmGateway {
   public static final String CALLS_ACTIVE = "ai_provider_calls_active";
   public static final String CALLS_TOTAL = "ai_provider_calls_total";
 
+  private static final String PROVIDER_TYPE_TAG = "provider_type";
+  private static final String REASONING_EFFORT_TAG = "reasoning_effort";
   private static final String UNKNOWN_PROVIDER_TYPE = "unknown";
+  private static final String PROVIDER_DEFAULT_REASONING_EFFORT = "provider_default";
   private final LlmGateway delegate;
   private final MeterRegistry meterRegistry;
-  private final ConcurrentMap<String, AtomicInteger> activeCalls = new ConcurrentHashMap<>();
+  private final ConcurrentMap<CallDimensions, AtomicInteger> activeCalls = new ConcurrentHashMap<>();
 
   public AiProviderCallMetricsLlmGateway(LlmGateway delegate, MeterRegistry meterRegistry) {
     this.delegate = java.util.Objects.requireNonNull(delegate, "delegate must not be null");
@@ -94,23 +99,25 @@ public final class AiProviderCallMetricsLlmGateway implements LlmGateway {
   }
 
   private CallObservation start(LlmCompletionRequest request) {
-    String providerType = providerType(request);
-    AtomicInteger active = activeCalls.computeIfAbsent(providerType, this::registerActiveGauge);
+    CallDimensions dimensions = new CallDimensions(providerType(request), reasoningEffort(request));
+    AtomicInteger active = activeCalls.computeIfAbsent(dimensions, this::registerActiveGauge);
     active.incrementAndGet();
-    return new CallObservation(providerType, active);
+    return new CallObservation(dimensions, active);
   }
 
-  private AtomicInteger registerActiveGauge(String providerType) {
+  private AtomicInteger registerActiveGauge(CallDimensions dimensions) {
     AtomicInteger active = new AtomicInteger();
     Gauge.builder(CALLS_ACTIVE, active, AtomicInteger::get)
-        .tag("provider_type", providerType)
+        .tag(PROVIDER_TYPE_TAG, dimensions.providerType())
+        .tag(REASONING_EFFORT_TAG, dimensions.reasoningEffort())
         .register(meterRegistry);
     return active;
   }
 
-  private void recordTerminal(String providerType, String status) {
+  private void recordTerminal(CallDimensions dimensions, String status) {
     Counter.builder(CALLS_TOTAL)
-        .tag("provider_type", providerType)
+        .tag(PROVIDER_TYPE_TAG, dimensions.providerType())
+        .tag(REASONING_EFFORT_TAG, dimensions.reasoningEffort())
         .tag("status", status)
         .register(meterRegistry)
         .increment();
@@ -127,23 +134,34 @@ public final class AiProviderCallMetricsLlmGateway implements LlmGateway {
     return request.modelSelector().providerId().map(value -> value.value()).orElse(UNKNOWN_PROVIDER_TYPE);
   }
 
+  private static String reasoningEffort(LlmCompletionRequest request) {
+    if (request == null) {
+      return PROVIDER_DEFAULT_REASONING_EFFORT;
+    }
+    LlmReasoningEffort effort = LlmReasoningEffortResolver.resolve(request);
+    return effort == null ? PROVIDER_DEFAULT_REASONING_EFFORT : effort.wireValue();
+  }
+
   private final class CallObservation {
 
-    private final String providerType;
+    private final CallDimensions dimensions;
     private final AtomicInteger active;
     private final AtomicBoolean finished = new AtomicBoolean();
 
-    private CallObservation(String providerType, AtomicInteger active) {
-      this.providerType = providerType;
+    private CallObservation(CallDimensions dimensions, AtomicInteger active) {
+      this.dimensions = dimensions;
       this.active = active;
     }
 
     private void finish(String status) {
       if (finished.compareAndSet(false, true)) {
         active.decrementAndGet();
-        recordTerminal(providerType, status);
+        recordTerminal(dimensions, status);
       }
     }
+  }
+
+  private record CallDimensions(String providerType, String reasoningEffort) {
   }
 
   private enum EmptySubscription implements Flow.Subscription {

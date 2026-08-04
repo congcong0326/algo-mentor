@@ -1423,10 +1423,22 @@ export interface LocaleResources {
     reviewPassScoreLabel: (passScore: number) => string;
     reviewNoReview: string;
     reviewCodeSnapshot: string;
+    reviewScoreBreakdown: string;
+    reviewScoreContribution: (score: number, maximum: number) => string;
+    reviewScoreDimensions: Record<'correctness' | 'complexity' | 'edgeCases' | 'codeQuality' | 'problemFit', string>;
+    reviewScoreLevels: Record<'excellent' | 'good' | 'needsImprovement' | 'weak', string>;
+    reviewScoreDetailAction: (dimension: string) => string;
+    reviewScoreTooltipTitle: (dimension: string, level: string, contribution: string) => string;
+    reviewScoreDetailUnavailable: string;
+    reviewScoreTimeComplexity: (value: string) => string;
+    reviewScoreSpaceComplexity: (value: string) => string;
+    reviewScoreExpectedComplexity: (value: string) => string;
+    reviewScoreAnalysisBasis: Record<
+      'SERVER_EXECUTION' | 'USER_REPORTED_EXECUTION' | 'STATIC_ANALYSIS' | 'INSUFFICIENT_CONTEXT',
+      string
+    >;
     reviewDeductionReasons: string;
     reviewImprovementSuggestions: string;
-    reviewEvidence: string;
-    reviewContextSummary: string;
     completionGateFallback: string;
     completionRequiresPassedReview: string;
     completionGateMessages: Record<'NO_REVIEW' | 'LATEST_REVIEW_FAILED' | 'PASSED' | 'ALREADY_COMPLETED', string>;
@@ -2896,10 +2908,35 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewPassScoreLabel: (passScore) => `通过分 ${passScore}`,
       reviewNoReview: '暂无代码提交记录',
       reviewCodeSnapshot: '代码快照',
+      reviewScoreBreakdown: '评分明细',
+      reviewScoreContribution: (score, maximum) => `${score} / ${maximum}`,
+      reviewScoreDimensions: {
+        correctness: '正确性',
+        complexity: '复杂度',
+        edgeCases: '边界条件',
+        codeQuality: '代码质量',
+        problemFit: '题目要求符合度',
+      },
+      reviewScoreLevels: {
+        excellent: '表现优秀',
+        good: '表现良好',
+        needsImprovement: '需要改进',
+        weak: '问题明显',
+      },
+      reviewScoreDetailAction: (dimension) => `查看${dimension}评分说明`,
+      reviewScoreTooltipTitle: (dimension, level, contribution) => `${dimension} · ${level} · ${contribution}`,
+      reviewScoreDetailUnavailable: '本次评审没有提供更细的分项说明。',
+      reviewScoreTimeComplexity: (value) => `时间复杂度：${value}`,
+      reviewScoreSpaceComplexity: (value) => `空间复杂度：${value}`,
+      reviewScoreExpectedComplexity: (value) => `目标复杂度：${value}`,
+      reviewScoreAnalysisBasis: {
+        SERVER_EXECUTION: '判断方式：服务端执行结果',
+        USER_REPORTED_EXECUTION: '判断方式：基于你提供的运行结果',
+        STATIC_ANALYSIS: '判断方式：静态分析，未实际运行代码',
+        INSUFFICIENT_CONTEXT: '判断方式：上下文不足，无法确认',
+      },
       reviewDeductionReasons: '扣分原因',
       reviewImprovementSuggestions: '改进建议',
-      reviewEvidence: '评审依据',
-      reviewContextSummary: '上下文摘要',
       completionGateFallback: '完成状态需要等待代码提交记录结果。',
       completionRequiresPassedReview: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
       completionGateMessages: {
@@ -4432,10 +4469,35 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewPassScoreLabel: (passScore) => `Pass score ${passScore}`,
       reviewNoReview: 'No code submission yet',
       reviewCodeSnapshot: 'Code snapshot',
+      reviewScoreBreakdown: 'Score breakdown',
+      reviewScoreContribution: (score, maximum) => `${score} / ${maximum}`,
+      reviewScoreDimensions: {
+        correctness: 'Correctness',
+        complexity: 'Complexity',
+        edgeCases: 'Edge cases',
+        codeQuality: 'Code quality',
+        problemFit: 'Requirement fit',
+      },
+      reviewScoreLevels: {
+        excellent: 'Excellent',
+        good: 'Good',
+        needsImprovement: 'Needs improvement',
+        weak: 'Significant issues',
+      },
+      reviewScoreDetailAction: (dimension) => `View ${dimension} score details`,
+      reviewScoreTooltipTitle: (dimension, level, contribution) => `${dimension} · ${level} · ${contribution}`,
+      reviewScoreDetailUnavailable: 'No additional explanation was provided for this dimension.',
+      reviewScoreTimeComplexity: (value) => `Time complexity: ${value}`,
+      reviewScoreSpaceComplexity: (value) => `Space complexity: ${value}`,
+      reviewScoreExpectedComplexity: (value) => `Expected complexity: ${value}`,
+      reviewScoreAnalysisBasis: {
+        SERVER_EXECUTION: 'Basis: server execution result',
+        USER_REPORTED_EXECUTION: 'Basis: execution result you provided',
+        STATIC_ANALYSIS: 'Basis: static analysis; the code was not executed',
+        INSUFFICIENT_CONTEXT: 'Basis: insufficient context to confirm',
+      },
       reviewDeductionReasons: 'Deduction reasons',
       reviewImprovementSuggestions: 'Improvement suggestions',
-      reviewEvidence: 'Evidence',
-      reviewContextSummary: 'Context summary',
       completionGateFallback: 'Completion is waiting for a code submission result.',
       completionRequiresPassedReview: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
       completionGateMessages: {

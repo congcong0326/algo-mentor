@@ -33,6 +33,7 @@ import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermission
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.common.trace.RequestTraceContext;
@@ -44,6 +45,7 @@ import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -868,18 +870,175 @@ class AgentLoopRunnerTest {
   }
 
   @Test
-  void emitsAgentErrorWhenRequiredStructuredOutputIsInvalidJson() {
+  void repairsRequiredStructuredOutputOnceWithoutToolsOrReasoning() {
     FakeGateway gateway = new FakeGateway();
     gateway.steps.add(List.of(
-        new LlmStreamEvent.ContentDelta("not-json"),
+        new LlmStreamEvent.ContentDelta("```json\n{\"days\":7}\n```"),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("{\"days\":7}"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<AgentOutput> outputs = new ArrayList<>();
+    List<StructuredOutputRepairEvent> repairEvents = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+        outputs.add(output);
+      }
+
+      @Override
+      public void onStructuredOutputRepair(
+          AgentLoopContext context,
+          StructuredOutputRepairEvent event
+      ) {
+        repairEvents.add(event);
+      }
+    };
     AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
         LlmToolChoice.auto(),
         4,
-        List.of(),
+        List.of(observer),
+        List.of());
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "request-1",
+        List.of(LlmMessage.user("create plan")),
+        Map.of(),
+        new AgentExecutionOptions(
+            new LlmGenerationOptions(0.7, 0.8, 3000, List.of("STOP"), 7L, Duration.ofSeconds(30)),
+            new LlmResponseFormat.JsonSchema(
+                "learning_plan_draft",
+                JsonNodeFactory.instance.objectNode().put("type", "object"),
+                true),
+            new AgentStructuredOutputOptions(
+                StructuredOutputStrategy.PROVIDER_NATIVE,
+                "learning_plan_draft",
+                "v1",
+                true)));
+
+    List<AgentStreamEvent> events = collect(runner.stream(request));
+
+    assertThat(gateway.requests).hasSize(2);
+    assertThat(gateway.requests.get(1)).satisfies(repairRequest -> {
+      assertThat(repairRequest.tools()).isEmpty();
+      assertThat(repairRequest.toolChoice()).isEqualTo(LlmToolChoice.none());
+      assertThat(repairRequest.options().reasoningEffort()).isEqualTo(LlmReasoningEffort.NONE);
+      assertThat(repairRequest.options().temperature()).isZero();
+      assertThat(repairRequest.options().topP()).isNull();
+      assertThat(repairRequest.options().stop()).isEmpty();
+      assertThat(repairRequest.responseFormat()).isEqualTo(request.executionOptions().responseFormat());
+      assertThat(repairRequest.messages()).hasSize(2);
+      assertThat(repairRequest.messages().get(1).text())
+          .contains("previousResponse", "```json", "JSON_PARSE");
+      assertThat(repairRequest.metadata())
+          .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPT, 1)
+          .containsEntry(AgentRuntimeMetadataKeys.STEP_INDEX, 2);
+    });
+    assertThat(outputs).singleElement().satisfies(output -> {
+      assertThat(output.text()).isEqualTo("{\"days\":7}");
+      assertThat(output.structured().path("days").asInt()).isEqualTo(7);
+      assertThat(output.metadata())
+          .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIRED, true)
+          .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPTS, 1)
+          .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_INITIAL_FAILURE_TYPE, "JSON_PARSE");
+    });
+    assertThat(events.stream()
+        .filter(AgentStreamEvent.AgentStepStart.class::isInstance)
+        .map(AgentStreamEvent.AgentStepStart.class::cast)
+        .map(AgentStreamEvent.AgentStepStart::stepIndex))
+        .containsExactly(1, 2);
+    assertThat(events.stream()
+        .filter(AgentStreamEvent.AgentRunEnd.class::isInstance)
+        .map(AgentStreamEvent.AgentRunEnd.class::cast)
+        .map(AgentStreamEvent.AgentRunEnd::steps))
+        .containsExactly(2);
+    assertThat(repairEvents)
+        .extracting(StructuredOutputRepairEvent::outcome)
+        .containsExactly(
+            StructuredOutputRepairEvent.Outcome.TRIGGERED,
+            StructuredOutputRepairEvent.Outcome.SUCCEEDED);
+  }
+
+  @Test
+  void repairsJsonThatDoesNotMatchTheRequestedSchema() {
+    ObjectNode schema = JsonNodeFactory.instance.objectNode();
+    schema.put("type", "object");
+    schema.put("additionalProperties", false);
+    schema.putObject("properties").putObject("days").put("type", "integer");
+    schema.putArray("required").add("days");
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("{\"days\":\"seven\"}"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("{\"days\":7}"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<AgentOutput> outputs = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+        outputs.add(output);
+      }
+    };
+    AgentLoopRunner runner = newTestRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "request-1",
+        List.of(LlmMessage.user("create plan")),
+        Map.of(),
+        new AgentExecutionOptions(
+            null,
+            new LlmResponseFormat.JsonSchema("learning_plan_draft", schema, true),
+            new AgentStructuredOutputOptions(
+                StructuredOutputStrategy.PROVIDER_NATIVE,
+                "learning_plan_draft",
+                "v1",
+                true)));
+
+    collect(runner.stream(request));
+
+    assertThat(gateway.requests).hasSize(2);
+    assertThat(gateway.requests.get(1).messages().get(1).text()).contains("JSON_SCHEMA", "days");
+    assertThat(outputs).singleElement().satisfies(output -> assertThat(output.metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_INITIAL_FAILURE_TYPE, "JSON_SCHEMA")
+        .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIRED, true));
+  }
+
+  @Test
+  void emitsAgentErrorWhenRequiredStructuredOutputIsInvalidJson() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("not-json"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("still-not-json"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<StructuredOutputRepairEvent> repairEvents = new ArrayList<>();
+    AgentLoopRunner runner = newTestRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(new AgentLoopObserver() {
+          @Override
+          public void onStructuredOutputRepair(
+              AgentLoopContext context,
+              StructuredOutputRepairEvent event
+          ) {
+            repairEvents.add(event);
+          }
+        }),
         List.of());
     AgentRequest request = new AgentRequest(
         "run-1",
@@ -901,7 +1060,16 @@ class AgentLoopRunnerTest {
     assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
     AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
     assertThat(error.error().code()).isEqualTo(AgentErrorCode.STRUCTURED_OUTPUT_INVALID);
-    assertThat(error.error().metadata()).containsEntry("schemaName", "learning_plan_draft");
+    assertThat(error.error().metadata())
+        .containsEntry("schemaName", "learning_plan_draft")
+        .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_FAILURE_TYPE, "JSON_PARSE")
+        .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPTS, 1);
+    assertThat(gateway.requests).hasSize(2);
+    assertThat(repairEvents)
+        .extracting(StructuredOutputRepairEvent::outcome)
+        .containsExactly(
+            StructuredOutputRepairEvent.Outcome.TRIGGERED,
+            StructuredOutputRepairEvent.Outcome.FAILED);
   }
 
   @Test

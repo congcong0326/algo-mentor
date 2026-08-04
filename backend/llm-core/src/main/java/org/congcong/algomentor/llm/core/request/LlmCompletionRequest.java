@@ -77,6 +77,18 @@ public record LlmCompletionRequest(
         invocationTarget);
   }
 
+  public LlmCompletionRequest withOptions(LlmGenerationOptions options) {
+    return new LlmCompletionRequest(
+        modelSelector,
+        messages,
+        options,
+        tools,
+        toolChoice,
+        responseFormat,
+        metadata,
+        invocationTarget);
+  }
+
   private static void validateToolChoice(List<LlmToolSpec> tools, LlmToolChoice toolChoice) {
     if ((toolChoice.mode() == LlmToolChoice.Mode.REQUIRED || toolChoice.mode() == LlmToolChoice.Mode.SPECIFIC)
         && tools.isEmpty()) {

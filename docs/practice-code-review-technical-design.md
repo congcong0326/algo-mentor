@@ -181,6 +181,7 @@ CREATE INDEX idx_practice_code_review_tag_tag_review
 - `PracticeCodeReviewSummary`：列表和 session 聚合使用的摘要。
 - `PracticeCodeReviewScore`：五个维度分和总分。
 - `PracticeCodeReviewEvidence`：识别证据，例如代码块语言、关键字、题目函数名、类名。
+- `scoreExplanations`：结构化输出必须为五个评分维度分别提供一到两句用户可读说明；应用层将其转为稳定的 `SCORE_*` evidence 类型持久化，供前端评分进度条 Tooltip 使用，不新增数据库列。
 - `PracticeCompletionGate`：完成资格判断结果。
 - `PracticeReviewResult`：代码 Review capability 结果，区分 `NOT_CODE_LIKE`、`NOT_COMPLETE_SUBMISSION`、`SAVED`、`FAILED`。
 
@@ -435,7 +436,7 @@ isCompleteLeetCodeSolution == true
 - 学习计划事实：当前工具链路提供受信的 planId 和 phaseIndex；阶段目标与计划题原因仍作为后续上下文增强项。
 - 当前用户提交：服务端按当前 run 的 user message 读取原始消息和待 Review 代码，不接受模型参数传入代码或身份信息。
 - 评测硬门槛：先输出 verdict、依据、阻断标记、最坏时间/空间复杂度、目标复杂度和约束分析，再进行分项评分。
-- 评分规则：正确性 0-4、复杂度 0-2、边界条件 0-2、代码质量 0-1、思路表达与题意贴合 0-1；评测阻断最高 5 分，明显非最优但预计可通过最高 8 分。
+- 评分规则：正确性 0-4、复杂度 0-2、边界条件 0-2，三个维度使用 0.5 分步长；代码质量固定为 0、0.5、0.75、1 四档；题目要求符合度固定为 0、0.5、1 三档。评测阻断最高 5 分，明显非最优但预计可通过最高 8 分。
 - 识别规则：普通片段、报错、伪代码、非本题代码必须返回 false，不生成正式 Review。
 
 当前 `judgeAssessment` 主要来自模型对题面约束、代码和用户反馈的静态分析，并不等同于真实代码沙箱结果。后续接入执行服务时，服务端应把 AC/WA/TLE/MLE/CE/RE 作为受信事实注入；`SERVER_EXECUTION` 的优先级必须高于用户自报和静态分析。

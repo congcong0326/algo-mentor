@@ -1,7 +1,6 @@
 package org.congcong.algomentor.agent.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,14 +22,24 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChai
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
 import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.structuredoutput.AgentStructuredOutputValidator;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairPrompt;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputValidationError;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputValidationResult;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputValidationStatus;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
+import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 
 /**
  * 可在调用线程同步执行的 Agent loop 控制流。
@@ -45,6 +54,7 @@ public final class AgentLoopEngine {
   private final ToolResultCompactor toolResultCompactor;
   private final RunMessageCompactor runMessageCompactor;
   private final ObjectMapper objectMapper;
+  private final AgentStructuredOutputValidator structuredOutputValidator;
   private final AgentToolPermissionGuard permissionGuard;
 
   public AgentLoopEngine(
@@ -66,6 +76,7 @@ public final class AgentLoopEngine {
     this.runMessageCompactor = Objects.requireNonNull(
         runMessageCompactor, "run message compactor must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "object mapper must not be null");
+    this.structuredOutputValidator = new AgentStructuredOutputValidator(objectMapper);
     this.permissionGuard = Objects.requireNonNull(permissionGuard, "permission guard must not be null");
   }
 
@@ -103,18 +114,20 @@ public final class AgentLoopEngine {
         throwIfCancelled(context);
         if (!stepResult.requiresTools()) {
           // 无工具调用表示模型已经给出最终输出；正文 token 已在 runStep 中作为流式事件透传给客户端。
-          AgentOutput output = buildFinalOutput(request, stepResult.content());
-          lifecycle.finalOutput(context, output);
-          lifecycle.runEnded(context, new AgentRunResult(
+          FinalOutputResult finalOutput = finalizeOutput(
+              context,
+              request,
               stepIndex,
-              stepResult.finishReason(),
-              output,
-              Map.of()));
-          return new AgentRunResult(
-              stepIndex,
-              stepResult.finishReason(),
-              output,
-              Map.of());
+              stepResult,
+              lifecycle);
+          lifecycle.finalOutput(context, finalOutput.output());
+          AgentRunResult runResult = new AgentRunResult(
+              finalOutput.steps(),
+              finalOutput.finishReason(),
+              finalOutput.output(),
+              finalOutput.metadata());
+          lifecycle.runEnded(context, runResult);
+          return runResult;
         }
         List<LlmToolCall> effectiveToolCalls = new ArrayList<>();
         for (LlmToolCall toolCall : stepResult.toolCalls()) {
@@ -130,7 +143,7 @@ public final class AgentLoopEngine {
         //  tool: call_1 的执行结果是 {...}
         //  assistant: 根据工具结果，最终答案是...
         //  对应到上面的案例，这里其实是向message里添加 我需要调用工具 fake_lookup，参数是 {...}
-        messages.add(LlmMessage.assistantToolCalls(effectiveToolCalls));
+        messages.add(LlmMessage.assistantToolCalls(effectiveToolCalls, stepResult.providerContinuation()));
         for (LlmToolCall toolCall : effectiveToolCalls) {
           throwIfCancelled(context);
           AgentTool tool = currentExecution.toolRegistry().find(toolCall.name())
@@ -187,10 +200,12 @@ public final class AgentLoopEngine {
       AgentLoopExecution execution,
       AgentCancellationToken cancellationToken
   ) {
+    int maxStepsWithStructuredOutputRepair = execution.maxSteps()
+        + request.executionOptions().structuredOutput().maxRepairAttempts();
     return new AgentLoopContext(
         request.runId() == null ? UUID.randomUUID().toString() : request.runId(),
         request,
-        execution.maxSteps(),
+        maxStepsWithStructuredOutputRepair,
         request.metadata(),
         cancellationToken);
   }
@@ -331,6 +346,15 @@ public final class AgentLoopEngine {
         execution.toolRegistry().specs(),
         execution.toolChoice(),
         requestMetadata));
+    return executeLlmRequest(context, stepIndex, lifecycle, llmRequest);
+  }
+
+  private AgentStepResult executeLlmRequest(
+      AgentLoopContext context,
+      int stepIndex,
+      AgentLoopLifecycle lifecycle,
+      LlmCompletionRequest llmRequest
+  ) {
     lifecycle.llmRequestReady(context, stepIndex, llmRequest);
     StepCollector collector = new StepCollector(context, stepIndex, lifecycle);
     try {
@@ -387,26 +411,224 @@ public final class AgentLoopEngine {
     return new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), throwable);
   }
 
-  private AgentOutput buildFinalOutput(AgentRequest request, String finalContent) {
+  private FinalOutputResult finalizeOutput(
+      AgentLoopContext context,
+      AgentRequest request,
+      int finalStepIndex,
+      AgentStepResult initialStepResult,
+      AgentLoopLifecycle lifecycle
+  ) {
+    AgentExecutionOptions executionOptions = request.executionOptions();
+    AgentStructuredOutputOptions structuredOutput = executionOptions.structuredOutput();
+    if (!isJsonResponseFormat(executionOptions.responseFormat())) {
+      AgentOutput output = buildFinalOutput(request, initialStepResult.content(), null, 0, null, null);
+      return new FinalOutputResult(
+          output,
+          finalStepIndex,
+          initialStepResult.finishReason(),
+          Map.of());
+    }
+
+    String candidateContent = initialStepResult.content();
+    LlmFinishReason finishReason = initialStepResult.finishReason();
+    StructuredOutputValidationResult validation = validateStructuredOutput(request, candidateContent);
+    if (validation.valid()) {
+      AgentOutput output = buildFinalOutput(
+          request,
+          candidateContent,
+          validation.structuredOutput(),
+          0,
+          null,
+          null);
+      return new FinalOutputResult(output, finalStepIndex, finishReason, structuredOutputRunMetadata(0));
+    }
+    if (!structuredOutput.required()) {
+      AgentOutput output = buildFinalOutput(
+          request,
+          candidateContent,
+          null,
+          0,
+          null,
+          validation.error());
+      return new FinalOutputResult(output, finalStepIndex, finishReason, structuredOutputRunMetadata(0));
+    }
+
+    StructuredOutputValidationError initialError = validation.error();
+    int repairAttempts = 0;
+    while (repairAttempts < structuredOutput.maxRepairAttempts()) {
+      repairAttempts++;
+      int repairStepIndex = finalStepIndex + repairAttempts;
+      StructuredOutputValidationError triggeringError = validation.error();
+      lifecycle.structuredOutputRepair(
+          context,
+          structuredOutputRepairEvent(
+              repairStepIndex,
+              repairAttempts,
+              structuredOutput.maxRepairAttempts(),
+              triggeringError,
+              StructuredOutputRepairEvent.Outcome.TRIGGERED));
+      AgentStepResult repairResult;
+      try {
+        repairResult = runStructuredOutputRepairStep(
+            context,
+            request,
+            repairStepIndex,
+            repairAttempts,
+            candidateContent,
+            triggeringError,
+            lifecycle);
+      } catch (RuntimeException exception) {
+        lifecycle.structuredOutputRepair(
+            context,
+            structuredOutputRepairEvent(
+                repairStepIndex,
+                repairAttempts,
+                structuredOutput.maxRepairAttempts(),
+                triggeringError,
+                StructuredOutputRepairEvent.Outcome.FAILED));
+        throw exception;
+      }
+      candidateContent = repairResult.content();
+      finishReason = repairResult.finishReason();
+      validation = repairResult.requiresTools()
+          ? StructuredOutputValidationResult.invalid(new StructuredOutputValidationError(
+              StructuredOutputValidationError.Type.UNEXPECTED_TOOL_CALL,
+              "Structured-output repair returned tool calls even though tools were disabled",
+              repairResult.toolCalls().stream().map(LlmToolCall::name).distinct().toList()))
+          : validateStructuredOutput(request, candidateContent);
+      lifecycle.structuredOutputRepair(
+          context,
+          structuredOutputRepairEvent(
+              repairStepIndex,
+              repairAttempts,
+              structuredOutput.maxRepairAttempts(),
+              triggeringError,
+              validation.valid()
+                  ? StructuredOutputRepairEvent.Outcome.SUCCEEDED
+                  : StructuredOutputRepairEvent.Outcome.FAILED));
+      if (validation.valid()) {
+        AgentOutput output = buildFinalOutput(
+            request,
+            candidateContent,
+            validation.structuredOutput(),
+            repairAttempts,
+            initialError,
+            null);
+        return new FinalOutputResult(
+            output,
+            repairStepIndex,
+            finishReason,
+            structuredOutputRunMetadata(repairAttempts));
+      }
+    }
+
+    throw structuredOutputInvalid(structuredOutput, validation.error(), repairAttempts);
+  }
+
+  private StructuredOutputRepairEvent structuredOutputRepairEvent(
+      int stepIndex,
+      int repairAttempt,
+      int maxRepairAttempts,
+      StructuredOutputValidationError validationError,
+      StructuredOutputRepairEvent.Outcome outcome
+  ) {
+    return new StructuredOutputRepairEvent(
+        stepIndex,
+        repairAttempt,
+        maxRepairAttempts,
+        validationError.type(),
+        outcome);
+  }
+
+  private StructuredOutputValidationResult validateStructuredOutput(
+      AgentRequest request,
+      String content
+  ) {
+    try {
+      return structuredOutputValidator.validate(request.executionOptions().responseFormat(), content);
+    } catch (RuntimeException exception) {
+      AgentStructuredOutputOptions structuredOutput = request.executionOptions().structuredOutput();
+      throw new AgentException(
+          AgentErrorCode.STRUCTURED_OUTPUT_SCHEMA_INVALID,
+          "Agent structured output schema is invalid",
+          false,
+          structuredOutputSchemaMetadata(structuredOutput),
+          exception);
+    }
+  }
+
+  private AgentStepResult runStructuredOutputRepairStep(
+      AgentLoopContext context,
+      AgentRequest request,
+      int stepIndex,
+      int repairAttempt,
+      String invalidOutput,
+      StructuredOutputValidationError validationError,
+      AgentLoopLifecycle lifecycle
+  ) {
+    lifecycle.stepStarted(context, stepIndex);
+    Map<String, Object> repairMetadata = new LinkedHashMap<>();
+    repairMetadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPT, repairAttempt);
+    repairMetadata.put(
+        AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_FAILURE_TYPE,
+        validationError.type().name());
+    repairMetadata.put(
+        AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_VALIDATION_ERROR,
+        validationError.message());
+    LlmCompletionRequest repairRequest = requestFactory.build(
+        request,
+        stepIndex,
+        StructuredOutputRepairPrompt.messages(objectMapper, invalidOutput, validationError),
+        List.of(),
+        LlmToolChoice.none(),
+        mergedMetadata(request.metadata(), repairMetadata))
+        .withOptions(repairGenerationOptions(request.executionOptions().generationOptions()));
+    repairRequest = lifecycle.beforeLlmRequest(context, stepIndex, repairRequest);
+    return executeLlmRequest(context, stepIndex, lifecycle, repairRequest);
+  }
+
+  private LlmGenerationOptions repairGenerationOptions(LlmGenerationOptions source) {
+    return new LlmGenerationOptions(
+        0.0,
+        null,
+        source.maxOutputTokens(),
+        List.of(),
+        source.seed(),
+        source.timeout(),
+        LlmReasoningEffort.NONE);
+  }
+
+  private AgentOutput buildFinalOutput(
+      AgentRequest request,
+      String finalContent,
+      JsonNode structured,
+      int repairAttempts,
+      StructuredOutputValidationError initialError,
+      StructuredOutputValidationError finalError
+  ) {
     AgentExecutionOptions executionOptions = request.executionOptions();
     AgentStructuredOutputOptions structuredOutput = executionOptions.structuredOutput();
     Map<String, Object> outputMetadata = new LinkedHashMap<>();
     outputMetadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
     outputMetadata.put(AgentRuntimeMetadataKeys.OUTPUT_CHAR_COUNT, finalContent == null ? 0 : finalContent.length());
-    JsonNode structured = null;
     if (isJsonResponseFormat(executionOptions.responseFormat())) {
-      try {
-        structured = objectMapper.readTree(finalContent);
-      } catch (JsonProcessingException ex) {
-        if (structuredOutput.required()) {
-          throw new AgentException(
-              AgentErrorCode.STRUCTURED_OUTPUT_INVALID,
-              "Agent structured output is not valid JSON",
-              false,
-              structuredOutputErrorMetadata(structuredOutput, ex),
-              ex);
-        }
-        outputMetadata.put(AgentRuntimeMetadataKeys.PARSE_ERROR, ex.getOriginalMessage());
+      outputMetadata.put(
+          AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_VALIDATION_STATUS,
+          (structured == null
+              ? StructuredOutputValidationStatus.INVALID
+              : StructuredOutputValidationStatus.VALID).name());
+      outputMetadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPTS, repairAttempts);
+      outputMetadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIRED, repairAttempts > 0);
+      outputMetadata.put(
+          AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_MAX_REPAIR_ATTEMPTS,
+          structuredOutput.maxRepairAttempts());
+      if (initialError != null) {
+        outputMetadata.put(
+            AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_INITIAL_FAILURE_TYPE,
+            initialError.type().name());
+      }
+      if (finalError != null) {
+        addValidationErrorMetadata(outputMetadata, finalError);
       }
     }
     return new AgentOutput(
@@ -422,11 +644,38 @@ public final class AgentLoopEngine {
         || responseFormat instanceof LlmResponseFormat.JsonSchema;
   }
 
-  private Map<String, Object> structuredOutputErrorMetadata(
+  private AgentException structuredOutputInvalid(
       AgentStructuredOutputOptions structuredOutput,
-      JsonProcessingException error
+      StructuredOutputValidationError validationError,
+      int repairAttempts
   ) {
     Map<String, Object> metadata = new LinkedHashMap<>();
+    addStructuredOutputContractMetadata(metadata, structuredOutput);
+    addValidationErrorMetadata(metadata, validationError);
+    metadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPTS, repairAttempts);
+    metadata.put(
+        AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_MAX_REPAIR_ATTEMPTS,
+        structuredOutput.maxRepairAttempts());
+    return new AgentException(
+        AgentErrorCode.STRUCTURED_OUTPUT_INVALID,
+        "Agent structured output failed JSON or schema validation",
+        false,
+        Map.copyOf(metadata),
+        null);
+  }
+
+  private Map<String, Object> structuredOutputSchemaMetadata(
+      AgentStructuredOutputOptions structuredOutput
+  ) {
+    Map<String, Object> metadata = new LinkedHashMap<>();
+    addStructuredOutputContractMetadata(metadata, structuredOutput);
+    return Map.copyOf(metadata);
+  }
+
+  private void addStructuredOutputContractMetadata(
+      Map<String, Object> metadata,
+      AgentStructuredOutputOptions structuredOutput
+  ) {
     if (structuredOutput.schemaName() != null) {
       metadata.put(AgentRuntimeMetadataKeys.SCHEMA_NAME, structuredOutput.schemaName());
     }
@@ -434,8 +683,34 @@ public final class AgentLoopEngine {
       metadata.put(AgentRuntimeMetadataKeys.SCHEMA_VERSION, structuredOutput.schemaVersion());
     }
     metadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
-    metadata.put(AgentRuntimeMetadataKeys.PARSE_ERROR, error.getOriginalMessage());
-    return Map.copyOf(metadata);
+  }
+
+  private void addValidationErrorMetadata(
+      Map<String, Object> metadata,
+      StructuredOutputValidationError validationError
+  ) {
+    metadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_FAILURE_TYPE, validationError.type().name());
+    metadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_VALIDATION_ERROR, validationError.message());
+    if (!validationError.details().isEmpty()) {
+      metadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_VALIDATION_ERRORS, validationError.details());
+    }
+    if (validationError.type() == StructuredOutputValidationError.Type.JSON_PARSE) {
+      metadata.put(AgentRuntimeMetadataKeys.PARSE_ERROR, validationError.message());
+    }
+  }
+
+  private Map<String, Object> structuredOutputRunMetadata(int repairAttempts) {
+    return Map.of(
+        AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIR_ATTEMPTS, repairAttempts,
+        AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_REPAIRED, repairAttempts > 0);
+  }
+
+  private record FinalOutputResult(
+      AgentOutput output,
+      int steps,
+      LlmFinishReason finishReason,
+      Map<String, Object> metadata
+  ) {
   }
 
   /**
@@ -455,6 +730,7 @@ public final class AgentLoopEngine {
     private final AtomicReference<Throwable> error = new AtomicReference<>();
     private Flow.Subscription subscription;
     private LlmFinishReason finishReason = LlmFinishReason.UNKNOWN;
+    private LlmProviderContinuation providerContinuation;
 
     private StepCollector(AgentLoopContext context, int stepIndex, AgentLoopLifecycle lifecycle) {
       this.context = context;
@@ -484,6 +760,7 @@ public final class AgentLoopEngine {
       }
       if (item instanceof LlmStreamEvent.MessageEnd messageEnd) {
         finishReason = messageEnd.finishReason();
+        providerContinuation = messageEnd.providerContinuation();
       }
       if (item instanceof LlmStreamEvent.Error llmError) {
         error.compareAndSet(null, llmError.error());
@@ -531,7 +808,7 @@ public final class AgentLoopEngine {
      * content 才会被外层 runner 作为最终 assistant 输出。</p>
      */
     private AgentStepResult result() {
-      return new AgentStepResult(toolCalls, finishReason, content.toString());
+      return new AgentStepResult(toolCalls, finishReason, content.toString(), providerContinuation);
     }
   }
 }

@@ -46,7 +46,7 @@ class SseLlmStreamSubscriberOpsTest {
   }
 
   @Test
-  void recordsSendFailureAsFailedAndClientDisconnected() {
+  void recordsClientDisconnectSeparatelyFromLaterUpstreamFailure() {
     RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
     RecordingLearningOpsRecorder learningRecorder = new RecordingLearningOpsRecorder();
     RecordingSubscription subscription = new RecordingSubscription();
@@ -62,14 +62,13 @@ class SseLlmStreamSubscriberOpsTest {
 
     assertThat(sseRecorder.events).containsExactly(
         "opened:practice_message",
-        "clientDisconnected:practice_message",
-        "failed:practice_message:send_failure");
+        "clientDisconnected:practice_message");
     assertThat(learningRecorder.events).containsExactly("practice:failed");
     assertThat(subscription.cancelled).isTrue();
   }
 
   @Test
-  void clientDisconnectedCallbackRecordsFailedAndCancelsUpstream() throws IOException {
+  void clientDisconnectedCallbackDoesNotMarkPracticeBusinessAsFailed() throws IOException {
     RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
     RecordingLearningOpsRecorder learningRecorder = new RecordingLearningOpsRecorder();
     RecordingSubscription subscription = new RecordingSubscription();
@@ -85,9 +84,8 @@ class SseLlmStreamSubscriberOpsTest {
 
     assertThat(sseRecorder.events).containsExactly(
         "opened:practice_message",
-        "clientDisconnected:practice_message",
-        "failed:practice_message:send_failure");
-    assertThat(learningRecorder.events).containsExactly("practice:failed");
+        "clientDisconnected:practice_message");
+    assertThat(learningRecorder.events).containsExactly("practice:completed");
     assertThat(subscription.cancelled).isTrue();
   }
 
@@ -108,8 +106,7 @@ class SseLlmStreamSubscriberOpsTest {
 
     assertThat(sseRecorder.events).containsExactly(
         "opened:practice_message",
-        "clientDisconnected:practice_message",
-        "failed:practice_message:send_failure");
+        "clientDisconnected:practice_message");
     assertThat(learningRecorder.events).containsExactly("practice:completed");
     assertThat(subscription.cancelled).isFalse();
     assertThat(subscription.requested).isEqualTo(2);
@@ -132,8 +129,7 @@ class SseLlmStreamSubscriberOpsTest {
 
     assertThat(sseRecorder.events).containsExactly(
         "opened:practice_message",
-        "clientDisconnected:practice_message",
-        "failed:practice_message:send_failure");
+        "clientDisconnected:practice_message");
     assertThat(learningRecorder.events).containsExactly("practice:completed");
     assertThat(subscription.cancelled).isFalse();
   }
@@ -157,8 +153,7 @@ class SseLlmStreamSubscriberOpsTest {
 
     assertThat(sseRecorder.events).containsExactly(
         "opened:practice_message",
-        "clientDisconnected:practice_message",
-        "failed:practice_message:send_failure");
+        "clientDisconnected:practice_message");
     assertThat(learningRecorder.events).containsExactly("practice:failed");
     assertThat(subscription.cancelled).isFalse();
   }

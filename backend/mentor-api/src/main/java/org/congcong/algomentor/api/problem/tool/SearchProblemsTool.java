@@ -50,7 +50,9 @@ public final class SearchProblemsTool implements AgentTool {
 
   private static final LlmToolSpec SPEC = new LlmToolSpec(
       SEARCH_PROBLEMS,
-      "Search local algorithm problems by keyword, difficulty, tag, sort, and page. Returns lightweight metadata only.",
+      "Search local algorithm problems by keyword, difficulty, tag, sort, and page. "
+          + "Use COMPANY_FREQUENCY_DESC for popular or high-frequency interview problems. "
+          + "Returns lightweight metadata only.",
       inputSchema(),
       true);
 
@@ -222,7 +224,7 @@ public final class SearchProblemsTool implements AgentTool {
     properties.set(KEYWORD, ProblemAgentToolSupport.nullableStringProperty(
         "Keyword matched against title, Chinese title, slug, or frontend id."));
     ObjectNode difficulty = ProblemAgentToolSupport.nullableStringProperty(
-        "One of EASY, MEDIUM, HARD. Use null to omit this filter.");
+        "One of EASY, MEDIUM, HARD. Use JSON null, not the string null, to omit this filter.");
     difficulty.putArray(ProblemAgentToolSupport.ENUM).add("EASY").add("MEDIUM").add("HARD").addNull();
     properties.set(DIFFICULTY, difficulty);
     properties.set(TAG, ProblemAgentToolSupport.nullableStringProperty(
@@ -234,7 +236,8 @@ public final class SearchProblemsTool implements AgentTool {
     properties.set(RECENCY_BUCKET, ProblemAgentToolSupport.nullableStringProperty(
         "Exact recency bucket returned by list_problem_filters. Use null to omit this filter."));
     ObjectNode sort = ProblemAgentToolSupport.nullableStringProperty(
-        "One of FRONTEND_ID_ASC, FRONTEND_ID_DESC, TITLE_ASC, UPDATED_DESC, COMPANY_FREQUENCY_DESC. Use null for the default sort.");
+        "One of FRONTEND_ID_ASC, FRONTEND_ID_DESC, TITLE_ASC, UPDATED_DESC, COMPANY_FREQUENCY_DESC. "
+            + "Use COMPANY_FREQUENCY_DESC for popular or high-frequency interview problems, or JSON null for the default sort.");
     sort.putArray(ProblemAgentToolSupport.ENUM)
         .add("FRONTEND_ID_ASC")
         .add("FRONTEND_ID_DESC")

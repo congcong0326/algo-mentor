@@ -97,6 +97,7 @@ public final class MicrometerOpsRecorders {
     @Override
     public void clientDisconnected(SseStreamType streamType) {
       streamType = requireStreamType(streamType);
+      decrementActive(streamType);
       Counter.builder(OpsMetricNames.SSE_CONNECTIONS_CLIENT_DISCONNECTED)
           .tag(OpsMetricTags.STREAM_TYPE, streamType.tagValue())
           .register(registry)

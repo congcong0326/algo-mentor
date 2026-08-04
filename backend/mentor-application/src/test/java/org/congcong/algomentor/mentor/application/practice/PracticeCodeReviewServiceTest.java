@@ -231,6 +231,12 @@ class PracticeCodeReviewServiceTest {
         PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY, "O(1)",
         PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY, "O(n)",
         PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS, "最大约束下预计可以通过。"));
+    output.put(PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS, Map.of(
+        PracticeCodeReviewConstants.JSON_SCORE_CORRECTNESS, "核心逻辑基本正确。",
+        PracticeCodeReviewConstants.JSON_SCORE_COMPLEXITY, "达到题目预期复杂度。",
+        PracticeCodeReviewConstants.JSON_SCORE_EDGE_CASES, "边界覆盖仍有遗漏。",
+        PracticeCodeReviewConstants.JSON_SCORE_CODE_QUALITY, "代码结构清晰。",
+        PracticeCodeReviewConstants.JSON_SCORE_PROBLEM_FIT, "满足当前题目的主要要求。"));
     output.put("scores", Map.of(
             "correctness", 3.0,
             "complexity", 2.0,

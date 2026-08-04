@@ -1,6 +1,7 @@
 package org.congcong.algomentor.ai.governance.provider.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Comparator;
@@ -16,6 +17,7 @@ import org.congcong.algomentor.ai.governance.provider.repository.AiProviderInsta
 import org.congcong.algomentor.llm.core.provider.LlmProviderAdapter;
 import org.congcong.algomentor.llm.core.provider.LlmProviderAdapterRegistry;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 
 /** 管理员维护 provider instance 与配置模型的应用服务，不进行远程连接测试。 */
 public class AiProviderManagementService {
@@ -183,16 +185,35 @@ public class AiProviderManagementService {
 
   public List<AiProviderTypeDescriptor> supportedProviderTypes() {
     return adapterRegistry.adapters().entrySet().stream()
-        .map(entry -> new AiProviderTypeDescriptor(entry.getKey().value(), entry.getValue().displayName()))
+        .map(entry -> descriptor(entry.getKey().value(), entry.getValue()))
         .sorted(Comparator.comparing(AiProviderTypeDescriptor::code))
         .toList();
   }
 
   /** 路由策略保存时复用同一校验，允许模型或实例处于停用状态。 */
   public void validateModelReference(long modelId) {
+    validateModelRoute(modelId, null);
+  }
+
+  /** 校验路由目标与可选 reasoning effort 的 provider 协议兼容性。 */
+  public void validateModelRoute(long modelId, LlmReasoningEffort reasoningEffort) {
     AiConfiguredModel model = getModel(modelId);
     AiProviderInstance provider = requireProvider(model.providerInstanceId());
-    requireAdapter(provider.providerType(), false);
+    LlmProviderAdapter adapter = requireAdapter(provider.providerType(), false);
+    if (reasoningEffort == null) {
+      return;
+    }
+    if (!adapter.supportedCapabilities().contains(org.congcong.algomentor.llm.core.provider.LlmCapability.REASONING_EFFORT)
+        || !adapter.acceptedReasoningEfforts().contains(reasoningEffort)) {
+      throw invalidModel("Configured AI provider does not accept the requested reasoning effort.", null);
+    }
+  }
+
+  private static AiProviderTypeDescriptor descriptor(String code, LlmProviderAdapter adapter) {
+    List<LlmReasoningEffort> efforts = java.util.Arrays.stream(LlmReasoningEffort.values())
+        .filter(adapter.acceptedReasoningEfforts()::contains)
+        .toList();
+    return new AiProviderTypeDescriptor(code, adapter.displayName(), efforts, adapter.defaultConfig());
   }
 
   private AiProviderInstance requireProvider(long providerInstanceId) {
@@ -295,10 +316,26 @@ public class AiProviderManagementService {
     return message != null && message.toLowerCase(Locale.ROOT).contains("duplicate");
   }
 
-  public record AiProviderTypeDescriptor(String code, String displayName) {
+  public record AiProviderTypeDescriptor(
+      String code,
+      String displayName,
+      List<LlmReasoningEffort> reasoningEfforts,
+      JsonNode defaultConfig
+  ) {
+    public AiProviderTypeDescriptor(String code, String displayName) {
+      this(code, displayName, List.of(), JsonNodeFactory.instance.objectNode());
+    }
+
     public AiProviderTypeDescriptor {
       code = Objects.requireNonNull(code, "code must not be null");
       displayName = Objects.requireNonNull(displayName, "displayName must not be null");
+      reasoningEfforts = reasoningEfforts == null ? List.of() : List.copyOf(reasoningEfforts);
+      defaultConfig = defaultConfig == null ? JsonNodeFactory.instance.objectNode() : defaultConfig.deepCopy();
+    }
+
+    @Override
+    public JsonNode defaultConfig() {
+      return defaultConfig.deepCopy();
     }
   }
 }

@@ -1,4 +1,4 @@
-package org.congcong.algomentor.llm.openai;
+package org.congcong.algomentor.llm.openai.compatible;
 
 import com.openai.errors.OpenAIIoException;
 import com.openai.errors.OpenAIRetryableException;
@@ -10,27 +10,31 @@ import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 
-final class OpenAiLlmExceptionMapper {
+public final class OpenAiCompatibleExceptionMapper {
 
-  private OpenAiLlmExceptionMapper() {
+  private OpenAiCompatibleExceptionMapper() {
   }
 
-  static LlmException map(Throwable error, LlmProviderId providerId, LlmModelId modelId) {
+  public static LlmException map(
+      Throwable error,
+      OpenAiCompatibleProviderProfile profile,
+      LlmModelId modelId
+  ) {
+    var providerId = profile.providerId();
     if (error instanceof LlmException llmException) {
       return llmException;
     }
     if (error instanceof SseException sseException) {
-      return mapSseException(sseException, providerId, modelId);
+      return mapSseException(sseException, profile, modelId);
     }
     if (error instanceof OpenAIServiceException serviceException) {
-      return mapServiceException(serviceException, providerId, modelId);
+      return mapServiceException(serviceException, profile, modelId);
     }
     if (error instanceof OpenAIRetryableException || error instanceof OpenAIIoException) {
       return new LlmException(
           LlmErrorCode.PROVIDER_UNAVAILABLE,
-          safeMessage(error),
+          safeMessage(error, profile),
           providerId,
           modelId,
           true,
@@ -39,7 +43,7 @@ final class OpenAiLlmExceptionMapper {
     }
     return new LlmException(
         LlmErrorCode.UNKNOWN,
-        safeMessage(error),
+        safeMessage(error, profile),
         providerId,
         modelId,
         false,
@@ -47,11 +51,16 @@ final class OpenAiLlmExceptionMapper {
         error);
   }
 
-  static LlmException streamError(String message, LlmProviderId providerId, LlmModelId modelId, Map<String, Object> metadata) {
+  public static LlmException streamError(
+      String message,
+      OpenAiCompatibleProviderProfile profile,
+      LlmModelId modelId,
+      Map<String, Object> metadata
+  ) {
     return new LlmException(
         LlmErrorCode.PROVIDER_UNAVAILABLE,
-        message == null || message.isBlank() ? "OpenAI stream returned an error" : message,
-        providerId,
+        profile.safeStreamErrorMessage(message),
+        profile.providerId(),
         modelId,
         true,
         metadata == null ? Map.of() : metadata,
@@ -60,9 +69,10 @@ final class OpenAiLlmExceptionMapper {
 
   private static LlmException mapServiceException(
       OpenAIServiceException error,
-      LlmProviderId providerId,
+      OpenAiCompatibleProviderProfile profile,
       LlmModelId modelId
   ) {
+    var providerId = profile.providerId();
     int statusCode = error.statusCode();
     LlmErrorCode code = switch (statusCode) {
       case 401 -> LlmErrorCode.AUTHENTICATION_FAILED;
@@ -78,14 +88,15 @@ final class OpenAiLlmExceptionMapper {
     error.code().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_CODE, value));
     error.type().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_TYPE, value));
     error.param().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_PARAM, value));
-    return new LlmException(code, safeMessage(error), providerId, modelId, retryable, metadata, error);
+    return new LlmException(code, safeMessage(error, profile), providerId, modelId, retryable, metadata, error);
   }
 
   private static LlmException mapSseException(
       SseException error,
-      LlmProviderId providerId,
+      OpenAiCompatibleProviderProfile profile,
       LlmModelId modelId
   ) {
+    var providerId = profile.providerId();
     Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LlmMetadataKeys.PROVIDER, providerId.value());
     metadata.put(LlmMetadataKeys.STATUS_CODE, error.statusCode());
@@ -94,7 +105,7 @@ final class OpenAiLlmExceptionMapper {
     error.param().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_PARAM, value));
     return new LlmException(
         LlmErrorCode.PROVIDER_UNAVAILABLE,
-        safeMessage(error),
+        safeMessage(error, profile),
         providerId,
         modelId,
         true,
@@ -102,10 +113,10 @@ final class OpenAiLlmExceptionMapper {
         error);
   }
 
-  private static String safeMessage(Throwable error) {
+  private static String safeMessage(Throwable error, OpenAiCompatibleProviderProfile profile) {
     if (error instanceof OpenAIServiceException serviceException) {
-      return "OpenAI provider returned HTTP " + serviceException.statusCode();
+      return profile.safeProviderHttpErrorMessage(serviceException.statusCode());
     }
-    return "OpenAI provider call failed";
+    return profile.safeProviderErrorMessage();
   }
 }

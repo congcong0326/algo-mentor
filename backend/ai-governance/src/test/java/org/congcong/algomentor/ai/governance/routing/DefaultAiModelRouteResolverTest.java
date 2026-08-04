@@ -32,6 +32,7 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderInstanceSpec;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.policy.model.PolicyMatchSource;
@@ -53,12 +54,19 @@ class DefaultAiModelRouteResolverTest {
     assertThat(snapshot.aiModelId()).isEqualTo(101L);
     assertThat(snapshot.providerInstanceId()).isEqualTo(11L);
     assertThat(snapshot.invocationTarget().upstreamModelId()).isEqualTo(LlmModelId.of("gpt-test"));
+    assertThat(snapshot.routeReasoningEffort()).isEqualTo(LlmReasoningEffort.HIGH);
+    assertThat(snapshot.invocationTarget().routeReasoningEffort()).isEqualTo(LlmReasoningEffort.HIGH);
     assertThat(snapshot.trustedMetadata())
         .containsEntry("aiConfiguredModelId", 101L)
         .containsEntry("aiProviderInstanceId", 11L)
+        .containsEntry("aiRouteReasoningEffort", "high")
         .doesNotContainKey("apiKey")
         .doesNotContainValue("secret-key");
     assertThat(fixture.adapter.creations).isOne();
+
+    fixture.policy.set(new ResolvedPolicy<>(17L, "ai.model-route.practice-chat.v1", "Practice route", 3,
+        new AiModelRoutePolicyContent(101L, LlmReasoningEffort.NONE), PolicyMatchSource.GROUP, 9L, 3L));
+    assertThat(snapshot.invocationTarget().routeReasoningEffort()).isEqualTo(LlmReasoningEffort.HIGH);
   }
 
   @Test
@@ -133,7 +141,7 @@ class DefaultAiModelRouteResolverTest {
   private static final class Fixture {
     private final AtomicReference<ResolvedPolicy<AiModelRoutePolicyContent>> policy = new AtomicReference<>(
         new ResolvedPolicy<>(17L, "ai.model-route.practice-chat.v1", "Practice route", 2,
-            new AiModelRoutePolicyContent(101L), PolicyMatchSource.GROUP, 9L, 3L));
+            new AiModelRoutePolicyContent(101L, LlmReasoningEffort.HIGH), PolicyMatchSource.GROUP, 9L, 3L));
     private final AiConfiguredModelRepository models = mock(AiConfiguredModelRepository.class);
     private final AiProviderInstanceRepository providers = mock(AiProviderInstanceRepository.class);
     private final RecordingAdapter adapter = new RecordingAdapter();

@@ -17,6 +17,7 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -237,6 +238,36 @@ class LlmCoreModelTest {
     assertThatThrownBy(() -> new LlmGenerationOptions(null, null, null, Arrays.asList("stop", null), null, Duration.ofSeconds(1)))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("LLM stop sequences must not be blank");
+  }
+
+  @Test
+  void keepsExistingGenerationOptionsAndRequestFieldsWhenAddingReasoningEffort() {
+    LlmGenerationOptions options = new LlmGenerationOptions(
+        0.2, 0.8, 128, List.of("stop"), 7L, Duration.ofSeconds(5));
+    LlmToolSpec tool = new LlmToolSpec(
+        "lookup", "Lookup a problem", com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode(), true);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(LlmProviderId.of("openai"), LlmModelId.of("gpt-5.2")))
+        .messages(List.of(LlmMessage.user("hello")))
+        .options(options)
+        .tools(List.of(tool))
+        .responseFormat(new LlmResponseFormat.JsonObject())
+        .metadata(Map.of("requestId", "req-1"))
+        .build();
+
+    LlmGenerationOptions updatedOptions = options.withReasoningEffort(LlmReasoningEffort.HIGH);
+    LlmCompletionRequest copy = request.withOptions(updatedOptions);
+
+    assertThat(options.reasoningEffort()).isNull();
+    assertThat(LlmGenerationOptions.defaults().reasoningEffort()).isNull();
+    assertThat(updatedOptions).isEqualTo(new LlmGenerationOptions(
+        0.2, 0.8, 128, List.of("stop"), 7L, Duration.ofSeconds(5), LlmReasoningEffort.HIGH));
+    assertThat(copy.options()).isEqualTo(updatedOptions);
+    assertThat(copy.messages()).isEqualTo(request.messages());
+    assertThat(copy.tools()).isEqualTo(request.tools());
+    assertThat(copy.responseFormat()).isEqualTo(request.responseFormat());
+    assertThat(copy.metadata()).isEqualTo(request.metadata());
+    assertThat(copy.invocationTarget()).isEqualTo(request.invocationTarget());
   }
 
   @Test

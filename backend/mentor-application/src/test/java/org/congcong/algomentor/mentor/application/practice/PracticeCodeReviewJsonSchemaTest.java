@@ -26,6 +26,7 @@ class PracticeCodeReviewJsonSchemaTest {
             "evidence",
             "contextSummary",
             PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT,
+            PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS,
             "scores",
             "passed",
             "deductionReasons",
@@ -68,7 +69,7 @@ class PracticeCodeReviewJsonSchemaTest {
   }
 
   @Test
-  void definesScoreDimensionRanges() {
+  void definesScoreDimensionRangesAndFixedLevels() {
     JsonNode scores = PracticeCodeReviewJsonSchema.schema().path("properties").path("scores");
 
     assertThat(scores.path("additionalProperties").asBoolean()).isFalse();
@@ -81,6 +82,29 @@ class PracticeCodeReviewJsonSchemaTest {
     assertScoreRange(scores, "codeQuality", 0, 1);
     assertScoreRange(scores, "problemFit", 0, 1);
     assertScoreRange(scores, "total", 0, 10);
+    assertScoreLevels(scores, "correctness", "0", "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4");
+    assertScoreLevels(scores, "complexity", "0", "0.5", "1", "1.5", "2");
+    assertScoreLevels(scores, "edgeCases", "0", "0.5", "1", "1.5", "2");
+    assertScoreLevels(scores, "codeQuality", "0", "0.5", "0.75", "1");
+    assertScoreLevels(scores, "problemFit", "0", "0.5", "1");
+    assertThat(scores.path("properties").path("total").has("enum")).isFalse();
+  }
+
+  @Test
+  void requiresOneUserVisibleExplanationForEveryScoreDimension() {
+    JsonNode explanations = PracticeCodeReviewJsonSchema.schema()
+        .path("properties")
+        .path(PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS);
+
+    assertThat(explanations.path("additionalProperties").asBoolean()).isFalse();
+    assertThat(explanations.path("required"))
+        .extracting(JsonNode::asText)
+        .containsExactly(
+            PracticeCodeReviewConstants.JSON_SCORE_CORRECTNESS,
+            PracticeCodeReviewConstants.JSON_SCORE_COMPLEXITY,
+            PracticeCodeReviewConstants.JSON_SCORE_EDGE_CASES,
+            PracticeCodeReviewConstants.JSON_SCORE_CODE_QUALITY,
+            PracticeCodeReviewConstants.JSON_SCORE_PROBLEM_FIT);
   }
 
   private void assertScoreRange(JsonNode scores, String field, int minimum, int maximum) {
@@ -88,5 +112,11 @@ class PracticeCodeReviewJsonSchemaTest {
     assertThat(schema.path("type").asText()).isEqualTo("number");
     assertThat(schema.path("minimum").asInt()).isEqualTo(minimum);
     assertThat(schema.path("maximum").asInt()).isEqualTo(maximum);
+  }
+
+  private void assertScoreLevels(JsonNode scores, String field, String... levels) {
+    assertThat(scores.path("properties").path(field).path("enum"))
+        .extracting(JsonNode::asText)
+        .containsExactly(levels);
   }
 }

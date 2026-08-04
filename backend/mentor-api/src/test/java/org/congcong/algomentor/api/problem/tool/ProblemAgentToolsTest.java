@@ -194,6 +194,73 @@ class ProblemAgentToolsTest {
   }
 
   @Test
+  void searchProblemsNormalizesStringEncodedScalarArgumentsFromCompatibleProviders() {
+    when(problemService.findProblems(any())).thenReturn(new ProblemPage<>(List.of(), 0, 1, 10));
+    ObjectNode arguments = JsonNodeFactory.instance.objectNode()
+        .put("keyword", "product of array except self")
+        .put("difficulty", "null")
+        .put("tag", "null")
+        .put("company", "null")
+        .put("role", "null")
+        .put("recencyBucket", "null")
+        .put("sort", "null")
+        .put("locale", "zh-CN")
+        .put("page", "1")
+        .put("pageSize", "10");
+
+    new SearchProblemsTool(problemService).execute(arguments, null);
+
+    ArgumentCaptor<ProblemListRequest> requestCaptor = ArgumentCaptor.forClass(ProblemListRequest.class);
+    verify(problemService).findProblems(requestCaptor.capture());
+    ProblemListRequest request = requestCaptor.getValue();
+    assertThat(request.keyword()).isEqualTo("product of array except self");
+    assertThat(request.difficulty()).isNull();
+    assertThat(request.tag()).isNull();
+    assertThat(request.company()).isNull();
+    assertThat(request.role()).isNull();
+    assertThat(request.recencyBucket()).isNull();
+    assertThat(request.page()).isEqualTo(1);
+    assertThat(request.pageSize()).isEqualTo(10);
+  }
+
+  @Test
+  void listProblemFiltersNormalizesStringEncodedNullableBoolean() {
+    when(problemService.findProblemFilters(ProblemLocale.DEFAULT)).thenReturn(new ProblemFilters(
+        1,
+        List.of(new ProblemFilterOption("EASY", "EASY", 1)),
+        List.of(),
+        List.of(),
+        List.of(),
+        List.of(),
+        List.of()));
+    ObjectNode arguments = JsonNodeFactory.instance.objectNode()
+        .put("includeCounts", "null")
+        .put("locale", "null");
+
+    JsonNode output = new ListProblemFiltersTool(problemService).execute(arguments, null);
+
+    assertThat(output.path("difficulties").get(0).path("problemCount").asLong()).isEqualTo(1);
+  }
+
+  @Test
+  void searchProblemsRejectsNonNumericStringEncodedPage() {
+    ObjectNode arguments = JsonNodeFactory.instance.objectNode().put("page", "one");
+
+    assertThatThrownBy(() -> new SearchProblemsTool(problemService).execute(arguments, null))
+        .isInstanceOfSatisfying(AgentException.class, exception ->
+            assertThat(exception).hasMessage("page must be an integer."));
+  }
+
+  @Test
+  void listProblemFiltersRejectsUnknownStringEncodedBoolean() {
+    ObjectNode arguments = JsonNodeFactory.instance.objectNode().put("includeCounts", "yes");
+
+    assertThatThrownBy(() -> new ListProblemFiltersTool(problemService).execute(arguments, null))
+        .isInstanceOfSatisfying(AgentException.class, exception ->
+            assertThat(exception).hasMessage("includeCounts must be a boolean."));
+  }
+
+  @Test
   void searchProblemsRejectsUnknownTag() {
     when(problemService.findProblemFilters(ProblemLocale.DEFAULT)).thenReturn(new ProblemFilters(
         1,

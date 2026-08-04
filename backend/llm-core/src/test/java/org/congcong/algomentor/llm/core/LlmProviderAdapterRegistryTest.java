@@ -23,6 +23,7 @@ class LlmProviderAdapterRegistryTest {
     LlmProviderAdapterRegistry registry = new LlmProviderAdapterRegistry(List.of(adapter));
 
     assertThat(registry.find(LlmProviderType.of("openai"))).containsSame(adapter);
+    assertThat(adapter.acceptedReasoningEfforts()).isEmpty();
   }
 
   @Test

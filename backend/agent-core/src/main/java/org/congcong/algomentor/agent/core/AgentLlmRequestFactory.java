@@ -148,6 +148,9 @@ public final class AgentLlmRequestFactory {
     }
     values.put(AgentRuntimeMetadataKeys.STEP_INDEX, stepIndex);
     values.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
+    values.put(
+        AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_MAX_REPAIR_ATTEMPTS,
+        structuredOutput.maxRepairAttempts());
     if (structuredOutput.schemaName() != null && !structuredOutput.schemaName().isBlank()) {
       values.put(AgentRuntimeMetadataKeys.SCHEMA_NAME, structuredOutput.schemaName());
     }

@@ -24,7 +24,10 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "language": "java",
           "rawCode": "class Solution { int climbStairs(int n) { return n; } }",
           "normalizedCode": "class Solution { public int climbStairs(int n) { return n; } }",
-          "evidence": [{"type": "ENTRY_FUNCTION", "value": "climbStairs"}],
+          "evidence": [
+            {"type": "ENTRY_FUNCTION", "value": "climbStairs"},
+            {"type": "SCORE_CORRECTNESS", "value": "不应保留的旧说明"}
+          ],
           "contextSummary": "用户提交了 Java 解法。",
           "scores": {
             "correctness": 3.0,
@@ -51,6 +54,17 @@ class PracticeCodeReviewStructuredOutputMapperTest {
     assertThat(draft.rawCode()).isEqualTo("class Solution { int climbStairs(int n) { return n; } }");
     assertThat(draft.normalizedCode())
         .isEqualTo("class Solution { public int climbStairs(int n) { return n; } }");
+    assertThat(draft.evidence())
+        .extracting(PracticeCodeReviewEvidence::type)
+        .contains(
+            PracticeCodeReviewConstants.EVIDENCE_SCORE_CORRECTNESS,
+            PracticeCodeReviewConstants.EVIDENCE_SCORE_COMPLEXITY,
+            PracticeCodeReviewConstants.EVIDENCE_SCORE_EDGE_CASES,
+            PracticeCodeReviewConstants.EVIDENCE_SCORE_CODE_QUALITY,
+            PracticeCodeReviewConstants.EVIDENCE_SCORE_PROBLEM_FIT);
+    assertThat(draft.evidence())
+        .extracting(PracticeCodeReviewEvidence::value)
+        .doesNotContain("不应保留的旧说明");
     assertThat(draft.userMessageId()).isEqualTo(701L);
     assertThat(draft.agentRunDbId()).isEqualTo(501L);
     assertThat(draft.contentLocale()).isEqualTo("zh-CN");
@@ -411,6 +425,9 @@ class PracticeCodeReviewStructuredOutputMapperTest {
       if (!output.has(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT)) {
         output.set(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT, defaultJudgeAssessment());
       }
+      if (!output.has(PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS)) {
+        output.set(PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS, defaultScoreExplanations());
+      }
       return output;
     } catch (JsonProcessingException exception) {
       throw new IllegalArgumentException(exception);
@@ -428,5 +445,15 @@ class PracticeCodeReviewStructuredOutputMapperTest {
     assessment.put(PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY, "O(n)");
     assessment.put(PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS, "最大约束下预计可以通过。");
     return assessment;
+  }
+
+  private ObjectNode defaultScoreExplanations() {
+    ObjectNode explanations = objectMapper.createObjectNode();
+    explanations.put(PracticeCodeReviewConstants.JSON_SCORE_CORRECTNESS, "核心逻辑基本正确。");
+    explanations.put(PracticeCodeReviewConstants.JSON_SCORE_COMPLEXITY, "达到题目预期复杂度。");
+    explanations.put(PracticeCodeReviewConstants.JSON_SCORE_EDGE_CASES, "覆盖了主要边界条件。");
+    explanations.put(PracticeCodeReviewConstants.JSON_SCORE_CODE_QUALITY, "代码结构清晰。");
+    explanations.put(PracticeCodeReviewConstants.JSON_SCORE_PROBLEM_FIT, "满足当前题目的主要要求。");
+    return explanations;
   }
 }

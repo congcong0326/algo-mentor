@@ -25,8 +25,11 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallS
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
+import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.junit.jupiter.api.Test;
 
 class PersistentAgentTraceObserverTest {
@@ -87,6 +90,36 @@ class PersistentAgentTraceObserverTest {
     assertThat(row.metadata().toString()).contains("[REDACTED]");
     assertThat(row.createdAt()).isEqualTo(NOW);
     assertThat(runTraceMapper.attachedSnapshot).isEqualTo(new AttachedSnapshot(31L, 1, 51L));
+  }
+
+  @Test
+  void excludesContinuationFromPersistedRequestSnapshot() {
+    String sentinel = "trace-continuation-sentinel";
+    LlmProviderContinuation continuation = new LlmProviderContinuation(
+        LlmProviderType.of("compatible-test"),
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("secret", sentinel));
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "lookup",
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode());
+    Map<String, Object> metadata = Map.of(
+        AgentRuntimeMetadataKeys.TASK_ID, 11L,
+        AgentRuntimeMetadataKeys.RUN_DB_ID, 31L);
+    AgentRequest agentRequest = new AgentRequest("agent-run-id", "request-id", List.of(LlmMessage.user("question")), metadata);
+    AgentLoopContext context = new AgentLoopContext("agent-run-id", agentRequest, 4, metadata);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(new LlmModelSelector(LlmProviderId.of("openai"), LlmModelId.of("gpt-test"), Set.of(), null))
+        .messages(List.of(
+            LlmMessage.assistantToolCalls(List.of(toolCall), continuation),
+            LlmMessage.toolResult("call_1", com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode())))
+        .build();
+
+    observer.onLlmRequestReady(context, 2, request);
+
+    assertThat(mapper.row.messagesJson().toString())
+        .doesNotContain(sentinel, "providerContinuation", "payload");
+    assertThat(mapper.row.requestSnapshotJson().toString())
+        .doesNotContain(sentinel, "providerContinuation", "payload");
   }
 
   private static final class FakeSnapshotMapper implements AgentContextSnapshotMapper {

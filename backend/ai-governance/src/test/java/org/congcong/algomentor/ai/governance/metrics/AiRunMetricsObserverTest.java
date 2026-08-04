@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputValidationError;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
@@ -26,5 +28,45 @@ class AiRunMetricsObserverTest {
 
     assertThat(registry.find("ai.run.requests").tag("status", "COMPLETED").counter().count()).isEqualTo(1);
     assertThat(registry.find("ai.run.tokens").tag("type", "total").counter().count()).isEqualTo(14);
+  }
+
+  @Test
+  void recordsStructuredOutputRepairTriggerAndOutcomeWithLowCardinalityTags() {
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    AiRunMetricsObserver observer = new AiRunMetricsObserver(registry);
+    AiRunAdmission admission = AiRunGovernanceObserverTest.admittedRun();
+    var context = AiRunGovernanceObserverTest.contextWithAdmission(admission);
+
+    observer.onStructuredOutputRepair(context, new StructuredOutputRepairEvent(
+        2,
+        1,
+        1,
+        StructuredOutputValidationError.Type.JSON_PARSE,
+        StructuredOutputRepairEvent.Outcome.TRIGGERED));
+    observer.onStructuredOutputRepair(context, new StructuredOutputRepairEvent(
+        2,
+        1,
+        1,
+        StructuredOutputValidationError.Type.JSON_PARSE,
+        StructuredOutputRepairEvent.Outcome.SUCCEEDED));
+
+    assertThat(registry.get(AiRunMetricsObserver.STRUCTURED_OUTPUT_REPAIRS)
+        .tags(
+            "purpose", admission.purpose().name(),
+            "source", admission.source().name(),
+            "failure_type", "JSON_PARSE",
+            "outcome", "TRIGGERED",
+            "attempt", "1")
+        .counter()
+        .count()).isEqualTo(1d);
+    assertThat(registry.get(AiRunMetricsObserver.STRUCTURED_OUTPUT_REPAIRS)
+        .tags(
+            "purpose", admission.purpose().name(),
+            "source", admission.source().name(),
+            "failure_type", "JSON_PARSE",
+            "outcome", "SUCCEEDED",
+            "attempt", "1")
+        .counter()
+        .count()).isEqualTo(1d);
   }
 }

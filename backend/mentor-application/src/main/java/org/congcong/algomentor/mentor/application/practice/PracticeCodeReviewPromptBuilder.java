@@ -89,17 +89,18 @@ public class PracticeCodeReviewPromptBuilder {
         - 0.0：实际或静态分析可明确判断会 TLE；其他复杂度阻断按上述规则限制。
 
         其他评分规则：
-        - correctness: 0..4，是否能编译、是否对所有合法输入正确、是否能在资源限制内完成；只有无阻断时才能高于 2。
-        - complexity: 0..2，最坏时间/空间复杂度与最大输入约束、follow-up 和目标复杂度的匹配程度。
-        - edgeCases: 0..2，边界条件覆盖情况。
-        - codeQuality: 0..1，可读性、命名、冗余和 LeetCode 提交格式。
-        - problemFit: 0..1，是否解决当前题目而不是其他题目。
+        - correctness 只可取 %s，评价是否能编译、是否对所有合法输入正确、是否能在资源限制内完成；只有无阻断时才能高于 2。
+        - complexity 只可取 %s，评价最坏时间/空间复杂度与最大输入约束、follow-up 和目标复杂度的匹配程度。
+        - edgeCases 只可取 %s：2 表示覆盖充分，1.5 表示仅有轻微遗漏，1 表示遗漏重要边界，0.5 表示存在严重缺口，0 表示基本未处理。
+        - codeQuality 只可取 %s：1 表示清晰且无明显质量问题，0.75 表示整体良好但有轻微命名或冗余问题，0.5 表示存在明显可读性或结构问题，0 表示质量问题严重。
+        - problemFit 只可取 %s，评价对当前题目显式要求的符合程度：1 表示完全符合，0.5 表示核心方向相关但遗漏关键要求，0 表示不符合。
         - total: 0..10，可先给出模型估计值；服务端会按维度分重新归一化。
         - passed: 你需给出初始判断；服务端会按 judgeAssessment、正确性阻断和 total >= 6 共同重新计算。
 
         输出要求：
         - rawCode 保留用户提交的代码。
         - normalizedCode 仅做必要格式整理，不要改变算法语义。
+        - %s 的五个字段必须分别说明对应维度为什么得到当前分数；每项使用一到两句面向学习者的短说明，不复述分数，不使用内部规则代码。
         - evidence 使用短类型和值说明关键证据，例如 ENTRY_FUNCTION、PROBLEM_FIT、MISSING_EDGE_CASE。
         - judgeAssessment.timeComplexity 和 spaceComplexity 给出最坏复杂度；expectedTimeComplexity 给出题目目标复杂度，无法判断时填写 UNKNOWN。
         - judgeAssessment.constraintAnalysis 必须结合题目最大约束解释为什么预计通过、超时、超内存或无法确认，不能只写“复杂度较高”。
@@ -115,7 +116,13 @@ public class PracticeCodeReviewPromptBuilder {
         context.originalMessage(),
         context.extractedCode(),
         context.recentChatSummary(),
-        trustedTags(context));
+        trustedTags(context),
+        PracticeCodeReviewConstants.CORRECTNESS_SCORE_LEVELS,
+        PracticeCodeReviewConstants.COMPLEXITY_SCORE_LEVELS,
+        PracticeCodeReviewConstants.EDGE_CASE_SCORE_LEVELS,
+        PracticeCodeReviewConstants.CODE_QUALITY_SCORE_LEVELS,
+        PracticeCodeReviewConstants.PROBLEM_FIT_SCORE_LEVELS,
+        PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS);
   }
 
   private String trustedTags(PracticeTurnContext context) {

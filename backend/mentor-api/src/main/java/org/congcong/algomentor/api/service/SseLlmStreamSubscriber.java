@@ -133,7 +133,7 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
       } else {
         requestNextOrFinish(event);
       }
-      emitter.completeWithError(sendFailure);
+      // Servlet 容器会完成已失效的异步请求；再次 completeWithError 会被派发到全局 HTTP 异常处理器。
     }
   }
 
@@ -153,7 +153,6 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
         emitter.complete();
       } catch (IOException | RuntimeException sendFailure) {
         recordClientDisconnected(sendFailure);
-        emitter.completeWithError(sendFailure);
       }
     }
   }
@@ -179,7 +178,6 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
         emitter.complete();
       } catch (IOException | RuntimeException sendFailure) {
         recordClientDisconnected(sendFailure);
-        emitter.completeWithError(sendFailure);
       }
     }
   }
@@ -202,9 +200,7 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
 
   public void clientDisconnected(Throwable throwable) {
     clientConnected.set(false);
-    if (!sseTerminalRecorded.get()) {
-      recordClientDisconnected(throwable);
-    }
+    recordClientDisconnected(throwable);
     cancel();
   }
 
@@ -272,17 +268,13 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
   }
 
   private void recordClientDisconnected(Throwable throwable) {
-    if (clientDisconnectedRecorded.compareAndSet(false, true)) {
+    if (sseTerminalRecorded.compareAndSet(false, true)
+        && clientDisconnectedRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.clientDisconnected(streamType);
-      opsLogger.warn(
+      opsLogger.info(
           log,
-          OpsLogEventType.SSE_CONNECTION_FAILED,
-          logFields(SseFailureType.SEND_FAILURE, throwable),
-          null);
-    }
-    recordSseFailed(SseFailureType.SEND_FAILURE, throwable);
-    if (cancelUpstreamOnClientDisconnect) {
-      recordPracticeStatus(OpsStatus.FAILED, SseFailureType.SEND_FAILURE, throwable);
+          OpsLogEventType.SSE_CONNECTION_CLIENT_DISCONNECTED,
+          clientDisconnectLogFields(throwable));
     }
   }
 
@@ -316,6 +308,15 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
     return Map.of(
         OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue(),
         OpsLogFields.FAILURE_TYPE, failureType.tagValue(),
+        OpsLogFields.EXCEPTION_TYPE, throwable.getClass().getSimpleName());
+  }
+
+  private Map<String, ?> clientDisconnectLogFields(Throwable throwable) {
+    if (throwable == null) {
+      return Map.of(OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue());
+    }
+    return Map.of(
+        OpsLogFields.SSE_STREAM_TYPE, streamType.tagValue(),
         OpsLogFields.EXCEPTION_TYPE, throwable.getClass().getSimpleName());
   }
 

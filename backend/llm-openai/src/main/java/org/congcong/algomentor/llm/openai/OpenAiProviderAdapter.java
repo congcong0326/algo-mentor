@@ -1,6 +1,7 @@
 package org.congcong.algomentor.llm.openai;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.util.Objects;
 import java.util.Set;
 import org.congcong.algomentor.llm.core.provider.LlmCapability;
@@ -8,27 +9,23 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderAdapter;
 import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderInstanceSpec;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
+import org.congcong.algomentor.llm.core.request.LlmReasoningEffort;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleProviderClient;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleResponsesClient;
+import org.congcong.algomentor.llm.openai.compatible.OpenAiCompatibleResponsesClientFactory;
 
 /** OpenAI Responses API 的唯一动态 provider adapter。 */
 public final class OpenAiProviderAdapter implements LlmProviderAdapter {
 
-  public static final LlmProviderType PROVIDER_TYPE = LlmProviderType.of("openai");
-  private static final Set<LlmCapability> SUPPORTED_CAPABILITIES = Set.of(
-      LlmCapability.CHAT_COMPLETION,
-      LlmCapability.STREAMING,
-      LlmCapability.TOOL_CALLING,
-      LlmCapability.STRUCTURED_OUTPUT,
-      LlmCapability.JSON_SCHEMA_OUTPUT,
-      LlmCapability.TOKEN_USAGE,
-      LlmCapability.CACHED_TOKEN_USAGE);
+  public static final LlmProviderType PROVIDER_TYPE = OpenAiProviderProfile.PROVIDER_TYPE;
 
-  private final OpenAiResponsesClientFactory clientFactory;
+  private final OpenAiCompatibleResponsesClientFactory clientFactory;
 
   public OpenAiProviderAdapter() {
-    this(OpenAiResponsesClient::fromConfig);
+    this(OpenAiCompatibleResponsesClient::fromConnectionConfig);
   }
 
-  public OpenAiProviderAdapter(OpenAiResponsesClientFactory clientFactory) {
+  public OpenAiProviderAdapter(OpenAiCompatibleResponsesClientFactory clientFactory) {
     this.clientFactory = Objects.requireNonNull(clientFactory, "clientFactory must not be null");
   }
 
@@ -39,12 +36,26 @@ public final class OpenAiProviderAdapter implements LlmProviderAdapter {
 
   @Override
   public String displayName() {
-    return "OpenAI";
+    return OpenAiProviderProfile.INSTANCE.displayName();
   }
 
   @Override
   public Set<LlmCapability> supportedCapabilities() {
-    return SUPPORTED_CAPABILITIES;
+    return OpenAiProviderProfile.INSTANCE.supportedCapabilities();
+  }
+
+  @Override
+  public Set<LlmReasoningEffort> acceptedReasoningEfforts() {
+    return OpenAiProviderProfile.INSTANCE.acceptedReasoningEfforts();
+  }
+
+  @Override
+  public JsonNode defaultConfig() {
+    return JsonNodeFactory.instance.objectNode()
+        .put("apiKey", "")
+        .put("baseUrl", "https://api.openai.com/v1")
+        .put("timeoutSeconds", 300)
+        .put("maxRetries", 2);
   }
 
   @Override
@@ -58,6 +69,8 @@ public final class OpenAiProviderAdapter implements LlmProviderAdapter {
       throw new IllegalArgumentException("OpenAI adapter requires an openai provider instance spec");
     }
     OpenAiProviderConfig config = OpenAiProviderConfig.fromJson(instance.config());
-    return new OpenAiProviderClient(clientFactory.create(config));
+    return new OpenAiCompatibleProviderClient(
+        clientFactory.create(config.toConnectionConfig()),
+        OpenAiProviderProfile.INSTANCE);
   }
 }

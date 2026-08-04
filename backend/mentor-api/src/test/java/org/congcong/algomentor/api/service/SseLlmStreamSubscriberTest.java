@@ -25,13 +25,21 @@ class SseLlmStreamSubscriberTest {
 
     assertThat(subscription.cancelled).isFalse();
     assertThat(subscription.requested).isEqualTo(2);
+    assertThat(emitter.completionError).isNull();
   }
 
   private static final class FailingSseEmitter extends SseEmitter {
 
+    private Throwable completionError;
+
     @Override
     public synchronized void send(SseEventBuilder builder) throws IOException {
       throw new IOException("client disconnected");
+    }
+
+    @Override
+    public void completeWithError(Throwable ex) {
+      completionError = ex;
     }
   }
 

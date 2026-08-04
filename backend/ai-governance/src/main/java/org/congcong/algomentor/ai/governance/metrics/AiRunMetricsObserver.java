@@ -14,6 +14,7 @@ import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputRepairEvent;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
@@ -21,6 +22,8 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 public class AiRunMetricsObserver implements AgentLoopObserver {
+
+  public static final String STRUCTURED_OUTPUT_REPAIRS = "ai.structured.output.repairs";
 
   private final MeterRegistry registry;
   private final AtomicInteger activeRuns = new AtomicInteger();
@@ -78,6 +81,25 @@ public class AiRunMetricsObserver implements AgentLoopObserver {
     if (admission != null) {
       counter("ai.tool.errors", admission, "tool", toolName(toolCall)).increment();
     }
+  }
+
+  @Override
+  public void onStructuredOutputRepair(
+      AgentLoopContext context,
+      StructuredOutputRepairEvent event
+  ) {
+    AiRunAdmission admission = admission(context);
+    if (admission == null || event == null) {
+      return;
+    }
+    Counter.builder(STRUCTURED_OUTPUT_REPAIRS)
+        .tag("purpose", admission.purpose().name())
+        .tag("source", admission.source().name())
+        .tag("failure_type", event.failureType().name())
+        .tag("outcome", event.outcome().name())
+        .tag("attempt", Integer.toString(event.repairAttempt()))
+        .register(registry)
+        .increment();
   }
 
   @Override

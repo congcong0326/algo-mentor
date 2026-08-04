@@ -14,8 +14,6 @@ import {
 } from '../../services/api';
 import type { AdminAiConfiguredModel, AdminAiProvider, AdminAiProviderType } from '../../types/api';
 
-const emptyConfig = '{\n  "apiKey": "",\n  "baseUrl": "https://api.openai.com/v1",\n  "timeoutSeconds": 300,\n  "maxRetries": 2\n}';
-
 export default function AiProviderModelPanel() {
   const [providers, setProviders] = useState<AdminAiProvider[]>([]);
   const [types, setTypes] = useState<AdminAiProviderType[]>([]);
@@ -24,7 +22,7 @@ export default function AiProviderModelPanel() {
   const [name, setName] = useState('');
   const [providerType, setProviderType] = useState('');
   const [enabled, setEnabled] = useState(true);
-  const [configText, setConfigText] = useState(emptyConfig);
+  const [configText, setConfigText] = useState('{}');
   const [modelName, setModelName] = useState('');
   const [modelId, setModelId] = useState('');
   const [modelEnabled, setModelEnabled] = useState(true);
@@ -45,7 +43,15 @@ export default function AiProviderModelPanel() {
       ]);
       setProviders(nextProviders.items);
       setTypes(nextTypes.items);
-      if (!providerType && nextTypes.items[0]) setProviderType(nextTypes.items[0].code);
+      if (!selected) {
+        const nextProviderType = nextTypes.items.some((type) => type.code === providerType)
+          ? providerType
+          : nextTypes.items[0]?.code ?? '';
+        if (nextProviderType !== providerType) {
+          setProviderType(nextProviderType);
+          setConfigText(configTemplate(nextTypes.items, nextProviderType));
+        }
+      }
       if (selected) {
         const current = nextProviders.items.find((item) => item.id === selected.id);
         if (current) await selectProvider(current.id);
@@ -81,8 +87,18 @@ export default function AiProviderModelPanel() {
     setModels([]);
     setName('');
     setEnabled(true);
-    setConfigText(emptyConfig);
+    const nextProviderType = providerType || types[0]?.code || '';
+    setProviderType(nextProviderType);
+    setConfigText(configTemplate(types, nextProviderType));
     setEditingModel(undefined);
+  }
+
+  function changeProviderType(nextProviderType: string) {
+    const currentTemplate = configTemplate(types, providerType);
+    setProviderType(nextProviderType);
+    if (!selected && configText === currentTemplate) {
+      setConfigText(configTemplate(types, nextProviderType));
+    }
   }
 
   async function saveProvider() {
@@ -140,7 +156,7 @@ export default function AiProviderModelPanel() {
     </tbody></table></div>
     <div className="ai-provider-editor">
       <label>Name<input onChange={(event) => setName(event.target.value)} value={name} /></label>
-      <label>Provider type<select disabled={Boolean(selected)} onChange={(event) => setProviderType(event.target.value)} value={providerType}>{types.map((type) => <option key={type.code} value={type.code}>{type.displayName}</option>)}</select></label>
+      <label>Provider type<select disabled={Boolean(selected)} onChange={(event) => changeProviderType(event.target.value)} value={providerType}>{types.map((type) => <option key={type.code} value={type.code}>{type.displayName}</option>)}</select></label>
       <label className="checkbox-label"><input checked={enabled} onChange={(event) => setEnabled(event.target.checked)} type="checkbox" />Enabled</label>
       <label className="ai-provider-config">Configuration<textarea onChange={(event) => setConfigText(event.target.value)} rows={8} spellCheck={false} value={configText} /></label>
       <button className="primary-button" disabled={saving} onClick={() => void saveProvider()} type="button"><Save aria-hidden="true" /><span>{selected ? 'Save provider' : 'Create provider'}</span></button>
@@ -150,6 +166,10 @@ export default function AiProviderModelPanel() {
 }
 
 function message(error: unknown): string { return error instanceof ApiRequestError ? error.message : error instanceof Error ? error.message : 'Request failed'; }
+
+function configTemplate(types: AdminAiProviderType[], providerType: string): string {
+  return JSON.stringify(types.find((type) => type.code === providerType)?.defaultConfig ?? {}, null, 2);
+}
 
 function baseUrl(provider: AdminAiProvider): string {
   if (provider.baseUrl) return provider.baseUrl;
