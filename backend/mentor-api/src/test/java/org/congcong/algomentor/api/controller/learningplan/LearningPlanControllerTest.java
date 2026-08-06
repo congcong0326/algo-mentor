@@ -198,7 +198,6 @@ class LearningPlanControllerTest {
                   "weeklyHours": 6,
                   "programmingLanguage": "Java",
                   "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
-                  "interviewOriented": true,
                   "topicPreferences": ["Array", "Hash Table"]
                 }
                 """))
@@ -244,7 +243,6 @@ class LearningPlanControllerTest {
                   "level": "INTERMEDIATE",
                   "weeklyHours": 6,
                   "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
-                  "interviewOriented": true,
                   "topicPreferences": ["Dynamic Programming"],
                   "additionalConstraints": "每周复盘一次",
                   "personalizationEnabled": false
@@ -362,7 +360,7 @@ class LearningPlanControllerTest {
                 org.hamcrest.Matchers.containsString("\"supersededProposalIds\":[]"),
                 org.hamcrest.Matchers.containsString("\"extensionDraft\""),
                 org.hamcrest.Matchers.containsString("\"phaseIndex\":2"),
-                org.hamcrest.Matchers.containsString("\"recommendedTags\":[\"Graph\"]"),
+                org.hamcrest.Matchers.containsString("\"tags\":[\"Graph\",\"DFS\"]"),
                 org.hamcrest.Matchers.containsString("\"title\":\"Number of Islands\""))));
 
     verify(extensionProposalStreamService).streamFirstRevision(eq(42L), eq(900L), eq("补充图论训练"), any(), eq(Map.of()));
@@ -450,8 +448,7 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.draftPlan.metadata.dailyProblemCount").value(1))
         .andExpect(jsonPath("$.data.draftPlan.metadata.personalizationEnabled").doesNotExist())
         .andExpect(jsonPath("$.data.draftPlan.metadata.template").doesNotExist())
-        .andExpect(jsonPath("$.data.draftPlan.metadata.sourceCommit").doesNotExist())
-        .andExpect(jsonPath("$.data.draftPlan.metadata.problemRefs").doesNotExist());
+        .andExpect(jsonPath("$.data.draftPlan.metadata.internalOnly").doesNotExist());
 
     ArgumentCaptor<LearningPlanTemplateDraftCommand> commandCaptor =
         ArgumentCaptor.forClass(LearningPlanTemplateDraftCommand.class);
@@ -507,8 +504,7 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.metadata.dailyProblemCount").value(1))
         .andExpect(jsonPath("$.data.metadata.personalizationEnabled").doesNotExist())
         .andExpect(jsonPath("$.data.metadata.template").doesNotExist())
-        .andExpect(jsonPath("$.data.metadata.sourceCommit").doesNotExist())
-        .andExpect(jsonPath("$.data.metadata.problemRefs").doesNotExist())
+        .andExpect(jsonPath("$.data.metadata.internalOnly").doesNotExist())
         .andExpect(jsonPath("$.data.paceSummary.currentWeek").exists());
   }
 
@@ -639,10 +635,6 @@ class LearningPlanControllerTest {
             "图论补强",
             1,
             "图遍历",
-            List.of("掌握 BFS 与 DFS"),
-            List.of("Graph"),
-            List.of("能解释遍历边界"),
-            "复盘图题模板。",
             List.of(new LearningPlanProblemDraft(
                 "number-of-islands",
                 1,
@@ -652,7 +644,7 @@ class LearningPlanControllerTest {
                 List.of("Graph", "DFS"),
                 "练习图遍历。",
                 1)))),
-        Map.of("problemRecommendationIncomplete", false));
+        Map.of());
   }
 
   private LearningPlanDraftPlan draftPlan() {
@@ -666,7 +658,6 @@ class LearningPlanControllerTest {
         6,
         "Java",
         new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array", "Hash Table"),
         "中级，每周 6 小时。",
         List.of(new LearningPlanPhaseDraft(
@@ -674,10 +665,6 @@ class LearningPlanControllerTest {
             "基础题型恢复",
             1,
             "数组和哈希表",
-            List.of("恢复基础题型手感"),
-            List.of("Array", "Hash Table"),
-            List.of("能说明哈希表查找边界"),
-            "整理错误原因。",
             List.of(new LearningPlanProblemDraft(
                 "two-sum",
                 1,
@@ -691,9 +678,8 @@ class LearningPlanControllerTest {
             "dailyProblemCount", 1,
             LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
             LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true,
-            "template", Map.of("sourceCommit", "internal-commit", "problemRefs", List.of("two-sum")),
-            "sourceCommit", "internal-commit",
-            "problemRefs", List.of("two-sum")));
+            "template", Map.of("templateId", "internal-template", "matchedProblemCount", 1),
+            "internalOnly", "internal-value"));
   }
 
   private LearningPlanDraftPlan draftPlanWithMultipleProblems() {
@@ -707,7 +693,6 @@ class LearningPlanControllerTest {
         6,
         "Java",
         new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array", "Hash Table"),
         "中级，每周 6 小时。",
         List.of(
@@ -716,10 +701,6 @@ class LearningPlanControllerTest {
                 "基础题型恢复",
                 1,
                 "数组和哈希表",
-                List.of("恢复基础题型手感"),
-                List.of("Array", "Hash Table"),
-                List.of("能说明哈希表查找边界"),
-                "整理错误原因。",
                 List.of(
                     problem("two-sum", 1, "Two Sum", "两数之和", "EASY", "恢复哈希表查找。", 1),
                     problem("valid-palindrome", 125, "Valid Palindrome", "验证回文串", "EASY", "练习双指针。", 2),
@@ -729,12 +710,8 @@ class LearningPlanControllerTest {
                 "图论补强",
                 1,
                 "图遍历",
-                List.of("掌握 BFS 与 DFS"),
-                List.of("Graph"),
-                List.of("能解释遍历边界"),
-                "复盘图题模板。",
                 List.of(problem("number-of-islands", 200, "Number of Islands", "岛屿数量", "MEDIUM", "练习图遍历。", 1)))),
-        Map.of("problemRecommendationIncomplete", false));
+        Map.of());
   }
 
   private LearningPlanProblemDraft problem(

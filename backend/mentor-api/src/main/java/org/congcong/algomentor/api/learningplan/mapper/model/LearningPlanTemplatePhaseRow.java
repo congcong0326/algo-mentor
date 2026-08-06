@@ -1,7 +1,5 @@
 package org.congcong.algomentor.api.learningplan.mapper.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 public record LearningPlanTemplatePhaseRow(
     Long id,
     Long templateDbId,
@@ -10,13 +8,6 @@ public record LearningPlanTemplatePhaseRow(
     String titleEn,
     Integer durationWeeks,
     String focus,
-    String focusEn,
-    JsonNode objectivesJson,
-    JsonNode objectivesEnJson,
-    JsonNode recommendedTagsJson,
-    JsonNode acceptanceCriteriaJson,
-    JsonNode acceptanceCriteriaEnJson,
-    String reviewAdvice,
-    String reviewAdviceEn
+    String focusEn
 ) {
 }

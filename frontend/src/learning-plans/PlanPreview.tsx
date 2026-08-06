@@ -14,6 +14,7 @@ import {
   getPlanNextTrainingPackage,
   getPlanRhythmSettings,
 } from './load';
+import { getPhaseDisplayTags } from './phaseTags';
 
 type PlanPreviewProblem = LearningPlanDraftPlan['phases'][number]['problems'][number]
   | LearningPlanDetailProblemResponse;
@@ -225,17 +226,21 @@ export function PlanPhaseDetails({
       <div className="plan-subsection-heading">
         <h2>{resources.learningPlans.phaseDetails}</h2>
       </div>
-      {plan.phases.map((phase) => (
-        <section className="phase-block" key={phase.phaseIndex}>
+      {plan.phases.map((phase) => {
+        const displayTags = getPhaseDisplayTags(phase);
+        return (
+          <section className="phase-block" key={phase.phaseIndex}>
           <div className="phase-heading">
             <h3>{phase.title}</h3>
           </div>
           <p>{phase.focus}</p>
-          <div className="tag-row">
-            {phase.recommendedTags.map((tag) => (
-              <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>
-            ))}
-          </div>
+            {displayTags.length > 0 && (
+              <div className="tag-row">
+                {displayTags.map((tag) => (
+                  <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>
+                ))}
+              </div>
+            )}
           <div className="problem-list compact-problems">
             {phase.problems.map((problem) => (
               <ProblemRow
@@ -248,8 +253,9 @@ export function PlanPhaseDetails({
               />
             ))}
           </div>
-        </section>
-      ))}
+          </section>
+        );
+      })}
     </section>
   );
 }

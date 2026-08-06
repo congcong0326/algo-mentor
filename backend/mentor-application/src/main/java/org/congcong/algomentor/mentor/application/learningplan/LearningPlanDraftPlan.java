@@ -1,9 +1,11 @@
 package org.congcong.algomentor.mentor.application.learningplan;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record LearningPlanDraftPlan(
     String title,
     String summary,
@@ -14,7 +16,6 @@ public record LearningPlanDraftPlan(
     int weeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyDistribution difficultyDistribution,
-    boolean interviewOriented,
     List<String> topicPreferences,
     String additionalConstraints,
     List<LearningPlanPhaseDraft> phases,
@@ -45,7 +46,6 @@ public record LearningPlanDraftPlan(
         weeklyHours,
         programmingLanguage,
         difficultyDistribution,
-        interviewOriented,
         topicPreferences,
         additionalConstraints,
         phases,

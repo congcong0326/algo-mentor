@@ -73,10 +73,6 @@ public class LearningPlanExtensionStructuredOutputMapper {
           phase.title(),
           phase.durationWeeks(),
           phase.focus(),
-          phase.objectives(),
-          canonicalTags(phase.recommendedTags(), locale),
-          phase.acceptanceCriteria(),
-          phase.reviewAdvice(),
           problems));
     }
     Map<String, Object> metadata = new LinkedHashMap<>(raw.metadata());
@@ -84,13 +80,4 @@ public class LearningPlanExtensionStructuredOutputMapper {
     return new LearningPlanExtensionDraft(raw.summary(), phases, metadata);
   }
 
-  private List<String> canonicalTags(List<String> tags, String locale) {
-    if (tags == null) {
-      return List.of();
-    }
-    return tags.stream()
-        .flatMap(tag -> problemCatalog.findCanonicalTagValue(tag, locale).stream())
-        .distinct()
-        .toList();
-  }
 }

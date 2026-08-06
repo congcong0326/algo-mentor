@@ -6,7 +6,6 @@
   "expectedOutcome": "完成后能独立编写常见查询、连接、聚合、子查询和字符串处理 SQL，并复盘典型错误。",
   "goal": "系统掌握数据分析和后端面试中最常见的 SQL 查询模式。",
   "intent": "PRACTICE_GOAL",
-  "interviewOriented": true,
   "level": "BEGINNER",
   "licenseNotice": "LeetCode 官方 Study Plan；内部 seed 仅使用结构化题目元数据和来源链接。",
   "metadata": {
@@ -21,143 +20,45 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立说明“基础查询”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "掌握 SELECT、过滤、去重和基础条件表达式。",
-      "objectives": [
-        "完成“基础查询”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "Select"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "基础查询"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“基础连接”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "训练内连接、外连接和多表关联条件。",
-      "objectives": [
-        "完成“基础连接”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "Join"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "基础连接"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“聚合函数”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "掌握 COUNT、SUM、AVG 和条件聚合。",
-      "objectives": [
-        "完成“聚合函数”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "Aggregation"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "聚合函数"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“排序与分组”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "稳定处理 GROUP BY、HAVING、排序和分组统计。",
-      "objectives": [
-        "完成“排序与分组”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "Grouping"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "排序与分组"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“进阶查询与连接”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "训练条件连接、窗口前置思维和复杂结果集组合。",
-      "objectives": [
-        "完成“进阶查询与连接”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 5,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "Advanced Join"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "进阶查询与连接"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“子查询”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "掌握相关子查询、集合判断和分层查询。",
-      "objectives": [
-        "完成“子查询”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 6,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "Subquery"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "子查询"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“字符串与高级子句”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "完成字符串函数、正则和高级过滤的综合训练。",
-      "objectives": [
-        "完成“字符串与高级子句”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 7,
-      "recommendedTags": [
-        "Database",
-        "SQL",
-        "String Function"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "字符串与高级子句"
     }
   ],

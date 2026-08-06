@@ -2,8 +2,8 @@ package org.congcong.algomentor.mentor.application.learningplan.template;
 
 import java.util.List;
 import java.util.Map;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 
@@ -24,11 +24,9 @@ public record LearningPlanTemplate(
     int defaultWeeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyPreference difficultyPreference,
-    boolean interviewOriented,
     List<String> topicPreferences,
     String targetAudience,
     String targetAudienceEn,
-    Map<String, Object> difficultyMix,
     List<String> prerequisites,
     List<String> prerequisitesEn,
     List<String> recommendedFor,
@@ -54,7 +52,6 @@ public record LearningPlanTemplate(
 
   public LearningPlanTemplate {
     topicPreferences = topicPreferences == null ? List.of() : List.copyOf(topicPreferences);
-    difficultyMix = difficultyMix == null ? Map.of() : Map.copyOf(difficultyMix);
     prerequisites = prerequisites == null ? List.of() : List.copyOf(prerequisites);
     prerequisitesEn = prerequisitesEn == null ? List.of() : List.copyOf(prerequisitesEn);
     recommendedFor = recommendedFor == null ? List.of() : List.copyOf(recommendedFor);
@@ -63,86 +60,6 @@ public record LearningPlanTemplate(
     notRecommendedForEn = notRecommendedForEn == null ? List.of() : List.copyOf(notRecommendedForEn);
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
     phases = phases == null ? List.of() : List.copyOf(phases);
-  }
-
-  public LearningPlanTemplate(
-      Long id,
-      String templateId,
-      String title,
-      String summary,
-      LearningPlanTemplateCatalogCategory catalogCategory,
-      Integer recommendedOrder,
-      LearningPlanIntent intent,
-      String goal,
-      int defaultDurationWeeks,
-      LearningPlanLevel level,
-      int defaultWeeklyHours,
-      String programmingLanguage,
-      LearningPlanDifficultyPreference difficultyPreference,
-      boolean interviewOriented,
-      List<String> topicPreferences,
-      String targetAudience,
-      Map<String, Object> difficultyMix,
-      List<String> prerequisites,
-      List<String> recommendedFor,
-      List<String> notRecommendedFor,
-      String expectedOutcome,
-      String sourceName,
-      String sourceUrl,
-      String sourceCommit,
-      String sourceDataPath,
-      String sourceDescription,
-      String curationNotes,
-      String licenseNotice,
-      int problemCount,
-      int matchedProblemCount,
-      int missingProblemCount,
-      Map<String, Object> metadata,
-      List<LearningPlanTemplatePhase> phases
-  ) {
-    this(
-        id,
-        templateId,
-        title,
-        null,
-        summary,
-        null,
-        catalogCategory,
-        recommendedOrder,
-        intent,
-        goal,
-        null,
-        defaultDurationWeeks,
-        level,
-        defaultWeeklyHours,
-        programmingLanguage,
-        difficultyPreference,
-        interviewOriented,
-        topicPreferences,
-        targetAudience,
-        null,
-        difficultyMix,
-        prerequisites,
-        List.of(),
-        recommendedFor,
-        List.of(),
-        notRecommendedFor,
-        List.of(),
-        expectedOutcome,
-        null,
-        false,
-        sourceName,
-        sourceUrl,
-        sourceCommit,
-        sourceDataPath,
-        sourceDescription,
-        curationNotes,
-        licenseNotice,
-        problemCount,
-        matchedProblemCount,
-        missingProblemCount,
-        metadata,
-        phases);
   }
 
   public LearningPlanContentLocale resolveContentLocale(LearningPlanContentLocale requestedLocale) {
@@ -201,11 +118,9 @@ public record LearningPlanTemplate(
         defaultWeeklyHours,
         programmingLanguage,
         difficultyPreference,
-        interviewOriented,
         topicPreferences,
         targetAudience,
         targetAudienceEn,
-        difficultyMix,
         prerequisites,
         prerequisitesEn,
         recommendedFor,

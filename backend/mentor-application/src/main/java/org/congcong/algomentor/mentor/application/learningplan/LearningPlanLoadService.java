@@ -18,8 +18,6 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatu
 
 public class LearningPlanLoadService {
 
-  public static final String LOAD_RISK_NORMAL = "NORMAL";
-  public static final String LOAD_RISK_OVERLOADED = "OVERLOADED";
   public static final int MIN_DAILY_PROBLEM_COUNT = 1;
   public static final int MAX_DAILY_PROBLEM_COUNT = 10;
   public static final int MIN_TRAINING_DAYS_PER_WEEK = 1;
@@ -77,7 +75,6 @@ public class LearningPlanLoadService {
     metadata.put(LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, effectiveTrainingDaysPerWeek);
     metadata.put(LearningPlanDraftMetadataKeys.COVERAGE_POLICY, effectivePolicy.name());
     metadata.put(LearningPlanDraftMetadataKeys.LOAD_SUMMARY, toMetadata(summary));
-    metadata.put(LearningPlanDraftMetadataKeys.LOAD_RISK, isOverloaded(summary) ? LOAD_RISK_OVERLOADED : LOAD_RISK_NORMAL);
     return copyWithMetadata(plan, metadata);
   }
 
@@ -196,8 +193,7 @@ public class LearningPlanLoadService {
             round1(plannedProblems.stream()
                 .mapToDouble(problem -> estimateProblemLoad(problem.difficulty(), problem.tags(), reviewBufferIncluded))
                 .sum()),
-            plannedProblems.stream().map(LearningPlanProblemDraft::slug).toList(),
-            phase.reviewAdvice()));
+            plannedProblems.stream().map(LearningPlanProblemDraft::slug).toList()));
       }
     }
     return buckets;
@@ -225,12 +221,10 @@ public class LearningPlanLoadService {
     Map<ProblemKey, PracticeProgressStatus> progressByProblem = progressStatusByProblem(progress);
     int dailyProblemCount = dailyProblemCountFromMetadata(plan);
     List<String> prioritySlugs = new ArrayList<>();
-    String reviewTask = "复盘本次训练中的卡点和错因。";
+    String reviewTask = reviewTask(null, plan.contentLocale());
     int weekIndex = 1;
     for (LearningPlanPhaseDraft phase : plan.phases()) {
-      if (phase.reviewAdvice() != null && !phase.reviewAdvice().isBlank()) {
-        reviewTask = phase.reviewAdvice();
-      }
+      reviewTask = reviewTask(phase, plan.contentLocale());
       for (LearningPlanProblemDraft problem : phase.problems()) {
         PracticeProgressStatus status = progressByProblem.getOrDefault(
             new ProblemKey(phase.phaseIndex(), problem.slug()),
@@ -369,11 +363,22 @@ public class LearningPlanLoadService {
         plan.weeklyHours(),
         plan.programmingLanguage(),
         plan.difficultyDistribution(),
-        plan.interviewOriented(),
         plan.topicPreferences(),
         plan.additionalConstraints(),
         plan.phases(),
         metadata);
+  }
+
+  private String reviewTask(LearningPlanPhaseDraft phase, LearningPlanContentLocale locale) {
+    boolean english = locale == LearningPlanContentLocale.EN_US;
+    if (phase == null || phase.title() == null || phase.title().isBlank()) {
+      return english
+          ? "Review blockers, mistakes, and edge cases from the current training."
+          : "复盘本次训练中的卡点、错因和边界条件。";
+    }
+    return english
+        ? "Review blockers, mistakes, and edge cases from \"" + phase.title() + "\"."
+        : "复盘「" + phase.title() + "」训练中的卡点、错因和边界条件。";
   }
 
   private double estimateProblemLoad(String difficulty, List<String> tags, boolean reviewBufferIncluded) {

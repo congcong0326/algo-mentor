@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 5,
   "programmingLanguage": "Java",
   "difficultyPreference": "EASY",
-  "interviewOriented": false,
   "topicPreferences": [
     "Simulation",
     "Array",
@@ -53,81 +52,27 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "用短题稳定循环、条件分支、计数和简单数组返回。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Simulation",
-        "Array"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "语法热身与简单模拟"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "训练字符串遍历、拼接、映射关系和计数字典。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "String",
-        "Hash Table"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "字符串与哈希基础"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "练习下标移动、矩阵遍历、原地修改和基础排序合并。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Array",
-        "Matrix",
-        "Two Pointers"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "数组、矩阵与边界"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "完成栈、队列、HashMap 和简单设计题，巩固类和状态维护。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "Stack",
-        "Queue",
-        "Design"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "基础数据结构实现"
     }
   ]

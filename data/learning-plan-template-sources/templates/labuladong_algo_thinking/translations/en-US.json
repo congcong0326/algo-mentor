@@ -8,115 +8,43 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the Linear Structure and Two Pointer Framework",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Start with arrays and linked lists, practicing fast/slow pointers, left/right pointers, and in-place modification.",
-      "objectives": [
-        "Complete all local matching questions at the Linear Structure and Two Pointer Frame stage and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Linear Structures and Two-Pointer Frameworks"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"window, dichotomy and inter-domain pre-treatment\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice reusable frameworks for sliding windows, binary-search boundaries, prefix sums, and difference arrays.",
-      "objectives": [
-        "Complete all local matching questions for the \"window, split and inter-domain preprocessing\" phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Sliding Windows, Binary Search, and Preprocessing"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signal and core solution for the main \"recursion, backtracking, and BFS\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Understand recursive and backtracking search through decision trees, state restoration, and shortest-step models.",
-      "objectives": [
-        "Complete all local matches for the \"regression, backtracking and BFS\" phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Recursion, Backtracking, and BFS"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the “Dictational thought”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Build a tree-problem framework around traversal positions, subtree return values, and binary search tree properties.",
-      "objectives": [
-        "Complete all local matching questions at the \"Dictionary Tree Progressive Thinking\" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Binary-Tree Recursive Thinking"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of \"Charts and Queue\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Progress from graph construction to topological sorting, connectivity, shortest paths, and minimum spanning trees.",
-      "objectives": [
-        "Complete all local matching questions at the \"Chart and Quest\" stage and record the basis for status or data structure selection",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Graphs and Connectivity"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"dynamic programming state design\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice defining states, choices, transitions, and base cases across sequence and state-machine problems.",
-      "objectives": [
-        "Complete all local matching questions for the dynamic programming state design phase and document the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Dynamic Programming State Design"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"uniform structure, stacking and design\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice maintaining state with monotonic stacks, monotonic queues, priority queues, and cache structures.",
-      "objectives": [
-        "Complete all local matching questions in the \" Mono-modular Structure, Stack and Design \" phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 7,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Monotonic Structures, Heaps, and Design"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide independent descriptions of the main HF integrated applications",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Use classic composite frameworks to test transfer, boundary control, and data-structure composition skills.",
-      "objectives": [
-        "Completion of all local matching features for the HF integrated application phase and documentation of status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 8,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "High-Frequency Integrated Applications"
     }
   ],

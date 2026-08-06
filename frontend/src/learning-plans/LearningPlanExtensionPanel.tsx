@@ -7,6 +7,7 @@ import type {
   LearningPlanExtensionReadyEvent,
   LearningPlanPhaseDraft,
 } from '../types/api';
+import { getPhaseDisplayTags } from './phaseTags';
 
 interface LearningPlanExtensionPanelProps {
   contentLocale: LearningPlanContentLocale;
@@ -26,6 +27,7 @@ function ExtensionPhaseBlock({
   phase: LearningPlanPhaseDraft;
 }) {
   const { resources } = useI18n();
+  const displayTags = getPhaseDisplayTags(phase);
 
   return (
     <section className="phase-block" key={phase.phaseIndex}>
@@ -33,11 +35,13 @@ function ExtensionPhaseBlock({
         <h3>{phase.title}</h3>
       </div>
       <p>{phase.focus}</p>
-      <div className="tag-row">
-        {phase.recommendedTags.map((tag) => (
-          <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>
-        ))}
-      </div>
+      {displayTags.length > 0 && (
+        <div className="tag-row">
+          {displayTags.map((tag) => (
+            <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>
+          ))}
+        </div>
+      )}
       <div className="problem-list compact-problems">
         {phase.problems.map((problem) => (
           <div className="problem-row" key={problem.slug}>

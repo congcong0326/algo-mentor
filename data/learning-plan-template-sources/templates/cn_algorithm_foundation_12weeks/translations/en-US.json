@@ -7,129 +7,48 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Build foundations in array indexing, two pointers, prefix sums, and matrix traversal.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Array and Matrix Foundations"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Practice linked-list rewrites, fast/slow pointers, and deletion boundaries.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Linked-List Pointer Operations"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Use hash tables for counting, deduplication, set intersections, and two-sum relationships.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Hashing and Set Modeling"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Practice string processing, parenthesis matching, and basic stack/queue implementations.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Strings, Stacks, and Queues"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Systematically practice DFS/BFS traversal, tree height, paths, and binary search tree validation.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Binary-Tree Traversal and Properties"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Practice choosing, undoing choices, pruning, and grid search.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Backtracking Search"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Develop greedy intuition through local choices and interval boundaries.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 7,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Greedy Algorithms and Intuition"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Progress from one-dimensional states to knapsack and string DP, emphasizing state definitions and transition order.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 8,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Introduction to Dynamic Programming"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Complete foundations in grid BFS/DFS, graph construction, and connectivity.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 9,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Graph Foundations and Final Review"
     }
   ],

@@ -38,7 +38,6 @@ public final class LearningPlanTemplateResponseMapper {
         template.defaultWeeklyHours(),
         template.programmingLanguage(),
         template.difficultyPreference(),
-        template.interviewOriented(),
         template.topicPreferences(),
         template.targetAudience(contentLocale),
         template.expectedOutcome(contentLocale),
@@ -78,7 +77,6 @@ public final class LearningPlanTemplateResponseMapper {
         template.defaultWeeklyHours(),
         template.programmingLanguage(),
         template.difficultyPreference(),
-        template.interviewOriented(),
         template.topicPreferences(),
         template.targetAudience(contentLocale),
         template.prerequisites(contentLocale),
@@ -102,10 +100,6 @@ public final class LearningPlanTemplateResponseMapper {
         phase.title(contentLocale),
         phase.durationWeeks(),
         phase.focus(contentLocale),
-        phase.objectives(contentLocale),
-        phase.recommendedTags(),
-        phase.acceptanceCriteria(contentLocale),
-        phase.reviewAdvice(contentLocale),
         (int) phase.problemRefs().stream().filter(ref -> ref.matchedProblem()).count());
   }
 

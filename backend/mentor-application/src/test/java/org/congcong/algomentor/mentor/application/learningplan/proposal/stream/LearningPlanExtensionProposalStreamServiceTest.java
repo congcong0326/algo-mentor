@@ -523,7 +523,6 @@ class LearningPlanExtensionProposalStreamServiceTest {
 
   private LearningPlanDraftPlan basePlan(boolean personalizationEnabled, boolean templatePlan) {
     Map<String, Object> metadata = new java.util.LinkedHashMap<>();
-    metadata.put("problemRecommendationIncomplete", false);
     metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US");
     metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, personalizationEnabled);
     if (templatePlan) {
@@ -539,7 +538,6 @@ class LearningPlanExtensionProposalStreamServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         List.of(new LearningPlanPhaseDraft(
@@ -547,10 +545,6 @@ class LearningPlanExtensionProposalStreamServiceTest {
             "数组与哈希表基础",
             2,
             "Array",
-            List.of("掌握基础题型"),
-            List.of("Array"),
-            List.of("能独立复盘错题"),
-            "记录边界条件。",
             List.of(new LearningPlanProblemDraft(
                 "two-sum",
                 1,
@@ -564,7 +558,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
   }
 
   private LearningPlanExtensionDraft extensionDraft(String summary, String slug) {
-    return new LearningPlanExtensionDraft(summary, List.of(extensionPhase(slug)), Map.of("problemRecommendationIncomplete", false));
+    return new LearningPlanExtensionDraft(summary, List.of(extensionPhase(slug)), Map.of());
   }
 
   private LearningPlanPhaseDraft extensionPhase(String slug) {
@@ -573,10 +567,6 @@ class LearningPlanExtensionProposalStreamServiceTest {
         "图论补强",
         1,
         "Graph",
-        List.of("掌握图遍历"),
-        List.of("Graph"),
-        List.of("能识别连通性问题"),
-        "复盘建图方式。",
         List.of(new LearningPlanProblemDraft(
             slug,
             261,
@@ -598,10 +588,6 @@ class LearningPlanExtensionProposalStreamServiceTest {
               "title": "图论补强",
               "durationWeeks": 1,
               "focus": "Graph",
-              "objectives": ["掌握图遍历"],
-              "recommendedTags": ["Graph"],
-              "acceptanceCriteria": ["能识别连通性问题"],
-              "reviewAdvice": "复盘建图方式。",
               "problems": [
                 {
                   "slug": "%s",
@@ -617,7 +603,6 @@ class LearningPlanExtensionProposalStreamServiceTest {
             }
           ],
           "metadata": {
-            "problemRecommendationIncomplete": false
           }
         }
         """.formatted(summary, slug, slug, slug);

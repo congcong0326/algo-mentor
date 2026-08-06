@@ -19,8 +19,7 @@ public final class LearningPlanExtensionJsonSchema {
     ObjectNode properties = root.putObject("properties");
     properties.set("summary", string());
     properties.set("newPhases", phases());
-    properties.set("metadata", metadata());
-    require(root, "summary", "newPhases", "metadata");
+    require(root, "summary", "newPhases");
     return root;
   }
 
@@ -40,13 +39,8 @@ public final class LearningPlanExtensionJsonSchema {
     properties.set("title", string());
     properties.set("durationWeeks", integer(1, 52));
     properties.set("focus", string());
-    properties.set("objectives", stringArray());
-    properties.set("recommendedTags", stringArray());
-    properties.set("acceptanceCriteria", stringArray());
-    properties.set("reviewAdvice", string());
     properties.set("problems", problems());
-    require(root, "phaseIndex", "title", "durationWeeks", "focus", "objectives", "recommendedTags",
-        "acceptanceCriteria", "reviewAdvice", "problems");
+    require(root, "phaseIndex", "title", "durationWeeks", "focus", "problems");
     return root;
   }
 
@@ -74,15 +68,6 @@ public final class LearningPlanExtensionJsonSchema {
     return root;
   }
 
-  private static JsonNode metadata() {
-    ObjectNode schema = object();
-    schema.put("additionalProperties", false);
-    ObjectNode properties = schema.putObject("properties");
-    properties.set("problemRecommendationIncomplete", bool());
-    require(schema, "problemRecommendationIncomplete");
-    return schema;
-  }
-
   private static ObjectNode object() {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "object");
@@ -100,12 +85,6 @@ public final class LearningPlanExtensionJsonSchema {
     ArrayNode type = node.putArray("type");
     type.add("string");
     type.add("null");
-    return node;
-  }
-
-  private static ObjectNode bool() {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.put("type", "boolean");
     return node;
   }
 

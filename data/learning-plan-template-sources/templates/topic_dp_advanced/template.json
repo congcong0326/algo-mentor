@@ -6,7 +6,6 @@
   "expectedOutcome": "完成后能识别四类进阶 DP 的状态维度，独立设计转移并复盘时间与空间复杂度。",
   "goal": "建立复杂动态规划的状态设计、转移优化和问题分类能力。",
   "intent": "TOPIC_BREAKTHROUGH",
-  "interviewOriented": true,
   "level": "ADVANCED",
   "licenseNotice": "项目内部题库结构化元数据；模板不包含题面、题解或代码。",
   "metadata": {
@@ -19,84 +18,27 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立说明“区间动态规划”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "训练以区间长度、左右端点和最后一次操作为核心的状态设计。",
-      "objectives": [
-        "完成“区间动态规划”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Interval DP",
-        "String"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "区间动态规划"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“树形动态规划”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "通过子树返回值、选或不选状态和换根技巧解决树上最优问题。",
-      "objectives": [
-        "完成“树形动态规划”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Tree",
-        "Depth First Search"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "树形动态规划"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“状压与子集动态规划”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "用位掩码表达集合状态，并控制状态数量、转移顺序和记忆化边界。",
-      "objectives": [
-        "完成“状压与子集动态规划”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Bitmask",
-        "Memoization"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "状压与子集动态规划"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“数位、计数与博弈动态规划”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "综合练习高位约束、计数状态和双方最优选择下的状态转移。",
-      "objectives": [
-        "完成“数位、计数与博弈动态规划”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Digit DP",
-        "Game Theory",
-        "Math"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "数位、计数与博弈动态规划"
     }
   ],

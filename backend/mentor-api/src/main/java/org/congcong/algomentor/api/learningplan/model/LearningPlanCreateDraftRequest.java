@@ -16,7 +16,6 @@ public record LearningPlanCreateDraftRequest(
     Integer weeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyDistribution difficultyDistribution,
-    Boolean interviewOriented,
     List<String> topicPreferences,
     String additionalConstraints,
     Boolean personalizationEnabled
@@ -35,7 +34,6 @@ public record LearningPlanCreateDraftRequest(
         weeklyHours,
         programmingLanguage,
         difficultyDistribution,
-        interviewOriented,
         topicPreferences,
         additionalConstraints,
         personalizationEnabled == null || personalizationEnabled,

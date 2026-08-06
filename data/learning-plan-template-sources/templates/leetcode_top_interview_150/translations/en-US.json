@@ -8,143 +8,53 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signal and core solution for the main \" array and string \" type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Complete the official array and string core, emphasizing in-place modification, simulation, and boundary handling.",
-      "objectives": [
-        "Finish all local matching questions in the array and string phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Arrays and Strings"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"two pointer, window and matrix\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice state maintenance with two pointers, sliding windows, and two-dimensional matrices.",
-      "objectives": [
-        "Complete all local matching questions at the two pointer, window and matrix stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Two Pointers, Sliding Windows, and Matrices"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of “hash, inter-district and coop”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Cover high-frequency interview patterns for hash-map counting, interval operations, and stack structures.",
-      "objectives": [
-        "Complete all local matching questions for the \"hash, inter-port\" phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Hashing, Intervals, and Stacks"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the “linked list”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Systematically practice linked-list rewrites, cycles, copying, sorting, and cache design.",
-      "objectives": [
-        "Complete all local matching questions in the Linked List phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Linked Lists"
     },
     {
-      "acceptanceCriteria": [
-        "An independent description of the identification signal and the core solution for the main choreography of the binary tree and the search tree",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice recursive traversal, level-order traversal, and binary search tree operations.",
-      "objectives": [
-        "Complete all local matching questions during the \"Dixon Tree and Search Tree\" phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Binary Trees and Binary Search Trees"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of Chart and Trie",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice graph construction, connectivity, shortest paths, and tries.",
-      "objectives": [
-        "Complete all local matching questions for the Chart and Trie phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Graphs and Tries"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of “backtracking and partition”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice decision-tree search, pruning, palindrome partitioning, and combination solutions.",
-      "objectives": [
-        "Complete all local matching questions in the backtracking and partitioning phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 7,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Backtracking and Divide and Conquer"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"Kadane, Half-Screen and Stack\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Use Kadane's algorithm, boundary-aware binary search, and priority queues to solve high-frequency advanced problems.",
-      "objectives": [
-        "Complete all local matching questions in the Kadane, Half-Screech phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 8,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Kadane's Algorithm, Binary Search, and Heaps"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"bit computing and mathematics\" theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice bit manipulation, number patterns, geometry, and simulation.",
-      "objectives": [
-        "Finish all local matching questions at the Bit-Accounting and Mathematics stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 9,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Bit Manipulation and Mathematics"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"developmental planning and integration\" theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Complete the roadmap with multidimensional dynamic programming and a full-route review.",
-      "objectives": [
-        "Complete the \"dynamic programming Integrated Ending\" phase and document the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 10,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Comprehensive Dynamic Programming Review"
     }
   ],

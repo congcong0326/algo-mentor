@@ -14,9 +14,7 @@ class LearningPlanDraftValidatorTest {
 
   @Test
   void generatedPlanRejectsMoreThanFiveProblemsPerPhase() {
-    LearningPlanDraftPlan plan = plan(1, 6, Map.of(
-        LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE,
-        false));
+    LearningPlanDraftPlan plan = plan(1, 6, Map.of());
 
     assertThatThrownBy(() -> validator.validateGeneratedPlan(plan))
         .isInstanceOf(LearningPlanException.class)
@@ -47,7 +45,6 @@ class LearningPlanDraftValidatorTest {
         81,
         null,
         null,
-        null,
         List.of(),
         "x".repeat(1001),
         true,
@@ -74,7 +71,6 @@ class LearningPlanDraftValidatorTest {
         8,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         List.of(phase(1, phaseCount, problemsPerPhase)),
@@ -87,10 +83,6 @@ class LearningPlanDraftValidatorTest {
         "阶段 " + phaseIndex,
         durationWeeks,
         "Array",
-        List.of("完成训练"),
-        List.of("Array"),
-        List.of("能复盘"),
-        "记录错题。",
         problems(problemCount));
   }
 

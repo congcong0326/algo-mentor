@@ -55,7 +55,6 @@ export default function LearningPlanCreateForm({
 
   const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
     && Number.isInteger(weeklyHours) && weeklyHours > 0;
-  const selectedScenario = planScenarioOptions.find((option) => option.value === intent) ?? planScenarioOptions[0];
   const selectedDifficulty = getDifficultyDistribution(difficultyValue);
   const effectiveSubmitLabel = submitLabel ?? resources.learningPlans.generateDraft;
   const totalCapacityPoints = durationWeeks > 0 && weeklyHours > 0 ? durationWeeks * weeklyHours : 0;
@@ -128,7 +127,6 @@ export default function LearningPlanCreateForm({
         mediumPercent: selectedDifficulty.mediumPercent,
         hardPercent: selectedDifficulty.hardPercent,
       },
-      interviewOriented: selectedScenario.interviewOriented,
       topicPreferences,
       additionalConstraints: additionalConstraints || undefined,
       personalizationEnabled,

@@ -43,7 +43,6 @@ describe('LearningPlanCreateModal', () => {
         mediumPercent: 55,
         hardPercent: 20,
       },
-      interviewOriented: true,
       topicPreferences: ['Dynamic Programming'],
       additionalConstraints: '希望每周留一天复盘。',
       personalizationEnabled: true,

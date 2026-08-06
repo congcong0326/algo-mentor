@@ -37,7 +37,6 @@ public class LearningPlanAgentService {
         ? List.of("Array", "Hash Table", "Two Pointers", "Dynamic Programming")
         : brief.topicPreferences();
     List<LearningPlanPhaseDraft> phases = new ArrayList<>();
-    boolean incomplete = false;
 
     for (int index = 0; index < phaseCount; index++) {
       String tag = preferredTags.get(index % preferredTags.size());
@@ -57,13 +56,11 @@ public class LearningPlanAgentService {
               candidates.indexOf(candidate) + 1,
               problemReason(brief, tag)))
           .toList();
-      incomplete = incomplete || problems.size() < 3;
       int phaseIndex = index + 1;
       phases.add(phase(brief, phaseIndex, phaseWeeks.get(index), tag, problems));
     }
 
     Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, incomplete);
     metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, brief.contentLocale().languageTag());
     metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, brief.personalizationEnabled());
 
@@ -77,7 +74,6 @@ public class LearningPlanAgentService {
         brief.weeklyHours(),
         brief.programmingLanguage(),
         brief.difficultyDistribution(),
-        brief.interviewOriented(),
         brief.topicPreferences(),
         brief.additionalConstraints(),
         phases,
@@ -154,14 +150,6 @@ public class LearningPlanAgentService {
           "Phase " + phaseIndex + ": " + tag + " Practice",
           durationWeeks,
           tag,
-          List.of(
-              "Build a reliable problem-solving method for " + tag,
-              "Complete the recommended problems and review key mistakes"),
-          List.of(tag),
-          List.of(
-              "Explain the core approach for this phase independently",
-              "Summarize at least one reusable pattern or boundary-case lesson"),
-          "Record root causes, complexity analysis, and reusable patterns.",
           problems);
     }
     return new LearningPlanPhaseDraft(
@@ -169,10 +157,6 @@ public class LearningPlanAgentService {
         "第 " + phaseIndex + " 阶段：" + tag + " 训练",
         durationWeeks,
         tag,
-        List.of("围绕 " + tag + " 建立稳定解题方法", "完成推荐题并复盘关键错误"),
-        List.of(tag),
-        List.of("能独立说明本阶段题目的核心思路", "能总结至少 1 条可复用模板或边界经验"),
-        "记录错误原因、复杂度分析和可复用模板。",
         problems);
   }
 

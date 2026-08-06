@@ -94,7 +94,6 @@ public class LearningPlanTemplateDraftService {
         template.defaultWeeklyHours(),
         programmingLanguage,
         LearningPlanDifficultyDistributions.forTemplate(template.difficultyPreference()),
-        template.interviewOriented(),
         template.topicPreferences(),
         null,
         false,
@@ -143,13 +142,11 @@ public class LearningPlanTemplateDraftService {
     }
     List<Integer> phaseWeeks = splitWeeks(brief.durationWeeks(), template.phases().size());
     List<LearningPlanPhaseDraft> phases = new ArrayList<>();
-    boolean incomplete = template.missingProblemCount() > 0;
 
     for (int index = 0; index < template.phases().size(); index++) {
       LearningPlanTemplatePhase templatePhase = template.phases().get(index);
       List<LearningPlanTemplateProblemRef> refs = templatePhase.problemRefs();
       List<LearningPlanProblemDraft> problems = selectProblems(refs, contentLocale.languageTag());
-      incomplete = incomplete || problems.size() < refs.size();
       phases.add(toDraftPhase(index + 1, phaseWeeks.get(index), templatePhase, problems, contentLocale));
     }
 
@@ -163,11 +160,10 @@ public class LearningPlanTemplateDraftService {
         brief.weeklyHours(),
         brief.programmingLanguage(),
         brief.difficultyDistribution(),
-        brief.interviewOriented(),
         brief.topicPreferences(),
         brief.additionalConstraints(),
         phases,
-        draftMetadata(template, incomplete, contentLocale));
+        draftMetadata(template, contentLocale));
     return loadService.withRhythmMetadata(plan, dailyProblemCount, trainingDaysPerWeek);
   }
 
@@ -212,10 +208,6 @@ public class LearningPlanTemplateDraftService {
         templatePhase.title(contentLocale),
         durationWeeks,
         templatePhase.focus(contentLocale),
-        templatePhase.objectives(contentLocale),
-        templatePhase.recommendedTags(),
-        templatePhase.acceptanceCriteria(contentLocale),
-        templatePhase.reviewAdvice(contentLocale),
         problems);
   }
 
@@ -231,45 +223,17 @@ public class LearningPlanTemplateDraftService {
 
   private Map<String, Object> draftMetadata(
       LearningPlanTemplate template,
-      boolean incomplete,
       LearningPlanContentLocale contentLocale
   ) {
     Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, incomplete);
     metadata.put(LearningPlanDraftMetadataKeys.DRAFT_SOURCE, LearningPlanDraftMetadataKeys.DRAFT_SOURCE_TEMPLATE);
     metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, contentLocale.languageTag());
     metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, false);
     Map<String, Object> templateMetadata = new LinkedHashMap<>();
     templateMetadata.put(LearningPlanDraftMetadataKeys.TEMPLATE_ID, template.templateId());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.SOURCE_NAME, template.sourceName());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.SOURCE_URL, template.sourceUrl());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.SOURCE_COMMIT, template.sourceCommit());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.SOURCE_DATA_PATH, template.sourceDataPath());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.PROBLEM_COUNT, template.problemCount());
     templateMetadata.put(LearningPlanDraftMetadataKeys.MATCHED_PROBLEM_COUNT, template.matchedProblemCount());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.MISSING_PROBLEM_COUNT, template.missingProblemCount());
-    templateMetadata.put(LearningPlanDraftMetadataKeys.PROBLEM_REFS, problemRefMetadata(template));
     metadata.put(LearningPlanDraftMetadataKeys.TEMPLATE, templateMetadata);
     return metadata;
-  }
-
-  private List<Map<String, Object>> problemRefMetadata(LearningPlanTemplate template) {
-    return template.phases().stream()
-        .flatMap(phase -> phase.problemRefs().stream())
-        .map(ref -> {
-          Map<String, Object> item = new LinkedHashMap<>();
-          item.put(LearningPlanDraftMetadataKeys.PHASE_INDEX, ref.phaseIndex());
-          item.put(LearningPlanDraftMetadataKeys.SORT_ORDER, ref.sortOrder());
-          item.put(LearningPlanDraftMetadataKeys.SOURCE_ORDER, ref.sourceOrder());
-          item.put(LearningPlanDraftMetadataKeys.PROBLEM_SLUG, ref.problemSlug());
-          item.put(LearningPlanDraftMetadataKeys.SOURCE_TITLE, ref.sourceTitle());
-          item.put(LearningPlanDraftMetadataKeys.SOURCE_DIFFICULTY, ref.sourceDifficulty());
-          item.put(LearningPlanDraftMetadataKeys.PATTERN, ref.pattern());
-          item.put(LearningPlanDraftMetadataKeys.SOURCE_URL, ref.sourceUrl());
-          item.put(LearningPlanDraftMetadataKeys.MATCHED_PROBLEM, ref.matchedProblem());
-          return item;
-        })
-        .toList();
   }
 
   private String normalizeTemplateId(String templateId) {

@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 7,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Trie",
     "String Matching",
@@ -49,41 +48,13 @@
       "phaseIndex": 1,
       "title": "Trie 构建、检索与前缀应用",
       "durationWeeks": 1,
-      "focus": "从基础 Trie API 逐步扩展到通配搜索、前缀聚合、棋盘搜索和流式匹配。",
-      "objectives": [
-        "掌握 Trie 节点、终止标记和字符映射设计",
-        "理解 Trie 与 DFS、排序、哈希和数据流的组合方式"
-      ],
-      "recommendedTags": [
-        "Trie",
-        "String",
-        "Design"
-      ],
-      "acceptanceCriteria": [
-        "能独立实现插入、完整匹配和前缀匹配",
-        "能根据字符集和数据规模选择数组子节点或哈希子节点"
-      ],
-      "reviewAdvice": "复盘每题的节点字段、终止条件和搜索分支数量，重点检查空串与重复单词。"
+      "focus": "从基础 Trie API 逐步扩展到通配搜索、前缀聚合、棋盘搜索和流式匹配。"
     },
     {
       "phaseIndex": 2,
       "title": "字符串匹配、回文与编辑状态",
       "durationWeeks": 1,
-      "focus": "训练 KMP/滚动哈希思维，并用回文和编辑距离衔接字符串动态规划。",
-      "objectives": [
-        "理解前缀函数、滚动哈希和匹配失败后的状态复用",
-        "掌握回文扩展、切分和编辑距离的状态定义"
-      ],
-      "recommendedTags": [
-        "String Matching",
-        "Rolling Hash",
-        "Dynamic Programming"
-      ],
-      "acceptanceCriteria": [
-        "能解释字符串匹配算法如何避免重复比较",
-        "能独立写出回文或编辑距离类状态转移"
-      ],
-      "reviewAdvice": "把匹配算法的状态含义和 DP 的下标定义写在代码前，完成后用短串手动推演。"
+      "focus": "训练 KMP/滚动哈希思维，并用回文和编辑距离衔接字符串动态规划。"
     }
   ]
 }

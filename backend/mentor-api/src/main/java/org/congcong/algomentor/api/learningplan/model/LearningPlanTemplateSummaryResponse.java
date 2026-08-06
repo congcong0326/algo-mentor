@@ -22,7 +22,6 @@ public record LearningPlanTemplateSummaryResponse(
     int defaultWeeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyPreference difficultyPreference,
-    boolean interviewOriented,
     List<String> topicPreferences,
     String targetAudience,
     String expectedOutcome,

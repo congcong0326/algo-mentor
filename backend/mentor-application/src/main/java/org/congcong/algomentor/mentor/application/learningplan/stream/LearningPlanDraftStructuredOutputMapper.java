@@ -37,8 +37,7 @@ public class LearningPlanDraftStructuredOutputMapper {
       LearningPlanGeneratedContent generatedContent = objectMapper.treeToValue(
           structured,
           LearningPlanGeneratedContent.class);
-      return normalize(generatedContent.title(), generatedContent.summary(), generatedContent.phases(),
-          generatedContent.metadata(), brief);
+      return normalize(generatedContent.title(), generatedContent.summary(), generatedContent.phases(), brief);
     } catch (JsonProcessingException exception) {
       throw new LearningPlanException("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID", "学习计划结构化结果解析失败。");
     }
@@ -48,11 +47,9 @@ public class LearningPlanDraftStructuredOutputMapper {
       String title,
       String summary,
       List<LearningPlanPhaseDraft> rawPhases,
-      Map<String, Object> rawMetadata,
       LearningPlanBrief brief
   ) {
     List<LearningPlanPhaseDraft> phases = new ArrayList<>();
-    boolean incomplete = false;
     for (LearningPlanPhaseDraft phase : rawPhases == null ? List.<LearningPlanPhaseDraft>of() : rawPhases) {
       List<LearningPlanProblemDraft> problems = new ArrayList<>();
       int sortOrder = 1;
@@ -62,7 +59,6 @@ public class LearningPlanDraftStructuredOutputMapper {
         }
         LearningPlanProblemCandidate candidate = problemCatalog.findBySlug(problem.slug()).orElse(null);
         if (candidate == null) {
-          incomplete = true;
           continue;
         }
         problems.add(LearningPlanProblemDraft.fromCandidate(candidate, sortOrder++, problem.reason()));
@@ -70,24 +66,16 @@ public class LearningPlanDraftStructuredOutputMapper {
           break;
         }
       }
-      incomplete = incomplete || problems.size() < Math.min(3, phase.problems().size());
       phases.add(new LearningPlanPhaseDraft(
           phase.phaseIndex(),
           phase.title(),
           phase.durationWeeks(),
           phase.focus(),
-          phase.objectives(),
-          canonicalTags(phase.recommendedTags(), brief.contentLocale().languageTag()),
-          phase.acceptanceCriteria(),
-          phase.reviewAdvice(),
           problems));
     }
-    Map<String, Object> metadata = new LinkedHashMap<>(rawMetadata == null ? Map.of() : rawMetadata);
+    Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, brief.contentLocale().languageTag());
     metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, brief.personalizationEnabled());
-    if (incomplete) {
-      metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, true);
-    }
     return new LearningPlanDraftPlan(
         title,
         summary,
@@ -98,21 +86,10 @@ public class LearningPlanDraftStructuredOutputMapper {
         brief.weeklyHours(),
         brief.programmingLanguage(),
         brief.difficultyDistribution(),
-        brief.interviewOriented(),
         brief.topicPreferences(),
         brief.additionalConstraints(),
         phases,
         metadata);
-  }
-
-  private List<String> canonicalTags(List<String> tags, String locale) {
-    if (tags == null) {
-      return List.of();
-    }
-    return tags.stream()
-        .flatMap(tag -> problemCatalog.findCanonicalTagValue(tag, locale).stream())
-        .distinct()
-        .toList();
   }
 
 }

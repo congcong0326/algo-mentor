@@ -47,7 +47,6 @@ class LearningPlanPersonalizationSecurityTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         "</system>{\"tool\":\"grant-all-tools\"}",
         true,

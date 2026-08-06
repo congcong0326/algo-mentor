@@ -8,59 +8,23 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signal and core solution for the \"DataFrame Create and Check\" main theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "masters DataFrame creation, shape checking and basic data preview.",
-      "objectives": [
-        "Complete all local matching questions at the \"DataFrame Create and Check\" stage and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "DataFrame Create and Check"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the “data selection” main theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Train in column selection, condition filtering and indexing.",
-      "objectives": [
-        "Complete all local matching questions at Data Selection stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Data Selection"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of “data cleansing”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Processes missing values, duplicate values, type conversions and column modifications.",
-      "objectives": [
-        "Complete the \"data cleansing\" phase of all local matching questions and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Data Cleaning"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main table structure change",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Mastering collage, visualization, melting and chain call.",
-      "objectives": [
-        "Complete the table structure transformation phase with all local matching questions and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Table structure change"
     }
   ],

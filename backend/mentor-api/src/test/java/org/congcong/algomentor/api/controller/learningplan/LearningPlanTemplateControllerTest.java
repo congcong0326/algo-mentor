@@ -105,10 +105,7 @@ class LearningPlanTemplateControllerTest {
         .andExpect(jsonPath("$.data.notRecommendedFor[0]").value("English exclusion"))
         .andExpect(jsonPath("$.data.expectedOutcome").value("English outcome"))
         .andExpect(jsonPath("$.data.phases[0].title").value("English phase"))
-        .andExpect(jsonPath("$.data.phases[0].focus").value("English focus"))
-        .andExpect(jsonPath("$.data.phases[0].objectives[0]").value("English objective"))
-        .andExpect(jsonPath("$.data.phases[0].acceptanceCriteria[0]").value("English criterion"))
-        .andExpect(jsonPath("$.data.phases[0].reviewAdvice").value("English review"));
+        .andExpect(jsonPath("$.data.phases[0].focus").value("English focus"));
   }
 
   @Test
@@ -125,10 +122,7 @@ class LearningPlanTemplateControllerTest {
         .andExpect(jsonPath("$.data.summary").value("中文摘要"))
         .andExpect(jsonPath("$.data.goal").value("中文目标"))
         .andExpect(jsonPath("$.data.phases[0].title").value("中文阶段"))
-        .andExpect(jsonPath("$.data.phases[0].focus").value("中文重点"))
-        .andExpect(jsonPath("$.data.phases[0].objectives[0]").value("中文目标项"))
-        .andExpect(jsonPath("$.data.phases[0].acceptanceCriteria[0]").value("中文验收"))
-        .andExpect(jsonPath("$.data.phases[0].reviewAdvice").value("中文复盘"));
+        .andExpect(jsonPath("$.data.phases[0].focus").value("中文重点"));
   }
 
   @Test
@@ -146,25 +140,23 @@ class LearningPlanTemplateControllerTest {
     return new LearningPlanTemplate(
         1L,
         "neetcode_blind_75_interview_core",
-        "Blind 75",
-        "summary",
+        "Blind 75",null,
+        "summary",null,
         LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
         1,
         LearningPlanIntent.INTERVIEW_SPRINT,
-        "goal",
+        "goal",null,
         4,
         LearningPlanLevel.INTERMEDIATE,
         8,
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
-        true,
         List.of("Array"),
-        "audience",
-        Map.of("Easy", Map.of("count", 1)),
-        List.of("basic"),
-        List.of("interview"),
-        List.of("zero"),
-        "outcome",
+        "audience",null,
+        List.of("basic"),List.of(),
+        List.of("interview"),List.of(),
+        List.of("zero"),List.of(),
+        "outcome",null,false,
         "neetcode-gh/leetcode",
         "https://github.com/neetcode-gh/leetcode",
         "9907b7fed441fa55083c0751e208b7197101dbba",
@@ -179,13 +171,9 @@ class LearningPlanTemplateControllerTest {
         List.of(new LearningPlanTemplatePhase(
             10L,
             1,
-            "phase",
+            "phase",null,
             1,
-            "focus",
-            List.of("objective"),
-            List.of("Array"),
-            List.of("done"),
-            "review",
+            "focus",null,
             List.of(new LearningPlanTemplateProblemRef(
                 100L,
                 1,
@@ -218,11 +206,9 @@ class LearningPlanTemplateControllerTest {
         8,
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
-        true,
         List.of("Array"),
         "中文受众",
         "English audience",
-        Map.of("Easy", Map.of("count", 1)),
         List.of("中文前置"),
         List.of("English prerequisite"),
         List.of("中文推荐"),
@@ -251,13 +237,6 @@ class LearningPlanTemplateControllerTest {
             1,
             "中文重点",
             "English focus",
-            List.of("中文目标项"),
-            List.of("English objective"),
-            List.of("Array"),
-            List.of("中文验收"),
-            List.of("English criterion"),
-            "中文复盘",
-            "English review",
             List.of(new LearningPlanTemplateProblemRef(
                 100L,
                 1,

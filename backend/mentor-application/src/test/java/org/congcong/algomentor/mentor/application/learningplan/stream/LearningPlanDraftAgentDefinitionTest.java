@@ -138,7 +138,6 @@ class LearningPlanDraftAgentDefinitionTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         true,

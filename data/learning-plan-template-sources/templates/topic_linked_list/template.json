@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 6,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Linked List",
     "Two Pointers",
@@ -52,42 +51,13 @@
       "phaseIndex": 1,
       "title": "基础操作、反转与双指针",
       "durationWeeks": 1,
-      "focus": "训练链表遍历、局部反转、快慢指针和删除节点时的边界处理。",
-      "objectives": [
-        "能在纸面上跟踪 prev、current、next 的变化",
-        "掌握环检测、中点、倒数第 N 个节点和相交判断"
-      ],
-      "recommendedTags": [
-        "Linked List",
-        "Two Pointers",
-        "Recursion"
-      ],
-      "acceptanceCriteria": [
-        "能独立完成基础反转、合并和快慢指针题",
-        "能说明虚拟头节点和判空顺序解决的边界问题"
-      ],
-      "reviewAdvice": "复盘时为每道题画出指针移动前后的局部链表，重点检查头节点、尾节点和空链表。"
+      "focus": "训练链表遍历、局部反转、快慢指针和删除节点时的边界处理。"
     },
     {
       "phaseIndex": 2,
       "title": "合并排序与复杂链表结构",
       "durationWeeks": 1,
-      "focus": "处理区间反转、重排、归并排序、随机指针和双向链表设计。",
-      "objectives": [
-        "掌握链表分治、归并和多段重连",
-        "理解哈希表与双向链表组合的设计取舍"
-      ],
-      "recommendedTags": [
-        "Linked List",
-        "Divide and Conquer",
-        "Doubly Linked List",
-        "Design"
-      ],
-      "acceptanceCriteria": [
-        "能独立完成区间反转、排序和 K 路合并",
-        "能解释随机指针复制和 LRU 的节点关系与复杂度"
-      ],
-      "reviewAdvice": "把复杂题拆成定位、断链、重连三个步骤，单独验证每一步的不变量。"
+      "focus": "处理区间反转、重排、归并排序、随机指针和双向链表设计。"
     }
   ]
 }

@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 7,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Backtracking",
     "Array",
@@ -51,61 +50,21 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "先稳定选择树、去重边界和结果收集位置。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Backtracking",
-        "Array"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "子集、组合与排列"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "通过棋盘、括号、IP 和回文切割练习约束判断。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Backtracking",
-        "String",
-        "Matrix"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "棋盘与字符串切割"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "用高约束题训练排序剪枝、状态压缩前置和搜索空间控制。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Backtracking",
-        "Pruning"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "剪枝与约束搜索"
     }
   ]

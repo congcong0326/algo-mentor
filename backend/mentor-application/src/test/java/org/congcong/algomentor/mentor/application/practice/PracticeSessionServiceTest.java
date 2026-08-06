@@ -479,10 +479,6 @@ class PracticeSessionServiceTest {
           "哈希表基础",
           1,
           "补数查找",
-          List.of(),
-          List.of(),
-          List.of(),
-          "",
           List.of(problem));
       LearningPlanDraftPlan snapshot = new LearningPlanDraftPlan(
           "哈希表训练",
@@ -494,7 +490,6 @@ class PracticeSessionServiceTest {
           8,
           "Java",
           new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
-          true,
           List.of("Hash Table"),
           "profile",
           List.of(phase),

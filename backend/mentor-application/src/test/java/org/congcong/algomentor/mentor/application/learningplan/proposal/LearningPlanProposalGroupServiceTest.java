@@ -265,7 +265,6 @@ class LearningPlanProposalGroupServiceTest {
         6,
         "Java",
         null,
-        true,
         null,
         "已有基础",
         null,

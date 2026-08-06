@@ -92,7 +92,6 @@ class LearningPlanContractServiceTest {
             5,
             "Java",
             new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(25, 55, 20),
-            true,
             List.of("array", "dp"),
             "profile",
             List.of(
@@ -114,10 +113,6 @@ class LearningPlanContractServiceTest {
         title,
         1,
         "focus",
-        List.of("objective"),
-        List.of("tag"),
-        List.of("acceptance"),
-        "复盘卡点。",
         problems);
   }
 

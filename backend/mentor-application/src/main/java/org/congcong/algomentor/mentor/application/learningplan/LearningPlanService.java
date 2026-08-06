@@ -71,7 +71,6 @@ public class LearningPlanService {
         snapshot.weeklyHours(),
         snapshot.programmingLanguage(),
         snapshot.difficultyDistribution(),
-        snapshot.interviewOriented(),
         snapshot.topicPreferences(),
         snapshot.additionalConstraints(),
         snapshot.phases(),

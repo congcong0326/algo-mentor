@@ -7,8 +7,7 @@ public record LearningPlanWeeklyBucket(
     String title,
     int plannedProblemCount,
     double plannedLoadPoints,
-    List<String> problemSlugs,
-    String reviewAdvice
+    List<String> problemSlugs
 ) {
 
   public LearningPlanWeeklyBucket {

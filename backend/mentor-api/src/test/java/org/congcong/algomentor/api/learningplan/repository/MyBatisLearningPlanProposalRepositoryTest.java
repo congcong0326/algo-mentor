@@ -329,10 +329,9 @@ class MyBatisLearningPlanProposalRepositoryTest {
         8,
         "java",
         new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(25, 55, 20),
-        true,
         List.of("array"),
         "Reserve one weekly review session.",
-        List.of(new LearningPlanPhaseDraft(1, "phase", 1, "focus", List.of(), List.of(), List.of(), "review", List.of())),
+        List.of(new LearningPlanPhaseDraft(1, "phase", 1, "focus", List.of())),
         Map.of(
             LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
             LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true));

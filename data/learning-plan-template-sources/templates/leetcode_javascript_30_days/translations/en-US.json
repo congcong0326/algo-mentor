@@ -8,73 +8,28 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the \"closed and functional domain\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "masters the closed, word domain and function status.",
-      "objectives": [
-        "Complete all local matching questions at the Closed & Function Fields phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Closed & Function Fields"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the \" array and function transformation \" main theme type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Trains in Map/Filter/reduce and high-level functions.",
-      "objectives": [
-        "Finish all local matching questions for the array and function transformation phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Array & Function Change"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme \"Promise and time control\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Mastery of the step Promise, delay, cancellation and timing.",
-      "objectives": [
-        "Complete all local matching questions at the \"Promise and Time Control\" stage and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Promise and Time Control"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"JSON and object operations\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "The training is carried out through the history, serialization, grouping and deep transformation of the subject.",
-      "objectives": [
-        "Complete all local matching questions at the \"JSON and object operation\" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "JSON and Object Operations"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main “class and aggregate” theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Complete class, event and synthesis of challenges and organize JavaScript's common implementation model.",
-      "objectives": [
-        "Complete all local matching questions in the Class and Consolidated Ending phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Class & Consolidated End"
     }
   ],

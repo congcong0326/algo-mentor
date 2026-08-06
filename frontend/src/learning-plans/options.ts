@@ -16,11 +16,11 @@ export const intentOptionValues: LearningPlanIntent[] = [
 export const levelOptionValues: LearningPlanLevel[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
 export const planScenarioOptions = [
-  { labelKey: 'INTERVIEW_SPRINT', value: 'INTERVIEW_SPRINT', interviewOriented: true },
-  { labelKey: 'TOPIC_BREAKTHROUGH', value: 'TOPIC_BREAKTHROUGH', interviewOriented: false },
-  { labelKey: 'PRACTICE_GOAL', value: 'PRACTICE_GOAL', interviewOriented: false },
-  { labelKey: 'MISTAKE_REVIEW', value: 'MISTAKE_REVIEW', interviewOriented: false },
-  { labelKey: 'LONG_TERM_LEARNING', value: 'LONG_TERM_LEARNING', interviewOriented: false },
+  { labelKey: 'INTERVIEW_SPRINT', value: 'INTERVIEW_SPRINT' },
+  { labelKey: 'TOPIC_BREAKTHROUGH', value: 'TOPIC_BREAKTHROUGH' },
+  { labelKey: 'PRACTICE_GOAL', value: 'PRACTICE_GOAL' },
+  { labelKey: 'MISTAKE_REVIEW', value: 'MISTAKE_REVIEW' },
+  { labelKey: 'LONG_TERM_LEARNING', value: 'LONG_TERM_LEARNING' },
 ] as const;
 
 export const programmingLanguageOptions = [

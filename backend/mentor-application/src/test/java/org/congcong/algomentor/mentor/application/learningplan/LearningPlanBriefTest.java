@@ -44,7 +44,6 @@ class LearningPlanBriefTest {
     assertThat(brief.additionalConstraints()).isEqualTo("每周保留一天复盘");
     assertThat(brief.topicPreferences()).containsExactly("Dynamic Programming", "Graph");
     assertThat(brief.programmingLanguage()).isEqualTo("Java");
-    assertThat(brief.interviewOriented()).isFalse();
     assertThat(brief.personalizationEnabled()).isTrue();
     assertThat(brief.contentLocale()).isEqualTo(LearningPlanContentLocale.ZH_CN);
   }
@@ -77,7 +76,6 @@ class LearningPlanBriefTest {
         6,
         " Java ",
         new LearningPlanDifficultyDistribution(25, 55, 20),
-        null,
         topics,
         additionalConstraints,
         true,

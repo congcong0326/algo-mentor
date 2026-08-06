@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 6,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Bit Manipulation",
     "Bitmask"
@@ -48,40 +47,15 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "用 Single Number、bit count 和幂判断题稳定常见位操作。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Bit Manipulation"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "基础位操作与异或技巧"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "训练子集生成、位与范围、异或 Trie 和状态压缩图搜索。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Bit Manipulation",
-        "Bitmask"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "位掩码、子集枚举与进阶状态"
     }
   ]

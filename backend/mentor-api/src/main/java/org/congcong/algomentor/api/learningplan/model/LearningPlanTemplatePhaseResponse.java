@@ -7,10 +7,6 @@ public record LearningPlanTemplatePhaseResponse(
     String title,
     int durationWeeks,
     String focus,
-    List<String> objectives,
-    List<String> recommendedTags,
-    List<String> acceptanceCriteria,
-    String reviewAdvice,
     int plannedProblemCount
 ) {
 }

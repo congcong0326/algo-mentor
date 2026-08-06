@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 6,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Heap",
     "Priority Queue",
@@ -51,43 +50,15 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "用静态数组、矩阵、链表和多列表题稳定堆排序模型。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Heap",
-        "Priority Queue",
-        "Sorting"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "TopK、第 K 大与多路合并"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "训练动态维护、任务调度、双堆平衡和在线更新。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Heap",
-        "Priority Queue",
-        "Design"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "调度、数据流与双堆"
     }
   ]

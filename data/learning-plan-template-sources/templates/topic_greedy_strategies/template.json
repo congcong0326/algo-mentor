@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 7,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Greedy",
     "Intervals",
@@ -52,62 +51,21 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "用合并、插入、删除、箭数和链式选择题训练排序依据。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Greedy",
-        "Intervals",
-        "Sorting"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "区间调度与覆盖"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "通过覆盖范围、资源分配和交易题训练局部最优边界。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Greedy",
-        "Array"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "跳跃、加油站与分配"
     },
     {
-      "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
-      ],
       "durationWeeks": 1,
       "focus": "集中处理字典序、删除、重排和排序后组合的贪心选择。",
-      "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Greedy",
-        "String",
-        "Sorting"
-      ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
       "title": "字符串与排序贪心"
     }
   ]

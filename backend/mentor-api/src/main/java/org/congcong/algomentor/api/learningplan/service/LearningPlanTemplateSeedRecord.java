@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.learningplan.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
@@ -7,6 +8,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanInten
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateCatalogCategory;
 
+/** v3 模板 Seed 记录；读取 v2 文件时忽略已废弃字段。 */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record LearningPlanTemplateSeedRecord(
     String templateId,
     String title,
@@ -23,11 +26,9 @@ public record LearningPlanTemplateSeedRecord(
     int defaultWeeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyPreference difficultyPreference,
-    boolean interviewOriented,
     List<String> topicPreferences,
     String targetAudience,
     String targetAudienceEn,
-    Map<String, Object> difficultyMix,
     List<String> prerequisites,
     List<String> prerequisitesEn,
     List<String> recommendedFor,
@@ -50,7 +51,6 @@ public record LearningPlanTemplateSeedRecord(
 
   public LearningPlanTemplateSeedRecord {
     topicPreferences = topicPreferences == null ? List.of() : List.copyOf(topicPreferences);
-    difficultyMix = difficultyMix == null ? Map.of() : Map.copyOf(difficultyMix);
     prerequisites = prerequisites == null ? List.of() : List.copyOf(prerequisites);
     prerequisitesEn = prerequisitesEn == null ? List.of() : List.copyOf(prerequisitesEn);
     recommendedFor = recommendedFor == null ? List.of() : List.copyOf(recommendedFor);

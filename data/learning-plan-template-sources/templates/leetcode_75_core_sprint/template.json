@@ -6,7 +6,6 @@
   "expectedOutcome": "完成后能识别 22 类核心题型，并对常见数据结构、图搜索和动态规划题形成稳定解题模板。",
   "goal": "以题量适中的官方路线建立主流面试题型覆盖和稳定完成体验。",
   "intent": "INTERVIEW_SPRINT",
-  "interviewOriented": true,
   "level": "INTERMEDIATE",
   "licenseNotice": "LeetCode 官方 Study Plan；内部 seed 仅使用结构化题目元数据和来源链接。",
   "metadata": {
@@ -21,127 +20,39 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立说明“数组、双指针与窗口”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "从数组和字符串开始，训练双指针、滑动窗口与前缀和。",
-      "objectives": [
-        "完成“数组、双指针与窗口”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Array",
-        "String",
-        "Two Pointers",
-        "Sliding Window",
-        "Prefix Sum"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "数组、双指针与窗口"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“哈希、栈队列与链表”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "建立哈希映射、栈队列状态和链表指针改写的稳定模板。",
-      "objectives": [
-        "完成“哈希、栈队列与链表”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Hash Table",
-        "Stack",
-        "Queue",
-        "Linked List"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "哈希、栈队列与链表"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“二叉树与搜索树”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "集中训练树的 DFS、BFS 和二叉搜索树性质。",
-      "objectives": [
-        "完成“二叉树与搜索树”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Tree",
-        "Depth First Search",
-        "Breadth First Search",
-        "Binary Search Tree"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "二叉树与搜索树"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“图、堆、二分与回溯”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "覆盖图搜索、优先队列、边界二分和基础回溯。",
-      "objectives": [
-        "完成“图、堆、二分与回溯”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "Graph",
-        "Heap",
-        "Binary Search",
-        "Backtracking"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "图、堆、二分与回溯"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“一维与多维动态规划”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "通过一维和多维状态设计完成动态规划主线，并补齐位运算。",
-      "objectives": [
-        "完成“一维与多维动态规划”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 5,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Bit Manipulation"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "一维与多维动态规划"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“Trie、区间与单调栈收尾”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "用前缀树、区间和单调栈完成专项收尾与整套路线复盘。",
-      "objectives": [
-        "完成“Trie、区间与单调栈收尾”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 6,
-      "recommendedTags": [
-        "Trie",
-        "Intervals",
-        "Monotonic Stack"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "Trie、区间与单调栈收尾"
     }
   ],

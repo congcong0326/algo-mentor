@@ -1376,7 +1376,6 @@ const planFixture: LearningPlanDetailResponse = {
   weeklyHours: 5,
   programmingLanguage: 'Java',
   difficultyDistribution: { easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
-  interviewOriented: false,
   topicPreferences: ['Array'],
   additionalConstraints: '每周留一天复盘。',
   metadata: {},
@@ -1386,10 +1385,6 @@ const planFixture: LearningPlanDetailResponse = {
       title: '基础阶段',
       durationWeeks: 1,
       focus: '数组基础',
-      objectives: ['理解哈希表'],
-      recommendedTags: ['Array'],
-      acceptanceCriteria: ['完成 Two Sum'],
-      reviewAdvice: '复盘边界条件',
       problems: [
         {
           slug: 'two-sum',

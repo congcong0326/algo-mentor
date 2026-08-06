@@ -7,45 +7,18 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Sorts the training with consolidation, insertion, deletion, number of arrows and chain selection.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Inter-sectional movement and coverage"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Local best borders are trained through coverage, resource allocation and transactional issues.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Jump, gas stations and distribution"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Focus on the greedy selection of dictionaries, deletions, rearrangers and rearrangers.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "String and sort greed"
     }
   ],

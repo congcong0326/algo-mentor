@@ -22,7 +22,6 @@ public record LearningPlanDraftPlanResponse(
     int weeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyDistribution difficultyDistribution,
-    boolean interviewOriented,
     List<String> topicPreferences,
     String additionalConstraints,
     List<LearningPlanPhaseDraft> phases,

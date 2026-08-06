@@ -95,7 +95,6 @@ class LearningPlanExtensionApplyServiceTest {
         .containsEntry(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true)
         .containsEntry(LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT, 3)
         .containsEntry(LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, 4)
-        .containsEntry(LearningPlanDraftMetadataKeys.LOAD_RISK, "NORMAL")
         .containsEntry(LearningPlanDraftMetadataKeys.LOAD_SUMMARY, Map.of("problemCount", 1));
   }
 
@@ -319,7 +318,6 @@ class LearningPlanExtensionApplyServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Graph"),
         "已有基础",
         phases,
@@ -328,7 +326,6 @@ class LearningPlanExtensionApplyServiceTest {
             LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true,
             LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT, 3,
             LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, 4,
-            LearningPlanDraftMetadataKeys.LOAD_RISK, "NORMAL",
             LearningPlanDraftMetadataKeys.LOAD_SUMMARY, Map.of("problemCount", 1)));
   }
 
@@ -349,10 +346,6 @@ class LearningPlanExtensionApplyServiceTest {
         "阶段 " + phaseIndex,
         1,
         "图论",
-        List.of("掌握图论"),
-        List.of("Graph"),
-        List.of("完成练习"),
-        "复盘模板",
         problems);
   }
 
@@ -435,7 +428,6 @@ class LearningPlanExtensionApplyServiceTest {
               snapshot.weeklyHours(),
               snapshot.programmingLanguage(),
               snapshot.difficultyDistribution(),
-              snapshot.interviewOriented(),
               snapshot.topicPreferences(),
               snapshot.additionalConstraints(),
               mergedPhases,

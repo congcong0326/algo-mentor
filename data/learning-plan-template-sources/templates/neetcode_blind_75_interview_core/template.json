@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 8,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Arrays & Hashing",
     "Two Pointers",
@@ -79,89 +78,27 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立说清本阶段推荐题的主解法和复杂度",
-        "能复盘错题中的边界条件和状态定义"
-      ],
       "durationWeeks": 1,
       "focus": "完成数组、哈希、双指针、滑窗、栈和链表的完整 Blind 75 训练。",
-      "objectives": [
-        "完成本阶段核心题型的一轮训练",
-        "为每类 pattern 记录至少 1 条可复用解题模板"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Arrays & Hashing",
-        "Two Pointers",
-        "Sliding Window",
-        "Stack",
-        "Linked List"
-      ],
-      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
       "title": "数组、哈希与线性结构"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说清本阶段推荐题的主解法和复杂度",
-        "能复盘错题中的边界条件和状态定义"
-      ],
       "durationWeeks": 1,
       "focus": "完成二分、区间、树和 Trie 的完整 Blind 75 训练。",
-      "objectives": [
-        "完成本阶段核心题型的一轮训练",
-        "为每类 pattern 记录至少 1 条可复用解题模板"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Binary Search",
-        "Intervals",
-        "Trees",
-        "Tries"
-      ],
-      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
       "title": "二分、区间与树"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说清本阶段推荐题的主解法和复杂度",
-        "能复盘错题中的边界条件和状态定义"
-      ],
       "durationWeeks": 1,
       "focus": "完成图搜索、回溯和堆相关的完整 Blind 75 训练。",
-      "objectives": [
-        "完成本阶段核心题型的一轮训练",
-        "为每类 pattern 记录至少 1 条可复用解题模板"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Graphs",
-        "Advanced Graphs",
-        "Backtracking",
-        "Heap / Priority Queue"
-      ],
-      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
       "title": "图、回溯与堆"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说清本阶段推荐题的主解法和复杂度",
-        "能复盘错题中的边界条件和状态定义"
-      ],
       "durationWeeks": 1,
       "focus": "完成动态规划、贪心、位运算和数学几何的完整 Blind 75 训练。",
-      "objectives": [
-        "完成本阶段核心题型的一轮训练",
-        "为每类 pattern 记录至少 1 条可复用解题模板"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "1-D Dynamic Programming",
-        "2-D Dynamic Programming",
-        "Greedy",
-        "Bit Manipulation",
-        "Math & Geometry"
-      ],
-      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
       "title": "动态规划、贪心与综合收尾"
     }
   ]

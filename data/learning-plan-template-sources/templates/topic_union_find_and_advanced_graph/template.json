@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 8,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Union Find",
     "Topological Sort",
@@ -52,60 +51,19 @@
       "phaseIndex": 1,
       "title": "并查集基础与连通性应用",
       "durationWeeks": 1,
-      "focus": "用路径压缩和按秩合并处理连通块、冗余边和多集合合并。",
-      "objectives": [
-        "实现稳定的 find、union 和连通块计数模板",
-        "识别二维坐标、字符串账户和多角色边的并查集映射"
-      ],
-      "recommendedTags": [
-        "Union Find",
-        "Graph"
-      ],
-      "acceptanceCriteria": [
-        "能说明路径压缩和按秩合并的作用",
-        "能独立把问题实体映射为并查集节点"
-      ],
-      "reviewAdvice": "复盘每题的节点定义、初始连通块数量和 union 成功时的计数变化。"
+      "focus": "用路径压缩和按秩合并处理连通块、冗余边和多集合合并。"
     },
     {
       "phaseIndex": 2,
       "title": "拓扑排序与有向依赖",
       "durationWeeks": 1,
-      "focus": "训练入度 BFS、DFS 染色、分组依赖和 DAG 上的动态规划。",
-      "objectives": [
-        "掌握拓扑序、环检测和安全节点的两类实现",
-        "理解拓扑顺序与 DAG 动态规划的结合"
-      ],
-      "recommendedTags": [
-        "Topological Sort",
-        "Graph",
-        "Dynamic Programming"
-      ],
-      "acceptanceCriteria": [
-        "能独立判断有向图是否存在环并生成拓扑序",
-        "能处理分组依赖和拓扑序上的状态转移"
-      ],
-      "reviewAdvice": "同时记录入度法和 DFS 染色法的状态含义，并检查孤立点与重复边。"
+      "focus": "训练入度 BFS、DFS 染色、分组依赖和 DAG 上的动态规划。"
     },
     {
       "phaseIndex": 3,
       "title": "最短路与最小生成树",
       "durationWeeks": 1,
-      "focus": "比较 Dijkstra、限制边数松弛、最小瓶颈路径和 Kruskal/Prim 的适用条件。",
-      "objectives": [
-        "根据负权、边数限制和最小瓶颈目标选择路径算法",
-        "掌握最小生成树的选边过程和关键边判断"
-      ],
-      "recommendedTags": [
-        "Shortest Path",
-        "Heap",
-        "Minimum Spanning Tree"
-      ],
-      "acceptanceCriteria": [
-        "能写出堆优化 Dijkstra 并说明过期状态处理",
-        "能区分最短路与最小生成树的目标"
-      ],
-      "reviewAdvice": "按图的方向、边权、目标函数和状态维度建立算法选择表，再复盘复杂度。"
+      "focus": "比较 Dijkstra、限制边数松弛、最小瓶颈路径和 Kruskal/Prim 的适用条件。"
     }
   ]
 }

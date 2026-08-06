@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.learningplan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +11,7 @@ class LearningPlanContentLocaleTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void briefAndNewPlanWithoutContentLocaleDefaultToChinese() throws Exception {
+  void historicJsonIgnoresRemovedFieldsAndDefaultsMissingContentLocaleToChinese() throws Exception {
     LearningPlanBrief brief = objectMapper.readValue("""
         {
           "intent": "INTERVIEW_SPRINT",
@@ -44,13 +45,32 @@ class LearningPlanContentLocaleTest {
           "interviewOriented": true,
           "topicPreferences": ["Array"],
           "additionalConstraints": null,
-          "phases": [],
+          "phases": [{
+            "phaseIndex": 1,
+            "title": "旧阶段",
+            "durationWeeks": 4,
+            "focus": "旧重点",
+            "objectives": ["旧目标"],
+            "recommendedTags": ["Array"],
+            "acceptanceCriteria": ["旧验收"],
+            "reviewAdvice": "旧复盘",
+            "problems": []
+          }],
           "metadata": {}
         }
         """, LearningPlanDraftPlan.class);
 
     assertThat(brief.contentLocale()).isEqualTo(LearningPlanContentLocale.ZH_CN);
     assertThat(plan.contentLocale()).isEqualTo(LearningPlanContentLocale.ZH_CN);
+    JsonNode serializedBrief = objectMapper.valueToTree(brief);
+    JsonNode serializedPlan = objectMapper.valueToTree(plan);
+    assertThat(serializedBrief.has("interviewOriented")).isFalse();
+    assertThat(serializedPlan.has("interviewOriented")).isFalse();
+    JsonNode serializedPhase = serializedPlan.path("phases").get(0);
+    assertThat(serializedPhase.has("objectives")).isFalse();
+    assertThat(serializedPhase.has("recommendedTags")).isFalse();
+    assertThat(serializedPhase.has("acceptanceCriteria")).isFalse();
+    assertThat(serializedPhase.has("reviewAdvice")).isFalse();
   }
 
   @Test

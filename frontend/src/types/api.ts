@@ -1136,7 +1136,6 @@ export interface LearningPlanCreateDraftRequest {
   weeklyHours?: number;
   programmingLanguage?: string;
   difficultyDistribution: LearningPlanDifficultyDistribution;
-  interviewOriented?: boolean;
   topicPreferences: string[];
   additionalConstraints?: string;
   personalizationEnabled?: boolean;
@@ -1162,7 +1161,6 @@ export interface LearningPlanWeeklyBucket {
   plannedProblemCount: number;
   plannedLoadPoints: number;
   problemSlugs: string[];
-  reviewAdvice?: string | null;
 }
 
 export interface LearningPlanTrainingPackage {
@@ -1239,7 +1237,6 @@ export interface LearningPlanTemplateSummaryResponse {
   defaultWeeklyHours: number;
   programmingLanguage?: string | null;
   difficultyPreference: LearningPlanDifficultyPreference;
-  interviewOriented: boolean;
   topicPreferences: string[];
   targetAudience: string;
   expectedOutcome: string;
@@ -1253,10 +1250,6 @@ export interface LearningPlanTemplatePhaseResponse {
   title: string;
   durationWeeks: number;
   focus: string;
-  objectives: string[];
-  recommendedTags: string[];
-  acceptanceCriteria: string[];
-  reviewAdvice: string;
   plannedProblemCount: number;
 }
 
@@ -1308,10 +1301,6 @@ export interface LearningPlanPhaseDraft {
   title: string;
   durationWeeks: number;
   focus: string;
-  objectives: string[];
-  recommendedTags: string[];
-  acceptanceCriteria: string[];
-  reviewAdvice: string;
   problems: LearningPlanProblemDraft[];
 }
 
@@ -1334,7 +1323,6 @@ export interface LearningPlanDraftPlan {
   weeklyHours: number;
   programmingLanguage?: string;
   difficultyDistribution: LearningPlanDifficultyDistribution;
-  interviewOriented: boolean;
   topicPreferences: string[];
   additionalConstraints?: string | null;
   phases: LearningPlanPhaseDraft[];

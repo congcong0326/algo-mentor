@@ -7,31 +7,13 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Can independently complete consolidation, insertion, deletion and intersection",
-        "You can explain the status of stacks and diagonals in the query type between questions."
-      ],
       "focus": "Training in consolidation, insertion, deletion, overwhelming and query after sorting by starting or ending point.",
-      "objectives": [
-        "Master the overlapping determination and sorting key selection",
-        "Understand the differences between greedy endpoints, semi-research and maintenance candidates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Each is preceded by an agreement to clear the sorting keys and the closed zone, and then verify that the three types of boundary are adjacent, covered and completely separated.",
       "title": "Merge, Overwrite and Query"
     },
     {
-      "acceptanceCriteria": [
-        "Unique, dual and multiple calendar overlaps achieved independently",
-        "Could solve inter-temporal statistical problems with event points or stacks"
-      ],
       "focus": "Number of overlaps and on-line movements with orderly collections, differential events, prefixes and stacks.",
-      "objectives": [
-        "Mastery of calendar conflict detection and maximum simultaneous operation maintenance",
-        "Understanding scanned incident sequencing, differential recovery and inter-activity maintenance"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Lists the rules for the sorting of starting and ending events separately, and uses the time axis to check and calculate changes.",
       "title": "Calendar schedule and scanner"
     }
   ],

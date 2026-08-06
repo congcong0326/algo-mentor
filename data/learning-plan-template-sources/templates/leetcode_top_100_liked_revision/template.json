@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 10,
   "programmingLanguage": "Java",
   "difficultyPreference": "MIXED",
-  "interviewOriented": true,
   "topicPreferences": [
     "Array",
     "Hash Table",
@@ -58,210 +57,63 @@
   },
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能判断哈希、双指针和数组原地操作的适用信号",
-        "能说明线性题的去重、边界和复杂度取舍"
-      ],
       "durationWeeks": 1,
       "focus": "建立哈希计数、双指针、数组遍历和线性结构的高频解题骨架。",
-      "objectives": [
-        "完成本阶段全部题目并标注所用的数据结构",
-        "整理两类容易混淆的双指针和哈希建模边界"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Array",
-        "Hash Table",
-        "Two Pointers"
-      ],
-      "reviewAdvice": "优先复盘去重、指针移动条件和前缀信息的维护时机。",
       "title": "哈希、数组与双指针"
     },
     {
-      "acceptanceCriteria": [
-        "能处理原地变换、区间合并和二维矩阵遍历",
-        "能为数组题选择排序、前缀和或模拟策略"
-      ],
       "durationWeeks": 1,
       "focus": "训练数组原地修改、区间关系、矩阵模拟与前缀和建模。",
-      "objectives": [
-        "完成本阶段全部题目并记录不变量",
-        "整理矩阵边界和区间端点的常见错误"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Array",
-        "Intervals",
-        "Matrix",
-        "Prefix Sum"
-      ],
-      "reviewAdvice": "复盘原地修改时的读写顺序，以及区间端点的开闭定义。",
       "title": "数组、区间与矩阵"
     },
     {
-      "acceptanceCriteria": [
-        "能稳定改写链表指针并处理虚拟头节点",
-        "能解释缓存设计中哈希表与双向链表的协作"
-      ],
       "durationWeeks": 1,
       "focus": "系统训练链表反转、快慢指针、合并排序、相交与缓存设计。",
-      "objectives": [
-        "完成本阶段全部题目并画出关键指针变化",
-        "总结环检测、合并和 LRU 的状态不变量"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Linked List",
-        "Two Pointers",
-        "Design"
-      ],
-      "reviewAdvice": "每次复盘先明确谁持有 next 指针，再验证断链和空节点边界。",
       "title": "链表与设计"
     },
     {
-      "acceptanceCriteria": [
-        "能写出二分搜索的循环不变量和终止条件",
-        "能识别单调栈、滑动窗口和栈解析的适用场景"
-      ],
       "durationWeeks": 1,
       "focus": "覆盖括号、表达式、单调栈、滑动窗口和二分边界。",
-      "objectives": [
-        "完成本阶段全部题目并记录单调性或搜索区间",
-        "整理至少两种二分模板的左右边界写法"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "Stack",
-        "Monotonic Stack",
-        "Sliding Window",
-        "Binary Search"
-      ],
-      "reviewAdvice": "对二分题逐轮验证区间含义；对单调结构写清入栈和出栈条件。",
       "title": "栈、单调结构与二分"
     },
     {
-      "acceptanceCriteria": [
-        "能区分前中后序递归返回值与层序遍历状态",
-        "能使用 BST 性质完成校验和构造"
-      ],
       "durationWeeks": 1,
       "focus": "掌握二叉树遍历、递归分治、树构造和二叉搜索树性质。",
-      "objectives": [
-        "完成本阶段全部题目并写出每个递归函数的含义",
-        "归纳树题中的空节点、路径和左右子树边界"
-      ],
       "phaseIndex": 5,
-      "recommendedTags": [
-        "Tree",
-        "Binary Tree",
-        "Binary Search Tree",
-        "Depth First Search"
-      ],
-      "reviewAdvice": "先写清递归函数的输入输出，再处理空节点和合并左右子树结果。",
       "title": "树、递归与搜索树"
     },
     {
-      "acceptanceCriteria": [
-        "能完成树形 DP、LCA 和序列化的状态设计",
-        "能实现图遍历和 Trie 的基础操作"
-      ],
       "durationWeeks": 1,
       "focus": "衔接树的进阶递归、图连通性和 Trie 前缀结构。",
-      "objectives": [
-        "完成本阶段全部题目并记录图的节点、边和访问状态",
-        "整理树形 DP 与普通递归的状态差异"
-      ],
       "phaseIndex": 6,
-      "recommendedTags": [
-        "Tree",
-        "Graph",
-        "Trie",
-        "Dynamic Programming"
-      ],
-      "reviewAdvice": "图题先确定访问标记的生命周期；树形 DP 先定义节点返回的状态。",
       "title": "树进阶、图与 Trie"
     },
     {
-      "acceptanceCriteria": [
-        "能画出回溯决策树并在正确位置恢复状态",
-        "能区分 DFS、BFS、拓扑排序和加权图建模"
-      ],
       "durationWeeks": 1,
       "focus": "训练组合枚举、剪枝、网格搜索、课程依赖和变量关系图。",
-      "objectives": [
-        "完成本阶段全部题目并标注选择、剪枝和回退位置",
-        "整理图遍历中的 visited、入度和路径状态"
-      ],
       "phaseIndex": 7,
-      "recommendedTags": [
-        "Backtracking",
-        "Graph",
-        "Breadth First Search",
-        "Depth First Search"
-      ],
-      "reviewAdvice": "复盘时区分全局状态和路径状态，避免在回溯后遗漏恢复。",
       "title": "回溯、搜索与图建模"
     },
     {
-      "acceptanceCriteria": [
-        "能为 Top K、调度和区间问题选择堆或排序策略",
-        "能说明贪心选择为何不会破坏最优性"
-      ],
       "durationWeeks": 1,
       "focus": "覆盖二分变体、Top K、会议调度、贪心和排序重建。",
-      "objectives": [
-        "完成本阶段全部题目并记录排序键或堆中元素含义",
-        "为每类贪心题写出局部选择的证明思路"
-      ],
       "phaseIndex": 8,
-      "recommendedTags": [
-        "Binary Search",
-        "Heap",
-        "Greedy",
-        "Sorting"
-      ],
-      "reviewAdvice": "先说明排序或优先队列维持的顺序，再验证每次选择的正确性。",
       "title": "二分、堆、贪心与调度"
     },
     {
-      "acceptanceCriteria": [
-        "能独立定义一维、网格和背包问题的状态与转移",
-        "能解释初始化、遍历方向和空间优化"
-      ],
       "durationWeeks": 1,
       "focus": "建立路径、子序列、背包、股票和计数类动态规划基础。",
-      "objectives": [
-        "完成本阶段全部题目并写出状态定义和转移方程",
-        "整理至少三类 DP 初始化和遍历方向错误"
-      ],
       "phaseIndex": 9,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Array",
-        "Matrix"
-      ],
-      "reviewAdvice": "先用二维或完整状态验证正确性，再决定是否压缩空间。",
       "title": "动态规划基础"
     },
     {
-      "acceptanceCriteria": [
-        "能完成编辑距离、区间 DP 和状态压缩类转移",
-        "能在综合题中清晰口述建模、复杂度和边界"
-      ],
       "durationWeeks": 1,
       "focus": "完成高阶 DP，并用字符串、位运算和综合题进行面试前闭环复盘。",
-      "objectives": [
-        "完成本阶段全部题目并对难题写出状态图或转移表",
-        "完成一次限时模拟，复盘表达、复杂度和遗漏边界"
-      ],
       "phaseIndex": 10,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "String",
-        "Bit Manipulation",
-        "Backtracking"
-      ],
-      "reviewAdvice": "优先复盘状态设计失败的题，再用口述方式检验是否真正掌握。",
       "title": "动态规划进阶与综合题"
     }
   ]

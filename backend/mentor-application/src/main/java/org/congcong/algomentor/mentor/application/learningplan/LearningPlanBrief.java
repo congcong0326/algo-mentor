@@ -1,8 +1,10 @@
 package org.congcong.algomentor.mentor.application.learningplan;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
 /** AI 学习计划创建与修订共用的已规范化规划输入。 */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record LearningPlanBrief(
     LearningPlanIntent intent,
     String objective,
@@ -11,7 +13,6 @@ public record LearningPlanBrief(
     Integer weeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyDistribution difficultyDistribution,
-    Boolean interviewOriented,
     List<String> topicPreferences,
     String additionalConstraints,
     boolean personalizationEnabled,
@@ -22,7 +23,6 @@ public record LearningPlanBrief(
     contentLocale = contentLocale == null ? LearningPlanContentLocale.ZH_CN : contentLocale;
     objective = LearningPlanObjectiveDefaults.resolve(intent, objective, contentLocale);
     programmingLanguage = normalize(programmingLanguage);
-    interviewOriented = interviewOriented == null ? false : interviewOriented;
     topicPreferences = normalizeList(topicPreferences);
     additionalConstraints = normalize(additionalConstraints);
   }

@@ -111,7 +111,6 @@ class LearningPlanExtensionAgentDefinitionTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         List.of(),

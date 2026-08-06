@@ -126,7 +126,6 @@ public class LearningPlanDraftService {
         brief.weeklyHours(),
         brief.programmingLanguage(),
         brief.difficultyDistribution(),
-        brief.interviewOriented(),
         brief.topicPreferences(),
         brief.additionalConstraints(),
         brief.personalizationEnabled(),

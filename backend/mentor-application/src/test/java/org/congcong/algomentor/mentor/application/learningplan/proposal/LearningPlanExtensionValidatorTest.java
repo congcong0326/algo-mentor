@@ -124,7 +124,6 @@ class LearningPlanExtensionValidatorTest {
         6,
         "Java",
         new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Graph"),
         "已有基础",
         phases,
@@ -148,10 +147,6 @@ class LearningPlanExtensionValidatorTest {
         "阶段 " + phaseIndex,
         1,
         "图论",
-        List.of("掌握图论"),
-        List.of("Graph"),
-        List.of("完成练习"),
-        "复盘模板",
         problems);
   }
 

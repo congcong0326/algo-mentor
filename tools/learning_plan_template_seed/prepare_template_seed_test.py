@@ -54,11 +54,12 @@ class PrepareTemplateSeedTest(unittest.TestCase):
         )
         for template in templates:
             self.assertTrue(template["targetAudience"])
-            self.assertTrue(template["difficultyMix"])
             self.assertTrue(template["prerequisites"])
             self.assertTrue(template["recommendedFor"])
             self.assertTrue(template["notRecommendedFor"])
             self.assertTrue(template["expectedOutcome"])
+            self.assertNotIn("difficultyMix", template)
+            self.assertNotIn("interviewOriented", template)
             self.assertTrue(template["sourceDescription"])
             self.assertTrue(template["curationNotes"])
             self.assertTrue(template["licenseNotice"])
@@ -75,6 +76,11 @@ class PrepareTemplateSeedTest(unittest.TestCase):
                 template["defaultDurationWeeks"],
                 sum(phase["durationWeeks"] for phase in template["phases"]),
             )
+            for phase in template["phases"]:
+                self.assertEqual(
+                    {"phaseIndex", "title", "durationWeeks", "focus", "titleEn", "focusEn"},
+                    set(phase),
+                )
         neetcode150 = next(
             template for template in templates if template["templateId"] == "neetcode_150_systematic_interview"
         )
@@ -351,7 +357,6 @@ class PrepareTemplateSeedTest(unittest.TestCase):
     def test_validate_template_requires_target_audience(self) -> None:
         template = {
             "templateId": "x",
-            "difficultyMix": {"Easy": 1},
             "prerequisites": ["basic"],
             "recommendedFor": ["interview"],
             "notRecommendedFor": ["none"],

@@ -116,7 +116,9 @@ class LearningPlanTemplateDraftServiceTest {
         .hasSize(149);
     Map<?, ?> metadata = (Map<?, ?>) result.draftPlan().metadata().get("template");
     assertThat(metadata.get("templateId")).isEqualTo("neetcode_150_systematic_interview");
-    assertThat((List<?>) metadata.get("problemRefs")).hasSize(150);
+    assertThat(metadata.get("matchedProblemCount")).isEqualTo(149);
+    assertThat(metadata.keySet().stream().map(String::valueOf).toList())
+        .containsExactlyInAnyOrder("templateId", "matchedProblemCount");
 
     LearningPlanConfirmResult confirmed = draftService.confirmDraft(7L, result.draftId());
 
@@ -345,10 +347,9 @@ class LearningPlanTemplateDraftServiceTest {
         .hasSize(problemCount - missingProblemCount);
     Map<?, ?> metadata = (Map<?, ?>) result.draftPlan().metadata().get("template");
     assertThat(metadata.get("templateId")).isEqualTo(templateId);
-    assertThat(metadata.get("problemCount")).isEqualTo(problemCount);
     assertThat(metadata.get("matchedProblemCount")).isEqualTo(problemCount - missingProblemCount);
-    assertThat(metadata.get("missingProblemCount")).isEqualTo(missingProblemCount);
-    assertThat((List<?>) metadata.get("problemRefs")).hasSize(problemCount);
+    assertThat(metadata.keySet().stream().map(String::valueOf).toList())
+        .containsExactlyInAnyOrder("templateId", "matchedProblemCount");
   }
 
   private LearningPlanTemplate blind75Template() {
@@ -370,13 +371,6 @@ class LearningPlanTemplateDraftServiceTest {
             phase.durationWeeks(),
             phase.focus(),
             "English " + phase.focus(),
-            phase.objectives(),
-            List.of("English objective"),
-            phase.recommendedTags(),
-            phase.acceptanceCriteria(),
-            List.of("English acceptance criterion"),
-            phase.reviewAdvice(),
-            "Review mistakes.",
             phase.problemRefs()))
         .toList();
     return new LearningPlanTemplate(
@@ -396,11 +390,9 @@ class LearningPlanTemplateDraftServiceTest {
         template.defaultWeeklyHours(),
         template.programmingLanguage(),
         template.difficultyPreference(),
-        template.interviewOriented(),
         template.topicPreferences(),
         template.targetAudience(),
         "Algorithm interview candidates",
-        template.difficultyMix(),
         template.prerequisites(),
         List.of("Basic data structures"),
         template.recommendedFor(),
@@ -462,25 +454,23 @@ class LearningPlanTemplateDraftServiceTest {
     return new LearningPlanTemplate(
         null,
         templateId,
-        templateId,
-        "summary",
+        templateId,null,
+        "summary",null,
         LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
         1,
         LearningPlanIntent.INTERVIEW_SPRINT,
-        "准备算法面试",
+        "准备算法面试",null,
         durationWeeks,
         LearningPlanLevel.INTERMEDIATE,
         8,
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
-        true,
         List.of("Array", "Tree", "Graph", "Dynamic Programming"),
-        "准备算法面试的学习者",
-        Map.of("Easy", Map.of("count", 2), "Medium", Map.of("count", 6)),
-        List.of("基础数据结构"),
-        List.of("面试备战"),
-        List.of("零基础"),
-        "能完成核心题型复盘",
+        "准备算法面试的学习者",null,
+        List.of("基础数据结构"),List.of(),
+        List.of("面试备战"),List.of(),
+        List.of("零基础"),List.of(),
+        "能完成核心题型复盘",null,false,
         "neetcode-gh/leetcode",
         "https://github.com/neetcode-gh/leetcode",
         "9907b7fed441fa55083c0751e208b7197101dbba",
@@ -519,13 +509,9 @@ class LearningPlanTemplateDraftServiceTest {
     return new LearningPlanTemplatePhase(
         null,
         phaseIndex,
-        title,
+        title,null,
         1,
-        title,
-        List.of("完成 " + title),
-        List.of(title),
-        List.of("能复盘 " + title),
-        "记录错题。",
+        title,null,
         refs);
   }
 

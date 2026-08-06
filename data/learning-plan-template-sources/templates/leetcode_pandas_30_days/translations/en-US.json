@@ -8,73 +8,28 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solvers that provide an independent description of the main theme type of Filter and String Processing",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Training conditions filtering, text matching and string column transformation.",
-      "objectives": [
-        "Complete all local matching questions at the Filter and String Processing stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Filter & String Processing"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"data operation\" type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Completes column transformation, sorting, weighting and grouping.",
-      "objectives": [
-        "Complete all local matching questions at the Data Operation stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Data Operations"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of “statistical analysis”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Basic statistics, ranking and distribution calculations.",
-      "objectives": [
-        "Complete all local matching questions at the `statistical analysis' stage and document the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Statistical analysis"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"data aggregation\" theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Trains in the calculation of groupby, polymer functions and grouping indicators.",
-      "objectives": [
-        "Complete all local matching questions at the Data Cohesion stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Data Fusion"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"data set-up and comprehensive disk\" type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Completes multi-watch connection, ligation, and complete Pandas reset.",
-      "objectives": [
-        "Complete all local matching questions at the data set-up and integrated disc and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Dataset Integration Duplicate"
     }
   ],

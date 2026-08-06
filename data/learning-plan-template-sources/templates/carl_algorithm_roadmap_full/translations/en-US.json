@@ -8,157 +8,58 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the “array base and boundary”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Build a foundation in linear structures through array storage, binary-search boundaries, two pointers, and sliding windows.",
-      "objectives": [
-        "Complete all local matching questions at the \"array base and boundary\" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Array Foundations and Boundaries"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the \"linked list pointer operation\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice linked-list insertion, deletion, reversal, intersection, and cycle detection.",
-      "objectives": [
-        "Complete all local matching questions at the Linked List Pointer Operation and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Linked-List Pointer Operations"
     },
     {
-      "acceptanceCriteria": [
-        "An independent description of the identification signal and core solution for the main theme \"hash Table and Group Search\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Master set membership, frequency maps, and grouping strategies with hash tables.",
-      "objectives": [
-        "Complete all local matching questions in the hash Table and Group Search phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Hash Tables and Grouping"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that are independent in describing the main theme of Strings and Two Pointers",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Practice in-place string operations, KMP, and two-pointer techniques across arrays and linked lists.",
-      "objectives": [
-        "Finish all local matching questions in the String and Two Pointers phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Strings and Two Pointers"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"inn, queue and priority\" types",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Build foundations in stack/queue transformations, expression processing, monotonic structures, and Top K problems.",
-      "objectives": [
-        "Completion of all local matching questions for the stack, queue and priority phase and recording of status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Stacks, Queues, and Priority Queues"
     },
     {
-      "acceptanceCriteria": [
-        "An independent description of the identification signal and the core solution for the main choreography of the binary tree and the search tree",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Systematically practice tree traversal, paths, construction, lowest common ancestors, and binary search tree properties.",
-      "objectives": [
-        "Complete all local matching questions during the \"Dixon Tree and Search Tree\" phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Binary Trees and Binary Search Trees"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main retrospect theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Use combinations, partitions, subsets, permutations, and board problems to practice decision trees and pruning.",
-      "objectives": [
-        "Complete all local matching questions at backtracking and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 7,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Backtracking Search"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent account of the main theme of the “growing strategy”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Learn how local choices lead to global optima through sequence, interval, jump, and allocation problems.",
-      "objectives": [
-        "Complete all local matching questions at the \"Growth Policy\" stage and document the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 8,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Greedy Strategies"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the dynamically planned main theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Progress from basic states to knapsack, house robber, stock, subsequence, and edit-distance problems.",
-      "objectives": [
-        "Complete all local matching questions at the dynamic programming Main Line stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 9,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Dynamic Programming Core"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"single fusion\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Use monotonic stacks to solve next-greater-element, temperature, rainwater, and histogram-area problems.",
-      "objectives": [
-        "Complete all local matching questions at the \" Untied Integrator \" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 10,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Monotonic Stack Consolidation"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the “figure complete route”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Cover graph traversal, islands, topological sorting, union-find, shortest paths, and minimum spanning trees.",
-      "objectives": [
-        "Complete all local matching questions at the \"chart complete route\" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 11,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Complete Graph Roadmap"
     }
   ],

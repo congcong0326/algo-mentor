@@ -3,6 +3,8 @@ package org.congcong.algomentor.mentor.application.learningplan.proposal.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.congcong.algomentor.agent.core.structuredoutput.AgentStructuredOutputValidator;
 import org.congcong.algomentor.agent.core.structuredoutput.StructuredOutputValidationResult;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
@@ -31,7 +33,6 @@ class LearningPlanDraftRevisionJsonSchemaTest {
                   "mediumPercent": 60,
                   "hardPercent": 10
                 },
-                "interviewOriented": false,
                 "topicPreferences": ["Graph"],
                 "additionalConstraints": null,
                 "personalizationEnabled": true,
@@ -45,19 +46,35 @@ class LearningPlanDraftRevisionJsonSchemaTest {
                   "title": "Graph Basics",
                   "durationWeeks": 1,
                   "focus": "Traversal",
-                  "objectives": ["Use BFS and DFS"],
-                  "recommendedTags": ["Graph"],
-                  "acceptanceCriteria": ["Solve traversal problems independently"],
-                  "reviewAdvice": "Review visited-state invariants.",
                   "problems": []
-                }],
-                "metadata": {
-                  "problemRecommendationIncomplete": false
-                }
+                }]
               }
             }
             """);
 
     assertThat(result.valid()).isTrue();
+  }
+
+  @Test
+  void resolvedBriefSchemaOnlyContainsCurrentBriefFields() {
+    var properties = LearningPlanDraftRevisionJsonSchema.schema()
+        .path("properties")
+        .path("resolvedBrief")
+        .path("properties");
+    List<String> fields = new ArrayList<>();
+    properties.fieldNames().forEachRemaining(fields::add);
+
+    assertThat(fields).containsExactlyInAnyOrder(
+        "intent",
+        "objective",
+        "durationWeeks",
+        "level",
+        "weeklyHours",
+        "programmingLanguage",
+        "difficultyDistribution",
+        "topicPreferences",
+        "additionalConstraints",
+        "personalizationEnabled",
+        "contentLocale");
   }
 }

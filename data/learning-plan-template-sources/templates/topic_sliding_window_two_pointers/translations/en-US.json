@@ -7,31 +7,13 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Completes the pointer, the fast and slow pointer and rearranges it to reassemble.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Double pointer and sort weight"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Training window expansion/constriction conditions, counter maintenance and single-team queue windows.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Fixed & Variable Window"
     }
   ],

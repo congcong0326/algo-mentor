@@ -105,6 +105,33 @@ class LearningPlanLoadServiceTest {
     assertThat(trainingPackage.priorityProblemSlugs()).containsExactly("number-of-islands");
   }
 
+  @Test
+  void derivesLocalizedReviewTaskFromTheCurrentPhaseOrGenericFallback() {
+    LearningPlanTrainingPackage chinese = service.nextTrainingPackage(plan(4, 3), List.of());
+    LearningPlanTrainingPackage english = service.nextTrainingPackage(
+        plan(4, 3).withContentLocale(LearningPlanContentLocale.EN_US), List.of());
+    LearningPlanDraftPlan withoutPhases = new LearningPlanDraftPlan(
+        "empty",
+        "summary",
+        LearningPlanIntent.LONG_TERM_LEARNING,
+        "build foundations",
+        1,
+        LearningPlanLevel.BEGINNER,
+        5,
+        "Java",
+        new LearningPlanDifficultyDistribution(35, 55, 10),
+        List.of(),
+        null,
+        List.of(),
+        Map.of(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US"));
+
+    assertThat(chinese.reviewTask()).isEqualTo("复盘「基础阶段」训练中的卡点、错因和边界条件。");
+    assertThat(english.reviewTask())
+        .isEqualTo("Review blockers, mistakes, and edge cases from \"基础阶段\".");
+    assertThat(service.nextTrainingPackage(withoutPhases).reviewTask())
+        .isEqualTo("Review blockers, mistakes, and edge cases from the current training.");
+  }
+
   private LearningPlanDraftPlan plan(int durationWeeks, int weeklyHours) {
     return new LearningPlanDraftPlan(
         "四周训练",
@@ -116,7 +143,6 @@ class LearningPlanLoadServiceTest {
         weeklyHours,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array", "Graph"),
         null,
         List.of(new LearningPlanPhaseDraft(
@@ -124,10 +150,6 @@ class LearningPlanLoadServiceTest {
             "基础阶段",
             durationWeeks,
             "Array and Graph",
-            List.of("完成基础训练"),
-            List.of("Array", "Graph"),
-            List.of("能复盘"),
-            "记录错题。",
             List.of(
                 problem("two-sum", "EASY", List.of("Array")),
                 problem("number-of-islands", "MEDIUM", List.of("Graph"))))),
@@ -165,25 +187,23 @@ class LearningPlanLoadServiceTest {
     return new LearningPlanTemplate(
         null,
         "template",
-        "模板",
-        "summary",
+        "模板",null,
+        "summary",null,
         LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
         1,
         LearningPlanIntent.INTERVIEW_SPRINT,
-        "准备算法面试",
+        "准备算法面试",null,
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
-        true,
         List.of("Array", "Graph"),
-        "准备面试",
-        Map.of(),
-        List.of(),
-        List.of(),
-        List.of(),
-        "完成训练",
+        "准备面试",null,
+        List.of(),List.of(),
+        List.of(),List.of(),
+        List.of(),List.of(),
+        "完成训练",null,false,
         "source",
         "https://example.com",
         "commit",
@@ -202,13 +222,9 @@ class LearningPlanLoadServiceTest {
     return new LearningPlanTemplatePhase(
         null,
         phaseIndex,
-        pattern,
+        pattern,null,
         1,
-        pattern,
-        List.of(pattern),
-        List.of(pattern),
-        List.of("能复盘"),
-        "记录错题。",
+        pattern,null,
         List.of(new LearningPlanTemplateProblemRef(
             null,
             phaseIndex,

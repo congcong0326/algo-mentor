@@ -6,7 +6,6 @@
   "expectedOutcome": "完成后能从题目特征定位双指针、搜索、树图或动态规划框架，并能解释状态、不变量和关键边界。",
   "goal": "建立先识别问题结构、再套用算法框架并检查边界的稳定解题流程。",
   "intent": "LONG_TERM_LEARNING",
-  "interviewOriented": true,
   "level": "INTERMEDIATE",
   "licenseNotice": "仓库未提供可直接内置内容的 LICENSE；内部模板只参考章节结构并使用本地题库重建。",
   "metadata": {
@@ -20,164 +19,51 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "能独立说明“线性结构与双指针框架”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "从数组和链表的遍历不变量出发，掌握快慢指针、左右指针和原地修改。",
-      "objectives": [
-        "完成“线性结构与双指针框架”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 1,
-      "recommendedTags": [
-        "Array",
-        "Linked List",
-        "Two Pointers"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "线性结构与双指针框架"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“窗口、二分与区间预处理”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "训练滑动窗口、二分边界、前缀和与差分数组的通用框架。",
-      "objectives": [
-        "完成“窗口、二分与区间预处理”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 2,
-      "recommendedTags": [
-        "Sliding Window",
-        "Binary Search",
-        "Prefix Sum",
-        "Difference Array"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "窗口、二分与区间预处理"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“递归、回溯与 BFS”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "用决策树、状态恢复和最短步数模型统一理解递归搜索。",
-      "objectives": [
-        "完成“递归、回溯与 BFS”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 3,
-      "recommendedTags": [
-        "Backtracking",
-        "Breadth First Search",
-        "Recursion"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "递归、回溯与 BFS"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“二叉树递归思维”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "围绕前中后序位置、子树返回值和 BST 性质建立树问题框架。",
-      "objectives": [
-        "完成“二叉树递归思维”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 4,
-      "recommendedTags": [
-        "Tree",
-        "Binary Tree",
-        "Binary Search Tree"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "二叉树递归思维"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“图论与并查集”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "从图遍历推进到拓扑排序、并查集、最短路和最小生成树。",
-      "objectives": [
-        "完成“图论与并查集”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 5,
-      "recommendedTags": [
-        "Graph",
-        "Union Find",
-        "Shortest Path"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "图论与并查集"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“动态规划状态设计”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "统一练习状态、选择、转移和 base case，并覆盖典型序列与状态机问题。",
-      "objectives": [
-        "完成“动态规划状态设计”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 6,
-      "recommendedTags": [
-        "Dynamic Programming",
-        "Memoization"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "动态规划状态设计"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“单调结构、堆与设计”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "掌握单调栈、单调队列、优先队列和缓存结构中的状态维护。",
-      "objectives": [
-        "完成“单调结构、堆与设计”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 7,
-      "recommendedTags": [
-        "Monotonic Stack",
-        "Heap",
-        "Design"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "单调结构、堆与设计"
     },
     {
-      "acceptanceCriteria": [
-        "能独立说明“高频综合应用”主要题型的识别信号和核心解法",
-        "能复盘复杂度、边界条件和一次典型错误"
-      ],
       "durationWeeks": 1,
       "focus": "用经典综合题检验框架迁移、边界控制和数据结构组合能力。",
-      "objectives": [
-        "完成“高频综合应用”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-        "整理至少 2 个易错边界和可复用解题模板"
-      ],
       "phaseIndex": 8,
-      "recommendedTags": [
-        "Array",
-        "Linked List",
-        "Design",
-        "Math"
-      ],
-      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
       "title": "高频综合应用"
     }
   ],

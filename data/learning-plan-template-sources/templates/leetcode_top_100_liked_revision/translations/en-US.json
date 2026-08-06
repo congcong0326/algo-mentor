@@ -8,143 +8,53 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "It's a good signal to judge how Hash, two pointers and arrays work in situ.",
-        "It shows the weight, boundaries and complexity of linear issues."
-      ],
       "focus": "High frequency detachment skeletons for al-hash count, two pointers, arrays and linear structures.",
-      "objectives": [
-        "Completion of all topics at this stage and indication of the data structure used",
-        "Collapse two easy-to-discrete pairs of hands and hash modelling borders."
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Priority is given to the time when to double-drive, pointer move conditions and prefix information is maintained.",
       "title": "Hash, array and two pointers"
     },
     {
-      "acceptanceCriteria": [
-        "Can handle in situ transformations, sector consolidation and 2D matrix Calendar",
-        "Can select sorting, prefixing and simulation policies for cluster questions"
-      ],
       "focus": "Training arrays in situ modification, inter-district relations, matrix simulation and prefixing and modelling.",
-      "objectives": [
-        "Complete all topics at this stage and record no variables",
-        "Collapse frequent errors in matrix boundaries and inter-end points"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Repeats the order in which you read and write when you change it, as well as the definition of closure of an inter-end.",
       "title": "Numeric, inter-team and matrix"
     },
     {
-      "acceptanceCriteria": [
-        "It can stabilize the linked list pointer and process the virtual header. Points",
-        "It explains the collaboration between the hash watch and the two-way chain in the cache design."
-      ],
       "focus": "System training chain reverses, fast and slow pointers, merge sequencing, intersection and cache design.",
-      "objectives": [
-        "Completion of all topics and key pointer changes",
-        "Summarize the state of the ring detection, merge and LRU"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Each flash drive identifies who holds the next pointer, then verifys the break chain and empty node boundary.",
       "title": "Chain and Design"
     },
     {
-      "acceptanceCriteria": [
-        "Can write a two-point search with no variables and termination conditions",
-        "Appropriate scenes for identifying monotole, sliding window and stack resolution"
-      ],
       "focus": "Covers brackets, expressions, monotrons, sliding windows and diagonal boundaries.",
-      "objectives": [
-        "Complete all topics at this stage and record monotonous or search spaces",
-        "Collapse the left and right boundaries of at least two two two templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Interval between semi-topics; write entry and exit conditions for monotonous structures.",
       "title": "Inn, monotonous structure and split"
     },
     {
-      "acceptanceCriteria": [
-        "Distinguishing the return value of the previous meso- and back-sequencing back to the stratum state",
-        "Enable verification and construction using BST properties"
-      ],
       "focus": "(b) Knowledge of the cross-section of the binary tree, its subdivision, its construction and the nature of the binary search tree.",
-      "objectives": [
-        "Finish the entire title at this stage and write the meaning of each recursive function",
-        "Summarize the empty nodes, paths and right- and right-stree boundaries of the tree"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Writes the input output of the recursive function, then handles the empty nodes and merges the result of the right and right subtrees.",
       "title": "Tree, Recursive and Search Tree"
     },
     {
-      "acceptanceCriteria": [
-        "State design for tree DP, LCA and serialization",
-        "A basic operation that enables mapping and Trie"
-      ],
       "focus": "The step-by-step, map connectivity and Trie prefix structure for connecting trees.",
-      "objectives": [
-        "Completion of all topics at this stage and recording of nodes, sides and access status",
-        "Collapse the difference between the status of the tree DP and the normal regression status"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "The title determines the life cycle of the access mark; the tree DP defines the state of the node return first.",
       "title": "Tree Progress, Charts and Trie"
     },
     {
-      "acceptanceCriteria": [
-        "Can draw backtracking decision tree and restore it in the right position",
-        "Distinguishing between DFS, BFS, pop-up sequencing and weighted map modelling"
-      ],
       "focus": "Training packages, cutters, grid searches, course dependence and variable relationship maps.",
-      "objectives": [
-        "Complete all topics at this stage and indicate selection, cutting and retreating positions",
-        "Viewd, entered, and path status of the chart"
-      ],
       "phaseIndex": 7,
-      "reviewAdvice": "Distinguishing the global state from the path state when you repeat the disk, avoiding the recovery of a backtracking.",
       "title": "Backtracking, search and map modelling"
     },
     {
-      "acceptanceCriteria": [
-        "Can select stacking or sorting policies for Top K, Schedules and Intersectional Problems",
-        "It's a way to explain why a greedy choice doesn't undermine excellence."
-      ],
       "focus": "Covers the dichotoms, Top K, Conference Scheduling, Greedy and Sorting Reconstruction.",
-      "objectives": [
-        "Finish all topics at this stage and record the meaning of sorting keys or stacks of elements",
-        "Write a partial selection for each type of greed."
-      ],
       "phaseIndex": 8,
-      "reviewAdvice": "First specify the order in which the ranking or priority queue is maintained and then verify the correctness of each selection.",
       "title": "Two points, stacking, greed and movement control"
     },
     {
-      "acceptanceCriteria": [
-        "Can independently define the status and transfer of one-dimensional, grid and knapsack problems",
-        "It explains initialization, routing and space optimization."
-      ],
       "focus": "Establish the basis for dynamic programming of paths, subsequences, knapsacks, stocks and counting categories.",
-      "objectives": [
-        "Complete all topics at this stage and write state definitions and transfer equations",
-        "Collapse at least three types of DP initialization and going through error"
-      ],
       "phaseIndex": 9,
-      "reviewAdvice": "Validation of correctness is done with two-dimensional or complete state before a decision is made to compress space.",
       "title": "Dynamic programming basis"
     },
     {
-      "acceptanceCriteria": [
-        "Can complete editing distance, interval DP and state compression class transfer",
-        "Clear oral modelling, complexity and boundaries in the synthesis"
-      ],
       "focus": "Finalizes the high-level DP and close loops before interviews are conducted with strings, bits and composites.",
-      "objectives": [
-        "Completion of all topics at this stage and preparation of status charts or transfer forms for difficult issues",
-        "Completion of a time-limited simulation, double disk expression, complexity and missing boundary"
-      ],
       "phaseIndex": 10,
-      "reviewAdvice": "The question of failure in the design of the priority flashback state is then tested orally for genuine mastery.",
       "title": "Dynamic programming progress and synthesis"
     }
   ],

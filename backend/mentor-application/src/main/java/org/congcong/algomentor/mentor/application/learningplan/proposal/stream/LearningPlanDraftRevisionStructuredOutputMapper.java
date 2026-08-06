@@ -50,7 +50,6 @@ public final class LearningPlanDraftRevisionStructuredOutputMapper {
           candidate.weeklyHours(),
           candidate.programmingLanguage(),
           candidate.difficultyDistribution(),
-          candidate.interviewOriented(),
           candidate.topicPreferences(),
           candidate.additionalConstraints(),
           currentBrief.personalizationEnabled(),

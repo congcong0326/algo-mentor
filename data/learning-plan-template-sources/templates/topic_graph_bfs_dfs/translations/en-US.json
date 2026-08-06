@@ -7,59 +7,23 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Complete the basics of the diagrams and grids with clear vision, boundaries and layers.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "DFS/BFS Through Base"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Training grid links, border infections and regional integration.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Island and regional variants"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Training in entry, queue and dependency maps through the curriculum and dictionary sequences.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Scale and Dependency"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "The toolbox is organized using connectivity, redundancies and short-circuit questions.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "And check and weighted the end."
     }
   ],

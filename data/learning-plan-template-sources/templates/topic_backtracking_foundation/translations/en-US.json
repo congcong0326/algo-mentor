@@ -7,45 +7,18 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Stable selection of trees, heavy borders and collection of results.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Subset, Grouping and Arrange"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Discrepancies are judged through chessboards, brackets, IPs and correspondence cutting exercises.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Chess Board and String Cut"
     },
     {
-      "acceptanceCriteria": [
-        "Independent restatement of the conditions applicable to each topic at this stage",
-        "Border conditions, complexity and transportable templates to write errors"
-      ],
       "focus": "Training in the sequencing of cuttings, state compression prefixes and search space control using high-constrained subjects.",
-      "objectives": [
-        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
-        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
       "title": "Cut and limit search"
     }
   ],

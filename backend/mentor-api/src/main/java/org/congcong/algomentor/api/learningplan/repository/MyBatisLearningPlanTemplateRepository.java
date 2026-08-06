@@ -162,11 +162,9 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         value(row.defaultWeeklyHours()),
         row.programmingLanguage(),
         LearningPlanDifficultyPreference.valueOf(row.difficultyPreference()),
-        Boolean.TRUE.equals(row.interviewOriented()),
         read(row.topicPreferencesJson(), STRING_LIST),
         row.targetAudience(),
         row.targetAudienceEn(),
-        read(row.difficultyMixJson(), OBJECT_MAP),
         read(row.prerequisitesJson(), STRING_LIST),
         readNullableList(row.prerequisitesEnJson()),
         read(row.recommendedForJson(), STRING_LIST),
@@ -260,13 +258,6 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         value(row.durationWeeks()),
         row.focus(),
         row.focusEn(),
-        read(row.objectivesJson(), STRING_LIST),
-        readNullableList(row.objectivesEnJson()),
-        read(row.recommendedTagsJson(), STRING_LIST),
-        read(row.acceptanceCriteriaJson(), STRING_LIST),
-        readNullableList(row.acceptanceCriteriaEnJson()),
-        row.reviewAdvice(),
-        row.reviewAdviceEn(),
         refs);
   }
 
@@ -303,11 +294,9 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         template.defaultWeeklyHours(),
         template.programmingLanguage(),
         template.difficultyPreference().name(),
-        template.interviewOriented(),
         json(template.topicPreferences()),
         template.targetAudience(),
         template.targetAudienceEn(),
-        json(template.difficultyMix()),
         json(template.prerequisites()),
         json(template.prerequisitesEn()),
         json(template.recommendedFor()),
@@ -341,14 +330,7 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         phase.titleEn(),
         phase.durationWeeks(),
         phase.focus(),
-        phase.focusEn(),
-        json(phase.objectives()),
-        json(phase.objectivesEn()),
-        json(phase.recommendedTags()),
-        json(phase.acceptanceCriteria()),
-        json(phase.acceptanceCriteriaEn()),
-        phase.reviewAdvice(),
-        phase.reviewAdviceEn());
+        phase.focusEn());
   }
 
   private LearningPlanTemplateProblemRefRow toProblemRefRow(

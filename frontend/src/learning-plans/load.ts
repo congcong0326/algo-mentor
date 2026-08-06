@@ -15,22 +15,11 @@ export function getPlanLoadSummary(plan: LearningPlanDraftPlan): LearningPlanLoa
 }
 
 export function getPlanWeeklyBuckets(plan: LearningPlanDraftPlan): LearningPlanWeeklyBucket[] {
-  if (plan.weeklyBuckets?.length) {
-    return plan.weeklyBuckets;
-  }
-  const value = plan.metadata?.weeklyBuckets;
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value.filter(isWeeklyBucket);
+  return plan.weeklyBuckets ?? [];
 }
 
 export function getPlanNextTrainingPackage(plan: LearningPlanDraftPlan): LearningPlanTrainingPackage | undefined {
-  if (plan.nextTrainingPackage) {
-    return plan.nextTrainingPackage;
-  }
-  const value = plan.metadata?.nextTrainingPackage;
-  return isTrainingPackage(value) ? value : undefined;
+  return plan.nextTrainingPackage;
 }
 
 export function getPlanRhythmSettings(plan: LearningPlanDraftPlan): LearningPlanRhythmSettings {
@@ -64,29 +53,6 @@ function isLoadSummary(value: unknown): value is LearningPlanLoadSummary {
     && typeof item.plannedLoadPoints === 'number'
     && typeof item.totalCapacityPoints === 'number'
     && typeof item.intensity === 'string';
-}
-
-function isWeeklyBucket(value: unknown): value is LearningPlanWeeklyBucket {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-  const item = value as Partial<LearningPlanWeeklyBucket>;
-  return typeof item.weekIndex === 'number'
-    && typeof item.plannedProblemCount === 'number'
-    && typeof item.plannedLoadPoints === 'number'
-    && Array.isArray(item.problemSlugs);
-}
-
-function isTrainingPackage(value: unknown): value is LearningPlanTrainingPackage {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-  const item = value as Partial<LearningPlanTrainingPackage>;
-  return typeof item.weekIndex === 'number'
-    && typeof item.newProblemCount === 'number'
-    && typeof item.estimatedMinutes === 'number'
-    && typeof item.reviewTask === 'string'
-    && Array.isArray(item.priorityProblemSlugs);
 }
 
 function numberFromMetadata(value: unknown, fallback: number) {

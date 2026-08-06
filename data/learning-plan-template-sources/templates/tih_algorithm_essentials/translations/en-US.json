@@ -7,87 +7,33 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"linear structure and search basis\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Focus on core interview models in training arrays, Hash, string and sorting searches.",
-      "objectives": [
-        "Complete all local matching questions at the Linear Structure and Search Basis stage and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Linear structure and search base"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core decomposition that provide an independent description of the main theme of \"Clock, queue and regression\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Creates a stable solver template for the rewriting of the pointer, the queue status and the decomposition.",
-      "objectives": [
-        "Complete all local matching questions at the \"Clock, queue and retrogression \" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Chain, queue and repatriate"
     },
     {
-      "acceptanceCriteria": [
-        "An independent description of the identification signal and core solution for the main theme of Tree, Trie and Priority Line",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "High frequency interviews covered through trees, binoculars, prefixes and piles.",
-      "objectives": [
-        "Complete all local matching questions for the Tree, Trie and priority queue phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Tree, Trie and Priority"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of “maps, inter-zone and matrix modelling”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Training maps are searched, dependencies, boundaries between zones and a two-dimensional matrix.",
-      "objectives": [
-        "Complete all local matching questions for the \"charts, intersections and matrix modelling\" phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Charts, intersections and matrix modelling"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of “dynamic programming and binary techniques”",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "HF complex questions are completed using status definition, transfer sequence and bit calculation.",
-      "objectives": [
-        "Complete all local matching questions in the dynamic programming and binary techniques phase and document the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Dynamic programming and binary techniques"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"mathematics-geometrically combined\" theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Composes numerical patterns, coordinates and geometric boundaries and completes a set of resets.",
-      "objectives": [
-        "Complete all local matching questions at Mathematical-geometrically combined closing and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Mathematics and Geometry End"
     }
   ],

@@ -67,12 +67,14 @@ class LearningPlanDraftStreamServiceTest {
         .extracting(problem -> problem.slug())
         .containsExactly("two-sum");
     assertThat(ready.draft().draftPlan().metadata())
-        .containsEntry("problemRecommendationIncomplete", true)
         .containsEntry("contentLocale", "en-US")
-        .containsKey("loadSummary")
-        .containsKey("dailyProblemCount")
-        .containsKey("trainingDaysPerWeek")
-        .doesNotContainKeys("weeklyBuckets", "nextTrainingPackage", "rhythmMode");
+        .containsOnlyKeys(
+            "contentLocale",
+            "personalizationEnabled",
+            "dailyProblemCount",
+            "trainingDaysPerWeek",
+            "coveragePolicy",
+            "loadSummary");
   }
 
   @Test
@@ -88,7 +90,6 @@ class LearningPlanDraftStreamServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         true,
@@ -204,7 +205,6 @@ class LearningPlanDraftStreamServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         personalizationEnabled,
@@ -237,10 +237,6 @@ class LearningPlanDraftStreamServiceTest {
               "title": "数组与哈希表基础",
               "durationWeeks": 2,
               "focus": "Array",
-              "objectives": ["掌握数组基础题型"],
-              "recommendedTags": ["Array"],
-              "acceptanceCriteria": ["能独立复盘错题"],
-              "reviewAdvice": "记录边界条件。",
               "problems": [%s]
             },
             {
@@ -248,10 +244,6 @@ class LearningPlanDraftStreamServiceTest {
               "title": "二分与双指针",
               "durationWeeks": 1,
               "focus": "Binary Search",
-              "objectives": ["掌握二分"],
-              "recommendedTags": ["Binary Search"],
-              "acceptanceCriteria": ["能说明循环不变量"],
-              "reviewAdvice": "总结模板。",
               "problems": []
             },
             {
@@ -259,15 +251,10 @@ class LearningPlanDraftStreamServiceTest {
               "title": "动态规划入门",
               "durationWeeks": 1,
               "focus": "Dynamic Programming",
-              "objectives": ["识别状态转移"],
-              "recommendedTags": ["Dynamic Programming"],
-              "acceptanceCriteria": ["能写出状态定义"],
-              "reviewAdvice": "复盘状态设计。",
               "problems": []
             }
           ],
           "metadata": {
-            "problemRecommendationIncomplete": false
           }
         }
         """.formatted(problems);

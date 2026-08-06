@@ -14,10 +14,7 @@ final class LearningPlanPublicMetadataMapper {
       LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT,
       LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK,
       LearningPlanDraftMetadataKeys.COVERAGE_POLICY,
-      LearningPlanDraftMetadataKeys.LOAD_SUMMARY,
-      LearningPlanDraftMetadataKeys.LOAD_RISK,
-      LearningPlanDraftMetadataKeys.WEEKLY_BUCKETS,
-      LearningPlanDraftMetadataKeys.NEXT_TRAINING_PACKAGE);
+      LearningPlanDraftMetadataKeys.LOAD_SUMMARY);
 
   private LearningPlanPublicMetadataMapper() {
   }

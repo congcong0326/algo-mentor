@@ -230,10 +230,6 @@ function extensionReadyEventFixture(): LearningPlanExtensionReadyEvent {
         title: '动态规划强化',
         durationWeeks: 2,
         focus: '线性 DP 和背包模型',
-        objectives: ['掌握状态定义'],
-        recommendedTags: ['Dynamic Programming'],
-        acceptanceCriteria: ['能解释转移方程'],
-        reviewAdvice: '复盘状态压缩。',
         problems: [{
           slug: 'climbing-stairs',
           frontendId: 70,
@@ -265,7 +261,6 @@ const planFixture: LearningPlanDetailResponse = {
   weeklyHours: 5,
   programmingLanguage: 'Java',
   difficultyDistribution: { easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
-  interviewOriented: false,
   topicPreferences: ['Array'],
   additionalConstraints: '每周留一天复盘。',
   metadata: {},
@@ -288,7 +283,6 @@ const planFixture: LearningPlanDetailResponse = {
     plannedProblemCount: 1,
     plannedLoadPoints: 2.5,
     problemSlugs: ['two-sum'],
-    reviewAdvice: '复盘边界条件',
   }],
   nextTrainingPackage: {
     weekIndex: 1,
@@ -306,7 +300,6 @@ const planFixture: LearningPlanDetailResponse = {
       plannedProblemCount: 1,
       plannedLoadPoints: 2.5,
       problemSlugs: ['two-sum'],
-      reviewAdvice: '复盘边界条件',
     },
     currentWeekCompletedProblemCount: 0,
     plannedProblemCountToDate: 1,
@@ -324,10 +317,6 @@ const planFixture: LearningPlanDetailResponse = {
       title: '基础阶段',
       durationWeeks: 1,
       focus: '数组基础',
-      objectives: ['理解哈希表'],
-      recommendedTags: ['Array'],
-      acceptanceCriteria: ['完成 Two Sum'],
-      reviewAdvice: '复盘边界条件',
       problems: [
         {
           slug: 'two-sum',

@@ -7,143 +7,53 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"array and Hash\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Creates a base model for running, indexing, weighting and constant time search.",
-      "objectives": [
-        "Complete all local matching questions for the \"array and Hash\" phase and record status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Group and Hash"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"two pointer\" type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "masters the same direction, the opposite direction and the slow pointer and handles array problems in a sequenced manner.",
-      "objectives": [
-        "Complete all local matching questions at the two pointers stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "two pointers"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main sliding window type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Trains fixed, variable and window contraction conditions.",
-      "objectives": [
-        "Complete all local matching questions in the Slide Window phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Slide Window"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main theme of the \"linked list pointer\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Proficiency of linked lists, reverse, ring detection, amalgamation and deletion operations.",
-      "objectives": [
-        "Complete all local matching questions in the Linked List Pointer phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Linked List Pointer"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"diverse search\" type",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "The idea of creating an orderly interval, a rotating array and an answer boundary.",
-      "objectives": [
-        "Complete all local matching questions at the \"Diverse Search\" stage and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 5,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Half Search"
     },
     {
-      "acceptanceCriteria": [
-        "An independent description of the identification signal and core solution for the main FFS and BFS types",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "The tree's history, path and nature are judged by the regression and queue.",
-      "objectives": [
-        "Finish all local matches for the Tree DFS and BFS phases and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 6,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Tree DFS and BFS"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"sequence and inter-section\" theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Control over inter-district consolidation, insertion and conflict judgement through sorting pre-processing.",
-      "objectives": [
-        "Complete all local matching questions in the Sorting and Intersection phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 7,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Sort & & Zone"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signal and core solution for the \"chart BFS and DFS\" main theme",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Training in connectivity blocks, grid search, modelling and course dependence.",
-      "objectives": [
-        "Finish all local matching questions for the Chart BFS and DFS phases and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 8,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Figure BFS and DFS"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the main \"stack and priority queues\"",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Top K, Recent Point, Multiroad Selection and Movement Control Issues.",
-      "objectives": [
-        "Complete all local matching questions in the Stack and priority queue phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 9,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Stack & priority queue"
     },
     {
-      "acceptanceCriteria": [
-        "Identification signals and core solutions that provide an independent description of the Matrix Passage and Prefixes",
-        "Can review the complexity, boundary conditions, and one representative mistake"
-      ],
       "focus": "Complete matrix simulations and create a basis for interfacing queries with prefixes.",
-      "objectives": [
-        "Finish all local matching questions for the Matrix Passing and Prefixing phase and record the status or data structure selection basis",
-        "Collapse at least 2 error-prone borders and reusable solver templates"
-      ],
       "phaseIndex": 10,
-      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
       "title": "Matrix through prefixes"
     }
   ],

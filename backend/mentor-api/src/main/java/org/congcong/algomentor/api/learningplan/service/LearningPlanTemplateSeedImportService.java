@@ -118,13 +118,6 @@ public class LearningPlanTemplateSeedImportService {
             phase.durationWeeks(),
             phase.focus(),
             phase.focusEn(),
-            phase.objectives(),
-            phase.objectivesEn(),
-            phase.recommendedTags(),
-            phase.acceptanceCriteria(),
-            phase.acceptanceCriteriaEn(),
-            phase.reviewAdvice(),
-            phase.reviewAdviceEn(),
             refsByPhase.getOrDefault(phase.phaseIndex(), List.of())))
         .toList();
     return new LearningPlanTemplate(
@@ -144,11 +137,9 @@ public class LearningPlanTemplateSeedImportService {
         record.defaultWeeklyHours(),
         record.programmingLanguage(),
         record.difficultyPreference(),
-        record.interviewOriented(),
         record.topicPreferences(),
         record.targetAudience(),
         record.targetAudienceEn(),
-        record.difficultyMix(),
         record.prerequisites(),
         record.prerequisitesEn(),
         record.recommendedFor(),
@@ -272,7 +263,6 @@ public class LearningPlanTemplateSeedImportService {
     requireNonBlank(template.summary(), "summary");
     requireNonBlank(template.goal(), "goal");
     requireNonBlank(template.targetAudience(), "targetAudience");
-    requireNonEmpty(template.difficultyMix(), "difficultyMix");
     requireNonEmpty(template.prerequisites(), "prerequisites");
     requireNonEmpty(template.recommendedFor(), "recommendedFor");
     requireNonEmpty(template.notRecommendedFor(), "notRecommendedFor");
@@ -327,15 +317,8 @@ public class LearningPlanTemplateSeedImportService {
       durationWeeks += phase.durationWeeks();
       requireNonBlank(phase.title(), "phase.title");
       requireNonBlank(phase.focus(), "phase.focus");
-      requireNonEmpty(phase.objectives(), "phase.objectives");
-      requireNonEmpty(phase.recommendedTags(), "phase.recommendedTags");
-      requireNonEmpty(phase.acceptanceCriteria(), "phase.acceptanceCriteria");
-      requireNonBlank(phase.reviewAdvice(), "phase.reviewAdvice");
       requireNonBlank(phase.titleEn(), "phase.titleEn");
       requireNonBlank(phase.focusEn(), "phase.focusEn");
-      requireNonEmpty(phase.objectivesEn(), "phase.objectivesEn");
-      requireNonEmpty(phase.acceptanceCriteriaEn(), "phase.acceptanceCriteriaEn");
-      requireNonBlank(phase.reviewAdviceEn(), "phase.reviewAdviceEn");
     }
     if (durationWeeks != template.defaultDurationWeeks()) {
       throw new IllegalArgumentException("Learning plan template phase duration sum does not match default duration: "

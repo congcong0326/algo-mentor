@@ -43,9 +43,6 @@ TEMPLATE_FIELDS = (
 PHASE_FIELDS = (
     "title",
     "focus",
-    "objectives",
-    "acceptanceCriteria",
-    "reviewAdvice",
 )
 HAN_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 

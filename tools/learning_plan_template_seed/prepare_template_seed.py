@@ -46,9 +46,6 @@ TEMPLATE_ENGLISH_FIELD_MAP = {
 PHASE_ENGLISH_FIELD_MAP = {
     "title": "titleEn",
     "focus": "focusEn",
-    "objectives": "objectivesEn",
-    "acceptanceCriteria": "acceptanceCriteriaEn",
-    "reviewAdvice": "reviewAdviceEn",
 }
 DERIVED_TEMPLATE_METADATA_KEYS = {
     "matchedProblemCount",
@@ -234,7 +231,6 @@ TEMPLATE_CONFIGS = {
         "defaultDurationWeeks": 4,
         "defaultWeeklyHours": 8,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "已有基本编程能力、准备 1 个月左右算法面试冲刺的学习者。",
         "prerequisites": ["能读写一种主力语言", "理解数组、哈希表、链表、树的基本概念"],
         "recommendedFor": ["面试时间较近，需要高频核心题路线", "刷题经验有限但希望快速建立题型地图"],
@@ -254,7 +250,6 @@ TEMPLATE_CONFIGS = {
         "defaultDurationWeeks": 12,
         "defaultWeeklyHours": 10,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "有 2 到 3 个月准备周期、希望系统覆盖面试算法题型的学习者。",
         "prerequisites": ["掌握一门主力语言的基础语法", "了解常见数据结构和时间复杂度", "每周能稳定投入 8 小时以上"],
         "recommendedFor": ["准备中大型技术面试", "希望按题型模式系统刷题", "刷过少量题但缺少完整路线"],
@@ -273,7 +268,6 @@ TEMPLATE_CONFIGS = {
         "defaultDurationWeeks": 5,
         "defaultWeeklyHours": 8,
         "difficultyPreference": "MIXED",
-        "interviewOriented": True,
         "targetAudience": "已有基础题经验、希望用 5 周做面试前高密度复习的学习者。",
         "prerequisites": ["能完成 Easy/Medium 基础题", "了解数组、链表、树、图和动态规划的常见术语"],
         "recommendedFor": ["面试倒计时 4 到 6 周", "需要明确每周题单和复盘节奏"],
@@ -297,16 +291,6 @@ def phase_spec(
         "title": title,
         "durationWeeks": duration_weeks,
         "focus": focus,
-        "objectives": [
-            "完成本阶段推荐题并记录每题的核心建模方式",
-            "整理本阶段至少 2 条高频错因和复盘策略",
-        ],
-        "recommendedTags": tags,
-        "acceptanceCriteria": [
-            "能独立复述本阶段每类题的适用条件",
-            "能写出错题的边界条件、复杂度和可迁移模板",
-        ],
-        "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
         "problemSlugs": slugs,
     }
 
@@ -323,7 +307,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 12,
         "defaultWeeklyHours": 6,
         "difficultyPreference": "MIXED",
-        "interviewOriented": False,
         "targetAudience": "刚开始系统刷题、偏好中文路线、希望逐步建立知识脉络的学习者。",
         "prerequisites": ["能使用一种语言写基础循环和函数", "愿意按周复盘错题和模板"],
         "recommendedFor": ["刷题路线不清楚的新手", "需要中文语境下的系统推进节奏", "希望先用 Easy/Medium 打基础"],
@@ -377,7 +360,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 4,
         "defaultWeeklyHours": 8,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "已刷过基础题但动态规划题正确率不稳定的学习者。",
         "prerequisites": ["理解递归和数组遍历", "能写出基础复杂度分析", "做过至少 30 道 Easy/Medium 题"],
         "recommendedFor": ["状态定义不稳定", "背包、子序列或股票题容易混淆", "需要面试前专项补强 DP"],
@@ -417,7 +399,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 4,
         "defaultWeeklyHours": 7,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "对图搜索、拓扑关系或并查集不稳定的中级学习者。",
         "prerequisites": ["理解队列、栈和递归", "能读写邻接表或网格遍历", "完成过树的 DFS/BFS 基础题"],
         "recommendedFor": ["岛屿题、课程表、并查集常出错", "需要按图论专题集中复盘"],
@@ -455,7 +436,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 2,
         "defaultWeeklyHours": 6,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "二分题经常卡在左右边界、循环条件或答案空间的学习者。",
         "prerequisites": ["理解有序数组和基本循环", "能独立写出基础二分查找"],
         "recommendedFor": ["需要短周期提升边界题稳定性", "旋转数组、矩阵搜索或答案二分易错"],
@@ -490,7 +470,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 2,
         "defaultWeeklyHours": 6,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "字符串、数组和窗口维护题容易超时或边界出错的学习者。",
         "prerequisites": ["熟悉数组、字符串和哈希计数", "能写基础排序和双指针循环"],
         "recommendedFor": ["需要快速提升数组/字符串面试题正确率", "窗口收缩条件和去重逻辑不稳定"],
@@ -524,7 +503,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 3,
         "defaultWeeklyHours": 7,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "已经做过基础数组和递归题，但树题递归边界、返回值或层序遍历不稳定的学习者。",
         "prerequisites": ["理解递归调用栈", "了解二叉树节点结构", "能写基础 DFS 或 BFS"],
         "recommendedFor": ["树遍历、BST 或路径题容易混淆", "需要面试前补齐二叉树高频题", "希望把递归和队列遍历整理成模板"],
@@ -567,7 +545,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 3,
         "defaultWeeklyHours": 7,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "能写递归但回溯题容易漏撤销、去重或剪枝条件的学习者。",
         "prerequisites": ["理解递归和数组/字符串遍历", "能说明基础 DFS 结束条件", "做过至少 20 道 Easy/Medium 题"],
         "recommendedFor": ["组合、排列、子集题容易套错模板", "棋盘搜索或字符串切割题缺少系统复盘", "需要面试前集中补强搜索题"],
@@ -603,7 +580,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 2,
         "defaultWeeklyHours": 6,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "知道堆结构但在 TopK、数据流或调度题中不清楚堆元素设计的学习者。",
         "prerequisites": ["理解数组和排序", "知道最小堆/最大堆基本操作", "能分析 O(log n) 插入删除"],
         "recommendedFor": ["TopK、合并链表或数据流题不稳定", "需要快速补齐优先队列面试题", "想训练堆元素设计和懒删除意识"],
@@ -639,7 +615,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 3,
         "defaultWeeklyHours": 7,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "能写实现但贪心题经常无法证明选择策略或排序依据的学习者。",
         "prerequisites": ["熟悉数组、排序和基础区间题", "能写简单复杂度分析", "做过若干 Medium 题"],
         "recommendedFor": ["区间调度、跳跃题或字符串贪心经常靠直觉", "需要面试前整理贪心证明模板", "想补齐排序后选择类题"],
@@ -678,7 +653,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 2,
         "defaultWeeklyHours": 6,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "括号、表达式、下一个更大元素或柱状图题容易写乱边界的学习者。",
         "prerequisites": ["理解数组和字符串遍历", "会使用栈或双端队列", "能写基础括号匹配"],
         "recommendedFor": ["单调栈入栈出栈条件不稳定", "表达式题和括号题缺少统一模板", "想补齐窗口最大值和柱状图经典题"],
@@ -713,7 +687,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 2,
         "defaultWeeklyHours": 6,
         "difficultyPreference": "MEDIUM",
-        "interviewOriented": True,
         "targetAudience": "位运算语法会用但对异或、mask 枚举和状态压缩缺少系统理解的学习者。",
         "prerequisites": ["理解二进制表示", "会写数组遍历和哈希计数", "知道与或非异或基础操作"],
         "recommendedFor": ["Single Number、Counting Bits 或 mask 题经常靠记忆", "需要短周期补齐位运算面试题", "想为状压 DP 打基础"],
@@ -747,7 +720,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 6,
         "defaultWeeklyHours": 8,
         "difficultyPreference": "MIXED",
-        "interviewOriented": True,
         "targetAudience": "已刷过一轮基础题、希望通过经典高赞题二刷查漏补缺的学习者。",
         "prerequisites": ["至少完成过 50 道题", "有错题复盘记录或薄弱标签", "能阅读 Medium 题解并复述思路"],
         "recommendedFor": ["面试前 1 到 2 个月复盘", "需要覆盖高频经典题并整理错题"],
@@ -804,7 +776,6 @@ MANUAL_TEMPLATES = {
         "defaultDurationWeeks": 4,
         "defaultWeeklyHours": 5,
         "difficultyPreference": "EASY",
-        "interviewOriented": False,
         "targetAudience": "刚换语言、基础语法不稳或实现细节经常出错的学习者。",
         "prerequisites": ["能写变量、循环、函数和基础数组操作", "愿意用同一语言反复练习基础实现"],
         "recommendedFor": ["想先提升代码熟练度", "Easy 题经常因为语法或边界出错", "准备进入系统刷题前打基础"],
@@ -1243,12 +1214,12 @@ def build_template_from_source_template(
         "sourceTags": sorted({tag for ref in refs for tag in ref["metadata"].get("sourceTags", [])}),
         "sourceStrategy": metadata.get("sourceStrategy", "direct_metadata"),
     }
-    phases = list(source_template.get("phases") or [])
-    topic_preferences = list(dict.fromkeys(tag for phase in phases for tag in phase.get("recommendedTags", [])))
+    topic_preferences = source_template.get("topicPreferences")
+    if not isinstance(topic_preferences, list) or not topic_preferences:
+        raise ValueError(f"template topicPreferences must be explicitly provided: {source_template.get('templateId')}")
     template = {
         **source_template,
-        "topicPreferences": source_template.get("topicPreferences") or topic_preferences,
-        "difficultyMix": difficulty_mix(refs),
+        "topicPreferences": topic_preferences,
         "metadata": metadata,
     }
     validate_template(template)
@@ -1317,22 +1288,11 @@ def build_neetcode_refs(
 def build_neetcode_phases(template_id: str) -> list[dict[str, Any]]:
     phases: list[dict[str, Any]] = []
     for index, phase in enumerate(NEETCODE_PHASES[template_id], start=1):
-        patterns = list(phase["patterns"])
         phases.append(phase_row(
             index=index,
             title=str(phase["title"]),
             duration_weeks=int(phase["durationWeeks"]),
             focus=str(phase["focus"]),
-            tags=patterns,
-            objectives=[
-                "完成本阶段核心题型的一轮训练",
-                "为每类 pattern 记录至少 1 条可复用解题模板",
-            ],
-            acceptance=[
-                "能独立说清本阶段推荐题的主解法和复杂度",
-                "能复盘错题中的边界条件和状态定义",
-            ],
-            review="按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
         ))
     return phases
 
@@ -1467,10 +1427,6 @@ def add_manual_templates(
                 title=phase["title"],
                 duration_weeks=phase["durationWeeks"],
                 focus=phase["focus"],
-                tags=phase["recommendedTags"],
-                objectives=phase["objectives"],
-                acceptance=phase["acceptanceCriteria"],
-                review=phase["reviewAdvice"],
             )
             for index, phase in enumerate(config["phases"], start=1)
         ]
@@ -1573,7 +1529,9 @@ def build_template_from_config(
         "sourceTags": sorted({tag for ref in refs for tag in ref["metadata"].get("sourceTags", [])}),
         "sourceStrategy": extra_metadata.get("sourceStrategy", "direct_metadata"),
     }
-    topic_preferences = list(dict.fromkeys(tag for phase in phases for tag in phase["recommendedTags"]))
+    topic_preferences = list(dict.fromkeys(
+        tag for ref in refs for tag in ref["metadata"].get("sourceTags", [])
+    ))
     template = {
         "templateId": template_id,
         "title": config["title"],
@@ -1585,10 +1543,8 @@ def build_template_from_config(
         "defaultWeeklyHours": config["defaultWeeklyHours"],
         "programmingLanguage": "Java",
         "difficultyPreference": config["difficultyPreference"],
-        "interviewOriented": config["interviewOriented"],
         "topicPreferences": topic_preferences,
         "targetAudience": config["targetAudience"],
-        "difficultyMix": difficulty_mix(refs),
         "prerequisites": config["prerequisites"],
         "recommendedFor": config["recommendedFor"],
         "notRecommendedFor": config["notRecommendedFor"],
@@ -1612,20 +1568,14 @@ def phase_row(
     title: str,
     duration_weeks: int,
     focus: str,
-    tags: list[str],
-    objectives: list[str],
-    acceptance: list[str],
-    review: str,
+    *_deprecated_parts: Any,
+    **_deprecated_fields: Any,
 ) -> dict[str, Any]:
     return {
         "phaseIndex": index,
         "title": title,
         "durationWeeks": duration_weeks,
         "focus": focus,
-        "objectives": objectives,
-        "recommendedTags": tags,
-        "acceptanceCriteria": acceptance,
-        "reviewAdvice": review,
     }
 
 
@@ -1683,7 +1633,7 @@ def build_report(
         else:
             source_missing_counts[source_key] += 1
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "generatedAt": generated_at,
         "source": ROOT_SOURCE,
         "sources": [
@@ -1741,7 +1691,7 @@ def template_report(template: dict[str, Any], refs: list[dict[str, Any]]) -> dic
         "matchedProblemCount": sum(1 for ref in refs if ref["metadata"]["matchedLocalProblem"]),
         "missingProblemCount": sum(1 for ref in refs if not ref["metadata"]["matchedLocalProblem"]),
         "missingProblemExamples": missing_problem_slugs[:10],
-        "difficultyMix": template["difficultyMix"],
+        "difficultyMix": difficulty_mix(refs),
     }
 
 
@@ -1843,7 +1793,7 @@ def validate_template(template: dict[str, Any]) -> None:
         or recommended_order < 1
     ):
         raise ValueError(f"invalid recommendedOrder: {template.get('templateId')}")
-    for field in ["difficultyMix", "prerequisites", "recommendedFor", "notRecommendedFor", "phases"]:
+    for field in ["topicPreferences", "prerequisites", "recommendedFor", "notRecommendedFor", "phases"]:
         if not template.get(field):
             raise ValueError(f"missing required template field: {field}")
     english_ready = template.get("englishContentReady") is True
@@ -1860,7 +1810,7 @@ def validate_template(template: dict[str, Any]) -> None:
     for phase in template["phases"]:
         phase_indexes.append(int(phase.get("phaseIndex", 0)))
         duration_weeks += int(phase.get("durationWeeks", 0))
-        for field in ["title", "focus", "objectives", "recommendedTags", "acceptanceCriteria", "reviewAdvice"]:
+        for field in ["title", "focus"]:
             if not phase.get(field):
                 raise ValueError(f"missing required phase field: {field}")
         phase_english_present = any(field in phase for field in PHASE_ENGLISH_FIELD_MAP.values())

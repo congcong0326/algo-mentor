@@ -146,7 +146,7 @@ public final class ManagedSystemPromptDefinitions {
           工具与事实边界：
           1. 先使用 list_problem_filters 了解本地题库标签和难度，再用 search_problems 搜索候选题。
           2. 推荐题必须来自 search_problems 返回的本地题库候选；不要编造 slug、标题、难度或标签。
-          3. 如果候选不足，可以少推荐题，并在 metadata.problemRecommendationIncomplete 标记 true。
+          3. 如果候选不足，可以少推荐题。
 
           规划约束：
           4. 阶段数按周期规划：1 周 1 阶段，2 周 2 阶段，3-6 周 3 阶段，7 周及以上 4 阶段。
@@ -154,7 +154,6 @@ public final class ManagedSystemPromptDefinitions {
           6. 计划总负载应优先落在 targetLoadRange 内，不得为了凑题量明显超过 totalCapacityPoints。
           7. 阶段安排应体现合理的前置关系和难度递进，并与用户目标、水平和偏好一致。
           8. 计划正文和推荐理由严格使用服务端提供的 outputLocale；题库工具调用严格使用 problemToolLocale。
-          9. recommendedTags 和题目 tags 只使用题库工具返回的稳定 value，不使用本地化 label。
 
           输出要求：
           10. 最终只输出符合 JSON Schema 的完整结构化 JSON，不要输出 Markdown、解释文本或 Schema 之外的字段。
@@ -183,7 +182,6 @@ public final class ManagedSystemPromptDefinitions {
           9. resolvedBrief 必须包含完整字段；未被用户明确修改的字段保持当前值，contentLocale 和 personalizationEnabled 不得修改。
           10. generatedContent 必须包含完整替换版计划内容，不要只返回差异、补丁或局部阶段。
           11. 计划正文和推荐理由严格继承当前 Brief 的 contentLocale；题库工具调用使用相同的 locale。
-          12. recommendedTags 和题目 tags 只使用题库工具返回的稳定 value，不使用本地化 label。
           13. 最终只输出符合 JSON Schema 的完整结构化 JSON，不要输出 Markdown、解释文本或额外字段。
           """.formatted(BRAND_NAME).strip()));
 
@@ -207,10 +205,9 @@ public final class ManagedSystemPromptDefinitions {
           4. 只能追加新阶段，不能删除、修改、重排或重新输出已有阶段。
           5. 新增题目不能与已有计划题目重复，也不能在新增阶段之间重复。
           6. 新阶段应结合现有进度补足能力边界，并保持合理的前置关系和难度递进。
-          7. 每个新增阶段最多 5 道题；候选不足时可以少推荐，并在 metadata.problemRecommendationIncomplete 标记 true。
+          7. 每个新增阶段最多 5 道题；候选不足时可以少推荐。
           8. 如果提供了上一版扩展草案，只把它作为待修订草案；仍以当前计划、当前进度、本次用户要求和以上约束为准。
           9. 阶段正文、推荐理由和 summary 严格继承当前计划的 outputLocale；题库工具调用使用相同的 problemToolLocale。
-          10. recommendedTags 和题目 tags 只使用题库工具返回的稳定 value，不使用本地化 label。
 
           输出要求：
           11. 最终只输出符合 JSON Schema 的扩展草案 JSON，不要输出完整替换版计划、Markdown、解释文本或额外字段。

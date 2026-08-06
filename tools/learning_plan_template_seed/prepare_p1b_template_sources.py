@@ -517,7 +517,6 @@ def build_tih_template(
         duration_weeks=6,
         weekly_hours=10,
         difficulty_preference="MIXED",
-        interview_oriented=True,
         target_audience="已有基础刷题经验，希望按主题系统补齐算法面试知识结构的学习者。",
         prerequisites=["掌握数组、链表、树和图的基本概念", "能独立完成常见 Easy 和部分 Medium 题"],
         recommended_for=["需要系统查漏补缺", "希望建立面试题型选择框架", "准备中期算法面试"],
@@ -675,7 +674,6 @@ def build_dp_advanced_template(problem_index: ProblemIndex) -> tuple[dict[str, A
         duration_weeks=4,
         weekly_hours=9,
         difficulty_preference="HARD",
-        interview_oriented=True,
         target_audience="已完成动态规划基础专题，能独立写出常见一维、背包和子序列 DP 的学习者。",
         prerequisites=["掌握状态定义、转移方程和初始化", "熟悉递归、记忆化搜索、树遍历和位运算"],
         recommended_for=["基础 DP 已掌握但 Hard 题缺少分类框架", "需要突破区间、树形、状压或数位 DP"],
@@ -754,7 +752,6 @@ def build_sword_offer_template(
         duration_weeks=8,
         weekly_hours=8,
         difficulty_preference="MIXED",
-        interview_oriented=True,
         target_audience="偏好中文题单、希望系统复习经典校招和社招算法题的学习者。",
         prerequisites=["掌握一种编程语言", "了解数组、链表、树、栈队列和基础动态规划"],
         recommended_for=["准备中文技术面试", "希望按经典题序系统查漏补缺", "需要 6 到 8 周完整路线"],
@@ -838,7 +835,6 @@ def build_lcci_template(
         duration_weeks=10,
         weekly_hours=10,
         difficulty_preference="MIXED",
-        interview_oriented=True,
         target_audience="已有数据结构基础，希望系统训练经典程序员面试题并逐步进入综合难题的学习者。",
         prerequisites=["掌握一种主力编程语言", "理解数组、链表、树、图和递归基础", "能独立完成常见 Easy 和部分 Medium 题"],
         recommended_for=["准备中文技术面试", "希望按经典章节系统训练", "需要覆盖基础题和综合难题"],
@@ -989,7 +985,6 @@ def build_carl_algorithm_roadmap_template(
         duration_weeks=16,
         weekly_hours=9,
         difficulty_preference="MIXED",
-        interview_oriented=False,
         target_audience="希望按中文知识脉络长期学习、已经掌握一门编程语言基础但缺少系统刷题顺序的学习者。",
         prerequisites=["掌握一种主力编程语言的基础语法", "每周能稳定投入 6 小时以上"],
         recommended_for=["第一次系统刷题", "希望补齐数据结构和算法知识图谱", "偏好中文路线和长期节奏"],
@@ -1099,7 +1094,6 @@ def build_labuladong_algo_thinking_template(
         duration_weeks=8,
         weekly_hours=8,
         difficulty_preference="MIXED",
-        interview_oriented=True,
         target_audience="已经刷过基础题，但知识点分散、希望用框架思维串联不同题型的学习者。",
         prerequisites=["理解常见数据结构", "能独立完成部分 Easy 和 Medium 题"],
         recommended_for=["希望建立跨题型解题框架", "刷题数量不少但迁移能力不足", "需要系统复盘核心算法套路"],
@@ -1150,7 +1144,6 @@ def build_sql_50_template(
         intent="PRACTICE_GOAL",
         level="BEGINNER",
         difficulty_preference="MIXED",
-        interview_oriented=True,
         programming_language="SQL",
     )
 
@@ -1185,7 +1178,6 @@ def build_javascript_30_days_template(
         intent="PRACTICE_GOAL",
         level="BEGINNER",
         difficulty_preference="EASY",
-        interview_oriented=False,
         programming_language="JavaScript",
     )
 
@@ -1219,7 +1211,6 @@ def build_pandas_introduction_template(
         intent="PRACTICE_GOAL",
         level="BEGINNER",
         difficulty_preference="EASY",
-        interview_oriented=False,
         programming_language="Python3",
     )
 
@@ -1255,7 +1246,6 @@ def build_pandas_30_days_template(
         intent="LONG_TERM_LEARNING",
         level="INTERMEDIATE",
         difficulty_preference="MIXED",
-        interview_oriented=False,
         programming_language="Python3",
     )
 
@@ -1346,7 +1336,6 @@ def build_official_study_plan_template(
         duration_weeks=duration_weeks,
         weekly_hours=weekly_hours,
         difficulty_preference=difficulty_preference,
-        interview_oriented=interview_oriented,
         target_audience=target_audience,
         prerequisites=prerequisites,
         recommended_for=recommended_for,
@@ -1464,7 +1453,6 @@ def build_sean_beginner_template(
         duration_weeks=10,
         weekly_hours=6,
         difficulty_preference="MIXED",
-        interview_oriented=True,
         target_audience="具备基础语法，但尚未形成数据结构与算法题型地图的入门学习者。",
         prerequisites=["能使用一种语言编写函数、循环和基础集合操作", "愿意按周完成同类题复盘"],
         recommended_for=["第一次系统准备算法面试", "刷题顺序混乱", "希望从 Easy 逐步过渡到 Medium"],
@@ -1505,16 +1493,7 @@ def phase_spec(title: str, focus: str, tags: list[str], source_themes: Any) -> d
         "title": title,
         "durationWeeks": 1,
         "focus": focus,
-        "objectives": [
-            f"完成“{title}”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
-            "整理至少 2 个易错边界和可复用解题模板",
-        ],
-        "recommendedTags": tags,
-        "acceptanceCriteria": [
-            f"能独立说明“{title}”主要题型的识别信号和核心解法",
-            "能复盘复杂度、边界条件和一次典型错误",
-        ],
-        "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+        "tags": tags,
         "sourceThemes": source_themes,
     }
 
@@ -1534,7 +1513,6 @@ def template_row(
     duration_weeks: int,
     weekly_hours: int,
     difficulty_preference: str,
-    interview_oriented: bool,
     target_audience: str,
     prerequisites: list[str],
     recommended_for: list[str],
@@ -1553,6 +1531,7 @@ def template_row(
 ) -> dict[str, Any]:
     for index, phase in enumerate(phases, start=1):
         phase["phaseIndex"] = index
+    topic_preferences = list(dict.fromkeys(tag for phase in phases for tag in phase.pop("tags", [])))
     return {
         "templateId": template_id,
         "title": title,
@@ -1564,8 +1543,7 @@ def template_row(
         "defaultWeeklyHours": weekly_hours,
         "programmingLanguage": programming_language,
         "difficultyPreference": difficulty_preference,
-        "interviewOriented": interview_oriented,
-        "topicPreferences": list(dict.fromkeys(tag for phase in phases for tag in phase["recommendedTags"])),
+        "topicPreferences": topic_preferences,
         "targetAudience": target_audience,
         "prerequisites": prerequisites,
         "recommendedFor": recommended_for,

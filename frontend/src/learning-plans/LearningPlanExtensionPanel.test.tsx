@@ -22,10 +22,6 @@ describe('LearningPlanExtensionPanel', () => {
         title: '动态规划强化',
         durationWeeks: 2,
         focus: '线性 DP 和背包模型',
-        objectives: ['掌握状态定义'],
-        recommendedTags: ['Dynamic Programming'],
-        acceptanceCriteria: ['能解释转移方程'],
-        reviewAdvice: '复盘状态压缩。',
         problems: [{
           slug: 'climbing-stairs',
           frontendId: 70,

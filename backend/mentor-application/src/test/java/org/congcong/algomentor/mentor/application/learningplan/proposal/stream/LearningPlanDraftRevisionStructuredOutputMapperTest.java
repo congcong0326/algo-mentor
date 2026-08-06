@@ -34,7 +34,6 @@ class LearningPlanDraftRevisionStructuredOutputMapperTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         "当前限制",
         true,
@@ -50,7 +49,6 @@ class LearningPlanDraftRevisionStructuredOutputMapperTest {
             "weeklyHours": 10,
             "programmingLanguage": "Kotlin",
             "difficultyDistribution": {"easyPercent": 20, "mediumPercent": 50, "hardPercent": 30},
-            "interviewOriented": false,
             "topicPreferences": ["Graph", "Shortest Path"],
             "additionalConstraints": "每周安排复盘",
             "personalizationEnabled": false,
@@ -64,13 +62,8 @@ class LearningPlanDraftRevisionStructuredOutputMapperTest {
               "title": "图基础",
               "durationWeeks": 1,
               "focus": "Graph",
-              "objectives": ["掌握图遍历"],
-              "recommendedTags": ["Graph"],
-              "acceptanceCriteria": ["能独立完成"],
-              "reviewAdvice": "复盘",
               "problems": []
-            }],
-            "metadata": {"problemRecommendationIncomplete": false}
+            }]
           }
         }
         """), currentBrief);
@@ -83,7 +76,6 @@ class LearningPlanDraftRevisionStructuredOutputMapperTest {
         10,
         "Kotlin",
         new LearningPlanDifficultyDistribution(20, 50, 30),
-        false,
         List.of("Graph", "Shortest Path"),
         "每周安排复盘",
         true,

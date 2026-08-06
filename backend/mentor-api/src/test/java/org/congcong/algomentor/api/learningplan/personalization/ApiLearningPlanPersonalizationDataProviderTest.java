@@ -230,7 +230,6 @@ class ApiLearningPlanPersonalizationDataProviderTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         List.of(new LearningPlanPhaseDraft(
@@ -238,10 +237,6 @@ class ApiLearningPlanPersonalizationDataProviderTest {
             "数组",
             4,
             "Array",
-            List.of("完成训练"),
-            List.of("Array"),
-            List.of("能独立完成"),
-            "复盘边界条件。",
             List.of(
                 problem("two-sum", 1),
                 problem("contains-duplicate", 2)))),

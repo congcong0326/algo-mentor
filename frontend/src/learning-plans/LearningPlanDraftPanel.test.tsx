@@ -17,7 +17,6 @@ describe('LearningPlanDraftPanel', () => {
     weeklyHours: 6,
     programmingLanguage: 'Java',
     difficultyDistribution: { easyPercent: 35, mediumPercent: 55, hardPercent: 10 },
-    interviewOriented: true,
     topicPreferences: ['Array', 'Hash Table'],
     additionalConstraints: '每周留一天复盘。',
     phases: [{
@@ -25,10 +24,6 @@ describe('LearningPlanDraftPanel', () => {
       title: '基础题型恢复',
       durationWeeks: 1,
       focus: '数组和哈希表',
-      objectives: ['恢复基础题型手感'],
-      recommendedTags: ['Array', 'Hash Table'],
-      acceptanceCriteria: ['能说明哈希表查找边界'],
-      reviewAdvice: '整理错误原因。',
       problems: [{
         slug: 'two-sum',
         frontendId: 1,

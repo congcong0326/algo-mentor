@@ -37,7 +37,6 @@ class LearningPlanDraftServiceTest {
         4,
         null,
         new LearningPlanDifficultyDistribution(25, 55, 20),
-        false,
         List.of(),
         null,
         true,
@@ -87,7 +86,6 @@ class LearningPlanDraftServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         true,
@@ -107,9 +105,6 @@ class LearningPlanDraftServiceTest {
     assertThat(generated.draftPlan().phases())
         .allSatisfy(phase -> {
           assertThat(phase.title()).startsWith("Phase ");
-          assertThat(phase.objectives()).allMatch(objective -> !objective.matches(".*[\\u4e00-\\u9fff].*"));
-          assertThat(phase.acceptanceCriteria()).allMatch(criterion -> !criterion.matches(".*[\\u4e00-\\u9fff].*"));
-          assertThat(phase.reviewAdvice()).doesNotMatch(".*[\\u4e00-\\u9fff].*");
           assertThat(phase.problems()).allSatisfy(problem -> assertThat(problem.reason())
               .startsWith("Practice Array"));
         });
@@ -152,7 +147,6 @@ class LearningPlanDraftServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         true,
@@ -182,7 +176,6 @@ class LearningPlanDraftServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         null,
         true,
@@ -207,7 +200,6 @@ class LearningPlanDraftServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array", "Hash Table"),
         null,
         true,
@@ -249,7 +241,6 @@ class LearningPlanDraftServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array", "Hash Table"),
         null,
         true,

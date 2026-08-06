@@ -35,13 +35,12 @@ public final class LearningPlanDraftRevisionJsonSchema {
     properties.set("weeklyHours", integer(1, 80));
     properties.set("programmingLanguage", nullableString());
     properties.set("difficultyDistribution", difficultyDistribution());
-    properties.set("interviewOriented", bool());
     properties.set("topicPreferences", stringArray());
     properties.set("additionalConstraints", nullableString());
     properties.set("personalizationEnabled", bool());
     properties.set("contentLocale", enumString("zh-CN", "en-US"));
     require(root, "intent", "objective", "durationWeeks", "level", "weeklyHours",
-        "programmingLanguage", "difficultyDistribution", "interviewOriented", "topicPreferences",
+        "programmingLanguage", "difficultyDistribution", "topicPreferences",
         "additionalConstraints", "personalizationEnabled", "contentLocale");
     return root;
   }

@@ -133,10 +133,6 @@ public class LearningPlanExtensionApplyService {
           phase.title(),
           phase.durationWeeks(),
           phase.focus(),
-          phase.objectives(),
-          phase.recommendedTags(),
-          phase.acceptanceCriteria(),
-          phase.reviewAdvice(),
           phase.problems()));
     }
     return new LearningPlanExtensionDraft(extension.summary(), reindexedPhases, extension.metadata());

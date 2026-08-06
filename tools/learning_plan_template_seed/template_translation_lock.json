@@ -1,5 +1,12 @@
 {
-  "schemaVersion": 1,
+  "decoding": {
+    "batchSize": 1,
+    "beamSize": 4,
+    "computeType": "float32",
+    "deviceType": "cpu",
+    "interThreads": 1,
+    "intraThreads": 1
+  },
   "engine": {
     "name": "Argos Translate",
     "pythonPackage": "argostranslate",
@@ -7,21 +14,14 @@
     "wheelSha256": "a89b42d82f40843900338f9ac60d4c82fda590b6898247f5d0c15d46731ca7df"
   },
   "model": {
-    "fromCode": "zh",
-    "toCode": "en",
-    "packageVersion": "1.9",
     "argosVersion": "1.9.0",
-    "source": "https://argos-net.com/v1/translate-zh_en-1_9.argosmodel",
+    "fromCode": "zh",
+    "packageVersion": "1.9",
     "sha256": "62e7af5a3a48b530e47b7b3e5c78c2de79073ecd815750d2bf3ab35b4a67da2d",
-    "sizeBytes": 74481402
+    "sizeBytes": 74481402,
+    "source": "https://argos-net.com/v1/translate-zh_en-1_9.argosmodel",
+    "toCode": "en"
   },
-  "decoding": {
-    "deviceType": "cpu",
-    "interThreads": 1,
-    "intraThreads": 1,
-    "batchSize": 1,
-    "beamSize": 4,
-    "computeType": "float32"
-  },
-  "sourceStructureSha256": "a0518063bd4c04f5da49a9ae5d801f4a9e9fa54208203c635f6e1652353cffcd"
+  "schemaVersion": 1,
+  "sourceStructureSha256": "31149c11161411edea45b24d9e493cce3760892393f4123b6fcf8ef4ed27fbe9"
 }

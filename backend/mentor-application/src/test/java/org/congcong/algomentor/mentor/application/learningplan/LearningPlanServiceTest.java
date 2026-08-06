@@ -124,7 +124,6 @@ class LearningPlanServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         "Reserve one weekly review session.",
         List.of(new LearningPlanPhaseDraft(
@@ -132,10 +131,6 @@ class LearningPlanServiceTest {
             "基础阶段",
             4,
             "Array",
-            List.of("完成基础训练"),
-            List.of("Array"),
-            List.of("能复盘"),
-            "记录错题。",
             List.of(new LearningPlanProblemDraft(
                 "two-sum",
                 1,

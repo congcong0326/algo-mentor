@@ -10,7 +10,7 @@
       "bytes": 33521,
       "hashInput": "manifest payload before self file stat insertion",
       "path": "learning_plan_template_seed_manifest.json",
-      "sha256": "d9f9c13bc3321b4bb906a3dfb31cd5e840c87f1d29749e1daaf4f36ba2f3a984"
+      "sha256": "e763b651f8d0d97ff6c299f6845d7c0668106ffa9d5c4dd8e9099dad01208591"
     },
     "learning_plan_template_seed_metadata.md": {
       "bytes": 21125,
@@ -18,16 +18,16 @@
       "sha256": "7eea21cc3b301e72b619d12cefa3029b8e572433db7171a550ec242fced72dae"
     },
     "learning_plan_templates.jsonl": {
-      "bytes": 356627,
+      "bytes": 175400,
       "path": "learning_plan_templates.jsonl",
-      "sha256": "a70c205b8c212889b6c8746776f3ee2391b5622deb3def7064c458eee26d81e6"
+      "sha256": "93afbc6e01d559575de578b60cbcbaa18ca8c9188b7f6b38cb87c0f3920e468b"
     }
   },
   "generatedAt": "2026-07-28T00:00:00+00:00",
   "matchedProblemCount": 1699,
   "missingProblemCount": 39,
   "problemRefCount": 1738,
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "source": {
     "commit": "bilingual-templates-2026-08-02",
     "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,translations/en-US.json,problem_refs.jsonl}",

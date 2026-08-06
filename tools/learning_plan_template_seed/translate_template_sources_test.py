@@ -196,9 +196,6 @@ def template_source(template_id: str = "template-one") -> dict:
             "durationWeeks": 1,
             "title": "中文阶段",
             "focus": "动态规划中文",
-            "objectives": ["中文目标一"],
-            "acceptanceCriteria": ["中文验收"],
-            "reviewAdvice": "中文复盘",
         }],
     }
 
@@ -218,9 +215,6 @@ def translated_template() -> dict:
             "phaseIndex": 1,
             "title": "English phase",
             "focus": "English focus",
-            "objectives": ["English objective"],
-            "acceptanceCriteria": ["English acceptance"],
-            "reviewAdvice": "English review advice",
         }],
     }
 

@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 7,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Intervals",
     "Sorting",
@@ -49,43 +48,13 @@
       "phaseIndex": 1,
       "title": "区间合并、覆盖与查询",
       "durationWeeks": 1,
-      "focus": "训练按起点或终点排序后的合并、插入、删除、覆盖和查询。",
-      "objectives": [
-        "掌握区间重叠判定和排序键选择",
-        "理解贪心选终点、二分找区间和堆维护候选的差异"
-      ],
-      "recommendedTags": [
-        "Intervals",
-        "Sorting",
-        "Greedy",
-        "Binary Search"
-      ],
-      "acceptanceCriteria": [
-        "能独立完成合并、插入、删除和相交题",
-        "能说明查询型区间题中堆和二分的状态含义"
-      ],
-      "reviewAdvice": "每题先写清排序键和开闭区间约定，再验证相邻、包含和完全分离三类边界。"
+      "focus": "训练按起点或终点排序后的合并、插入、删除、覆盖和查询。"
     },
     {
       "phaseIndex": 2,
       "title": "日历调度与扫描线",
       "durationWeeks": 1,
-      "focus": "用有序集合、差分事件、前缀计数和堆处理重叠次数与在线调度。",
-      "objectives": [
-        "掌握日历冲突检测和最大并发数维护",
-        "理解扫描线事件排序、差分恢复和活动区间维护"
-      ],
-      "recommendedTags": [
-        "Line Sweep",
-        "Prefix Sum",
-        "Ordered Set",
-        "Heap"
-      ],
-      "acceptanceCriteria": [
-        "能独立实现单次、双重和多重日历重叠",
-        "能用事件点或堆解决并发区间统计问题"
-      ],
-      "reviewAdvice": "把开始和结束事件的同点排序规则单独列出，并用时间轴检查并发计数变化。"
+      "focus": "用有序集合、差分事件、前缀计数和堆处理重叠次数与在线调度。"
     }
   ]
 }

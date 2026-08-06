@@ -114,7 +114,6 @@ public final class LearningPlanResponseMapper {
         snapshot.weeklyHours(),
         snapshot.programmingLanguage(),
         snapshot.difficultyDistribution(),
-        snapshot.interviewOriented(),
         snapshot.topicPreferences(),
         snapshot.additionalConstraints(),
         plan.status(),
@@ -124,10 +123,6 @@ public final class LearningPlanResponseMapper {
                 phase.title(),
                 phase.durationWeeks(),
                 phase.focus(),
-                phase.objectives(),
-                phase.recommendedTags(),
-                phase.acceptanceCriteria(),
-                phase.reviewAdvice(),
                 phase.problems().stream()
                     .map(problem -> new LearningPlanDetailProblemResponse(
                         problem.slug(),
@@ -183,7 +178,6 @@ public final class LearningPlanResponseMapper {
         plan.weeklyHours(),
         plan.programmingLanguage(),
         plan.difficultyDistribution(),
-        plan.interviewOriented(),
         plan.topicPreferences(),
         plan.additionalConstraints(),
         plan.phases(),

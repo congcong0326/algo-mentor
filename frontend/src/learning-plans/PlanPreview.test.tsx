@@ -44,6 +44,19 @@ describe('PlanPreview', () => {
     expect(screen.getByText('模板题目暂未匹配，先按 slug 记录。')).toBeInTheDocument();
   });
 
+  it('does not read the next package from metadata', () => {
+    render(<PlanPreview plan={{
+      ...draftPlan,
+      nextTrainingPackage: undefined,
+      metadata: {
+        ...draftPlan.metadata,
+        nextTrainingPackage: draftPlan.nextTrainingPackage,
+      },
+    }} />);
+
+    expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
+  });
+
   it('renders phase details without the package overview when used alone', () => {
     render(<PlanPhaseDetails plan={draftPlan} />);
 
@@ -89,7 +102,6 @@ const draftPlan: LearningPlanDraftPlan = {
   weeklyHours: 5,
   programmingLanguage: 'Java',
   difficultyDistribution: { easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
-  interviewOriented: false,
   topicPreferences: ['Array'],
   additionalConstraints: '每周留一天复盘。',
   metadata: {
@@ -106,33 +118,28 @@ const draftPlan: LearningPlanDraftPlan = {
       reviewBufferIncluded: true,
       suggestions: ['当前节奏有复盘缓冲，可以稳定推进。'],
     },
-    weeklyBuckets: [{
-      weekIndex: 1,
-      title: '基础阶段',
-      plannedProblemCount: 1,
-      plannedLoadPoints: 2.5,
-      problemSlugs: ['two-sum'],
-      reviewAdvice: '复盘边界条件',
-    }],
-    nextTrainingPackage: {
-      weekIndex: 1,
-      newProblemCount: 1,
-      reviewTask: '复盘边界条件',
-      estimatedMinutes: 60,
-      priorityProblemSlugs: ['two-sum'],
-    },
     dailyProblemCount: 1,
     trainingDaysPerWeek: 5,
+  },
+  weeklyBuckets: [{
+    weekIndex: 1,
+    title: '基础阶段',
+    plannedProblemCount: 1,
+    plannedLoadPoints: 2.5,
+    problemSlugs: ['two-sum'],
+  }],
+  nextTrainingPackage: {
+    weekIndex: 1,
+    newProblemCount: 1,
+    reviewTask: '复盘边界条件',
+    estimatedMinutes: 60,
+    priorityProblemSlugs: ['two-sum'],
   },
   phases: [{
     phaseIndex: 1,
     title: '基础阶段',
     durationWeeks: 1,
     focus: '数组基础',
-    objectives: ['理解哈希表'],
-    recommendedTags: ['Array'],
-    acceptanceCriteria: ['完成 Two Sum'],
-    reviewAdvice: '复盘边界条件',
     problems: [{
       slug: 'two-sum',
       frontendId: 1,
@@ -196,15 +203,12 @@ const detailPlan: LearningPlanDetailResponse = {
 
 const weeklyEdgePlan: LearningPlanDraftPlan = {
   ...draftPlan,
-  metadata: {
-    ...draftPlan.metadata,
-    nextTrainingPackage: {
-      weekIndex: 2,
-      newProblemCount: 1,
-      reviewTask: '确认模板题目是否已入库',
-      estimatedMinutes: 45,
-      priorityProblemSlugs: ['unknown-slug'],
-    },
+  nextTrainingPackage: {
+    weekIndex: 2,
+    newProblemCount: 1,
+    reviewTask: '确认模板题目是否已入库',
+    estimatedMinutes: 45,
+    priorityProblemSlugs: ['unknown-slug'],
   },
 };
 
@@ -219,9 +223,6 @@ const englishDetailPlan: LearningPlanDetailResponse = {
     ...detailPlan.phases[0],
     title: 'Foundation Phase',
     focus: 'Array fundamentals',
-    objectives: ['Understand hash-table lookup'],
-    acceptanceCriteria: ['Complete Two Sum'],
-    reviewAdvice: 'Review boundary cases.',
     problems: [{
       ...detailPlan.phases[0].problems[0],
       reason: 'Build a reliable lookup pattern.',

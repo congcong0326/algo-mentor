@@ -18,7 +18,7 @@ class LearningPlanGeneratedContentJsonSchemaTest {
 
     assertThat(schema.path("additionalProperties").asBoolean()).isFalse();
     assertThat(rootFields)
-        .containsExactlyInAnyOrder("title", "summary", "phases", "metadata");
+        .containsExactlyInAnyOrder("title", "summary", "phases");
     assertThat(properties.has("intent")).isFalse();
     assertThat(properties.has("objective")).isFalse();
     assertThat(properties.has("durationWeeks")).isFalse();
@@ -26,14 +26,22 @@ class LearningPlanGeneratedContentJsonSchemaTest {
     assertThat(properties.has("weeklyHours")).isFalse();
     assertThat(properties.has("programmingLanguage")).isFalse();
     assertThat(properties.has("difficultyDistribution")).isFalse();
-    assertThat(properties.has("interviewOriented")).isFalse();
     assertThat(properties.has("topicPreferences")).isFalse();
     assertThat(properties.has("additionalConstraints")).isFalse();
+    assertThat(properties.has("metadata")).isFalse();
+  }
 
-    JsonNode metadata = properties.path("metadata");
-    assertThat(metadata.path("additionalProperties").asBoolean()).isFalse();
-    List<String> required = new ArrayList<>();
-    metadata.path("required").forEach(node -> required.add(node.asText()));
-    assertThat(required).containsExactly("problemRecommendationIncomplete");
+  @Test
+  void phaseSchemaOnlyAcceptsFieldsNeededToExecuteThePlan() {
+    JsonNode phaseProperties = LearningPlanGeneratedContentJsonSchema.schema()
+        .path("properties")
+        .path("phases")
+        .path("items")
+        .path("properties");
+    List<String> phaseFields = new ArrayList<>();
+    phaseProperties.fieldNames().forEachRemaining(phaseFields::add);
+
+    assertThat(phaseFields)
+        .containsExactlyInAnyOrder("phaseIndex", "title", "durationWeeks", "focus", "problems");
   }
 }

@@ -457,7 +457,6 @@ class LearningPlanDraftRevisionStreamServiceTest {
         6,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         "当前水平：中级，每周 6 小时，语言：Java",
         true,
@@ -475,14 +474,13 @@ class LearningPlanDraftRevisionStreamServiceTest {
         6,
         "Java",
         new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
-        true,
         List.of("Array"),
         "当前水平：中级，每周 6 小时，语言：Java",
         List.of(
             phase(1, 2, "数组与哈希表基础"),
             phase(2, 1, "二分与双指针"),
             phase(3, 1, "动态规划入门")),
-        Map.of("problemRecommendationIncomplete", false));
+        Map.of());
   }
 
   private LearningPlanPhaseDraft phase(int phaseIndex, int weeks, String title) {
@@ -491,10 +489,6 @@ class LearningPlanDraftRevisionStreamServiceTest {
         title,
         weeks,
         "Array",
-        List.of("掌握基础题型"),
-        List.of("Array"),
-        List.of("能独立复盘错题"),
-        "记录边界条件。",
         List.of(new LearningPlanProblemDraft(
             "two-sum",
             1,
@@ -521,7 +515,6 @@ class LearningPlanDraftRevisionStreamServiceTest {
               "mediumPercent": 55,
               "hardPercent": 10
             },
-            "interviewOriented": true,
             "topicPreferences": ["Array"],
             "additionalConstraints": "当前水平：中级，每周 6 小时，语言：Java",
             "personalizationEnabled": true,
@@ -536,10 +529,6 @@ class LearningPlanDraftRevisionStreamServiceTest {
               "title": "数组与哈希表基础",
               "durationWeeks": 2,
               "focus": "Array",
-              "objectives": ["掌握数组基础题型"],
-              "recommendedTags": ["Array"],
-              "acceptanceCriteria": ["能独立复盘错题"],
-              "reviewAdvice": "记录边界条件。",
               "problems": [
                 {
                   "slug": "two-sum",
@@ -558,10 +547,6 @@ class LearningPlanDraftRevisionStreamServiceTest {
               "title": "二分与双指针",
               "durationWeeks": 1,
               "focus": "Binary Search",
-              "objectives": ["掌握二分"],
-              "recommendedTags": ["Binary Search"],
-              "acceptanceCriteria": ["能说明循环不变量"],
-              "reviewAdvice": "总结模板。",
               "problems": []
             },
             {
@@ -569,15 +554,10 @@ class LearningPlanDraftRevisionStreamServiceTest {
               "title": "动态规划入门",
               "durationWeeks": 1,
               "focus": "Dynamic Programming",
-              "objectives": ["识别状态转移"],
-              "recommendedTags": ["Dynamic Programming"],
-              "acceptanceCriteria": ["能写出状态定义"],
-              "reviewAdvice": "复盘状态设计。",
               "problems": []
             }
             ],
             "metadata": {
-              "problemRecommendationIncomplete": false
             }
           }
         }

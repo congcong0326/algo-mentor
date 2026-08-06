@@ -184,7 +184,6 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
         8,
         "Java",
         new LearningPlanDifficultyDistribution(easy, medium, hard),
-        true,
         List.of("array", "graph"),
         "每周保留一次复盘。",
         true,
@@ -209,7 +208,6 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
         8,
         "Java",
         new LearningPlanDifficultyDistribution(easy, medium, hard),
-        true,
         List.of("array", "graph"),
         "每周保留一次复盘。",
         List.of(phase(1, "基础训练")),
@@ -231,10 +229,6 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
         "阶段 " + phaseIndex,
         1,
         focus,
-        List.of("完成训练"),
-        List.of("array"),
-        List.of("能独立完成"),
-        "复盘边界条件。",
         List.of());
   }
 
@@ -248,7 +242,6 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
         "weeklyHours",
         "programmingLanguage",
         "difficultyDistribution",
-        "interviewOriented",
         "topicPreferences",
         "additionalConstraints",
         "personalizationEnabled",
@@ -267,7 +260,6 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
         "weeklyHours",
         "programmingLanguage",
         "difficultyDistribution",
-        "interviewOriented",
         "topicPreferences",
         "additionalConstraints",
         "phases",

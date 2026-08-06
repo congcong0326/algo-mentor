@@ -1357,7 +1357,6 @@ export interface LocaleResources {
     weeklyPlan: string;
     weeklyPlanTitle: (week: number, title: string) => string;
     weeklyBucketStats: (problems: number, load: number) => string;
-    weeklyReviewAdvice: (advice: string) => string;
     weeklyReviewBuffer: string;
     weeklyMissingProblem: string;
     phaseDetails: string;
@@ -2831,7 +2830,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       weeklyPlan: '按周执行计划',
       weeklyPlanTitle: (week, title) => `第 ${week} 周：${title}`,
       weeklyBucketStats: (problems) => `${problems} 题`,
-      weeklyReviewAdvice: (advice) => `复盘建议：${advice}`,
       weeklyReviewBuffer: '这周保留为复盘/缓冲，不安排新题。',
       weeklyMissingProblem: '模板题目暂未匹配，先按 slug 记录。',
       phaseDetails: '阶段详情',
@@ -4392,7 +4390,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       weeklyPlan: 'Weekly Execution Plan',
       weeklyPlanTitle: (week, title) => `Week ${week}: ${title}`,
       weeklyBucketStats: (problems) => `${problems} problems`,
-      weeklyReviewAdvice: (advice) => `Review advice: ${advice}`,
       weeklyReviewBuffer: 'Keep this week for review and buffer work, with no new problems scheduled.',
       weeklyMissingProblem: 'This template problem is not matched yet, so the slug is shown.',
       phaseDetails: 'Phase Details',

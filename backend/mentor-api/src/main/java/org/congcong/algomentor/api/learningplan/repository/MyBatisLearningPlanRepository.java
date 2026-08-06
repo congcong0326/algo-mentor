@@ -190,7 +190,6 @@ public class MyBatisLearningPlanRepository
         current.plan().weeklyHours(),
         current.plan().programmingLanguage(),
         current.plan().difficultyDistribution(),
-        current.plan().interviewOriented(),
         current.plan().topicPreferences(),
         current.plan().additionalConstraints(),
         phases,
@@ -224,10 +223,6 @@ public class MyBatisLearningPlanRepository
           phase.title(),
           phase.durationWeeks(),
           phase.focus(),
-          phase.objectives(),
-          phase.recommendedTags(),
-          phase.acceptanceCriteria(),
-          phase.reviewAdvice(),
           phase.problems()));
     }
     return reindexed;

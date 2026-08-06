@@ -18,8 +18,7 @@ public final class LearningPlanGeneratedContentJsonSchema {
     properties.set("title", string());
     properties.set("summary", string());
     properties.set("phases", phases());
-    properties.set("metadata", metadata());
-    require(root, "title", "summary", "phases", "metadata");
+    require(root, "title", "summary", "phases");
     return root;
   }
 
@@ -40,13 +39,8 @@ public final class LearningPlanGeneratedContentJsonSchema {
     properties.set("title", string());
     properties.set("durationWeeks", integer(1, 52));
     properties.set("focus", string());
-    properties.set("objectives", stringArray());
-    properties.set("recommendedTags", stringArray());
-    properties.set("acceptanceCriteria", stringArray());
-    properties.set("reviewAdvice", string());
     properties.set("problems", problems());
-    require(root, "phaseIndex", "title", "durationWeeks", "focus", "objectives", "recommendedTags",
-        "acceptanceCriteria", "reviewAdvice", "problems");
+    require(root, "phaseIndex", "title", "durationWeeks", "focus", "problems");
     return root;
   }
 
@@ -74,15 +68,6 @@ public final class LearningPlanGeneratedContentJsonSchema {
     return root;
   }
 
-  private static JsonNode metadata() {
-    ObjectNode schema = object();
-    schema.put("additionalProperties", false);
-    ObjectNode properties = schema.putObject("properties");
-    properties.set("problemRecommendationIncomplete", bool());
-    require(schema, "problemRecommendationIncomplete");
-    return schema;
-  }
-
   private static ObjectNode object() {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "object");
@@ -100,12 +85,6 @@ public final class LearningPlanGeneratedContentJsonSchema {
     ArrayNode type = node.putArray("type");
     type.add("string");
     type.add("null");
-    return node;
-  }
-
-  private static ObjectNode bool() {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.put("type", "boolean");
     return node;
   }
 

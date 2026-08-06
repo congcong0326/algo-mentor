@@ -10,7 +10,6 @@
   "defaultWeeklyHours": 6,
   "programmingLanguage": "Java",
   "difficultyPreference": "MEDIUM",
-  "interviewOriented": true,
   "topicPreferences": [
     "Prefix Sum",
     "Hash Table",
@@ -49,41 +48,13 @@
       "phaseIndex": 1,
       "title": "一维前缀和与哈希计数",
       "durationWeeks": 1,
-      "focus": "从区间查询过渡到前缀状态差值，并用哈希表统计满足条件的子数组。",
-      "objectives": [
-        "掌握前缀数组的下标约定和区间公式",
-        "能把目标子数组转换为两个前缀状态之间的关系"
-      ],
-      "recommendedTags": [
-        "Prefix Sum",
-        "Hash Table",
-        "Array"
-      ],
-      "acceptanceCriteria": [
-        "能独立完成区间和与前缀和加哈希题",
-        "能说明先查询还是先更新哈希计数的原因"
-      ],
-      "reviewAdvice": "统一使用长度为 n+1 的前缀数组思考边界，并记录哈希表中键和值的语义。"
+      "focus": "从区间查询过渡到前缀状态差值，并用哈希表统计满足条件的子数组。"
     },
     {
       "phaseIndex": 2,
       "title": "二维前缀和与差分更新",
       "durationWeeks": 1,
-      "focus": "训练矩阵区域统计、一维差分事件和批量区间增减。",
-      "objectives": [
-        "掌握二维前缀和的容斥公式",
-        "能使用差分数组表达区间增量和扫描事件"
-      ],
-      "recommendedTags": [
-        "Prefix Sum",
-        "Matrix",
-        "Difference Array"
-      ],
-      "acceptanceCriteria": [
-        "能独立完成二维区域和与目标矩阵计数",
-        "能正确处理差分的起点、终点后一位和还原过程"
-      ],
-      "reviewAdvice": "对二维题画出四块容斥区域；对差分题逐项还原一次，检查终点后一位是否越界。"
+      "focus": "训练矩阵区域统计、一维差分事件和批量区间增减。"
     }
   ]
 }

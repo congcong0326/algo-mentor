@@ -7,31 +7,13 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "Can independently achieve insertion, complete matching and prefix matching",
-        "Can select group subnodes or hash subnodes by character set and data size"
-      ],
       "focus": "Gradually expand from the base Trie API to match search, prefix aggregation, board search and flow matching.",
-      "objectives": [
-        "Master Trie Node, Terminator and Character Map Design",
-        "Understand Trie's combination with DFS, sorting, Hash and data stream"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Repeats the number of nodes, termination conditions and search branches for each item, focusing on empty strings and repetition of words.",
       "title": "Trie Build, Search and Prefix Application"
     },
     {
-      "acceptanceCriteria": [
-        "Can explain how string matching algorithms avoid double comparisons",
-        "Can independently write a reply or edit a distance class shift"
-      ],
       "focus": "Train KMP/Scroll Hash thinking, and develop dynamic programming with a message and edit distance string.",
-      "objectives": [
-        "Reuse status after understanding prefix functions, rolling Hash and matching failed",
-        "Get the status definition of the return extension, cut and edit distance"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Writes the status meaning of the matching algorithm and the subscript definition of the DP before the code, and then pushes it manually with a short string.",
       "title": "String Match, Reply and Edit Status"
     }
   ],

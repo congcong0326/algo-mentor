@@ -7,59 +7,23 @@
   ],
   "phases": [
     {
-      "acceptanceCriteria": [
-        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
-        "Revert border conditions and status definition in a mischaracter"
-      ],
       "focus": "Completed complete Blind 75 training in arrays, Hash, two pointers, sliding windows, bars and chains.",
-      "objectives": [
-        "Completion of the core training cycle at this stage",
-        "Record at least 1 resolvable solver template for each category"
-      ],
       "phaseIndex": 1,
-      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
       "title": "Numeric, Hash and linear structures"
     },
     {
-      "acceptanceCriteria": [
-        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
-        "Revert border conditions and status definition in a mischaracter"
-      ],
       "focus": "Complete Blind 75 training in 2nd, 6th, and Trie.",
-      "objectives": [
-        "Completion of the core training cycle at this stage",
-        "Record at least 1 resolvable solver template for each category"
-      ],
       "phaseIndex": 2,
-      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
       "title": "2nd Part, Intersection and Tree"
     },
     {
-      "acceptanceCriteria": [
-        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
-        "Revert border conditions and status definition in a mischaracter"
-      ],
       "focus": "Complete Blind 75 training related to mapping, backtracking and stacking.",
-      "objectives": [
-        "Completion of the core training cycle at this stage",
-        "Record at least 1 resolvable solver template for each category"
-      ],
       "phaseIndex": 3,
-      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
       "title": "Figure, backtracking and stacking"
     },
     {
-      "acceptanceCriteria": [
-        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
-        "Revert border conditions and status definition in a mischaracter"
-      ],
       "focus": "Complete Blind 75 training in dynamic programming, greed, biting and mathematical geometry.",
-      "objectives": [
-        "Completion of the core training cycle at this stage",
-        "Record at least 1 resolvable solver template for each category"
-      ],
       "phaseIndex": 4,
-      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
       "title": "Dynamic programming, greed and consolidation"
     }
   ],
