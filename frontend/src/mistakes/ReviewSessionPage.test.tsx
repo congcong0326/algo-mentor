@@ -58,8 +58,28 @@ describe('ReviewSessionPage', () => {
     expect(screen.getByRole('button', { name: /^简单，/ })).toBeEnabled();
 
     const noteDisclosure = await screen.findByRole('button', { name: /我的题目笔记/ });
+    const coachSummaryDisclosure = screen.getByRole('button', { name: /教练总结/ });
     expect(noteDisclosure).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByText('这段私有笔记不能出现在折叠标题中。')).not.toBeInTheDocument();
+    expect(coachSummaryDisclosure).toHaveAttribute('aria-expanded', 'false');
+    expect(noteDisclosure.closest('section')?.parentElement).toBe(
+      coachSummaryDisclosure.closest('section')?.parentElement,
+    );
+    expect(noteDisclosure.closest('section')).not.toContainElement(coachSummaryDisclosure.closest('section'));
+    expect(screen.queryByText('这段教练总结只能只读展示。')).not.toBeInTheDocument();
+  });
+
+  it('tracks structured notes and coach summary content independently', async () => {
+    vi.mocked(getProblemNote).mockResolvedValue(apiResponse(problemNote({
+      outline: emptyProblemSolutionOutline(),
+      noteMarkdown: '只有教练总结内容。',
+    })));
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    const noteDisclosure = await screen.findByRole('button', { name: /我的题目笔记/ });
+    await waitFor(() => expect(noteDisclosure).toHaveTextContent('暂无笔记'));
+    expect(noteDisclosure).not.toHaveTextContent('更新于');
+    const coachSummaryDisclosure = screen.getByRole('button', { name: /教练总结/ });
+    expect(coachSummaryDisclosure).toHaveTextContent('已有总结');
   });
 
   it('shows the localized English problem title returned by the context API', async () => {
@@ -86,18 +106,14 @@ describe('ReviewSessionPage', () => {
 
     const noteDisclosure = await screen.findByRole('button', { name: /我的题目笔记/ });
     fireEvent.click(noteDisclosure);
-    const freeNoteDisclosure = await screen.findByRole('button', { name: /自由笔记/ });
-    expect(freeNoteDisclosure).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByLabelText('自由笔记内容')).not.toBeInTheDocument();
-    fireEvent.click(freeNoteDisclosure);
-    const noteField = await screen.findByLabelText('自由笔记内容');
-    fireEvent.change(noteField, { target: { value: '尚未保存的新内容' } });
+    const noteField = await screen.findByLabelText('核心思路');
+    fireEvent.change(noteField, { target: { value: '尚未保存的新思路' } });
     await waitFor(() => expect(noteDisclosure).toHaveTextContent('有未保存修改'));
 
     fireEvent.click(noteDisclosure);
-    expect(screen.queryByLabelText('自由笔记内容')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('核心思路')).not.toBeInTheDocument();
     fireEvent.click(noteDisclosure);
-    expect(screen.getByLabelText('自由笔记内容')).toHaveValue('尚未保存的新内容');
+    expect(screen.getByLabelText('核心思路')).toHaveValue('尚未保存的新思路');
 
     fireEvent.click(screen.getByRole('button', { name: '返回复习中心' }));
     expect(confirmSpy).toHaveBeenCalledTimes(1);
@@ -106,6 +122,26 @@ describe('ReviewSessionPage', () => {
     confirmSpy.mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: '返回复习中心' }));
     expect(onNavigate).toHaveBeenCalledWith('/mistakes');
+  });
+
+  it('renders the coach summary as read-only Markdown and explains how to generate it', async () => {
+    vi.mocked(getProblemNote).mockResolvedValue(apiResponse(problemNote({
+      noteMarkdown: '# 解题要点\n\n- 用哈希表记录已访问元素\n- 命中时返回下标',
+    })));
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    const coachSummaryDisclosure = await screen.findByRole('button', { name: /教练总结/ });
+    await waitFor(() => expect(coachSummaryDisclosure).toHaveTextContent('已有总结'));
+    const hint = '可在题目训练过程中请教练总结内容，经你确认后生成到这里。';
+    const hintIcon = screen.getByRole('img', { name: hint });
+    expect(hintIcon).toHaveAttribute('aria-describedby', 'problem-note-coach-summary-tooltip-two-sum');
+    expect(screen.getByRole('tooltip')).toHaveTextContent(hint);
+
+    fireEvent.click(coachSummaryDisclosure);
+    expect(screen.getByRole('heading', { name: '解题要点' })).toBeInTheDocument();
+    expect(screen.getByText('用哈希表记录已访问元素')).toBeInTheDocument();
+    expect(screen.queryByLabelText('核心思路')).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: /教练总结/ })).not.toBeInTheDocument();
   });
 
   it('shows a revision conflict and preserves the local draft', async () => {
@@ -117,13 +153,12 @@ describe('ReviewSessionPage', () => {
     render(<ReviewSessionPage onNavigate={vi.fn()} />);
 
     fireEvent.click(await screen.findByRole('button', { name: /我的题目笔记/ }));
-    fireEvent.click(await screen.findByRole('button', { name: /自由笔记/ }));
-    const noteField = await screen.findByLabelText('自由笔记内容');
+    const noteField = await screen.findByLabelText('核心思路');
     fireEvent.change(noteField, { target: { value: '本地冲突草稿' } });
     fireEvent.click(screen.getByRole('button', { name: '保存笔记' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('笔记已在其他页面更新，请重新加载后再编辑。');
-    expect(screen.getByLabelText('自由笔记内容')).toHaveValue('本地冲突草稿');
+    expect(screen.getByLabelText('核心思路')).toHaveValue('本地冲突草稿');
     expect(screen.getByRole('button', { name: '重新加载' })).toBeInTheDocument();
   });
 
@@ -133,6 +168,12 @@ describe('ReviewSessionPage', () => {
     fireEvent.click(await screen.findByRole('button', { name: /我的题目笔记/ }));
     expect(await screen.findByLabelText('数据结构说明')).toBeInTheDocument();
     expect(screen.queryByLabelText('算法说明')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('边界与易错点')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '保存笔记' }).compareDocumentPosition(
+        screen.getByRole('button', { name: /教练总结/ }),
+      ) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
 
     fireEvent.click(screen.getByRole('checkbox', { name: '双指针' }));
     fireEvent.change(screen.getByLabelText('算法说明'), {
@@ -150,9 +191,20 @@ describe('ReviewSessionPage', () => {
           algorithms: ['TWO_POINTERS'],
           algorithmNotes: '左右指针向中间收缩。',
           dataStructureNotes: '哈希表保存已经访问的元素。',
+          edgeCases: '不能重复使用同一元素。',
         }),
+        noteMarkdown: '这段教练总结只能只读展示。',
       }),
     ));
+  });
+
+  it('does not submit a rating when a shortcut is typed into a note field', async () => {
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /我的题目笔记/ }));
+    fireEvent.keyDown(screen.getByLabelText('核心思路'), { key: '1' });
+
+    expect(submitReviewAttempt).not.toHaveBeenCalled();
   });
 
   it('submits one UUID-backed rating while a request is in flight', async () => {
@@ -222,8 +274,9 @@ function problemNote(overrides: Partial<UserProblemNote> = {}): UserProblemNote 
       ...emptyProblemSolutionOutline(),
       coreIdea: '使用哈希表保存已访问元素。',
       dataStructures: ['HASH_MAP'],
+      edgeCases: '不能重复使用同一元素。',
     },
-    noteMarkdown: '这段私有笔记不能出现在折叠标题中。',
+    noteMarkdown: '这段教练总结只能只读展示。',
     revision: 1,
     exists: true,
     hasContent: true,

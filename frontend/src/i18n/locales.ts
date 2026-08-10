@@ -1123,10 +1123,11 @@ export interface LocaleResources {
     updatedAt: (value: string) => string;
     loadingDetail: string;
     retry: string;
-    freeNote: string;
-    hasContent: string;
-    notFilled: string;
-    freeNoteContent: string;
+    coachSummary: string;
+    coachSummaryPresent: string;
+    coachSummaryNotGenerated: string;
+    coachSummaryEmpty: string;
+    coachSummaryHint: string;
     conflict: string;
     reload: string;
     saving: string;
@@ -2562,10 +2563,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       updatedAt: (value) => ` · 更新于 ${value}`,
       loadingDetail: '正在加载题目笔记...',
       retry: '重试',
-      freeNote: '自由笔记',
-      hasContent: '已有内容',
-      notFilled: '未填写',
-      freeNoteContent: '自由笔记内容',
+      coachSummary: '教练总结',
+      coachSummaryPresent: '已有总结',
+      coachSummaryNotGenerated: '尚未生成',
+      coachSummaryEmpty: '暂无教练总结。',
+      coachSummaryHint: '可在题目训练过程中请教练总结内容，经你确认后生成到这里。',
       conflict: '笔记已在其他页面更新，请重新加载后再编辑。',
       reload: '重新加载',
       saving: '保存中',
@@ -4114,10 +4116,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       updatedAt: (value) => ` · Updated ${value}`,
       loadingDetail: 'Loading problem notes...',
       retry: 'Retry',
-      freeNote: 'Free-form Note',
-      hasContent: 'Has content',
-      notFilled: 'Not filled in',
-      freeNoteContent: 'Free-form note content',
+      coachSummary: 'Coach Summary',
+      coachSummaryPresent: 'Summary available',
+      coachSummaryNotGenerated: 'Not generated yet',
+      coachSummaryEmpty: 'No coach summary yet.',
+      coachSummaryHint: 'During problem training, ask your coach to summarize the session and, after your confirmation, generate the content here.',
       conflict: 'This note was updated elsewhere. Reload it before editing again.',
       reload: 'Reload',
       saving: 'Saving',

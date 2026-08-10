@@ -123,16 +123,6 @@ export default function ProblemSolutionOutlineForm({
         onChange={(spaceComplexity) => update({ spaceComplexity })}
         value={value.spaceComplexity}
       />
-
-      <label className="problem-note-field problem-note-field-wide">
-        <span>{resources.problemNotes.edgeCases}</span>
-        <textarea
-          disabled={disabled}
-          onChange={(event) => update({ edgeCases: event.target.value })}
-          rows={4}
-          value={value.edgeCases}
-        />
-      </label>
     </div>
   );
 }

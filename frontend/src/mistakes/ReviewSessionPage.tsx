@@ -78,7 +78,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       const rating = ratingKeys[event.key];
-      if (!rating || !context || attempt || submittingRating) {
+      if (!rating || isTextEditingTarget(event.target) || !context || attempt || submittingRating) {
         return;
       }
       event.preventDefault();
@@ -285,6 +285,11 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
       )}
     </section>
   );
+}
+
+function isTextEditingTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement
+    && (target.isContentEditable || target.matches('input, textarea, select'));
 }
 
 function RatingButton({

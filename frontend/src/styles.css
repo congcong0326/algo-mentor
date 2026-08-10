@@ -1542,6 +1542,7 @@ a {
   gap: 0;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   padding: 24px;
 }
 
@@ -1550,7 +1551,12 @@ a {
   padding-bottom: 24px;
 }
 
+.problem-note-sections {
+  min-width: 0;
+}
+
 .problem-note-editor,
+.problem-note-coach-summary,
 .review-attempt-history {
   border-top: 1px solid var(--border-subtle);
 }
@@ -1702,47 +1708,80 @@ a {
   justify-content: flex-end;
 }
 
-.problem-note-free-note {
+.problem-note-coach-summary {
   display: grid;
-  gap: 12px;
-  border-top: 1px solid var(--border-subtle);
 }
 
-.problem-note-secondary-disclosure {
+.problem-note-coach-summary-header {
   display: flex;
-  width: 100%;
-  min-height: 52px;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
-  border: 0;
-  background: transparent;
-  color: var(--text-primary);
-  text-align: left;
+  gap: 4px;
 }
 
-.problem-note-secondary-disclosure > span {
-  display: grid;
+.problem-note-coach-summary-header .problem-note-disclosure {
+  width: auto;
   min-width: 0;
-  gap: 3px;
+  flex: 1 1 auto;
 }
 
-.problem-note-secondary-disclosure small {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.problem-note-secondary-disclosure svg {
-  width: 17px;
-  height: 17px;
-  flex: 0 0 auto;
-  transition: transform 160ms ease;
-}
-
-.problem-note-free-note.is-open .problem-note-secondary-disclosure svg {
+.problem-note-coach-summary.is-open .problem-note-disclosure > svg {
   transform: rotate(180deg);
+}
+
+.problem-note-coach-summary-body {
+  display: grid;
+  gap: 12px;
+  padding: 4px 0 20px;
+}
+
+.problem-note-coach-summary-info {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: help;
+}
+
+.problem-note-coach-summary-info:hover,
+.problem-note-coach-summary-info:focus-visible {
+  background: var(--surface-muted);
+  color: var(--accent-warm);
+  outline: 0;
+}
+
+.problem-note-coach-summary-info:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.problem-note-coach-summary-info svg {
+  width: 16px;
+  height: 16px;
+}
+
+.problem-note-coach-summary-content.review-problem-content {
+  min-width: 0;
+  padding: 0 0 4px;
+}
+
+.problem-note-coach-summary-content.review-problem-content .markdown-view h1 {
+  font-size: 18px;
+}
+
+.problem-note-coach-summary-content.review-problem-content .markdown-view h2 {
+  font-size: 16px;
+}
+
+.problem-note-coach-summary-content.review-problem-content .markdown-view h3 {
+  font-size: 14px;
+}
+
+.problem-note-coach-summary-empty {
+  margin: 0 0 4px;
+  color: var(--text-muted);
+  font-size: 13px;
 }
 
 .problem-note-save-error {
