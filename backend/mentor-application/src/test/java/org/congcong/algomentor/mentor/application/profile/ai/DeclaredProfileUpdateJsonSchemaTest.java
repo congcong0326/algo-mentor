@@ -17,5 +17,8 @@ class DeclaredProfileUpdateJsonSchemaTest {
         .containsExactly(DeclaredProfileUpdateJsonSchema.OPERATIONS);
     assertThat(schema.path("properties").path(DeclaredProfileUpdateJsonSchema.OPERATIONS).path("type").asText())
         .isEqualTo("array");
+    assertThat(schema.path("properties").path(DeclaredProfileUpdateJsonSchema.OPERATIONS)
+        .path("items").path("anyOf")).hasSize(3);
+    assertThat(schema.findValues("oneOf")).isEmpty();
   }
 }

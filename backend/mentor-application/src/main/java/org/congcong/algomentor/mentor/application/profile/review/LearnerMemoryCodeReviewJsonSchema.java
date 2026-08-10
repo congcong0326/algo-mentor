@@ -42,7 +42,7 @@ public final class LearnerMemoryCodeReviewJsonSchema {
     ObjectNode array = object();
     array.put("type", "array");
     array.put("maxItems", LearnerMemoryOperationBatch.MAX_OPERATIONS);
-    ArrayNode variants = array.putObject("items").putArray("oneOf");
+    ArrayNode variants = array.putObject("items").putArray("anyOf");
     variants.add(add());
     variants.add(confirm());
     variants.add(revise());
@@ -110,7 +110,7 @@ public final class LearnerMemoryCodeReviewJsonSchema {
 
   private static ObjectNode scope() {
     ObjectNode value = object();
-    ArrayNode variants = value.putArray("oneOf");
+    ArrayNode variants = value.putArray("anyOf");
     variants.add(generalScope());
     variants.add(tagScope());
     return value;

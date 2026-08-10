@@ -17,8 +17,11 @@ class LearnerMemoryCodeReviewJsonSchemaTest {
     assertThat(schema.path("required")).extracting(JsonNode::asText)
         .containsExactlyElementsOf(List.of(LearnerMemoryCodeReviewJsonSchema.OPERATIONS));
     JsonNode variants = schema.path("properties").path(LearnerMemoryCodeReviewJsonSchema.OPERATIONS)
-        .path("items").path("oneOf");
+        .path("items").path("anyOf");
     assertThat(variants).hasSize(4);
+    assertThat(variants.get(0).path("properties").path(LearnerMemoryCodeReviewJsonSchema.SCOPE)
+        .path("anyOf")).hasSize(2);
+    assertThat(schema.findValues("oneOf")).isEmpty();
     assertThat(schema.path("properties").path(LearnerMemoryCodeReviewJsonSchema.OPERATIONS).path("maxItems").asInt())
         .isEqualTo(12);
   }

@@ -31,7 +31,7 @@ public final class DeclaredProfileUpdateJsonSchema {
     ObjectNode array = object();
     array.put("type", "array");
     array.put("maxItems", 10);
-    ArrayNode variants = array.putObject("items").putArray("oneOf");
+    ArrayNode variants = array.putObject("items").putArray("anyOf");
     variants.add(add());
     variants.add(revise());
     variants.add(retire());
