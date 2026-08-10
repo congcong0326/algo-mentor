@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.congcong.algomentor.api.review.mapper.UserProblemNoteMapper;
 import org.congcong.algomentor.api.review.mapper.model.UserProblemNoteRow;
 import org.congcong.algomentor.api.review.mapper.model.UserProblemNoteSummaryRow;
-import org.congcong.algomentor.mentor.application.review.ReviewContractConstants;
 import org.congcong.algomentor.mentor.application.review.note.ProblemSolutionOutlineV1;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNote;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
@@ -53,7 +52,6 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
       long userId,
       String problemSlug,
       ProblemSolutionOutlineV1 outline,
-      String noteMarkdown,
       long expectedRevision,
       Instant now
   ) {
@@ -61,27 +59,33 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
         userId,
         problemSlug,
         objectMapper.valueToTree(outline),
-        noteMarkdown,
         expectedRevision,
         now)).map(this::toNote);
   }
 
   @Override
-  public Optional<UserProblemNote> append(
+  public Optional<UserProblemNote> replaceCoachSummary(
       long userId,
       String problemSlug,
       ProblemSolutionOutlineV1 initialOutline,
-      String contentMarkdown,
+      String summaryMarkdown,
+      long expectedCoachSummaryRevision,
       Instant now
   ) {
-    return Optional.ofNullable(mapper.append(
-        userId,
-        problemSlug,
-        objectMapper.valueToTree(initialOutline),
-        contentMarkdown,
-        ReviewContractConstants.NOTE_MARKDOWN_APPEND_SEPARATOR,
-        ReviewContractConstants.NOTE_MARKDOWN_MAX_CHARS,
-        now)).map(this::toNote);
+    UserProblemNoteRow row = expectedCoachSummaryRevision == 0
+        ? mapper.replaceCoachSummaryAtZero(
+            userId,
+            problemSlug,
+            objectMapper.valueToTree(initialOutline),
+            summaryMarkdown,
+            now)
+        : mapper.replaceCoachSummary(
+            userId,
+            problemSlug,
+            summaryMarkdown,
+            expectedCoachSummaryRevision,
+            now);
+    return Optional.ofNullable(row).map(this::toNote);
   }
 
   @Override
@@ -97,7 +101,9 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
         objectMapper.convertValue(row.outlineJson(), ProblemSolutionOutlineV1.class),
         row.noteMarkdown(),
         row.revision(),
+        row.coachSummaryRevision(),
         row.createdAt(),
+        row.coachSummaryUpdatedAt(),
         row.updatedAt());
   }
 
@@ -109,7 +115,9 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
         objectMapper.convertValue(row.outlineJson(), ProblemSolutionOutlineV1.class),
         row.hasNoteMarkdown(),
         row.revision(),
+        row.coachSummaryRevision(),
         row.createdAt(),
+        row.coachSummaryUpdatedAt(),
         row.updatedAt());
   }
 }

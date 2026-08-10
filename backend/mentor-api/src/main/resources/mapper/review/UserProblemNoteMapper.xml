@@ -14,7 +14,9 @@
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="note_markdown" javaType="string"/>
       <arg column="revision" javaType="_long"/>
+      <arg column="coach_summary_revision" javaType="_long"/>
       <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="coach_summary_updated_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
   </resultMap>
@@ -29,7 +31,9 @@
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="has_note_markdown" javaType="_boolean"/>
       <arg column="revision" javaType="_long"/>
+      <arg column="coach_summary_revision" javaType="_long"/>
       <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="coach_summary_updated_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
   </resultMap>
@@ -41,7 +45,9 @@
     outline_json,
     note_markdown,
     revision,
+    coach_summary_revision,
     created_at,
+    coach_summary_updated_at,
     updated_at
   </sql>
 
@@ -52,7 +58,9 @@
            outline_json,
            char_length(note_markdown) > 0 AS has_note_markdown,
            revision,
+           coach_summary_revision,
            created_at,
+           coach_summary_updated_at,
            updated_at
     FROM user_problem_note
     WHERE user_id = #{userId}
@@ -73,7 +81,9 @@
       outline_json,
       note_markdown,
       revision,
+      coach_summary_revision,
       created_at,
+      coach_summary_updated_at,
       updated_at
     ) VALUES (
       #{userId},
@@ -81,7 +91,9 @@
       #{outlineJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{noteMarkdown},
       1,
+      CASE WHEN #{noteMarkdown} = '' THEN 0 ELSE 1 END,
       #{now},
+      CASE WHEN #{noteMarkdown} = '' THEN NULL ELSE #{now} END,
       #{now}
     )
     ON CONFLICT (user_id, problem_slug) DO NOTHING
@@ -91,7 +103,6 @@
   <select id="update" resultMap="UserProblemNoteRowMap" affectData="true">
     UPDATE user_problem_note
     SET outline_json = #{outlineJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
-        note_markdown = #{noteMarkdown},
         revision = revision + 1,
         updated_at = #{now}
     WHERE user_id = #{userId}
@@ -100,34 +111,44 @@
     RETURNING <include refid="UserProblemNoteColumns"/>
   </select>
 
-  <select id="append" resultMap="UserProblemNoteRowMap" affectData="true">
+  <select id="replaceCoachSummaryAtZero" resultMap="UserProblemNoteRowMap" affectData="true">
     INSERT INTO user_problem_note (
       user_id,
       problem_slug,
       outline_json,
       note_markdown,
       revision,
+      coach_summary_revision,
       created_at,
+      coach_summary_updated_at,
       updated_at
     ) VALUES (
       #{userId},
       #{problemSlug},
       #{initialOutlineJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
-      #{contentMarkdown},
+      #{summaryMarkdown},
       1,
+      1,
+      #{now},
       #{now},
       #{now}
     )
     ON CONFLICT (user_id, problem_slug) DO UPDATE
-    SET note_markdown = CASE
-          WHEN user_problem_note.note_markdown = '' THEN EXCLUDED.note_markdown
-          ELSE user_problem_note.note_markdown || #{separator} || EXCLUDED.note_markdown
-        END,
-        revision = user_problem_note.revision + 1,
-        updated_at = EXCLUDED.updated_at
-    WHERE char_length(user_problem_note.note_markdown)
-        + CASE WHEN user_problem_note.note_markdown = '' THEN 0 ELSE char_length(#{separator}) END
-        + char_length(EXCLUDED.note_markdown) &lt;= #{maxMarkdownChars}
+    SET note_markdown = EXCLUDED.note_markdown,
+        coach_summary_revision = 1,
+        coach_summary_updated_at = EXCLUDED.coach_summary_updated_at
+    WHERE user_problem_note.coach_summary_revision = 0
+    RETURNING <include refid="UserProblemNoteColumns"/>
+  </select>
+
+  <select id="replaceCoachSummary" resultMap="UserProblemNoteRowMap" affectData="true">
+    UPDATE user_problem_note
+    SET note_markdown = #{summaryMarkdown},
+        coach_summary_revision = coach_summary_revision + 1,
+        coach_summary_updated_at = #{now}
+    WHERE user_id = #{userId}
+      AND problem_slug = #{problemSlug}
+      AND coach_summary_revision = #{expectedCoachSummaryRevision}
     RETURNING <include refid="UserProblemNoteColumns"/>
   </select>
 

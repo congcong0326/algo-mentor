@@ -171,6 +171,7 @@ class AgentLoopEngineTest {
     assertThat(secondRunEvents.get(secondRunEvents.size() - 1)).isInstanceOf(AgentStreamEvent.AgentRunEnd.class);
     assertThat(gateway.requests).hasSize(3);
     assertThat(lookup.executionCount).isEqualTo(2);
+    assertThat(lookup.toolCallIds).containsExactly("call_1", "call_2");
   }
 
   @Test
@@ -299,6 +300,7 @@ class AgentLoopEngineTest {
   private static final class TestTool implements AgentTool {
     private final String name;
     private int executionCount;
+    private final List<String> toolCallIds = new ArrayList<>();
 
     private TestTool(String name) {
       this.name = name;
@@ -312,6 +314,7 @@ class AgentLoopEngineTest {
     @Override
     public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
       executionCount++;
+      toolCallIds.add(context.toolCallId());
       return JsonNodeFactory.instance.objectNode().put("tool", name);
     }
   }

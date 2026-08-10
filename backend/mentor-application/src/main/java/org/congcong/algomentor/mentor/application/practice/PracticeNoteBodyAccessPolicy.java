@@ -19,11 +19,15 @@ final class PracticeNoteBodyAccessPolicy {
       "笔记里记录了什么");
   private static final List<String> CHINESE_READ_VERBS = List.of(
       "读取", "查看", "打开", "展示", "显示", "看看", "看下", "读一下", "给我看");
+  private static final List<String> CHINESE_COACH_SUMMARY_VERBS = List.of(
+      "生成", "更新", "替换", "保存", "重写", "重新生成", "整理", "总结");
   private static final List<String> CHINESE_NEGATIONS = List.of(
       "不要", "不用", "无需", "不需要", "别");
   private static final List<String> ENGLISH_BODY_MARKERS = List.of(
       "body", "content", "full", "complete", "entire", "what did i write", "what have i written");
   private static final List<String> ENGLISH_READ_VERBS = List.of("read", "show", "open", "display", "view");
+  private static final List<String> ENGLISH_COACH_SUMMARY_VERBS = List.of(
+      "create", "generate", "update", "replace", "save", "rewrite", "summarize");
   private static final List<String> ENGLISH_NEGATIONS = List.of(
       "do not", "don't", "dont", "never", "no need", "without");
 
@@ -46,13 +50,16 @@ final class PracticeNoteBodyAccessPolicy {
     if (containsAny(clause, CHINESE_STRONG_MARKERS)) {
       return true;
     }
+    if (clause.contains("教练总结") && containsAny(clause, CHINESE_COACH_SUMMARY_VERBS)) {
+      return true;
+    }
     if (mentionsChineseNote && !clause.contains("提纲")
         && containsAny(clause, CHINESE_READ_VERBS)) {
       return true;
     }
     boolean mentionsEnglishNote = clause.contains("note");
     if (!mentionsEnglishNote || clause.contains("outline") || containsAny(clause, ENGLISH_NEGATIONS)) {
-      return false;
+      return clause.contains("coach summary") && containsAny(clause, ENGLISH_COACH_SUMMARY_VERBS);
     }
     return containsAny(clause, ENGLISH_BODY_MARKERS)
         || containsAny(clause, ENGLISH_READ_VERBS);

@@ -10,7 +10,9 @@ public record UserProblemNoteRow(
     JsonNode outlineJson,
     String noteMarkdown,
     long revision,
+    long coachSummaryRevision,
     Instant createdAt,
+    Instant coachSummaryUpdatedAt,
     Instant updatedAt
 ) {
 }

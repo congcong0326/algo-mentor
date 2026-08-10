@@ -152,7 +152,6 @@ class ReviewQueueServiceTest {
           long userId,
           String problemSlug,
           ProblemSolutionOutlineV1 outline,
-          String noteMarkdown,
           long expectedRevision,
           Instant now
       ) {

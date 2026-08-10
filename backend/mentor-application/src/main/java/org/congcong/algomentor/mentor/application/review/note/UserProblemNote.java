@@ -9,17 +9,44 @@ public record UserProblemNote(
     ProblemSolutionOutlineV1 outline,
     String noteMarkdown,
     long revision,
+    long coachSummaryRevision,
     Instant createdAt,
+    Instant coachSummaryUpdatedAt,
     Instant updatedAt
 ) {
+  public UserProblemNote(
+      Long id,
+      long userId,
+      String problemSlug,
+      ProblemSolutionOutlineV1 outline,
+      String noteMarkdown,
+      long revision,
+      Instant createdAt,
+      Instant updatedAt
+  ) {
+    this(
+        id,
+        userId,
+        problemSlug,
+        outline,
+        noteMarkdown,
+        revision,
+        noteMarkdown == null || noteMarkdown.isBlank() ? 0 : 1,
+        createdAt,
+        noteMarkdown == null || noteMarkdown.isBlank() ? null : updatedAt,
+        updatedAt);
+  }
+
   public UserProblemNote {
     outline = outline == null ? ProblemSolutionOutlineV1.empty() : outline;
     noteMarkdown = noteMarkdown == null ? "" : noteMarkdown;
     revision = Math.max(0, revision);
+    coachSummaryRevision = Math.max(0, coachSummaryRevision);
   }
 
   public static UserProblemNote empty(long userId, String problemSlug) {
-    return new UserProblemNote(null, userId, problemSlug, ProblemSolutionOutlineV1.empty(), "", 0, null, null);
+    return new UserProblemNote(
+        null, userId, problemSlug, ProblemSolutionOutlineV1.empty(), "", 0, 0, null, null, null);
   }
 
   public boolean exists() {

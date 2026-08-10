@@ -2,11 +2,11 @@ package org.congcong.algomentor.api.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** Practice Chat 经用户确认追加当前题目笔记的独立能力开关。 */
-@ConfigurationProperties(prefix = PracticeChatNoteAppendProperties.PREFIX)
-public class PracticeChatNoteAppendProperties {
+/** Practice Chat 教练总结候选生成与采纳能力开关。 */
+@ConfigurationProperties(prefix = PracticeChatCoachSummaryProperties.PREFIX)
+public class PracticeChatCoachSummaryProperties {
 
-  public static final String PREFIX = "algo-mentor.practice-chat.note-append";
+  public static final String PREFIX = "algo-mentor.practice-chat.coach-summary";
 
   private boolean enabled = true;
 

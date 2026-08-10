@@ -10,13 +10,39 @@ public record UserProblemNoteSummary(
     ProblemSolutionOutlineV1 outline,
     boolean hasNoteMarkdown,
     long revision,
+    long coachSummaryRevision,
     Instant createdAt,
+    Instant coachSummaryUpdatedAt,
     Instant updatedAt
 ) {
+
+  public UserProblemNoteSummary(
+      Long id,
+      long userId,
+      String problemSlug,
+      ProblemSolutionOutlineV1 outline,
+      boolean hasNoteMarkdown,
+      long revision,
+      Instant createdAt,
+      Instant updatedAt
+  ) {
+    this(
+        id,
+        userId,
+        problemSlug,
+        outline,
+        hasNoteMarkdown,
+        revision,
+        hasNoteMarkdown ? 1 : 0,
+        createdAt,
+        hasNoteMarkdown ? updatedAt : null,
+        updatedAt);
+  }
 
   public UserProblemNoteSummary {
     outline = outline == null ? ProblemSolutionOutlineV1.empty() : outline;
     revision = Math.max(0, revision);
+    coachSummaryRevision = Math.max(0, coachSummaryRevision);
   }
 
   public static UserProblemNoteSummary from(UserProblemNote note) {
@@ -27,7 +53,9 @@ public record UserProblemNoteSummary(
         note.outline(),
         !note.noteMarkdown().isBlank(),
         note.revision(),
+        note.coachSummaryRevision(),
         note.createdAt(),
+        note.coachSummaryUpdatedAt(),
         note.updatedAt());
   }
 

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.practice.mapper.CoachSummaryProposalMapper">
+
+  <resultMap id="CoachSummaryProposalRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.CoachSummaryProposalRow">
+    <constructor>
+      <arg column="id" javaType="string"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="practice_session_id" javaType="_long"/>
+      <arg column="source_run_id" javaType="_long"/>
+      <arg column="source_tool_call_id" javaType="string"/>
+      <arg column="summary_markdown" javaType="string"/>
+      <arg column="base_coach_summary_revision" javaType="_long"/>
+      <arg column="status" javaType="string"/>
+      <arg column="applied_coach_summary_revision" javaType="java.lang.Long"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="applied_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="CoachSummaryMessageActionRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.CoachSummaryMessageActionRow">
+    <constructor>
+      <arg column="assistant_message_id" javaType="_long"/>
+      <arg column="proposal_id" javaType="string"/>
+      <arg column="status" javaType="string"/>
+      <arg column="operation" javaType="string"/>
+      <arg column="summary_markdown" javaType="string"/>
+      <arg column="applied_coach_summary_revision" javaType="java.lang.Long"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="applied_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="ProposalColumns">
+    id,
+    user_id,
+    problem_slug,
+    practice_session_id,
+    source_run_id,
+    source_tool_call_id,
+    summary_markdown,
+    base_coach_summary_revision,
+    status,
+    applied_coach_summary_revision,
+    created_at,
+    applied_at
+  </sql>
+
+  <select id="lockScope" resultType="int">
+    SELECT 1
+    FROM (
+      SELECT pg_advisory_xact_lock(
+          hashtext('practice_coach_summary_proposal'),
+          hashtext(CAST(#{userId} AS TEXT) || ':' || #{problemSlug}))
+    ) locked_scope
+  </select>
+
+  <select id="findBySource" resultMap="CoachSummaryProposalRowMap">
+    SELECT <include refid="ProposalColumns"/>
+    FROM practice_coach_summary_proposal
+    WHERE source_run_id = #{sourceRunId}
+      AND source_tool_call_id = #{sourceToolCallId}
+  </select>
+
+  <update id="supersedePending">
+    UPDATE practice_coach_summary_proposal
+    SET status = 'SUPERSEDED'
+    WHERE user_id = #{userId}
+      AND problem_slug = #{problemSlug}
+      AND status = 'PENDING'
+  </update>
+
+  <select id="insert" resultMap="CoachSummaryProposalRowMap" affectData="true">
+    INSERT INTO practice_coach_summary_proposal (
+      id,
+      user_id,
+      problem_slug,
+      practice_session_id,
+      source_run_id,
+      source_tool_call_id,
+      summary_markdown,
+      base_coach_summary_revision,
+      status,
+      applied_coach_summary_revision,
+      created_at,
+      applied_at
+    ) VALUES (
+      #{id},
+      #{userId},
+      #{problemSlug},
+      #{practiceSessionId},
+      #{sourceRunId},
+      #{sourceToolCallId},
+      #{summaryMarkdown},
+      #{baseCoachSummaryRevision},
+      #{status},
+      #{appliedCoachSummaryRevision},
+      #{createdAt},
+      #{appliedAt}
+    )
+    RETURNING <include refid="ProposalColumns"/>
+  </select>
+
+  <select id="findForUpdate" resultMap="CoachSummaryProposalRowMap">
+    SELECT <include refid="ProposalColumns"/>
+    FROM practice_coach_summary_proposal
+    WHERE id = #{proposalId}
+      AND user_id = #{userId}
+      AND practice_session_id = #{practiceSessionId}
+    FOR UPDATE
+  </select>
+
+  <select id="markApplied" resultMap="CoachSummaryProposalRowMap" affectData="true">
+    UPDATE practice_coach_summary_proposal
+    SET status = 'APPLIED',
+        applied_coach_summary_revision = #{appliedCoachSummaryRevision},
+        applied_at = #{appliedAt}
+    WHERE id = #{proposalId}
+      AND status = 'PENDING'
+    RETURNING <include refid="ProposalColumns"/>
+  </select>
+
+  <select id="markSuperseded" resultMap="CoachSummaryProposalRowMap" affectData="true">
+    UPDATE practice_coach_summary_proposal
+    SET status = 'SUPERSEDED'
+    WHERE id = #{proposalId}
+      AND status = 'PENDING'
+    RETURNING <include refid="ProposalColumns"/>
+  </select>
+
+  <select id="findMessageActions" resultMap="CoachSummaryMessageActionRowMap">
+    SELECT message.id AS assistant_message_id,
+           proposal.id AS proposal_id,
+           proposal.status,
+           CASE WHEN proposal.base_coach_summary_revision = 0 THEN 'CREATE' ELSE 'REPLACE' END AS operation,
+           proposal.summary_markdown,
+           proposal.applied_coach_summary_revision,
+           proposal.created_at,
+           proposal.applied_at
+    FROM practice_coach_summary_proposal proposal
+    JOIN agent_message message
+      ON message.run_id = proposal.source_run_id
+      AND message.role = 'assistant'
+      AND message.status = 'active'
+    WHERE proposal.user_id = #{userId}
+      AND proposal.practice_session_id = #{practiceSessionId}
+      AND message.id IN
+      <foreach collection="assistantMessageIds" item="messageId" open="(" separator="," close=")">
+        #{messageId}
+      </foreach>
+  </select>
+</mapper>

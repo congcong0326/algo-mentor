@@ -25,7 +25,6 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionToolContracts;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentInput;
-import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentToolContracts;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentInput;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentInput;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
@@ -33,6 +32,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAge
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeLearningStateAgentToolContracts;
+import org.congcong.algomentor.mentor.application.practice.ProposeCurrentProblemCoachSummaryAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentInput;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentInput;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
@@ -69,7 +69,7 @@ class MentorApiApplicationTest {
               LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
               LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE,
               PracticeLearningStateAgentToolContracts.TOOL_NAME,
-              AppendCurrentProblemNoteAgentToolContracts.TOOL_NAME,
+              ProposeCurrentProblemCoachSummaryAgentToolContracts.TOOL_NAME,
               LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
               ReadToolResultTool.NAME)),
       AiBusinessScenario.LEARNING_PLAN_DRAFT,

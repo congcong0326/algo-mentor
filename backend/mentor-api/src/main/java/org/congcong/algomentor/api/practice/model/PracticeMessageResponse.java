@@ -7,5 +7,6 @@ public record PracticeMessageResponse(
     String role,
     String messageType,
     String contentMarkdown,
-    Instant createdAt) {
+    Instant createdAt,
+    CoachSummaryProposalActionResponse coachSummaryAction) {
 }

@@ -72,6 +72,7 @@ import type {
   TodayPackResponse,
   PracticeMessageRequest,
   PracticeMessage,
+  CoachSummaryProposalAction,
   PracticeActiveRun,
   PracticeCodeReviewDetail,
   PracticeCodeReviewHistoryResponse,
@@ -479,23 +480,6 @@ export async function upsertProblemNote(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Problem note update request failed');
-  }
-
-  return response.json();
-}
-
-export async function deleteProblemNote(
-  problemSlug: string,
-  signal?: AbortSignal,
-): Promise<ApiResponse<void>> {
-  const response = await apiFetch(`/api/problems/${encodeURIComponent(problemSlug)}/note`, {
-    method: 'DELETE',
-    headers: jsonHeaders,
-    signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Problem note delete request failed');
   }
 
   return response.json();
@@ -1423,6 +1407,25 @@ export async function getPracticeSessionMessages(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Practice session messages request failed');
+  }
+
+  return response.json();
+}
+
+export async function applyPracticeCoachSummaryProposal(
+  sessionId: number,
+  proposalId: string,
+): Promise<ApiResponse<CoachSummaryProposalAction>> {
+  const response = await apiFetch(
+    `/api/practice-sessions/${sessionId}/coach-summary-proposals/${encodeURIComponent(proposalId)}/apply`,
+    {
+      method: 'POST',
+      headers: jsonHeaders,
+    },
+  );
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Coach summary proposal apply request failed');
   }
 
   return response.json();

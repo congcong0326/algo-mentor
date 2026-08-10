@@ -1443,30 +1443,28 @@ export interface LocaleResources {
     completionRequiresPassedReview: string;
     completionGateMessages: Record<'NO_REVIEW' | 'LATEST_REVIEW_FAILED' | 'PASSED' | 'ALREADY_COMPLETED', string>;
     practiceComposerPlaceholderReview: string;
+    coachSummarySave: string;
+    coachSummaryReplace: string;
+    coachSummaryApplying: string;
+    coachSummaryApplyRetry: string;
+    coachSummaryApplied: string;
+    coachSummarySuperseded: string;
+    coachSummaryApplyFailed: string;
     toolPermissionEyebrow: string;
     toolPermissionReviewTitle: string;
     toolPermissionReviewReason: string;
-    toolPermissionNoteTitle: string;
-    toolPermissionNoteReason: string;
     toolPermissionProblem: string;
     toolPermissionContextWarning: string;
     toolPermissionCodePreview: string;
     toolPermissionEffectSummary: string;
-    toolPermissionNoteContextWarning: string;
-    toolPermissionNotePreview: string;
-    toolPermissionNoteEffectSummary: string;
     toolPermissionCountdownLabel: string;
     toolPermissionCountdownHint: string;
     toolPermissionExpired: string;
     toolPermissionExpiredHint: string;
-    toolPermissionNoteExpiredHint: string;
     toolPermissionAllow: string;
     toolPermissionDeny: string;
-    toolPermissionNoteAllow: string;
-    toolPermissionNoteDeny: string;
     toolPermissionDecisionFailed: string;
     toolPermissionTimeoutNotice: string;
-    toolPermissionNoteTimeoutNotice: string;
     chatMessages: string;
     coach: string;
     you: string;
@@ -2946,30 +2944,28 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         ALREADY_COMPLETED: '这道题已经完成。',
       },
       practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
+      coachSummarySave: '保存为教练总结',
+      coachSummaryReplace: '替换教练总结',
+      coachSummaryApplying: '正在保存...',
+      coachSummaryApplyRetry: '重试保存',
+      coachSummaryApplied: '已保存到教练总结',
+      coachSummarySuperseded: '已有更新的教练总结候选',
+      coachSummaryApplyFailed: '保存教练总结失败，请重试。',
       toolPermissionEyebrow: '限时确认',
       toolPermissionReviewTitle: '提交代码记录',
       toolPermissionReviewReason: '模型请求生成一次代码提交记录。',
-      toolPermissionNoteTitle: '追加题目笔记',
-      toolPermissionNoteReason: '模型请求把以下内容追加到当前题目的笔记。',
       toolPermissionProblem: '题目',
       toolPermissionContextWarning: '暂时无法读取完整练习上下文，请确认代码和题目是否匹配。',
       toolPermissionCodePreview: '将提交的代码',
       toolPermissionEffectSummary: '确认后将生成代码提交记录，并可能影响题目完成状态。',
-      toolPermissionNoteContextWarning: '暂时无法确认当前练习题目；即使允许，服务端仍会校验题目上下文。',
-      toolPermissionNotePreview: '将追加的笔记',
-      toolPermissionNoteEffectSummary: '确认后只会追加到当前题目的笔记正文，不会覆盖已有笔记或修改解题提纲。',
       toolPermissionCountdownLabel: '超时后自动取消',
       toolPermissionCountdownHint: '请在倒计时结束前确认，本次对话不会因取消而中断。',
       toolPermissionExpired: '确认时间已结束',
       toolPermissionExpiredHint: '正在取消本次代码 Review…',
-      toolPermissionNoteExpiredHint: '正在取消本次笔记追加…',
       toolPermissionAllow: '确认生成',
       toolPermissionDeny: '暂不生成',
-      toolPermissionNoteAllow: '确认追加',
-      toolPermissionNoteDeny: '暂不追加',
       toolPermissionDecisionFailed: '提交确认结果失败，请重试。',
       toolPermissionTimeoutNotice: '确认已超时，本次未生成代码提交记录。',
-      toolPermissionNoteTimeoutNotice: '确认已超时，本次未追加题目笔记。',
       chatMessages: '聊天消息',
       coach: '教练',
       you: '你',
@@ -4507,30 +4503,28 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         ALREADY_COMPLETED: 'This practice is already complete.',
       },
       practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
+      coachSummarySave: 'Save as coach summary',
+      coachSummaryReplace: 'Replace coach summary',
+      coachSummaryApplying: 'Saving...',
+      coachSummaryApplyRetry: 'Retry save',
+      coachSummaryApplied: 'Saved to coach summary',
+      coachSummarySuperseded: 'A newer coach summary proposal is available',
+      coachSummaryApplyFailed: 'Failed to save the coach summary. Please retry.',
       toolPermissionEyebrow: 'Timed confirmation',
       toolPermissionReviewTitle: 'Submit code for review',
       toolPermissionReviewReason: 'The model is requesting permission to create a code submission record.',
-      toolPermissionNoteTitle: 'Append to problem note',
-      toolPermissionNoteReason: "The model is requesting permission to append the following content to this problem's note.",
       toolPermissionProblem: 'Problem',
       toolPermissionContextWarning: 'The full practice context is temporarily unavailable. Confirm that the code matches this problem.',
       toolPermissionCodePreview: 'Code to submit',
       toolPermissionEffectSummary: 'Confirmation creates a code submission record and may affect problem completion.',
-      toolPermissionNoteContextWarning: 'The current practice problem could not be confirmed. The server will still validate it before writing.',
-      toolPermissionNotePreview: 'Note to append',
-      toolPermissionNoteEffectSummary: 'Confirmation only appends to the current problem note. It does not overwrite existing notes or change the solution outline.',
       toolPermissionCountdownLabel: 'Cancels automatically at timeout',
       toolPermissionCountdownHint: 'Confirm before the timer ends. Cancelling will not interrupt the conversation.',
       toolPermissionExpired: 'Confirmation time has ended',
       toolPermissionExpiredHint: 'Cancelling this code review…',
-      toolPermissionNoteExpiredHint: 'Cancelling this note append…',
       toolPermissionAllow: 'Generate review',
       toolPermissionDeny: 'Not now',
-      toolPermissionNoteAllow: 'Append note',
-      toolPermissionNoteDeny: 'Not now',
       toolPermissionDecisionFailed: 'Failed to submit your confirmation. Please retry.',
       toolPermissionTimeoutNotice: 'Confirmation timed out. No code submission record was created.',
-      toolPermissionNoteTimeoutNotice: 'Confirmation timed out. The problem note was not updated.',
       chatMessages: 'Chat messages',
       coach: 'Coach',
       you: 'You',

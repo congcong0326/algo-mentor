@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
@@ -21,6 +23,8 @@ import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryMessageAction;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalService;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PracticeSessionService {
@@ -34,6 +38,7 @@ public class PracticeSessionService {
   private final PracticeCodeReviewRepository reviewRepository;
   private final PracticeCompletionGateService completionGateService;
   private final ManagedSystemPromptResolver systemPromptResolver;
+  private final CoachSummaryProposalService coachSummaryProposalService;
 
   public PracticeSessionService(
       LearningPlanRepository learningPlanRepository,
@@ -74,7 +79,8 @@ public class PracticeSessionService {
         agentTaskMessageRepository,
         reviewRepository,
         metrics,
-        ManagedSystemPrompts.defaultResolver());
+        ManagedSystemPrompts.defaultResolver(),
+        null);
   }
 
   public PracticeSessionService(
@@ -85,6 +91,26 @@ public class PracticeSessionService {
       PracticeCodeReviewRepository reviewRepository,
       PracticeCodeReviewMetrics metrics,
       ManagedSystemPromptResolver systemPromptResolver) {
+    this(
+        learningPlanRepository,
+        problemCatalog,
+        practiceSessionRepository,
+        agentTaskMessageRepository,
+        reviewRepository,
+        metrics,
+        systemPromptResolver,
+        null);
+  }
+
+  public PracticeSessionService(
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog problemCatalog,
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTaskMessageRepository agentTaskMessageRepository,
+      PracticeCodeReviewRepository reviewRepository,
+      PracticeCodeReviewMetrics metrics,
+      ManagedSystemPromptResolver systemPromptResolver,
+      CoachSummaryProposalService coachSummaryProposalService) {
     this.learningPlanRepository = learningPlanRepository;
     this.problemCatalog = problemCatalog;
     this.practiceSessionRepository = practiceSessionRepository;
@@ -94,6 +120,7 @@ public class PracticeSessionService {
     this.systemPromptResolver = systemPromptResolver == null
         ? ManagedSystemPrompts.defaultResolver()
         : systemPromptResolver;
+    this.coachSummaryProposalService = coachSummaryProposalService;
   }
 
   @Transactional
@@ -154,6 +181,18 @@ public class PracticeSessionService {
         .orElseThrow(() -> new LearningPlanException("PRACTICE_CODE_REVIEW_NOT_FOUND", "题目练习代码 Review 不存在。"));
   }
 
+  public CoachSummaryMessageAction applyCoachSummaryProposal(
+      long userId,
+      long sessionId,
+      String proposalId
+  ) {
+    if (coachSummaryProposalService == null) {
+      throw new LearningPlanException(
+          "COACH_SUMMARY_PROPOSAL_SERVICE_UNAVAILABLE", "教练总结候选服务不可用。");
+    }
+    return coachSummaryProposalService.apply(userId, sessionId, proposalId);
+  }
+
   @Transactional
   public PracticeSession updateProgressStatus(long userId, long sessionId, PracticeProgressStatus status) {
     if (status != PracticeProgressStatus.COMPLETED && status != PracticeProgressStatus.SKIPPED) {
@@ -193,6 +232,7 @@ public class PracticeSessionService {
             .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
             .map(this::toPracticeSessionMessage)
             .toList();
+    messages = enrichCoachSummaryActions(session, messages);
     Optional<AgentActiveRun> activeRun = session.agentTaskId() == null
         ? Optional.empty()
         : agentTaskMessageRepository.activeRun(session.agentTaskId());
@@ -226,6 +266,38 @@ public class PracticeSessionService {
         messageType instanceof String value ? value : PracticeChatPromptConstants.MESSAGE_TYPE_CHAT,
         message.content(),
         message.createdAt());
+  }
+
+  private List<PracticeSessionMessage> enrichCoachSummaryActions(
+      PracticeSession session,
+      List<PracticeSessionMessage> messages
+  ) {
+    if (coachSummaryProposalService == null || messages.isEmpty()) {
+      return messages;
+    }
+    List<Long> assistantMessageIds = messages.stream()
+        .filter(message -> "ASSISTANT".equals(message.role()))
+        .map(PracticeSessionMessage::id)
+        .toList();
+    Map<Long, CoachSummaryMessageAction> actions = coachSummaryProposalService.findMessageActions(
+            session.userId(), session.id(), assistantMessageIds).stream()
+        .collect(Collectors.toMap(CoachSummaryMessageAction::assistantMessageId, Function.identity()));
+    if (actions.isEmpty()) {
+      return messages;
+    }
+    return messages.stream().map(message -> {
+      CoachSummaryMessageAction action = actions.get(message.id());
+      if (action == null) {
+        return message;
+      }
+      return new PracticeSessionMessage(
+          message.id(),
+          message.role(),
+          message.messageType(),
+          action.summaryMarkdown(),
+          message.createdAt(),
+          action);
+    }).toList();
   }
 
   private PracticeChatContext requireContext(long userId, PracticeChatReference reference) {

@@ -193,7 +193,6 @@ describe('ReviewSessionPage', () => {
           dataStructureNotes: '哈希表保存已经访问的元素。',
           edgeCases: '不能重复使用同一元素。',
         }),
-        noteMarkdown: '这段教练总结只能只读展示。',
       }),
     ));
   });
@@ -278,6 +277,7 @@ function problemNote(overrides: Partial<UserProblemNote> = {}): UserProblemNote 
     },
     noteMarkdown: '这段教练总结只能只读展示。',
     revision: 1,
+    coachSummaryRevision: 1,
     exists: true,
     hasContent: true,
     createdAt: '2026-07-23T00:00:00Z',

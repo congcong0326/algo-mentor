@@ -87,7 +87,6 @@ export default function ProblemNoteEditor({
     try {
       const response = await upsertProblemNote(problemSlug, {
         expectedRevision: note.revision,
-        noteMarkdown: draft.noteMarkdown,
         outline: draft.outline,
       });
       const saved = requireApiData(response, resources.problemNotes.saveFailed);

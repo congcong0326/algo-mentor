@@ -24,20 +24,20 @@ public interface UserProblemNoteRepository {
       long userId,
       String problemSlug,
       ProblemSolutionOutlineV1 outline,
-      String noteMarkdown,
       long expectedRevision,
       Instant now
   );
 
-  /** 原子追加 Markdown 正文；已有结构化提纲必须保持不变。 */
-  default Optional<UserProblemNote> append(
+  /** 原子替换教练总结；结构化提纲及其 revision 必须保持不变。 */
+  default Optional<UserProblemNote> replaceCoachSummary(
       long userId,
       String problemSlug,
       ProblemSolutionOutlineV1 initialOutline,
-      String contentMarkdown,
+      String summaryMarkdown,
+      long expectedCoachSummaryRevision,
       Instant now
   ) {
-    throw new UnsupportedOperationException("Problem note append is not implemented");
+    throw new UnsupportedOperationException("Coach summary replacement is not implemented");
   }
 
   boolean delete(long userId, String problemSlug);

@@ -253,9 +253,14 @@ public final class AgentLoopEngine {
       AgentLoopLifecycle lifecycle
   ) {
     try {
-      return tool.execute(
+          return tool.execute(
           toolCall.arguments(),
-          new AgentExecutionContext(context.runId(), stepIndex, context.request().metadata(), context.cancelled()));
+          new AgentExecutionContext(
+              context.runId(),
+              stepIndex,
+              toolCall.id(),
+              context.request().metadata(),
+              context.cancelled()));
     } catch (AgentException ex) {
       AgentException error = enrichToolError(toolCall, ex);
       lifecycle.toolErrored(context, stepIndex, toolCall, error);

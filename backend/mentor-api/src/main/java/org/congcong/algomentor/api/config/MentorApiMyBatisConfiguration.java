@@ -13,7 +13,9 @@ import org.congcong.algomentor.api.learningplan.repository.LearningPlanTemplateC
 import org.congcong.algomentor.api.preference.mapper.UserAiPreferenceMapper;
 import org.congcong.algomentor.api.preference.repository.MyBatisUserAiPreferenceRepository;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
+import org.congcong.algomentor.api.practice.mapper.CoachSummaryProposalMapper;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
+import org.congcong.algomentor.api.practice.repository.MyBatisCoachSummaryProposalRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
@@ -50,6 +52,7 @@ import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRep
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalRepository;
 import org.congcong.algomentor.mentor.application.profile.claim.repository.LearnerMemoryClaimRepository;
 import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentProjectionRepository;
 import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentProjector;
@@ -122,6 +125,12 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean
   public ProblemMapper problemMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(ProblemMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public CoachSummaryProposalMapper coachSummaryProposalMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(CoachSummaryProposalMapper.class);
   }
 
   @Bean
@@ -419,6 +428,12 @@ public class MentorApiMyBatisConfiguration {
       ObjectMapper objectMapper
   ) {
     return new MyBatisUserProblemNoteRepository(mapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(CoachSummaryProposalRepository.class)
+  public CoachSummaryProposalRepository coachSummaryProposalRepository(CoachSummaryProposalMapper mapper) {
+    return new MyBatisCoachSummaryProposalRepository(mapper);
   }
 
   @Bean

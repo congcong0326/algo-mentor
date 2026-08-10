@@ -64,6 +64,9 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionMessag
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionResult;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionStatus;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryMessageAction;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalOperation;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalStatus;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.junit.jupiter.api.Test;
@@ -227,6 +230,30 @@ class PracticeSessionControllerTest {
         .andExpect(jsonPath("$.data[0].messageType").value("PROBLEM_STATEMENT"));
 
     verify(practiceSessionService).get(42L, 50L, 50);
+  }
+
+  @Test
+  void applyCoachSummaryProposalUsesOnlyTrustedUserSessionAndProposalId() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.applyCoachSummaryProposal(42L, 50L, "proposal-1"))
+        .thenReturn(new CoachSummaryMessageAction(
+            0L,
+            "proposal-1",
+            CoachSummaryProposalStatus.APPLIED,
+            CoachSummaryProposalOperation.REPLACE,
+            "# 完整总结",
+            3L,
+            Instant.parse("2026-07-25T00:00:00Z"),
+            Instant.parse("2026-07-25T00:01:00Z")));
+
+    mockMvc.perform(post("/api/practice-sessions/50/coach-summary-proposals/proposal-1/apply"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.proposalId").value("proposal-1"))
+        .andExpect(jsonPath("$.data.status").value("APPLIED"))
+        .andExpect(jsonPath("$.data.operation").value("REPLACE"))
+        .andExpect(jsonPath("$.data.appliedCoachSummaryRevision").value(3));
+
+    verify(practiceSessionService).applyCoachSummaryProposal(42L, 50L, "proposal-1");
   }
 
   @Test

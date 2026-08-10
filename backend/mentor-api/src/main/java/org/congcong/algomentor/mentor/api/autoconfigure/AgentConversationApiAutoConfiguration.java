@@ -22,7 +22,7 @@ import org.congcong.algomentor.api.config.LearnerMemoryDeclaredUpdateProperties;
 import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatLearningStateProperties;
-import org.congcong.algomentor.api.config.PracticeChatNoteAppendProperties;
+import org.congcong.algomentor.api.config.PracticeChatCoachSummaryProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.api.config.PracticeChatReviewTrajectoryProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
@@ -39,8 +39,6 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
-import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentTool;
-import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNotePermissionHook;
 import org.congcong.algomentor.mentor.application.practice.GetCurrentProblemLearningStateAgentTool;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
@@ -57,7 +55,10 @@ import org.congcong.algomentor.mentor.application.practice.PracticeMessageStream
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
+import org.congcong.algomentor.mentor.application.practice.ProposeCurrentProblemCoachSummaryAgentTool;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalRepository;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalService;
 import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
 import org.congcong.algomentor.mentor.application.profile.evidence.repository.LearnerMemoryEvidenceRepository;
 import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
@@ -85,7 +86,6 @@ import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpda
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
-import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteAppendService;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.CompareSubmissionVersionsAgentTool;
@@ -128,7 +128,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
     LearnerMemoryRecallProperties.class,
     PracticeCodeReviewProperties.class,
     PracticeChatLearningStateProperties.class,
-    PracticeChatNoteAppendProperties.class,
+    PracticeChatCoachSummaryProperties.class,
     PracticeChatPromptProperties.class,
     PracticeChatReviewTrajectoryProperties.class,
     LearnerMemoryCodeReviewConsumerProperties.class
@@ -324,46 +324,39 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(UserProblemNoteRepository.class)
+  @ConditionalOnBean({
+      CoachSummaryProposalRepository.class,
+      PracticeSessionRepository.class,
+      UserProblemNoteRepository.class
+  })
   @ConditionalOnProperty(
-      prefix = PracticeChatNoteAppendProperties.PREFIX,
+      prefix = PracticeChatCoachSummaryProperties.PREFIX,
       name = "enabled",
       havingValue = "true",
       matchIfMissing = true)
   @ConditionalOnMissingBean
-  public UserProblemNoteAppendService userProblemNoteAppendService(
+  public CoachSummaryProposalService coachSummaryProposalService(
+      CoachSummaryProposalRepository proposalRepository,
+      PracticeSessionRepository sessionRepository,
       UserProblemNoteRepository noteRepository
   ) {
-    return new UserProblemNoteAppendService(noteRepository, Clock.systemUTC());
+    return new CoachSummaryProposalService(
+        proposalRepository, sessionRepository, noteRepository, Clock.systemUTC());
   }
 
   @Bean
-  @ConditionalOnBean({PracticeSessionRepository.class, UserProblemNoteAppendService.class})
+  @ConditionalOnBean({PracticeSessionRepository.class, CoachSummaryProposalService.class})
   @ConditionalOnProperty(
-      prefix = PracticeChatNoteAppendProperties.PREFIX,
+      prefix = PracticeChatCoachSummaryProperties.PREFIX,
       name = "enabled",
       havingValue = "true",
       matchIfMissing = true)
-  @ConditionalOnProperty(
-      prefix = MentorConfigurationKeys.AGENT_TOOL_PERMISSION_PREFIX,
-      name = MentorConfigurationKeys.ENABLED,
-      havingValue = MentorConfigurationKeys.TRUE,
-      matchIfMissing = true)
   @ConditionalOnMissingBean
-  public AppendCurrentProblemNoteAgentTool appendCurrentProblemNoteAgentTool(
+  public ProposeCurrentProblemCoachSummaryAgentTool proposeCurrentProblemCoachSummaryAgentTool(
       PracticeSessionRepository sessionRepository,
-      UserProblemNoteAppendService noteAppendService
+      CoachSummaryProposalService proposalService
   ) {
-    return new AppendCurrentProblemNoteAgentTool(sessionRepository, noteAppendService);
-  }
-
-  @Bean
-  @ConditionalOnBean({PracticeSessionRepository.class, AppendCurrentProblemNoteAgentTool.class})
-  @ConditionalOnMissingBean
-  public AppendCurrentProblemNotePermissionHook appendCurrentProblemNotePermissionHook(
-      PracticeSessionRepository sessionRepository
-  ) {
-    return new AppendCurrentProblemNotePermissionHook(sessionRepository);
+    return new ProposeCurrentProblemCoachSummaryAgentTool(sessionRepository, proposalService);
   }
 
   @Bean
@@ -589,7 +582,7 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<ReadLearnerMemorySectionAgentTool> readLearnerMemorySectionTool,
       ObjectProvider<GetLearnerMemoryEvidenceAgentTool> learnerMemoryEvidenceTool,
       ObjectProvider<GetCurrentProblemLearningStateAgentTool> learningStateTool,
-      ObjectProvider<AppendCurrentProblemNoteAgentTool> noteAppendTool,
+      ObjectProvider<ProposeCurrentProblemCoachSummaryAgentTool> coachSummaryTool,
       ObjectProvider<GetProblemReviewTrajectoryAgentTool> reviewTrajectoryTool,
       ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
       ObjectProvider<ReadToolResultTool> readToolResultTool
@@ -601,7 +594,7 @@ public class AgentConversationApiAutoConfiguration {
     readLearnerMemorySectionTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     learnerMemoryEvidenceTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     learningStateTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
-    noteAppendTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    coachSummaryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     if (reviewTrajectoryScopeService.getIfAvailable() != null) {
       reviewTrajectoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     }
@@ -626,7 +619,8 @@ public class AgentConversationApiAutoConfiguration {
       AgentTaskMessageRepository agentTaskMessageRepository,
       ObjectProvider<PracticeCodeReviewRepository> reviewRepository,
       ObjectProvider<PracticeCodeReviewMetrics> reviewMetrics,
-      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver,
+      ObjectProvider<CoachSummaryProposalService> coachSummaryProposalService
   ) {
     return new PracticeSessionService(
         learningPlanRepository,
@@ -635,7 +629,8 @@ public class AgentConversationApiAutoConfiguration {
         agentTaskMessageRepository,
         reviewRepository.getIfAvailable(PracticeCodeReviewRepository::empty),
         reviewMetrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),
-        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
+        coachSummaryProposalService.getIfAvailable());
   }
 
   @Bean

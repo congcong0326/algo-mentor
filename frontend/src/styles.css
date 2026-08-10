@@ -6160,6 +6160,47 @@ a {
   font-weight: 700;
 }
 
+.practice-coach-summary-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.practice-coach-summary-action button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.practice-coach-summary-action button svg,
+.practice-coach-summary-action p svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.practice-coach-summary-action p {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.practice-coach-summary-action.is-applied p {
+  color: var(--success);
+}
+
+.practice-coach-summary-action > .error-text {
+  margin: 0;
+  font-size: 13px;
+}
+
 .practice-error {
   margin: 0;
 }

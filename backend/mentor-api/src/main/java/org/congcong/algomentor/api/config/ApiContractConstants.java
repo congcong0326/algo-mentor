@@ -191,6 +191,10 @@ public final class ApiContractConstants {
    */
   public static final String PRACTICE_SESSION_MESSAGES_PATH = "/{sessionId}/messages";
 
+  /** 采纳聊天消息中的教练总结候选。 */
+  public static final String PRACTICE_SESSION_COACH_SUMMARY_PROPOSAL_APPLY_PATH =
+      "/{sessionId}/coach-summary-proposals/{proposalId}/apply";
+
   /**
    * 题目练习会话进度状态路径。
    */

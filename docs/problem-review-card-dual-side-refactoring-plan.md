@@ -1,6 +1,6 @@
 # 题目复习卡与题目笔记重构实施计划
 
-> 状态：待实施  
+> 状态：已实施，并补充教练总结候选采纳链路
 > 日期：2026-07-24  
 > 适用范围：错题本、复习中心、题目长期笔记、FSRS 调度  
 > 前提：项目尚未上线，允许删除本地历史复习数据、旧接口、旧代码和旧表，不提供兼容层。
@@ -216,7 +216,9 @@ problem_slug
 outline_json               ProblemSolutionOutlineV1，可为空纲要
 note_markdown              教练总结 Markdown 正文，首版限制 10000 字符
 revision                   乐观锁版本
+coach_summary_revision     教练总结独立乐观锁版本
 created_at
+coach_summary_updated_at
 updated_at
 ```
 
@@ -225,7 +227,8 @@ updated_at
 - 唯一约束 `(user_id, problem_slug)`；
 - `user_id` 外键指向 `auth_users(id)`；
 - `problem_slug` 外键指向 `problem(slug)`；
-- 笔记写接口携带 `expectedRevision`，版本冲突返回 HTTP 409，避免训练页和复习页多标签覆盖；
+- 结构化提纲写接口携带 `expectedRevision`，只更新 `outline_json + revision`；
+- 教练总结通过 proposal apply 接口写入，使用独立 `coach_summary_revision`，不与提纲 revision 互相制造冲突；
 - 笔记内容不进入复习调度、AI Prompt 或学习计划数据。
 
 ## 4. 后端目标结构
@@ -279,10 +282,11 @@ review/catalog/     题目元数据与完整题面读取端口
 | 方法 | 路径 | 作用 |
 |---|---|---|
 | `GET` | `/api/problems/{problemSlug}/note` | 获取当前用户的题目笔记，不存在返回空结构 |
-| `PUT` | `/api/problems/{problemSlug}/note` | 创建或按 revision 更新题目笔记 |
-| `DELETE` | `/api/problems/{problemSlug}/note` | 删除题目笔记，不影响复习卡 |
+| `PUT` | `/api/problems/{problemSlug}/note` | 创建或按 revision 更新结构化提纲，不接受教练总结 Markdown |
 
 题目笔记 API 不接受 `planId`、`phaseIndex`、`sessionId` 或 `reviewCardId`。
+
+教练总结候选采纳使用 `POST /api/practice-sessions/{sessionId}/coach-summary-proposals/{proposalId}/apply`。请求体不携带 Markdown；服务端从 proposal 读取原文并校验当前用户、session、题目和 summary revision。
 
 ### 5.3 提交请求
 
@@ -355,10 +359,13 @@ ReviewRatingBar
 
 ### 6.4 教练总结与结构化笔记边界
 
-- 原自由笔记在产品界面中更名为“教练总结”，继续复用 `note_markdown` 存储教练生成的 Markdown，不修改数据库字段和 API 契约。
+- 原自由笔记在产品界面中更名为“教练总结”，继续复用 `note_markdown` 存储教练生成的 Markdown；新增独立 `coach_summary_revision` 和 proposal 采纳 API。
 - “我的题目笔记”和“教练总结”在题面下方是两个同级折叠区，分别根据结构化提纲和 `note_markdown` 计算状态，不得复用聚合 `hasContent` 混合判断。
 - 教练总结在题目笔记区域中只读展示，不提供用户直接编辑入口；前端使用现有安全 Markdown 渲染链路展示内容，不再引入 Markdown 编辑器依赖。
-- 标题旁展示提示图标，鼠标悬停或键盘聚焦时说明用户可在题目训练过程中请教练总结内容；教练生成结果仍必须经用户确认后才写入。
+- 标题旁展示提示图标，鼠标悬停或键盘聚焦时说明用户可在题目训练过程中请教练总结内容。
+- Agent 生成完整总结 proposal 后，聊天消息直接展示确切 Markdown，并在末尾提供一次性“保存/替换教练总结”按钮；不使用权限弹窗或倒计时。
+- Tool 只创建候选，不得声称已保存；按钮只提交 proposal ID，服务端原子采纳。新候选使旧 `PENDING` 候选失效，重复采纳幂等，revision 过期则标记 `SUPERSEDED`。
+- 本阶段不实现撤销替换。
 - 核心思路、数据结构说明和算法说明继续使用普通多行文本输入；数据结构与算法说明仍只在用户选择对应选项后展示。
 - “边界与易错点”暂时只从前端表单隐藏，`ProblemSolutionOutlineV1.edgeCases`、现有数据库内容和 API 字段继续保留，保存其他结构化字段时不得清空已有值。
 

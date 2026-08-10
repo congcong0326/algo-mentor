@@ -32,18 +32,23 @@ public interface UserProblemNoteMapper {
       @Param("userId") long userId,
       @Param("problemSlug") String problemSlug,
       @Param("outlineJson") JsonNode outlineJson,
-      @Param("noteMarkdown") String noteMarkdown,
       @Param("expectedRevision") long expectedRevision,
       @Param("now") Instant now
   );
 
-  UserProblemNoteRow append(
+  UserProblemNoteRow replaceCoachSummaryAtZero(
       @Param("userId") long userId,
       @Param("problemSlug") String problemSlug,
       @Param("initialOutlineJson") JsonNode initialOutlineJson,
-      @Param("contentMarkdown") String contentMarkdown,
-      @Param("separator") String separator,
-      @Param("maxMarkdownChars") int maxMarkdownChars,
+      @Param("summaryMarkdown") String summaryMarkdown,
+      @Param("now") Instant now
+  );
+
+  UserProblemNoteRow replaceCoachSummary(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug,
+      @Param("summaryMarkdown") String summaryMarkdown,
+      @Param("expectedCoachSummaryRevision") long expectedCoachSummaryRevision,
       @Param("now") Instant now
   );
 

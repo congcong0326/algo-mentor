@@ -11,7 +11,6 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteService;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,14 +46,7 @@ public class UserProblemNoteController {
         requireCurrentUserId(),
         problemSlug,
         request.outline(),
-        request.noteMarkdown(),
         request.expectedRevision())));
-  }
-
-  @DeleteMapping(ApiContractConstants.USER_PROBLEMS_BASE_PATH + "/{problemSlug}/note")
-  public ApiResponse<Void> delete(@PathVariable String problemSlug) {
-    requiredNoteService().delete(requireCurrentUserId(), problemSlug);
-    return ApiResponse.success(null);
   }
 
   private long requireCurrentUserId() {

@@ -138,6 +138,7 @@ function problemNote(): UserProblemNote {
     outline: emptyProblemSolutionOutline(),
     noteMarkdown: '详情关闭前不应泄露的笔记内容。',
     revision: 1,
+    coachSummaryRevision: 1,
     exists: true,
     hasContent: true,
     createdAt: '2026-07-22T00:00:00Z',

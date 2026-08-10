@@ -37,27 +37,27 @@ class UserProblemNoteServiceTest {
   }
 
   @Test
-  void createsUpdatesAndDeletesByRevision() {
-    UserProblemNote created = service.upsert(42L, "two-sum", outline("哈希表"), "先查再写入", 0);
-    UserProblemNote updated = service.upsert(42L, "two-sum", outline("补数"), "避免同一元素复用", 1);
+  void createsAndUpdatesOutlineWithoutChangingCoachSummary() {
+    UserProblemNote created = service.upsert(42L, "two-sum", outline("哈希表"), 0);
+    repository.replaceCoachSummary(
+        42L, "two-sum", ProblemSolutionOutlineV1.empty(), "先查再写入", 0, NOW);
+    UserProblemNote updated = service.upsert(42L, "two-sum", outline("补数"), 1);
 
     assertThat(created.revision()).isEqualTo(1);
     assertThat(updated.revision()).isEqualTo(2);
     assertThat(updated.outline().coreIdea()).isEqualTo("补数");
-    assertThat(updated.noteMarkdown()).isEqualTo("避免同一元素复用");
-
-    service.delete(42L, "two-sum");
-    assertThat(service.get(42L, "two-sum").exists()).isFalse();
+    assertThat(updated.noteMarkdown()).isEqualTo("先查再写入");
+    assertThat(updated.coachSummaryRevision()).isEqualTo(1);
   }
 
   @Test
   void rejectsAStaleRevisionWithoutOverwritingTheSavedNote() {
-    service.upsert(42L, "two-sum", outline("哈希表"), "初始笔记", 0);
+    service.upsert(42L, "two-sum", outline("哈希表"), 0);
 
-    assertThatThrownBy(() -> service.upsert(42L, "two-sum", outline("覆盖"), "旧页面内容", 7))
+    assertThatThrownBy(() -> service.upsert(42L, "two-sum", outline("覆盖"), 7))
         .isInstanceOfSatisfying(ReviewException.class, exception ->
             assertThat(exception.code()).isEqualTo("PROBLEM_NOTE_REVISION_CONFLICT"));
-    assertThat(service.get(42L, "two-sum").noteMarkdown()).isEqualTo("初始笔记");
+    assertThat(service.get(42L, "two-sum").outline().coreIdea()).isEqualTo("哈希表");
   }
 
   @Test
@@ -128,7 +128,6 @@ class UserProblemNoteServiceTest {
         long userId,
         String problemSlug,
         ProblemSolutionOutlineV1 outline,
-        String noteMarkdown,
         long expectedRevision,
         Instant now
     ) {
@@ -142,10 +141,41 @@ class UserProblemNoteServiceTest {
           userId,
           problemSlug,
           outline,
-          noteMarkdown,
+          current.noteMarkdown(),
           current.revision() + 1,
+          current.coachSummaryRevision(),
           current.createdAt(),
+          current.coachSummaryUpdatedAt(),
           now);
+      notes.put(key, updated);
+      return Optional.of(updated);
+    }
+
+    @Override
+    public Optional<UserProblemNote> replaceCoachSummary(
+        long userId,
+        String problemSlug,
+        ProblemSolutionOutlineV1 initialOutline,
+        String summaryMarkdown,
+        long expectedCoachSummaryRevision,
+        Instant now
+    ) {
+      String key = key(userId, problemSlug);
+      UserProblemNote current = notes.get(key);
+      if (current == null || current.coachSummaryRevision() != expectedCoachSummaryRevision) {
+        return Optional.empty();
+      }
+      UserProblemNote updated = new UserProblemNote(
+          current.id(),
+          userId,
+          problemSlug,
+          current.outline(),
+          summaryMarkdown,
+          current.revision(),
+          current.coachSummaryRevision() + 1,
+          current.createdAt(),
+          now,
+          current.updatedAt());
       notes.put(key, updated);
       return Optional.of(updated);
     }

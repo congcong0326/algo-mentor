@@ -16,6 +16,7 @@ vi.mock('../services/api', async () => {
   const actual = await vi.importActual<typeof import('../services/api')>('../services/api');
   return {
     ...actual,
+    applyPracticeCoachSummaryProposal: vi.fn(),
     createOrReusePracticeSession: vi.fn(),
     getPracticeSessionActiveRun: vi.fn(),
     getPracticeSessionMessages: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock('../services/api', async () => {
 });
 
 const decideAgentToolPermission = vi.mocked(api.decideAgentToolPermission);
+const applyPracticeCoachSummaryProposal = vi.mocked(api.applyPracticeCoachSummaryProposal);
 const createOrReusePracticeSession = vi.mocked(api.createOrReusePracticeSession);
 const getPracticeSessionActiveRun = vi.mocked(api.getPracticeSessionActiveRun);
 const getPracticeSession = vi.mocked(api.getPracticeSession);
@@ -65,6 +67,14 @@ describe('PracticeChatWorkbench review contracts', () => {
       permissionRequestId: 'permission-1',
       decision: 'ALLOW',
       accepted: true,
+    }));
+    applyPracticeCoachSummaryProposal.mockResolvedValue(apiResponse({
+      proposalId: 'proposal-1',
+      status: 'APPLIED',
+      operation: 'REPLACE',
+      appliedCoachSummaryRevision: 3,
+      createdAt: '2026-06-25T00:12:00Z',
+      appliedAt: '2026-06-25T00:13:00Z',
     }));
     streamPracticeMessage.mockResolvedValue(undefined);
     updatePracticeProgressStatus.mockResolvedValue(apiResponse(sessionFixture({
@@ -157,38 +167,50 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(within(dialog).queryByText('模型请求生成一次代码提交记录。')).not.toBeInTheDocument();
   });
 
-  it('shows the exact note content and append-only impact before confirmation', async () => {
+  it('renders an inline coach summary proposal and applies it without a permission dialog', async () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({
-        eventName: 'tool_permission_request',
-        data: permissionRequestEvent({
-          toolName: 'renamed_append_note_tool',
-          copyCode: 'APPEND_CURRENT_PROBLEM_NOTE_REQUESTED',
-          displayName: '追加题目笔记',
-          reason: '模型请求把以下内容追加到当前题目的笔记。',
-          preview: {
-            codePreview: undefined,
-            noteMarkdown: '**关键点**：先查补数，再写入当前元素。',
+        eventName: 'content_delta',
+        data: { content: '这段前置文案会被候选正文替换。' },
+      });
+      options.onEvent?.({
+        eventName: 'agent_tool_end',
+        data: agentToolEndEvent({
+          toolName: 'propose_current_problem_coach_summary',
+          result: {
+            type: 'current_problem_coach_summary_proposed',
+            status: 'PROPOSED',
+            proposalId: 'proposal-1',
+            summaryMarkdown: '# 教练总结\n\n- 先查补数，再写入当前元素。',
+            operation: 'REPLACE',
+            baseCoachSummaryRevision: 2,
           },
         }),
+      });
+      options.onEvent?.({
+        eventName: 'content_delta',
+        data: { content: '这段工具后的重复文案不应展示。' },
       });
       await new Promise<void>(() => undefined);
     });
     renderWorkbench();
 
     fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
-      target: { value: '把这个记到题目笔记里。' },
+      target: { value: '生成并更新教练总结。' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
-    const dialog = await screen.findByRole('dialog', { name: '追加题目笔记' });
-    expect(within(dialog).getByText('将追加的笔记')).toBeInTheDocument();
-    expect(within(dialog).getByText('**关键点**：先查补数，再写入当前元素。')).toBeInTheDocument();
-    expect(within(dialog).getByText('确认后只会追加到当前题目的笔记正文，不会覆盖已有笔记或修改解题提纲。'))
-      .toBeInTheDocument();
-    expect(within(dialog).getByRole('button', { name: '确认追加' })).toBeInTheDocument();
-    expect(within(dialog).getByRole('button', { name: '暂不追加' })).toBeInTheDocument();
-    expect(within(dialog).queryByText('将提交的代码')).not.toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '教练总结' })).toBeInTheDocument();
+    expect(screen.getByText('先查补数，再写入当前元素。')).toBeInTheDocument();
+    expect(screen.queryByText('这段前置文案会被候选正文替换。')).not.toBeInTheDocument();
+    expect(screen.queryByText('这段工具后的重复文案不应展示。')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '替换教练总结' }));
+
+    await waitFor(() => expect(applyPracticeCoachSummaryProposal).toHaveBeenCalledWith(101, 'proposal-1'));
+    expect(await screen.findByText('已保存到教练总结')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '替换教练总结' })).not.toBeInTheDocument();
   });
 
   it('shows the remaining confirmation time and disables decisions after expiry', async () => {
@@ -591,45 +613,6 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     await waitFor(() => expect(screen.queryByRole('dialog', { name: '提交代码记录' })).not.toBeInTheDocument());
     expect(screen.getByText('确认已超时，本次未生成代码提交记录。')).toHaveClass('practice-status-note');
-  });
-
-  it('shows note-specific not-written status when note confirmation times out', async () => {
-    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
-    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
-      streamOptions = options;
-      options.onEvent?.({
-        eventName: 'tool_permission_request',
-        data: permissionRequestEvent({
-          toolName: 'append_current_problem_note',
-          displayName: '追加题目笔记',
-          preview: { codePreview: undefined, noteMarkdown: '保存这个边界条件。' },
-        }),
-      });
-      await new Promise<void>(() => undefined);
-    });
-    renderWorkbench();
-
-    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
-      target: { value: '把这个记下来。' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: '发送' }));
-
-    expect(await screen.findByRole('dialog', { name: '追加题目笔记' })).toBeInTheDocument();
-
-    act(() => {
-      streamOptions?.onEvent({
-        eventName: 'tool_permission_timeout',
-        data: {
-          permissionRequestId: 'permission-1',
-          toolName: 'append_current_problem_note',
-          reason: 'expired',
-          expiredAt: '2026-06-26T00:01:00Z',
-        },
-      });
-    });
-
-    await waitFor(() => expect(screen.queryByRole('dialog', { name: '追加题目笔记' })).not.toBeInTheDocument());
-    expect(screen.getByText('确认已超时，本次未追加题目笔记。')).toHaveClass('practice-status-note');
   });
 
   it('renders rounded guidance tooltip for generated problem statements', async () => {
@@ -1166,7 +1149,6 @@ function permissionRequestEvent(overrides: {
     languageHint: string;
     codeLength: number;
     codePreview: string;
-    noteMarkdown: string;
     effects: string[];
     contextAvailable: boolean;
   }>;
@@ -1180,9 +1162,7 @@ function permissionRequestEvent(overrides: {
     permissionRequestId: 'permission-1',
     displayName: overrides.displayName ?? '提交代码记录',
     reason: overrides.reason ?? '需要生成一次代码提交记录',
-    copyCode: overrides.copyCode ?? (toolName === 'append_current_problem_note'
-      ? 'APPEND_CURRENT_PROBLEM_NOTE_REQUESTED'
-      : 'PRACTICE_CODE_REVIEW_REQUESTED'),
+    copyCode: overrides.copyCode ?? 'PRACTICE_CODE_REVIEW_REQUESTED',
     preview: {
       problemSlug: 'two-sum',
       problemTitle: '两数之和',

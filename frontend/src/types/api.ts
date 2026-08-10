@@ -969,6 +969,17 @@ export interface ProblemPage<T> {
 export type PracticeProgressStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED';
 export type PracticeMessageRole = 'USER' | 'ASSISTANT';
 export type PracticeMessageType = 'PROBLEM_STATEMENT' | 'CHAT';
+export type CoachSummaryProposalStatus = 'PENDING' | 'APPLIED' | 'SUPERSEDED';
+export type CoachSummaryProposalOperation = 'CREATE' | 'REPLACE';
+
+export interface CoachSummaryProposalAction {
+  proposalId: string;
+  status: CoachSummaryProposalStatus;
+  operation: CoachSummaryProposalOperation;
+  appliedCoachSummaryRevision?: number | null;
+  createdAt: string;
+  appliedAt?: string | null;
+}
 
 export interface PracticeSessionSummary {
   id: number;
@@ -997,6 +1008,7 @@ export interface PracticeMessage {
   messageType: PracticeMessageType;
   contentMarkdown: string;
   createdAt: string;
+  coachSummaryAction?: CoachSummaryProposalAction | null;
 }
 
 export interface PracticeActiveRun {
@@ -1787,15 +1799,16 @@ export interface UserProblemNote {
   outline: ProblemSolutionOutlineV1;
   noteMarkdown: string;
   revision: number;
+  coachSummaryRevision: number;
   exists: boolean;
   hasContent: boolean;
   createdAt?: string | null;
+  coachSummaryUpdatedAt?: string | null;
   updatedAt?: string | null;
 }
 
 export interface UserProblemNoteRequest {
   outline: ProblemSolutionOutlineV1;
-  noteMarkdown: string;
   expectedRevision: number;
 }
 

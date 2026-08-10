@@ -169,9 +169,9 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentTool.java`：`submit_practice_code_review` Agent 工具，从受信 metadata、practice session repository 和 run message lookup 读取上下文，不信任模型 arguments 中的用户/session/code。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`：`get_current_problem_learning_state` 只读工具，从受信 Practice Chat 上下文聚合当前题完成状态、最近正式 Review、复习安排和笔记提纲；笔记正文需当前消息显式请求。
-- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/AppendCurrentProblemNoteAgentTool.java`：`append_current_problem_note` 写工具，只接收待追加 Markdown，从受信 Practice Chat 上下文确定当前用户与题目，并通过题目笔记服务原子追加正文。
-- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/AppendCurrentProblemNotePermissionHook.java`：题目笔记追加权限 Hook，执行前展示确切 Markdown 并进入 `ASK`，非法参数直接拒绝。
-- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/note/UserProblemNoteAppendService.java`：面向受信当前题上下文的原子追加服务，规范化 Markdown、执行长度门禁并保持已有结构化提纲不变。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/ProposeCurrentProblemCoachSummaryAgentTool.java`：`propose_current_problem_coach_summary` 候选工具，只接收完整 `summaryMarkdown`，从受信 Practice Chat 上下文创建 proposal，不直接写正式总结。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/coachsummary`：教练总结 proposal 领域与应用服务，负责同题旧候选失效、run/tool call 幂等、消息 action 投影和按独立 summary revision 原子采纳。
+- `backend/mentor-api/src/main/resources/db/migration/V58__practice_coach_summary_proposal.sql`：增加 `coach_summary_revision`、proposal 表和同题单一 `PENDING` 约束。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewPermissionHook.java`：Review 工具业务权限 hook，命中 `ASK`，构造低敏 preview 并脱敏 authorization、cookie、API key、JWT/bearer/token 类内容。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentToolNames.java`：Review Agent 工具名、参数名、preview 字段和 tool result 字段常量。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewToolResultMapper.java`：Review 工具结果映射，输出 `practice_code_review_submitted` 摘要给 Agent 主模型。
@@ -197,7 +197,7 @@
 - `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、provider/model 维护、模型路由目录与用户命中模拟、按用户/模型/场景的 Token 与当前价格成本观测和模型价格编辑；路由 effort 与 provider 默认配置来自后端目录，切换模型时重置不被目标 provider 接受的 effort。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/legal`：`/terms` 服务条款和 `/privacy` 隐私政策公共页面，包含中英文简版正文和共用阅读布局。
-- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态。
+- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、教练总结候选正文与一次性采纳按钮、Review 入口、LeetCode 外链和题目完成状态。
 - `frontend/src/learning-plans`：学习计划创建、草案预览与修订、列表详情、模板选择和扩展交互；AI 创建请求使用 `objective`、精确难度分布、`additionalConstraints` 和可关闭的 `personalizationEnabled`。
 - `frontend/src/problem-notes`：可复用的题目笔记折叠编辑器、结构化纲要表单和固定选项，按 `problemSlug` 读写同一份长期笔记并处理 revision 冲突。
 - `frontend/src/mistakes/MistakeNotebookPage.tsx`：复习中心列表和详情弹窗，展示到期状态、完整题面、折叠笔记与不可变评级历史。

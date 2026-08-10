@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLink, Info, MoreHorizontal, SkipForward } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLink, Info, MoreHorizontal, Save, SkipForward } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
@@ -7,6 +7,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import type { LocaleResources, SupportedLocale } from '../i18n/locales';
 import {
   ApiRequestError,
+  applyPracticeCoachSummaryProposal,
   createOrReusePracticeSession,
   decideAgentToolPermission,
   getPracticeSession,
@@ -24,6 +25,7 @@ import type {
   LearningPlanProblemDraft,
   AgentToolPermissionRequestEvent,
   AgentToolPermissionDecisionType,
+  CoachSummaryProposalAction,
   PracticeCodeReviewHistoryResponse,
   PracticeMessage,
   PracticeProgressStatus,
@@ -48,10 +50,10 @@ const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
 const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
-const APPEND_NOTE_TOOL_NAME = 'append_current_problem_note';
+const COACH_SUMMARY_PROPOSAL_TOOL_NAME = 'propose_current_problem_coach_summary';
 const REVIEW_PERMISSION_COPY_CODE = 'PRACTICE_CODE_REVIEW_REQUESTED';
-const APPEND_NOTE_PERMISSION_COPY_CODE = 'APPEND_CURRENT_PROBLEM_NOTE_REQUESTED';
 const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
+const COACH_SUMMARY_PROPOSAL_RESULT_TYPE = 'current_problem_coach_summary_proposed';
 const TOOL_PERMISSION_DENIED_RESULT_TYPE = 'tool_permission_denied';
 const TOOL_PERMISSION_TIMEOUT_RESULT_TYPE = 'tool_permission_timeout';
 const TOOL_PERMISSION_COUNTDOWN_REFRESH_MS = 250;
@@ -61,7 +63,6 @@ interface PermissionPreview {
   problemSlug?: string;
   problemTitle?: string;
   codePreview?: string;
-  noteMarkdown?: string;
   contextAvailable?: boolean;
 }
 
@@ -74,6 +75,7 @@ interface PendingPermissionState {
 }
 
 type CoachWorkStatus = 'ORGANIZING' | 'REVIEW_RUNNING' | LearnerDeclaredProfileToolDisplayStatus;
+type CoachSummaryApplyStatus = 'applying' | 'error';
 
 interface AssistantWorkState {
   status: CoachWorkStatus;
@@ -143,21 +145,11 @@ function permissionRequestCopy(
       reason: resources.learningPlans.toolPermissionReviewReason,
     };
   }
-  if (isNotePermissionRequest(request)) {
-    return {
-      title: resources.learningPlans.toolPermissionNoteTitle,
-      reason: resources.learningPlans.toolPermissionNoteReason,
-    };
-  }
   return { title: request.displayName, reason: request.reason };
 }
 
 function isReviewPermissionRequest(request: AgentToolPermissionRequestEvent): boolean {
   return request.copyCode === REVIEW_PERMISSION_COPY_CODE || request.toolName === REVIEW_TOOL_NAME;
-}
-
-function isNotePermissionRequest(request: AgentToolPermissionRequestEvent): boolean {
-  return request.copyCode === APPEND_NOTE_PERMISSION_COPY_CODE || request.toolName === APPEND_NOTE_TOOL_NAME;
 }
 
 function readContentDelta(data: unknown): string {
@@ -194,9 +186,37 @@ function readPermissionPreview(data: unknown): PermissionPreview {
     problemSlug: readStringField(preview, 'problemSlug'),
     problemTitle: readStringField(preview, 'problemTitle'),
     codePreview: readStringField(preview, 'codePreview'),
-    noteMarkdown: readStringField(preview, 'noteMarkdown'),
     contextAvailable: readBooleanField(preview, 'contextAvailable'),
   };
+}
+
+function readCoachSummaryProposalAction(result: unknown, createdAt: string): CoachSummaryProposalAction | undefined {
+  if (typeof result !== 'object' || result === null) {
+    return undefined;
+  }
+  const value = result as Record<string, unknown>;
+  const proposalId = readStringField(value, 'proposalId');
+  const summaryMarkdown = readStringField(value, 'summaryMarkdown');
+  const operation = readStringField(value, 'operation');
+  if (readStringField(value, 'type') !== COACH_SUMMARY_PROPOSAL_RESULT_TYPE
+    || readStringField(value, 'status') !== 'PROPOSED'
+    || !proposalId
+    || !summaryMarkdown
+    || (operation !== 'CREATE' && operation !== 'REPLACE')) {
+    return undefined;
+  }
+  return {
+    proposalId,
+    status: 'PENDING',
+    operation,
+    createdAt,
+  };
+}
+
+function readCoachSummaryMarkdown(result: unknown): string | undefined {
+  return typeof result === 'object' && result !== null
+    ? readStringField(result as Record<string, unknown>, 'summaryMarkdown')
+    : undefined;
 }
 
 function readPermissionRequestEvent(data: unknown): AgentToolPermissionRequestEvent | undefined {
@@ -484,6 +504,7 @@ export default function PracticeChatWorkbench({
   const [permissionNotice, setPermissionNotice] = useState('');
   const [, setPermissionCountdownTick] = useState(0);
   const [assistantWorkStates, setAssistantWorkStates] = useState<Record<number, AssistantWorkState>>({});
+  const [coachSummaryApplyStates, setCoachSummaryApplyStates] = useState<Record<string, CoachSummaryApplyStatus>>({});
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
@@ -493,6 +514,7 @@ export default function PracticeChatWorkbench({
   const shouldAutoScrollRef = useRef(true);
   const submittingRef = useRef(false);
   const practiceLoadTokenRef = useRef(0);
+  const coachSummaryProposalMessageIdsRef = useRef(new Set<number>());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -514,6 +536,8 @@ export default function PracticeChatWorkbench({
     pendingPermissionIdRef.current = undefined;
     setPermissionNotice('');
     setAssistantWorkStates({});
+    setCoachSummaryApplyStates({});
+    coachSummaryProposalMessageIdsRef.current.clear();
     setStatus('loading');
 
     createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)
@@ -629,7 +653,6 @@ export default function PracticeChatWorkbench({
   const pendingPermissionProblem = pendingPermission
     ? permissionProblemLabel(pendingPermission.preview, sessionResponse, problem, locale)
     : undefined;
-  const noteAppendPermission = pendingPermission ? isNotePermissionRequest(pendingPermission.request) : false;
   const permissionCopy = pendingPermission
     ? permissionRequestCopy(pendingPermission.request, resources)
     : undefined;
@@ -788,6 +811,9 @@ export default function PracticeChatWorkbench({
   }
 
   function appendAssistantContent(assistantMessageId: number, content: string) {
+    if (coachSummaryProposalMessageIdsRef.current.has(assistantMessageId)) {
+      return;
+    }
     setAssistantWorkStates((current) => {
       if (current[assistantMessageId]?.status !== 'ORGANIZING') {
         return current;
@@ -804,6 +830,37 @@ export default function PracticeChatWorkbench({
       return {
         ...message,
         contentMarkdown: `${currentContent}${content}`,
+      };
+    }));
+  }
+
+  function showCoachSummaryProposal(
+    assistantMessageId: number,
+    action: CoachSummaryProposalAction,
+    summaryMarkdown: string,
+  ) {
+    coachSummaryProposalMessageIdsRef.current.add(assistantMessageId);
+    setAssistantWorkStates((current) => {
+      if (!(assistantMessageId in current)) {
+        return current;
+      }
+      const { [assistantMessageId]: _removed, ...remaining } = current;
+      return remaining;
+    });
+    setMessages((current) => current.map((message) => {
+      if (message.coachSummaryAction?.status === 'PENDING') {
+        return {
+          ...message,
+          coachSummaryAction: { ...message.coachSummaryAction, status: 'SUPERSEDED' },
+        };
+      }
+      if (message.id !== assistantMessageId) {
+        return message;
+      }
+      return {
+        ...message,
+        contentMarkdown: summaryMarkdown,
+        coachSummaryAction: action,
       };
     }));
   }
@@ -947,6 +1004,15 @@ export default function PracticeChatWorkbench({
               return;
             }
 
+            if (toolEnd.toolName === COACH_SUMMARY_PROPOSAL_TOOL_NAME) {
+              const action = readCoachSummaryProposalAction(toolEnd.result, now);
+              const summaryMarkdown = readCoachSummaryMarkdown(toolEnd.result);
+              if (action && summaryMarkdown) {
+                showCoachSummaryProposal(assistantMessageId, action, summaryMarkdown);
+              }
+              return;
+            }
+
             if (toolEnd.toolName !== REVIEW_TOOL_NAME) {
               return;
             }
@@ -1024,12 +1090,7 @@ export default function PracticeChatWorkbench({
 
             if (pendingPermissionIdRef.current === permissionRequestId) {
               pendingPermissionIdRef.current = undefined;
-              const timedOutToolName = typeof event.data === 'object' && event.data !== null
-                ? readStringField(event.data as Record<string, unknown>, 'toolName')
-                : undefined;
-              setPermissionNotice(timedOutToolName === APPEND_NOTE_TOOL_NAME
-                ? resources.learningPlans.toolPermissionNoteTimeoutNotice
-                : resources.learningPlans.toolPermissionTimeoutNotice);
+              setPermissionNotice(resources.learningPlans.toolPermissionTimeoutNotice);
               setPendingPermission(undefined);
             }
           }
@@ -1205,6 +1266,28 @@ export default function PracticeChatWorkbench({
             error: error instanceof Error ? error.message : resources.learningPlans.toolPermissionDecisionFailed,
           }
         : current);
+    }
+  }
+
+  async function handleCoachSummaryApply(action: CoachSummaryProposalAction) {
+    if (!sessionId || action.status !== 'PENDING' || coachSummaryApplyStates[action.proposalId] === 'applying') {
+      return;
+    }
+    setCoachSummaryApplyStates((current) => ({ ...current, [action.proposalId]: 'applying' }));
+    try {
+      const response = await applyPracticeCoachSummaryProposal(sessionId, action.proposalId);
+      const appliedAction = requireApiData(response, resources.learningPlans.coachSummaryApplyFailed);
+      setMessages((current) => current.map((message) => (
+        message.coachSummaryAction?.proposalId === action.proposalId
+          ? { ...message, coachSummaryAction: appliedAction }
+          : message
+      )));
+      setCoachSummaryApplyStates((current) => {
+        const { [action.proposalId]: _removed, ...remaining } = current;
+        return remaining;
+      });
+    } catch {
+      setCoachSummaryApplyStates((current) => ({ ...current, [action.proposalId]: 'error' }));
     }
   }
 
@@ -1456,6 +1539,37 @@ export default function PracticeChatWorkbench({
                 {message.contentMarkdown || resources.learningPlans.organizingThoughts}
               </p>
             ) : message.contentMarkdown ? <MarkdownView content={message.contentMarkdown} /> : null}
+            {message.role === 'ASSISTANT' && message.coachSummaryAction && (
+              <div className={`practice-coach-summary-action is-${message.coachSummaryAction.status.toLowerCase()}`}>
+                {message.coachSummaryAction.status === 'PENDING' ? (
+                  <button
+                    className="primary-button compact"
+                    disabled={coachSummaryApplyStates[message.coachSummaryAction.proposalId] === 'applying'}
+                    onClick={() => void handleCoachSummaryApply(message.coachSummaryAction!)}
+                    type="button"
+                  >
+                    <Save aria-hidden="true" />
+                    <span>{coachSummaryApplyStates[message.coachSummaryAction.proposalId] === 'applying'
+                      ? resources.learningPlans.coachSummaryApplying
+                      : coachSummaryApplyStates[message.coachSummaryAction.proposalId] === 'error'
+                        ? resources.learningPlans.coachSummaryApplyRetry
+                        : message.coachSummaryAction.operation === 'CREATE'
+                          ? resources.learningPlans.coachSummarySave
+                          : resources.learningPlans.coachSummaryReplace}</span>
+                  </button>
+                ) : (
+                  <p role="status">
+                    <CheckCircle2 aria-hidden="true" />
+                    <span>{message.coachSummaryAction.status === 'APPLIED'
+                      ? resources.learningPlans.coachSummaryApplied
+                      : resources.learningPlans.coachSummarySuperseded}</span>
+                  </p>
+                )}
+                {coachSummaryApplyStates[message.coachSummaryAction.proposalId] === 'error' && (
+                  <span className="error-text" role="alert">{resources.learningPlans.coachSummaryApplyFailed}</span>
+                )}
+              </div>
+            )}
           </article>
         ))}
         {hasActiveRun && (
@@ -1547,9 +1661,7 @@ export default function PracticeChatWorkbench({
             {permissionSeconds !== undefined && (
               <div
                 aria-label={permissionExpired
-                  ? `${resources.learningPlans.toolPermissionExpired}. ${noteAppendPermission
-                    ? resources.learningPlans.toolPermissionNoteExpiredHint
-                    : resources.learningPlans.toolPermissionExpiredHint}`
+                  ? `${resources.learningPlans.toolPermissionExpired}. ${resources.learningPlans.toolPermissionExpiredHint}`
                   : `${resources.learningPlans.toolPermissionCountdownLabel} ${formatPermissionCountdown(permissionSeconds)}. ${resources.learningPlans.toolPermissionCountdownHint}`}
                 className={`practice-permission-countdown ${permissionUrgent ? 'is-urgent' : ''} ${permissionExpired ? 'is-expired' : ''}`}
                 role="timer"
@@ -1565,9 +1677,7 @@ export default function PracticeChatWorkbench({
                     ? resources.learningPlans.toolPermissionExpired
                     : resources.learningPlans.toolPermissionCountdownLabel}</strong>
                   <span>{permissionExpired
-                    ? noteAppendPermission
-                      ? resources.learningPlans.toolPermissionNoteExpiredHint
-                      : resources.learningPlans.toolPermissionExpiredHint
+                    ? resources.learningPlans.toolPermissionExpiredHint
                     : resources.learningPlans.toolPermissionCountdownHint}</span>
                 </div>
               </div>
@@ -1583,9 +1693,7 @@ export default function PracticeChatWorkbench({
             {pendingPermission.preview.contextAvailable === false && (
               <div className="practice-permission-context-warning" role="note">
                 <AlertCircle aria-hidden="true" />
-                <span>{noteAppendPermission
-                  ? resources.learningPlans.toolPermissionNoteContextWarning
-                  : resources.learningPlans.toolPermissionContextWarning}</span>
+                <span>{resources.learningPlans.toolPermissionContextWarning}</span>
               </div>
             )}
 
@@ -1596,18 +1704,9 @@ export default function PracticeChatWorkbench({
               </div>
             )}
 
-            {pendingPermission.preview.noteMarkdown && (
-              <div className="practice-permission-code">
-                <strong>{resources.learningPlans.toolPermissionNotePreview}</strong>
-                <pre><code>{pendingPermission.preview.noteMarkdown}</code></pre>
-              </div>
-            )}
-
             <p className="practice-permission-effect">
               <CheckCircle2 aria-hidden="true" />
-              <span>{noteAppendPermission
-                ? resources.learningPlans.toolPermissionNoteEffectSummary
-                : resources.learningPlans.toolPermissionEffectSummary}</span>
+              <span>{resources.learningPlans.toolPermissionEffectSummary}</span>
             </p>
 
             {pendingPermission.error && (
@@ -1621,9 +1720,7 @@ export default function PracticeChatWorkbench({
                 onClick={() => void handlePermissionDecision('DENY')}
                 type="button"
               >
-                {noteAppendPermission
-                  ? resources.learningPlans.toolPermissionNoteDeny
-                  : resources.learningPlans.toolPermissionDeny}
+                {resources.learningPlans.toolPermissionDeny}
               </button>
               <button
                 className="primary-button compact"
@@ -1631,9 +1728,7 @@ export default function PracticeChatWorkbench({
                 onClick={() => void handlePermissionDecision('ALLOW')}
                 type="button"
               >
-                {noteAppendPermission
-                  ? resources.learningPlans.toolPermissionNoteAllow
-                  : resources.learningPlans.toolPermissionAllow}
+                {resources.learningPlans.toolPermissionAllow}
               </button>
             </div>
           </section>

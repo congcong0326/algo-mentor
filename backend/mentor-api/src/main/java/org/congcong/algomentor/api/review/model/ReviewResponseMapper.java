@@ -114,9 +114,11 @@ public final class ReviewResponseMapper {
         note.outline(),
         note.noteMarkdown(),
         note.revision(),
+        note.coachSummaryRevision(),
         note.exists(),
         note.hasContent(),
         note.createdAt(),
+        note.coachSummaryUpdatedAt(),
         note.updatedAt());
   }
 

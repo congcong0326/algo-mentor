@@ -338,7 +338,7 @@ class GetCurrentProblemLearningStateAgentToolTest {
     @Override public Optional<UserProblemNote> insert(long userId, String problemSlug,
         ProblemSolutionOutlineV1 outline, String noteMarkdown, Instant now) { return Optional.empty(); }
     @Override public Optional<UserProblemNote> update(long userId, String problemSlug,
-        ProblemSolutionOutlineV1 outline, String noteMarkdown, long expectedRevision, Instant now) {
+        ProblemSolutionOutlineV1 outline, long expectedRevision, Instant now) {
       return Optional.empty();
     }
     @Override public boolean delete(long userId, String problemSlug) { return false; }

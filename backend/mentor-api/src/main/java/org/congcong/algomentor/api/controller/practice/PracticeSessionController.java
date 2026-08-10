@@ -10,6 +10,7 @@ import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewDetailResponse;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewHistoryResponse;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewResponseMapper;
+import org.congcong.algomentor.api.practice.model.CoachSummaryProposalActionResponse;
 import org.congcong.algomentor.api.practice.model.PracticeMessageRequest;
 import org.congcong.algomentor.api.practice.model.PracticeMessageResponse;
 import org.congcong.algomentor.api.practice.model.PracticeActiveRunResponse;
@@ -133,6 +134,17 @@ public class PracticeSessionController {
     PracticeSessionResponse response = PracticeSessionResponseMapper.toResponse(
         requiredPracticeSessionService().get(userId, sessionId, limit));
     return ApiResponse.success(response.messages());
+  }
+
+  @PostMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_COACH_SUMMARY_PROPOSAL_APPLY_PATH)
+  public ApiResponse<CoachSummaryProposalActionResponse> applyCoachSummaryProposal(
+      @PathVariable long sessionId,
+      @PathVariable String proposalId
+  ) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(PracticeSessionResponseMapper.toCoachSummaryAction(
+        requiredPracticeSessionService().applyCoachSummaryProposal(userId, sessionId, proposalId)));
   }
 
   @GetMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH

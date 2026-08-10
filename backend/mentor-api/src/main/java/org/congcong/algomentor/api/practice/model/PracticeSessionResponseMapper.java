@@ -4,6 +4,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDe
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionMessage;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionResult;
+import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryMessageAction;
 
 public final class PracticeSessionResponseMapper {
 
@@ -61,6 +62,20 @@ public final class PracticeSessionResponseMapper {
         message.role(),
         message.messageType(),
         message.contentMarkdown(),
-        message.createdAt());
+        message.createdAt(),
+        toCoachSummaryAction(message.coachSummaryAction()));
+  }
+
+  public static CoachSummaryProposalActionResponse toCoachSummaryAction(CoachSummaryMessageAction action) {
+    if (action == null) {
+      return null;
+    }
+    return new CoachSummaryProposalActionResponse(
+        action.proposalId(),
+        action.status().name(),
+        action.operation().name(),
+        action.appliedCoachSummaryRevision(),
+        action.createdAt(),
+        action.appliedAt());
   }
 }

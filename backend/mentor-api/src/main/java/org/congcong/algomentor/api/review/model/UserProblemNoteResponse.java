@@ -9,9 +9,11 @@ public record UserProblemNoteResponse(
     ProblemSolutionOutlineV1 outline,
     String noteMarkdown,
     long revision,
+    long coachSummaryRevision,
     boolean exists,
     boolean hasContent,
     Instant createdAt,
+    Instant coachSummaryUpdatedAt,
     Instant updatedAt
 ) {
 }

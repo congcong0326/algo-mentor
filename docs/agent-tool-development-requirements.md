@@ -62,20 +62,22 @@
 
 落地结果：身份、session、plan、phase 和题目均来自服务端可信上下文；默认笔记摘要查询不读取 Markdown 正文，只有当前用户消息明确要求且工具参数同步开启时才读取正文。能力通过 `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` 独立开关启停。
 
-### 5.2 追加当前题目笔记
+### 5.2 生成并采纳当前题教练总结
 
-已完成：新增 `append_current_problem_note`，服务 Practice Chat。
+已完成：新增 `propose_current_problem_coach_summary`，服务 Practice Chat。
 
-业务需求：用户明确要求“保存到笔记”或“把这个记下来”时，Agent 能把本次对话中整理出的内容追加到当前题目的用户笔记。
+业务需求：用户明确要求生成或更新教练总结时，Agent 先在聊天中展示完整候选稿，用户通过消息末尾的一次性按钮决定是否创建或替换正式总结。
 
 范围边界：
 
-- 每次写入都需要用户确认，并展示将要追加的内容。
-- 只允许追加，不覆盖、清空或删除用户已有笔记。
-- 不自动在每次讲解或正式 Review 后写入。
-- 第一阶段不修改结构化解题提纲。
+- Tool 只生成候选，不直接写正式总结，不使用权限弹窗和倒计时。
+- 候选 Markdown 必须作为聊天消息的确切正文展示；按钮只提交 proposal ID。
+- 服务端 apply 原子创建或替换总结，并使用独立 revision，不修改结构化解题提纲。
+- 新候选自动使旧候选失效；重复 apply 幂等；revision 冲突不得覆盖较新总结。
+- 不自动在普通讲解或代码 Review 后生成候选。
+- 本阶段不实现撤销替换。
 
-落地结果：模型只提交待追加的 `contentMarkdown`；身份、session、plan、phase 和题目来自服务端可信上下文。权限 Hook 会在执行前把规范化后的确切 Markdown 展示给用户，只有用户允许后才进入工具实现；全局工具权限机制关闭时该写工具不会注册。持久化使用 PostgreSQL 原子 upsert，只追加正文并递增修订号，已有结构化提纲保持不变；拒绝、超时、非法参数和长度超限均不会写入。能力通过 `PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED` 独立开关启停。
+落地结果：模型只提交完整 `summaryMarkdown`；身份、session、plan、phase、题目、run 和 tool call 来自服务端可信上下文。proposal 持久化并关联最终 assistant 消息，查询历史消息时以 proposal Markdown 投影正文和按钮状态；采纳 API 只接收 `proposalId`，使用 `coach_summary_revision` 做原子替换，结构化提纲 revision 保持不变。能力通过 `PRACTICE_CHAT_COACH_SUMMARY_TOOL_ENABLED` 独立开关启停。
 
 ## 6. 暂缓需求
 
@@ -91,5 +93,5 @@
 
 1. 先补齐 `read_tool_result` 和 `get_problem_review_trajectory` 的现有场景接入。
 2. 已完成 `get_current_problem_learning_state`。
-3. 已完成需要用户确认的 `append_current_problem_note`。
+3. 已完成聊天候选 + 一次性采纳按钮的 `propose_current_problem_coach_summary`。
 4. 全局学习进度快照保持暂缓，不继续展开其他候选 Tool。
