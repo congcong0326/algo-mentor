@@ -25,12 +25,9 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
 
   private static final String JSON_TYPE = "type";
   private static final String JSON_OBJECT = "object";
-  private static final String JSON_STRING = "string";
-  private static final String JSON_NULL = "null";
   private static final String JSON_PROPERTIES = "properties";
   private static final String JSON_REQUIRED = "required";
   private static final String JSON_ADDITIONAL_PROPERTIES = "additionalProperties";
-  private static final String JSON_DESCRIPTION = "description";
 
   private static final String ERROR_MISSING_METADATA = "MISSING_METADATA";
   private static final String ERROR_NOT_PRACTICE_CHAT = "NOT_PRACTICE_CHAT";
@@ -47,8 +44,10 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
           workflow to extract code, analyze, score, and save a review record that may affect completion eligibility. \
           Use when the current user message looks like a complete solution submission for the active practice problem, \
           even if the user did not explicitly ask for a formal review. Do not use for snippets, pseudocode, error logs, \
-          local bug questions, syntax questions, or conceptual discussion. Do not pass user id, session id, problem slug, \
-          code, or message ids; the server derives them from trusted execution metadata.
+          local bug questions, syntax questions, conceptual discussion, or code from a current or previous assistant \
+          response. When the user asks to submit code from an assistant response or an earlier turn, explain that only \
+          code included in the current user message can be submitted; do not call this tool. This tool accepts no \
+          arguments; the server derives all submission context from trusted execution metadata.
           """.strip(),
       inputSchema(),
       true);
@@ -252,20 +251,8 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     if (arguments == null || arguments.isNull()) {
       return;
     }
-    if (!arguments.isObject()) {
-      throw failure("Practice code review tool arguments must be a JSON object", ERROR_INVALID_ARGUMENTS, Map.of(), null);
-    }
-    java.util.Iterator<String> fields = arguments.fieldNames();
-    while (fields.hasNext()) {
-      String fieldName = fields.next();
-      if (!PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT.equals(fieldName)
-          && !PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES.equals(fieldName)) {
-        throw failure("Practice code review tool arguments contain unsupported fields", ERROR_INVALID_ARGUMENTS, Map.of(), null);
-      }
-      JsonNode value = arguments.get(fieldName);
-      if (value != null && !value.isNull() && !value.isTextual()) {
-        throw failure("Practice code review tool arguments must be strings", ERROR_INVALID_ARGUMENTS, Map.of(), null);
-      }
+    if (!arguments.isObject() || !arguments.isEmpty()) {
+      throw failure("Practice code review tool does not accept arguments", ERROR_INVALID_ARGUMENTS, Map.of(), null);
     }
   }
 
@@ -349,24 +336,9 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
   private static JsonNode inputSchema() {
     ObjectNode schema = JsonNodeFactory.instance.objectNode();
     schema.put(JSON_TYPE, JSON_OBJECT);
-    ObjectNode properties = schema.putObject(JSON_PROPERTIES);
-    properties.set(
-        PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT,
-        nullableStringProperty("Optional user-facing reason for requesting this formal review."));
-    properties.set(
-        PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES,
-        nullableStringProperty("Optional short notes for the review request. Keep this concise and non-identifying."));
-    schema.putArray(JSON_REQUIRED)
-        .add(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT)
-        .add(PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES);
+    schema.putObject(JSON_PROPERTIES);
+    schema.putArray(JSON_REQUIRED);
     schema.put(JSON_ADDITIONAL_PROPERTIES, false);
     return schema;
-  }
-
-  private static ObjectNode nullableStringProperty(String description) {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.putArray(JSON_TYPE).add(JSON_STRING).add(JSON_NULL);
-    node.put(JSON_DESCRIPTION, description);
-    return node;
   }
 }

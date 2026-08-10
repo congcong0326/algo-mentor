@@ -47,7 +47,7 @@ class PracticeCodeReviewAgentToolTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void specUsesOpenAiStrictSchemaAndOnlyExposesNullableIntentAndNotes() {
+  void specUsesOpenAiStrictSchemaWithoutArguments() {
     PracticeCodeReviewAgentTool tool = tool(
         new FakePracticeSessionRepository(),
         new FakeTurnMessageLookupRepository(turnMessages()),
@@ -61,29 +61,16 @@ class PracticeCodeReviewAgentToolTest {
         .contains("extract code, analyze, score, and save a review record")
         .contains("Use when the current user message looks like a complete solution submission")
         .contains("even if the user did not explicitly ask for a formal review")
-        .contains("Do not pass user id, session id, problem slug, code, or message ids");
+        .contains("or code from a current or previous assistant response")
+        .contains("only code included in the current user message can be submitted")
+        .contains("do not call this tool")
+        .contains("This tool accepts no arguments");
     JsonNode schema = spec.inputSchema();
     assertThat(schema.path("type").asText()).isEqualTo("object");
     assertThat(spec.strict()).isTrue();
     assertThat(schema.path("additionalProperties").asBoolean()).isFalse();
-    assertThat(schema.path("properties").fieldNames())
-        .toIterable()
-        .containsExactlyInAnyOrder(
-            PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT,
-            PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES);
-    List<String> properties = new ArrayList<>();
-    schema.path("properties").fieldNames().forEachRemaining(properties::add);
-    List<String> required = new ArrayList<>();
-    schema.path("required").forEach(node -> required.add(node.asText()));
-    assertThat(required).containsExactlyElementsOf(properties);
-    JsonNode userIntentType = schema.path("properties")
-        .path(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT)
-        .path("type");
-    assertThat(userIntentType).extracting(JsonNode::asText).containsExactly("string", "null");
-    JsonNode notesType = schema.path("properties")
-        .path(PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES)
-        .path("type");
-    assertThat(notesType).extracting(JsonNode::asText).containsExactly("string", "null");
+    assertThat(schema.path("properties").isEmpty()).isTrue();
+    assertThat(schema.path("required").isEmpty()).isTrue();
     assertThat(schema.toString())
         .doesNotContain("userId")
         .doesNotContain("sessionId")
@@ -98,9 +85,7 @@ class PracticeCodeReviewAgentToolTest {
         new FakePracticeSessionRepository(),
         new FakeTurnMessageLookupRepository(turnMessages()),
         reviewService);
-    ObjectNode arguments = objectMapper.createObjectNode()
-        .put(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT, "请帮我正式 review")
-        .put(PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES, "模型侧备注");
+    ObjectNode arguments = objectMapper.createObjectNode();
 
     JsonNode result = tool.execute(arguments, executionContext(metadata()));
 
@@ -151,7 +136,6 @@ class PracticeCodeReviewAgentToolTest {
         new FakeTurnMessageLookupRepository(turnMessages()),
         reviewService);
     ObjectNode arguments = objectMapper.createObjectNode()
-        .put(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT, "请帮我正式 review")
         .put("userId", 999L)
         .put("code", "malicious code from model arguments");
 

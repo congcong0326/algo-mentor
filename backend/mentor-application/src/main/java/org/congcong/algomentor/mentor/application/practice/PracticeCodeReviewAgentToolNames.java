@@ -7,9 +7,6 @@ public final class PracticeCodeReviewAgentToolNames {
 
   public static final String SUBMIT_PRACTICE_CODE_REVIEW = "submit_practice_code_review";
 
-  public static final String ARGUMENT_USER_INTENT = "userIntent";
-  public static final String ARGUMENT_NOTES = "notes";
-
   public static final String RESULT_TYPE_PRACTICE_CODE_REVIEW_SUBMITTED = "practice_code_review_submitted";
 
   public static final String RESULT_TYPE = "type";

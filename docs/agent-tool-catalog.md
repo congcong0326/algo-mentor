@@ -217,7 +217,7 @@ Spring AgentTool Bean
 
 **输入与可信上下文**
 
-- 模型只可传 `userIntent` 和 `notes` 两个可空字符串。
+- 工具不接受模型参数；模型仅决定是否调用，调用时使用空对象。
 - `userId`、练习 session、题目 slug、当前用户消息、代码正文和消息 ID 全部从服务端可信 metadata 与持久化记录读取。
 - 工具会启动无工具的 Practice Code Review 子 Agent，完成代码提取、分析和结构化评分。
 

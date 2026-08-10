@@ -366,8 +366,7 @@ class PracticeCodeReviewFlowTest {
         new LlmStreamEvent.ToolCallEnd(new LlmToolCall(
             "call_review_1",
             PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
-            JsonNodeFactory.instance.objectNode()
-                .put(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT, "请做正式 Review"))),
+            JsonNodeFactory.instance.objectNode())),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
     gateway.steps.add(List.of(
         new LlmStreamEvent.ContentDelta(finalText),
