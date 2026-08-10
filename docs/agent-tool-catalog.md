@@ -18,7 +18,7 @@
 - 只存在于设计文档、尚未实现的规划工具。
 - 普通 Java `util`、前端工具栏和根目录 `tools/` 下的数据准备脚本。
 
-截至当前代码，生产代码共有 **15 个 `AgentTool` 实现**。需要特别区分两个概念：
+截至当前代码，生产代码共有 **17 个 `AgentTool` 实现**。需要特别区分两个概念：
 
 - **已注册**：Spring Bean 被收集进全局 `AgentToolRegistry`。
 - **可调用**：某个 `AgentDefinition.allowedToolNames()` 把工具加入当前 run 的白名单，模型才会看到并执行它。
@@ -27,7 +27,7 @@
 
 按 `application.yml` 默认值并假设 PostgreSQL 等完整依赖均已装配：
 
-- 默认实际暴露给业务 Agent 的工具有 7 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`submit_practice_code_review`、`get_current_problem_learning_state`、`append_current_problem_note`、`get_problem_review_trajectory`。
+- 默认实际暴露给业务 Agent 的工具有 9 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`query_learning_plan_revision`、`compile_learning_plan_revision`、`submit_practice_code_review`、`get_current_problem_learning_state`、`append_current_problem_note`、`get_problem_review_trajectory`。
 - 通过可选能力开关可再暴露 7 个学习者记忆工具。
 - `calculator` 和 `get_problem_statement` 虽然默认注册，但当前没有任何统一 Runtime Definition 将其加入白名单。
 
@@ -60,7 +60,7 @@ Spring AgentTool Bean
 | Agent 业务场景 | 最大步骤 | 当前 Tool 白名单 | 默认状态 |
 | --- | ---: | --- | --- |
 | 学习计划草案 `LEARNING_PLAN_DRAFT` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
-| 学习计划修订 `LEARNING_PLAN_REVISION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
+| 学习计划修订 `LEARNING_PLAN_REVISION` | 24 | `query_learning_plan_revision`、`compile_learning_plan_revision` | 开启 |
 | 学习计划扩展 `LEARNING_PLAN_EXTENSION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`append_current_problem_note`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像和记忆召回工具 | 开启 |
 | Code Review 画像后台更新 `CODE_REVIEW_PROFILE_UPDATE` | 4 | `get_problem_review_trajectory`、`get_code_review_evidence`、`compare_submission_versions` | 默认关闭 |
@@ -69,9 +69,65 @@ Spring AgentTool Bean
 
 `calculator` 和 `get_problem_statement` 不在上表任何 Definition 的白名单中。它们目前属于“已实现、可注册、尚无统一 Runtime 业务消费者”的工具。
 
-## 4. 题库工具
+## 4. 学习计划修订工具
 
-### 4.1 `list_problem_filters`
+学习计划修订 Agent 不再直接使用通用题库搜索 Tool。草稿第一次形成完整计划时，服务端冻结来源无关的 `originBrief + originPlan`；每次修订再冻结 `baseBrief + basePlan`。模型读取和编译均绑定当前 revision、用户与业务场景，不能读取后来变化的 draft，也不能自行指定其他用户、draft、revision 或模板。
+
+### 4.1 `query_learning_plan_revision`
+
+**业务目的**
+
+按需读取当前 revision 允许访问的冻结计划基线，避免把最多 149 题的计划全部放进首轮模型上下文，并支持精确恢复第一版草稿或撤销上次修订。
+
+**输入与输出**
+
+- `READ_BASELINE_OPTIONS`：返回 `CURRENT_REVISION`、`ORIGINAL_DRAFT`、`PREVIOUS_REVISION` 是否可用及语义说明。
+- `READ_PHASE`：按 `phaseRef` 分页读取一个阶段，返回阶段标题、重点、题目数、难度统计，以及题目的 `slug`、当前语言标题、难度和推荐理由。
+- `FIND_PROBLEMS`：按阶段引用、slug、难度或关键词筛选冻结计划中已经存在的题目。
+- `READ_PHASE` 和 `FIND_PROBLEMS` 可选择 `CURRENT_REVISION`、`ORIGINAL_DRAFT` 或 `PREVIOUS_REVISION`；未指定时默认当前修订基线。
+- 单页最多 30 题；cursor 绑定当前 revision ID、所选基线、操作和筛选条件，不能跨 revision、跨基线或更换条件复用。
+- 输出中的 `phaseRef` 只在当前冻结快照内有效，不是持久化 `phaseIndex`。
+
+**边界**
+
+- 只读，不搜索全局题库，不读取最新 mutable draft；`ORIGINAL_DRAFT` 读取草稿第一次完整落库的冻结快照，不重新查询可能已变化的模板。
+- 不返回题目 `frontendId`、双语标题、tags、`sortOrder`、阶段 `phaseIndex`、阶段 `durationWeeks` 或 metadata。
+- `userId`、`draftId`、`revisionId` 和场景标识来自服务端可信 metadata；模型参数中没有身份字段，也不接受 `templateId`。
+- 只对 `LEARNING_PLAN_REVISION` 白名单开放，无需用户确认。
+
+### 4.2 `compile_learning_plan_revision`
+
+**业务目的**
+
+把模型提交的语义 Patch 编译为完整 canonical 计划，并在 revision 仍为 `GENERATING` 时暂存 `proposedBrief + proposedPlan`。编译基线可选择当前修订、第一版完整草稿或上一次修订前快照；模型最终只返回该产物的 `artifactRef`，不再复制完整计划。
+
+**输入能力**
+
+- 基线选择：`CURRENT_REVISION` 用于普通修订；`ORIGINAL_DRAFT` 精确恢复第一版完整草稿，对模板和 AI 来源通用；`PREVIOUS_REVISION` 用于撤销上一轮修订。
+- Brief Patch：可修改规划字段；缺失字段保持基线，`personalizationEnabled` 和 `contentLocale` 无条件从基线恢复。
+- 计划 Patch：可修改标题、摘要，对阶段执行 `UPDATE`、`ADD`、`REMOVE`、`MOVE`。
+- 题目 Patch：可执行 `ADD`、`REMOVE`、`MOVE`、`REPLACE`；可直接指定 slug，也可通过 `replacementSelection` 让服务端按难度、关键词和主题提示选择本地题库候选。
+- 删除和移动必须显式表达，字段缺失不会被解释为删除。
+
+**恢复与校验**
+
+- 从本地题库按 slug 回填 `frontendId`、双语标题、difficulty 和 tags，只保留模型负责的 reason。
+- 按最终列表顺序重建 `phaseIndex` 和 `sortOrder`；阶段周数不交给模型，在总周期或阶段结构变化后由服务端兼容分配。
+- 从合并后的 Brief 回填计划中的重复约束字段，保留 metadata provenance，并重算学习负载。
+- 模板计划内容变化后失效旧 `matchedProblemCount` 断言；149 题模板计划不会套用 AI 生成计划“每阶段最多 5 题”的限制。
+- 编译失败返回 `NEEDS_REVISION + diagnostics`，不覆盖已存产物；成功返回 `PASS + artifactRef + baseline + changed + changeSummary`。
+- `changeSummary.problemCountBefore` 和修订前难度统计始终描述当前 revision 基线，修订后统计描述编译结果，因此 18→4 后按 `ORIGINAL_DRAFT` 恢复会明确返回 4→18。
+
+**副作用与权限**
+
+- 会更新当前 revision 的 proposed 快照，但不会直接把 revision 标记为 `READY`，也不会直接覆盖 draft。
+- Agent 最终输出 artifactRef 后，流服务重新读取产物并执行过期检查、READY 转换和 draft 更新。
+- `userId`、`revisionId` 和场景标识来自服务端可信 metadata，只对 `LEARNING_PLAN_REVISION` 白名单开放。
+- 该写入是一次修订请求内部的受限暂存，不代表对外部系统执行不可逆动作，因此无需额外用户确认。
+
+## 5. 题库工具
+
+### 5.1 `list_problem_filters`
 
 **业务目的**
 
@@ -79,7 +135,7 @@ Spring AgentTool Bean
 
 **适用场景**
 
-- 生成、修订或扩展学习计划前，了解可用难度和标签。
+- 生成或扩展学习计划前，了解可用难度和标签。
 - 用户提出“动态规划中等题”“某公司高频题”等模糊训练目标时，先把自然语言映射为题库精确值。
 - 在搜索前确认当前题库是否存在分类、公司、岗位或时间桶数据。
 
@@ -92,10 +148,10 @@ Spring AgentTool Bean
 **边界**
 
 - 只读，不改变业务数据。
-- 当前暴露给学习计划草案、修订和扩展 Agent。
+- 当前暴露给学习计划草案和扩展 Agent。
 - 配置：`AGENT_PROBLEM_FILTERS_TOOL_ENABLED`，默认 `true`。
 
-### 4.2 `search_problems`
+### 5.2 `search_problems`
 
 **业务目的**
 
@@ -118,10 +174,10 @@ Spring AgentTool Bean
 - `difficulty` 仅允许 `EASY`、`MEDIUM`、`HARD`。
 - `tag` 必须精确匹配 `list_problem_filters` 返回值。
 - 分页大小受 `ProblemListRequest.MAX_PAGE_SIZE` 约束。
-- 只读；当前暴露给学习计划草案、修订和扩展 Agent。
+- 只读；当前暴露给学习计划草案和扩展 Agent。学习计划修订使用冻结快照查询与编译器内部的受约束候选选择。
 - 配置：`AGENT_PROBLEM_SEARCH_TOOL_ENABLED`，默认 `true`。
 
-### 4.3 `get_problem_statement`
+### 5.3 `get_problem_statement`
 
 **业务目的**
 
@@ -140,9 +196,9 @@ Spring AgentTool Bean
 - 配置：`AGENT_PROBLEM_STATEMENT_TOOL_ENABLED`，默认 `true`。
 - Spring 默认会注册该工具，但当前没有 Agent Definition 将其加入白名单，因此没有统一 Runtime 业务场景可以调用它。
 
-## 5. Practice Chat 练习与状态工具
+## 6. Practice Chat 练习与状态工具
 
-### 5.1 `submit_practice_code_review`
+### 6.1 `submit_practice_code_review`
 
 **业务目的**
 
@@ -178,7 +234,7 @@ Spring AgentTool Bean
 - 用户拒绝、超时或取消时不会进入工具实现，也不会生成 Review 记录。
 - 配置：`PRACTICE_CODE_REVIEW_ENABLED`，默认 `true`；权限总开关 `AGENT_TOOL_PERMISSION_ENABLED` 默认 `true`。
 
-### 5.2 `get_current_problem_learning_state`
+### 6.2 `get_current_problem_learning_state`
 
 **业务目的**
 
@@ -210,7 +266,7 @@ Spring AgentTool Bean
 - 多版本 Review 的持续、已解决和新增问题继续使用 `get_problem_review_trajectory`。
 - 配置：`PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED`，默认 `true`。
 
-### 5.3 `append_current_problem_note`
+### 6.3 `append_current_problem_note`
 
 **业务目的**
 
@@ -236,7 +292,7 @@ Spring AgentTool Bean
 - 工具返回 `APPENDED` 后才能声称保存成功；失败、拒绝或超时不得声称笔记已更新。
 - 配置：`PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED`，默认 `true`；权限总开关 `AGENT_TOOL_PERMISSION_ENABLED` 默认 `true`。为保证每次写入都经过确认，权限总开关关闭时该工具不会注册或暴露给 Practice Chat。
 
-### 5.4 `update_learner_declared_profile`
+### 6.4 `update_learner_declared_profile`
 
 **业务目的**
 
@@ -270,32 +326,32 @@ Spring AgentTool Bean
 - 当前没有单独的确认弹窗；安全边界依赖用户明确表达、Prompt 规则、可信消息校验和原子写入服务。
 - 配置：`LEARNER_MEMORY_DECLARED_UPDATE_ENABLED`，默认 `false`。
 
-## 6. Practice Chat 记忆召回工具
+## 7. Practice Chat 记忆召回工具
 
 这三个工具只读取当前 Practice Chat run 启动时创建的学习者记忆快照，不直接遍历用户的全部长期记忆。默认开关关闭。
 
-### 6.1 `search_learner_memory`
+### 7.1 `search_learner_memory`
 
 - 业务目的：按文本、主题 section 和题目 tag 在当前快照中搜索相关长期记忆。
 - 输入：`query`、可选 `sectionRef`、`tagValues`、`limit`、`cursor`。
 - 输出：匹配 statement 的引用、Claim 文本、来源摘要、所在主题和是否命中当前题目。
 - 无匹配只表示当前 run 快照未命中，不能推断用户没有相关经验。
 
-### 6.2 `read_learner_memory_section`
+### 7.2 `read_learner_memory_section`
 
 - 业务目的：在模型已知某个记忆主题可能相关时，按固定投影顺序读取该主题。
 - 输入：`sectionRef`、`limit`，以及继续翻页时使用的 `afterStatementRef`。
 - 输出：主题标题、statement 列表和下一页位置。
 - 只能使用当前快照提供的 section/statement 引用，不能自行构造任意数据库查询。
 
-### 6.3 `get_learner_memory_evidence`
+### 7.3 `get_learner_memory_evidence`
 
 - 业务目的：核验某条记忆 statement 的证据类型和时间，帮助模型区分用户自述与正式 Review 观察。
 - 输入：`statementRef`、`limit`、`cursor`。
 - 输出：证据来源 `FORMAL_REVIEW` 或 `USER_MESSAGE`、证据角色和记录时间。
 - 不返回用户消息正文、代码正文或完整 Review Markdown。
 
-### 6.4 共享安全预算
+### 7.4 共享安全预算
 
 - 配置：`LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED`，默认 `false`。
 - 三项业务工具合计每个 run 最多调用 3 次。
@@ -304,11 +360,11 @@ Spring AgentTool Bean
 - 大结果通过 `read_tool_result` 继续读取时，最多允许 2 次范围读取。
 - 快照通过不可枚举的 run-local capability ref 访问，默认 15 分钟过期；run 释放后不能重新打开。
 
-## 7. Code Review 画像后台工具
+## 8. Code Review 画像后台工具
 
 这三个工具服务于后台 `CODE_REVIEW_PROFILE_UPDATE` Agent，用来从多次正式 Review 中提炼长期能力、错误模式和恢复轨迹。`get_problem_review_trajectory` 也可由 Practice Chat 在独立前台开关开启时读取当前训练题；其余两项不面向前台对话直接开放，默认随 Code Review 画像消费者一起关闭。
 
-### 7.1 `get_problem_review_trajectory`
+### 8.1 `get_problem_review_trajectory`
 
 - 业务目的：查看同一题最近最多 5 个正式 Review 的纵向变化。
 - 输入：`problemSlug`。
@@ -318,7 +374,7 @@ Spring AgentTool Bean
 - Practice Chat 中，只能通过当前 run 的不可枚举 capability 读取当前用户、当前训练题，且每个 run 最多调用一次；不会读取源代码或完整 Review Markdown。
 - 前台开关：`PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED`，默认 `true`，不依赖 `LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED`。
 
-### 7.2 `get_code_review_evidence`
+### 8.2 `get_code_review_evidence`
 
 - 业务目的：读取某条正式 Review 的受限证据详情，支持画像 Claim 的证据化判断。
 - 输入：`reviewId`。
@@ -326,7 +382,7 @@ Spring AgentTool Bean
 - 不返回源代码或完整 Review Markdown。
 - `reviewId` 必须属于当前用户且位于本次后台 run 的授权范围内。
 
-### 7.3 `compare_submission_versions`
+### 8.3 `compare_submission_versions`
 
 - 业务目的：比较同题前后两个正式提交版本，判断问题是持续、修复还是新出现。
 - 输入：`fromReviewId`、`toReviewId`。
@@ -334,7 +390,7 @@ Spring AgentTool Bean
 - 两个 Review 必须属于同一用户、同一题，且版本严格递增。
 - 每个 run 最多使用一次 diff；该结果含代码差异，敏感度高于另外两个后台只读工具，但仍受 run-local scope 和结果长度限制。
 
-### 7.4 共享安全预算
+### 8.4 共享安全预算
 
 - 配置：`LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED`，默认 `false`。
 - 三项工具合计每个后台 run 最多调用 3 次。
@@ -342,9 +398,9 @@ Spring AgentTool Bean
 - 工具只能使用随机 capability ref 访问任务预先授权的 Review 集合，默认 15 分钟过期。
 - 轨迹按题去重，diff 全 run 只能一次，越权 Review ID 返回结构化失败结果。
 
-## 8. 通用运行时工具
+## 9. 通用运行时工具
 
-### 8.1 `read_tool_result`
+### 9.1 `read_tool_result`
 
 **业务目的**
 
@@ -362,7 +418,7 @@ Spring AgentTool Bean
 - 当前只被 Practice Chat Definition 加入白名单。
 - 没有独立功能开关；存在 `ToolResultStore` 时注册。完整 PostgreSQL 装配会提供 `PostgresToolResultStore`。
 
-### 8.2 `calculator`
+### 9.2 `calculator`
 
 **业务目的**
 
@@ -381,7 +437,7 @@ Spring AgentTool Bean
 - 配置：`AGENT_CALCULATOR_TOOL_ENABLED`，默认 `true`。
 - 默认会进入全局 Registry，但没有任何当前 Agent Definition 将其加入白名单，因此统一 Runtime 业务流不会调用它。
 
-## 9. 默认配置汇总
+## 10. 默认配置汇总
 
 | 环境变量 | 默认值 | 影响的 Tool |
 | --- | --- | --- |
@@ -389,6 +445,7 @@ Spring AgentTool Bean
 | `AGENT_PROBLEM_FILTERS_TOOL_ENABLED` | `true` | `list_problem_filters` |
 | `AGENT_PROBLEM_SEARCH_TOOL_ENABLED` | `true` | `search_problems` |
 | `AGENT_PROBLEM_STATEMENT_TOOL_ENABLED` | `true` | `get_problem_statement`，仅控制注册 |
+| 无独立开关 | 条件装配 | `query_learning_plan_revision`、`compile_learning_plan_revision`；存在学习计划提案仓储时注册，仅修订 Agent 可见 |
 | `PRACTICE_CODE_REVIEW_ENABLED` | `true` | `submit_practice_code_review` 及 Review 子 Agent |
 | `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` | `true` | Practice Chat 的 `get_current_problem_learning_state` |
 | `PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED` | `true` | Practice Chat 的 `append_current_problem_note` |
@@ -403,36 +460,37 @@ Spring AgentTool Bean
 
 部署环境可能覆盖这些默认值，因此判断线上实际能力时，应同时检查 Spring 条件装配和运行环境变量。
 
-## 10. 当前实现观察
+## 11. 当前实现观察
 
-### 10.1 题面工具已实现但没有业务消费者
+### 11.1 题面工具已实现但没有业务消费者
 
 普通 Mentor 会话和算法主题讲解业务已移除，不再有对应的 Agent Definition 或 Tool 白名单。`get_problem_statement` 的实现、配置和设计仍然存在，但当前学习计划只允许过滤项和搜索工具，Practice Chat 则由后端固定注入当前题面。由于没有任何 Definition 将该工具加入白名单，统一 Runtime 当前没有它的业务消费者。
 
 Practice Chat 已由后端确定性注入当前题面，因此不会通过统一 Runtime 按需调用该工具。
 
-### 10.2 计算器当前没有业务消费者
+### 11.2 计算器当前没有业务消费者
 
 `calculator` 默认注册但不在任何 Definition 白名单中，当前统一 Runtime 业务流不会调用它。
 
-### 10.3 学习计划可继续读取被压缩的大工具结果
+### 11.3 学习计划草案和扩展可继续读取被压缩的大工具结果
 
-学习计划草案、修订和扩展 Agent 都已将 `read_tool_result` 加入白名单。过滤项或搜索结果超过压缩阈值时，模型可基于同一 run 的 `resultRef` 按范围续读；ToolResultStore 不允许跨 run 访问结果。
+学习计划草案和扩展 Agent 已将 `read_tool_result` 加入白名单。过滤项或搜索结果超过压缩阈值时，模型可基于同一 run 的 `resultRef` 按范围续读；ToolResultStore 不允许跨 run 访问结果。学习计划修订不使用通用结果续读，专用查询 Tool 自带最多 30 题的分页 cursor。
 
 当前搜索结果通常可通过较小 `pageSize` 控制，但公司过滤项等集合增长后仍可通过范围续读完整结果。
 
-### 10.4 长期记忆能力默认均为关闭状态
+### 11.4 长期记忆能力默认均为关闭状态
 
 自述画像写入、Practice Chat 记忆召回和 Code Review 画像后台更新都已经实现，但 `application.yml` 默认关闭。因此开发或产品验收时不能仅根据类和 Bean 是否存在判断功能已上线，应检查对应环境变量、Definition 注册和实际工具事件。
 
-### 10.5 写工具的确认策略不同
+### 11.5 写工具的确认策略不同
 
 `submit_practice_code_review` 和 `append_current_problem_note` 都有明确的 `ASK` 权限流程，真实副作用只在用户允许后发生；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。三者当前采用两种不同的产品授权语义。
 
-## 11. 主要代码依据
+## 12. 主要代码依据
 
 - Tool 抽象与注册：`backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentTool.java`、`AgentToolRegistry.java`。
 - 场景白名单：各业务模块的 `*AgentDefinition.java`。
+- 学习计划修订投影、查询与编译：`LearningPlanRevisionModelViewProjector.java`、`QueryLearningPlanRevisionAgentTool.java`、`CompileLearningPlanRevisionAgentTool.java`、`LearningPlanRevisionCanonicalRestorer.java`。
 - 全局 Tool 装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorAiConfiguration.java`。
 - Practice Chat 与记忆装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`。
 - 当前题学习状态工具：`backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`。

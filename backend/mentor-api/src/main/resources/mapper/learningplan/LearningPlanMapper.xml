@@ -26,6 +26,16 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="LearningPlanDraftOriginRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftOriginRow">
+    <constructor>
+      <arg column="origin_brief_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="origin_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+    </constructor>
+  </resultMap>
+
   <resultMap id="LearningPlanRowMap"
       type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow">
     <constructor>
@@ -91,7 +101,11 @@
       <arg column="revision_no" javaType="java.lang.Integer"/>
       <arg column="status" javaType="string"/>
       <arg column="instruction" javaType="string"/>
+      <arg column="base_brief_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="base_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="proposed_brief_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="proposed_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
@@ -138,6 +152,8 @@
       missing_fields_json,
       assistant_message,
       draft_plan_json,
+      origin_brief_json,
+      origin_plan_json,
       confirmed_plan_id,
       expires_at,
       created_at,
@@ -150,6 +166,12 @@
       #{messagesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{missingFieldsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{assistantMessage},
+      #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      CASE
+        WHEN #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler} IS NULL
+          THEN NULL
+        ELSE #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}
+      END,
       #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{confirmedPlanId},
       #{expiresAt},
@@ -167,6 +189,16 @@
         missing_fields_json = #{missingFieldsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         assistant_message = #{assistantMessage},
         draft_plan_json = #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        origin_brief_json = COALESCE(
+            origin_brief_json,
+            CASE
+              WHEN #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler} IS NULL
+                THEN NULL
+              ELSE #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}
+            END),
+        origin_plan_json = COALESCE(
+            origin_plan_json,
+            #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}),
         confirmed_plan_id = #{confirmedPlanId},
         expires_at = #{expiresAt},
         updated_at = #{updatedAt}
@@ -191,6 +223,17 @@
     FROM learning_plan_draft
     WHERE id = #{id}
       AND user_id = #{userId}
+  </select>
+
+  <select id="findDraftOriginForUser" resultMap="LearningPlanDraftOriginRowMap">
+    SELECT
+      origin_brief_json,
+      origin_plan_json
+    FROM learning_plan_draft
+    WHERE id = #{id}
+      AND user_id = #{userId}
+      AND origin_brief_json IS NOT NULL
+      AND origin_plan_json IS NOT NULL
   </select>
 
   <select id="findDraftByIdForUserForUpdate" resultMap="LearningPlanDraftRowMap">
@@ -683,7 +726,9 @@
       revision_no,
       status,
       instruction,
+      base_brief_json,
       base_plan_json,
+      proposed_brief_json,
       proposed_plan_json,
       error_code,
       error_message,
@@ -697,7 +742,9 @@
       #{revisionNo},
       #{status},
       #{instruction},
+      #{baseBriefJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{basePlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{proposedBriefJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{errorCode},
       #{errorMessage},
@@ -711,7 +758,9 @@
     UPDATE learning_plan_draft_revision
     SET status = #{status},
         instruction = #{instruction},
+        base_brief_json = #{baseBriefJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         base_plan_json = #{basePlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        proposed_brief_json = #{proposedBriefJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         proposed_plan_json = #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         error_code = #{errorCode},
         error_message = #{errorMessage},
@@ -729,7 +778,9 @@
       revision_no,
       status,
       instruction,
+      base_brief_json,
       base_plan_json,
+      proposed_brief_json,
       proposed_plan_json,
       error_code,
       error_message,
@@ -738,6 +789,31 @@
     FROM learning_plan_draft_revision
     WHERE id = #{id}
       AND user_id = #{userId}
+  </select>
+
+  <select id="findPreviousDraftRevisionForUser" resultMap="LearningPlanDraftRevisionRowMap">
+    SELECT
+      id,
+      proposal_group_id,
+      draft_id,
+      user_id,
+      revision_no,
+      status,
+      instruction,
+      base_brief_json,
+      base_plan_json,
+      proposed_brief_json,
+      proposed_plan_json,
+      error_code,
+      error_message,
+      created_at,
+      updated_at
+    FROM learning_plan_draft_revision
+    WHERE proposal_group_id = #{proposalGroupId}
+      AND user_id = #{userId}
+      AND revision_no &lt; #{beforeRevisionNo}
+    ORDER BY revision_no DESC, id DESC
+    LIMIT 1
   </select>
 
   <select id="insertExtensionRevision" resultType="java.lang.Long" affectData="true">

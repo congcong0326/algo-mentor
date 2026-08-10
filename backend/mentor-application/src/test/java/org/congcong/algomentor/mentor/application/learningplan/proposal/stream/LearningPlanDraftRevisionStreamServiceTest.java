@@ -30,6 +30,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConte
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
@@ -88,8 +89,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
         clock.instant(),
         clock.instant())).withReady(basePlan("旧修订计划"), clock.instant());
     previous = proposalRepository.saveDraftRevision(previous);
-    LearningPlanDraftRevisionStreamService service = serviceWithAgent(
-        finalJsonWithObjective("修订后计划", "掌握图论基础"));
+    LearningPlanDraftRevisionStreamService service = serviceWithCompiledAgent("修订后计划", "掌握图论基础");
 
     List<LearningPlanProposalStreamEvent> events = collect(service.stream(
         draft.userId(),
@@ -118,6 +118,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
     assertThat(savedDraft.brief().objective()).isEqualTo("掌握图论基础");
     assertThat(savedDraft.draftPlan().objective()).isEqualTo(savedDraft.brief().objective());
     assertThat(savedRevision.proposedPlan().objective()).isEqualTo(savedDraft.brief().objective());
+    assertThat(savedRevision.baseBrief()).isEqualTo(command());
+    assertThat(savedRevision.basePlan().title()).isEqualTo("原计划");
     assertThat(savedDraft.draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
     assertThat(lockOrder()).containsExactly("draft:100", "draft:100", "group:10");
   }
@@ -125,7 +127,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
   @org.junit.jupiter.api.Test
   void storesFailedRevisionAndEmitsDraftRevisionErrorWhenOutputIsInvalid() {
     LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
-    LearningPlanDraftRevisionStreamService service = serviceWithAgent("{\"title\":\"缺少阶段\"}");
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(
+        new FakeAgentRuntime("{\"title\":\"缺少阶段\"}"));
 
     List<LearningPlanProposalStreamEvent> events = collect(service.stream(
         draft.userId(),
@@ -176,7 +179,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
     proposalRepository.saveGroup(group.withLatestProposalId(newer.id(), clock.instant()));
     draftRepository.save(draftWithPlan(draft, basePlan("新修订计划")));
 
-    olderRunner.complete(finalJson("旧修订计划"));
+    olderRunner.completeCompiled("旧修订计划", command().objective());
     waitUntilDone(olderEvents, 1);
 
     assertThat(olderEvents.get(olderEvents.size() - 1).eventName()).isEqualTo("draft_revision_error");
@@ -231,7 +234,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
     proposalRepository.saveGroup(newerGroup.withLatestProposalId(newer.id(), clock.instant()));
     draftRepository.save(draftWithPlan(draft, basePlan("新修订计划")));
 
-    olderRunner.complete(finalJson("旧修订计划"));
+    olderRunner.completeCompiled("旧修订计划", command().objective());
     waitUntilDone(olderEvents, 1);
 
     assertThat(olderEvents.get(olderEvents.size() - 1).eventName()).isEqualTo("draft_revision_error");
@@ -252,7 +255,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
     LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
     ThrowOnSecondExecuteTransactionOperations transactions = new ThrowOnSecondExecuteTransactionOperations();
     LearningPlanDraftRevisionStreamService service = serviceWithAgent(
-        new FakeAgentRuntime(finalJson("修订后计划")),
+        new FakeAgentRuntime("修订后计划", command().objective()),
         transactions);
 
     List<LearningPlanProposalStreamEvent> events = collect(service.stream(
@@ -266,12 +269,14 @@ class LearningPlanDraftRevisionStreamServiceTest {
     LearningPlanDraftRevision revision = proposalRepository.draftRevisions.values().stream().findFirst().orElseThrow();
     assertThat(revision.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
     assertThat(revision.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_FAILED");
+    assertThat(revision.proposedPlan().title()).isEqualTo("修订后计划");
   }
 
   @org.junit.jupiter.api.Test
   void streamDoesNotCreateRevisionBeforeSubscription() {
     LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
-    LearningPlanDraftRevisionStreamService service = serviceWithAgent(finalJson("修订后计划"));
+    LearningPlanDraftRevisionStreamService service = serviceWithCompiledAgent(
+        "修订后计划", command().objective());
 
     service.stream(draft.userId(), draft.id(), "减少动态规划题", "run-no-subscription", Map.of());
 
@@ -297,7 +302,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
     waitUntilRevisionCount(1);
     publisher.subscribe(second);
     second.await();
-    runner.complete(finalJson("修订后计划"));
+    runner.completeCompiled("修订后计划", command().objective());
     first.await();
 
     assertThat(first.events.get(first.events.size() - 1).eventName()).isEqualTo("draft_revision_ready");
@@ -332,7 +337,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
   @org.junit.jupiter.api.Test
   void agentCompletionWithoutTerminalEventStoresFailedAndEmitsDraftRevisionError() {
     LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
-    LearningPlanDraftRevisionStreamService service = serviceWithAgent(new IncompleteAgentRuntime(finalJson("未完整结束")));
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(new IncompleteAgentRuntime(
+        "{\"status\":\"COMPILED\",\"artifactRef\":\"draft-revision:unknown:compiled\"}"));
 
     List<LearningPlanProposalStreamEvent> events = collect(service.stream(
         draft.userId(),
@@ -353,7 +359,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
   void assemblesOnePersonalizationSnapshotPerRevisionRunAndPassesItToTheAgent() {
     LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
     FakePersonalizationProvider provider = new FakePersonalizationProvider();
-    FakeAgentRuntime runtime = new FakeAgentRuntime(finalJson("修订后计划"));
+    FakeAgentRuntime runtime = new FakeAgentRuntime("修订后计划", command().objective());
     LearningPlanDraftRevisionStreamService service = serviceWithAgent(
         runtime,
         TransactionOperations.withoutTransaction(),
@@ -368,8 +374,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
         .containsOnly(LearningPlanPersonalizationSourceOutcome.EMPTY);
   }
 
-  private LearningPlanDraftRevisionStreamService serviceWithAgent(String content) {
-    return serviceWithAgent(new FakeAgentRuntime(content));
+  private LearningPlanDraftRevisionStreamService serviceWithCompiledAgent(String title, String objective) {
+    return serviceWithAgent(new FakeAgentRuntime(title, objective));
   }
 
   private LearningPlanDraftRevisionStreamService serviceWithAgent(AgentRuntime runtime) {
@@ -500,74 +506,45 @@ class LearningPlanDraftRevisionStreamServiceTest {
             1)));
   }
 
-  private String finalJson(String title) {
+  private String compiledFinalJson(long revisionId) {
     return """
-        {
-          "resolvedBrief": {
-            "intent": "INTERVIEW_SPRINT",
-            "objective": "准备 Java 后端算法面试",
-            "durationWeeks": 4,
-            "level": "INTERMEDIATE",
-            "weeklyHours": 6,
-            "programmingLanguage": "Java",
-            "difficultyDistribution": {
-              "easyPercent": 35,
-              "mediumPercent": 55,
-              "hardPercent": 10
-            },
-            "topicPreferences": ["Array"],
-            "additionalConstraints": "当前水平：中级，每周 6 小时，语言：Java",
-            "personalizationEnabled": true,
-            "contentLocale": "en-US"
-          },
-          "generatedContent": {
-            "title": "%s",
-            "summary": "围绕数组和哈希表建立高频题能力。",
-            "phases": [
-            {
-              "phaseIndex": 1,
-              "title": "数组与哈希表基础",
-              "durationWeeks": 2,
-              "focus": "Array",
-              "problems": [
-                {
-                  "slug": "two-sum",
-                  "frontendId": 1,
-                  "title": "Two Sum",
-                  "titleCn": "两数之和",
-                  "difficulty": "EASY",
-                  "tags": ["Array"],
-                  "reason": "匹配数组训练目标。",
-                  "sortOrder": 1
-                }
-              ]
-            },
-            {
-              "phaseIndex": 2,
-              "title": "二分与双指针",
-              "durationWeeks": 1,
-              "focus": "Binary Search",
-              "problems": []
-            },
-            {
-              "phaseIndex": 3,
-              "title": "动态规划入门",
-              "durationWeeks": 1,
-              "focus": "Dynamic Programming",
-              "problems": []
-            }
-            ],
-            "metadata": {
-            }
-          }
-        }
-        """.formatted(title);
+        {"status":"COMPILED","artifactRef":"draft-revision:%d:compiled"}
+        """.formatted(revisionId);
   }
 
-  private String finalJsonWithObjective(String title, String objective) {
-    return finalJson(title).replace(
-        "\"objective\": \"准备 Java 后端算法面试\"",
-        "\"objective\": \"%s\"".formatted(objective));
+  private void storeCompiledArtifact(AgentInvocation<?> invocation, String title, String objective) {
+    LearningPlanDraftRevisionAgentInput input = (LearningPlanDraftRevisionAgentInput) invocation.input();
+    LearningPlanDraftRevision revision = proposalRepository.findDraftRevisionForUser(input.revisionId(), input.userId())
+        .orElseThrow();
+    LearningPlanBrief proposedBrief = new LearningPlanBrief(
+        input.baseBrief().intent(),
+        objective,
+        input.baseBrief().durationWeeks(),
+        input.baseBrief().level(),
+        input.baseBrief().weeklyHours(),
+        input.baseBrief().programmingLanguage(),
+        input.baseBrief().difficultyDistribution(),
+        input.baseBrief().topicPreferences(),
+        input.baseBrief().additionalConstraints(),
+        input.baseBrief().personalizationEnabled(),
+        input.baseBrief().contentLocale());
+    LearningPlanDraftPlan proposedPlan = new LearningPlanDraftPlan(
+        title,
+        input.basePlan().summary(),
+        proposedBrief.intent(),
+        proposedBrief.objective(),
+        proposedBrief.durationWeeks(),
+        proposedBrief.level(),
+        proposedBrief.weeklyHours(),
+        proposedBrief.programmingLanguage(),
+        proposedBrief.difficultyDistribution(),
+        proposedBrief.topicPreferences(),
+        proposedBrief.additionalConstraints(),
+        input.basePlan().phases(),
+        Map.of(
+            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, proposedBrief.contentLocale().languageTag(),
+            LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, proposedBrief.personalizationEnabled()));
+    proposalRepository.saveDraftRevision(revision.withCompiled(proposedBrief, proposedPlan, clock.instant()));
   }
 
   private List<LearningPlanProposalStreamEvent> collect(Flow.Publisher<LearningPlanProposalStreamEvent> publisher) {
@@ -625,12 +602,22 @@ class LearningPlanDraftRevisionStreamServiceTest {
     return locks;
   }
 
-  private static class FakeAgentRuntime implements AgentRuntime {
+  private class FakeAgentRuntime implements AgentRuntime {
     private final String content;
+    private final String compiledTitle;
+    private final String compiledObjective;
     private AgentInvocation<?> invocation;
 
     FakeAgentRuntime(String content) {
       this.content = content;
+      this.compiledTitle = null;
+      this.compiledObjective = null;
+    }
+
+    FakeAgentRuntime(String compiledTitle, String compiledObjective) {
+      this.content = null;
+      this.compiledTitle = compiledTitle;
+      this.compiledObjective = compiledObjective;
     }
 
     @Override
@@ -641,12 +628,19 @@ class LearningPlanDraftRevisionStreamServiceTest {
     @Override
     public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       this.invocation = invocation;
+      String finalContent = content;
+      if (compiledTitle != null) {
+        storeCompiledArtifact(invocation, compiledTitle, compiledObjective);
+        LearningPlanDraftRevisionAgentInput input = (LearningPlanDraftRevisionAgentInput) invocation.input();
+        finalContent = compiledFinalJson(input.revisionId());
+      }
+      String responseContent = finalContent;
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
         String runId = invocation.context().idempotencyKey();
         publisher.submit(new AgentStreamEvent.AgentStepStart(runId, 1));
-        publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta(content)));
+        publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta(responseContent)));
         publisher.submit(new AgentStreamEvent.AgentStepEnd(runId, 1, LlmFinishReason.STOP, 0));
         publisher.submit(new AgentStreamEvent.AgentRunEnd(runId, 1, LlmFinishReason.STOP, Map.of()));
         publisher.close();
@@ -717,7 +711,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
     }
   }
 
-  private static final class ManualAgentRuntime implements AgentRuntime {
+  private final class ManualAgentRuntime implements AgentRuntime {
     private final AtomicReference<Flow.Subscriber<? super AgentStreamEvent>> subscriber = new AtomicReference<>();
     private final AtomicReference<AgentInvocation<?>> invocation = new AtomicReference<>();
 
@@ -751,6 +745,13 @@ class LearningPlanDraftRevisionStreamServiceTest {
       current.onNext(new AgentStreamEvent.AgentStepEnd(runId, 1, LlmFinishReason.STOP, 0));
       current.onNext(new AgentStreamEvent.AgentRunEnd(runId, 1, LlmFinishReason.STOP, Map.of()));
       current.onComplete();
+    }
+
+    void completeCompiled(String title, String objective) {
+      AgentInvocation<?> currentInvocation = invocation.get();
+      storeCompiledArtifact(currentInvocation, title, objective);
+      LearningPlanDraftRevisionAgentInput input = (LearningPlanDraftRevisionAgentInput) currentInvocation.input();
+      complete(compiledFinalJson(input.revisionId()));
     }
   }
 

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftOriginRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
@@ -24,6 +25,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaseSnapshot;
 import org.springframework.transaction.annotation.Transactional;
 
 public class MyBatisLearningPlanProposalRepository implements LearningPlanProposalRepository {
@@ -147,6 +149,22 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   }
 
   @Override
+  public Optional<LearningPlanRevisionBaseSnapshot> findDraftOriginForUser(long draftId, long userId) {
+    return Optional.ofNullable(mapper.findDraftOriginForUser(draftId, userId)).map(this::toBaseSnapshot);
+  }
+
+  @Override
+  public Optional<LearningPlanRevisionBaseSnapshot> findPreviousDraftRevisionBaseForUser(
+      long proposalGroupId,
+      int beforeRevisionNo,
+      long userId
+  ) {
+    return Optional.ofNullable(mapper.findPreviousDraftRevisionForUser(
+            proposalGroupId, beforeRevisionNo, userId))
+        .map(this::toBaseSnapshot);
+  }
+
+  @Override
   public Optional<LearningPlanExtensionRevision> findExtensionRevisionForUser(long revisionId, long userId) {
     return Optional.ofNullable(mapper.findExtensionRevisionForUser(revisionId, userId)).map(this::toExtensionRevision);
   }
@@ -246,7 +264,9 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         revisionNo,
         revision.status(),
         revision.instruction(),
+        revision.baseBrief(),
         revision.basePlan(),
+        revision.proposedBrief(),
         revision.proposedPlan(),
         revision.errorCode(),
         revision.errorMessage(),
@@ -284,7 +304,9 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         revision.revisionNo(),
         revision.status().name(),
         revision.instruction(),
+        json(revision.baseBrief()),
         json(revision.basePlan()),
+        json(revision.proposedBrief()),
         json(revision.proposedPlan()),
         revision.errorCode(),
         revision.errorMessage(),
@@ -336,12 +358,26 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         row.revisionNo(),
         LearningPlanProposalRevisionStatus.valueOf(row.status()),
         row.instruction(),
+        readNullable(row.baseBriefJson(), org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief.class),
         readNullable(row.basePlanJson(), LearningPlanDraftPlan.class),
+        readNullable(row.proposedBriefJson(), org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief.class),
         readNullable(row.proposedPlanJson(), LearningPlanDraftPlan.class),
         row.errorCode(),
         row.errorMessage(),
         row.createdAt(),
         row.updatedAt());
+  }
+
+  private LearningPlanRevisionBaseSnapshot toBaseSnapshot(LearningPlanDraftOriginRow row) {
+    return new LearningPlanRevisionBaseSnapshot(
+        read(row.originBriefJson(), org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief.class),
+        read(row.originPlanJson(), LearningPlanDraftPlan.class));
+  }
+
+  private LearningPlanRevisionBaseSnapshot toBaseSnapshot(LearningPlanDraftRevisionRow row) {
+    return new LearningPlanRevisionBaseSnapshot(
+        read(row.baseBriefJson(), org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief.class),
+        read(row.basePlanJson(), LearningPlanDraftPlan.class));
   }
 
   private LearningPlanExtensionRevision toExtensionRevision(LearningPlanExtensionRevisionRow row) {

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanGeneratedContentJsonSchema;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionToolContracts;
 
-/** 草案修订使用的严格输出 Schema：已解析规划输入与模型生成内容。 */
+/** 草案修订最终输出只引用 compile Tool 已生成的 artifact。 */
 public final class LearningPlanDraftRevisionJsonSchema {
 
   private LearningPlanDraftRevisionJsonSchema() {
@@ -16,43 +16,9 @@ public final class LearningPlanDraftRevisionJsonSchema {
     ObjectNode root = object();
     root.put("additionalProperties", false);
     ObjectNode properties = root.putObject("properties");
-    properties.set("resolvedBrief", resolvedBrief());
-    properties.set("generatedContent", LearningPlanGeneratedContentJsonSchema.schema());
-    require(root, "resolvedBrief", "generatedContent");
-    return root;
-  }
-
-  private static JsonNode resolvedBrief() {
-    ObjectNode root = object();
-    root.put("additionalProperties", false);
-    ObjectNode properties = root.putObject("properties");
-    properties.set("intent", enumString(
-        "PRACTICE_GOAL", "ABILITY_DIAGNOSIS", "INTERVIEW_SPRINT", "TOPIC_BREAKTHROUGH",
-        "MISTAKE_REVIEW", "LONG_TERM_LEARNING"));
-    properties.set("objective", nullableString());
-    properties.set("durationWeeks", integer(1, 52));
-    properties.set("level", enumString("BEGINNER", "INTERMEDIATE", "ADVANCED"));
-    properties.set("weeklyHours", integer(1, 80));
-    properties.set("programmingLanguage", nullableString());
-    properties.set("difficultyDistribution", difficultyDistribution());
-    properties.set("topicPreferences", stringArray());
-    properties.set("additionalConstraints", nullableString());
-    properties.set("personalizationEnabled", bool());
-    properties.set("contentLocale", enumString("zh-CN", "en-US"));
-    require(root, "intent", "objective", "durationWeeks", "level", "weeklyHours",
-        "programmingLanguage", "difficultyDistribution", "topicPreferences",
-        "additionalConstraints", "personalizationEnabled", "contentLocale");
-    return root;
-  }
-
-  private static JsonNode difficultyDistribution() {
-    ObjectNode root = object();
-    root.put("additionalProperties", false);
-    ObjectNode properties = root.putObject("properties");
-    properties.set("easyPercent", integer(0, 100));
-    properties.set("mediumPercent", integer(0, 100));
-    properties.set("hardPercent", integer(0, 100));
-    require(root, "easyPercent", "mediumPercent", "hardPercent");
+    properties.set("status", enumString(LearningPlanRevisionToolContracts.FINAL_STATUS_COMPILED));
+    properties.set("artifactRef", string());
+    require(root, "status", "artifactRef");
     return root;
   }
 
@@ -68,34 +34,6 @@ public final class LearningPlanDraftRevisionJsonSchema {
     return node;
   }
 
-  private static ObjectNode nullableString() {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    ArrayNode type = node.putArray("type");
-    type.add("string");
-    type.add("null");
-    return node;
-  }
-
-  private static ObjectNode bool() {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.put("type", "boolean");
-    return node;
-  }
-
-  private static ObjectNode integer(int minimum, int maximum) {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.put("type", "integer");
-    node.put("minimum", minimum);
-    node.put("maximum", maximum);
-    return node;
-  }
-
-  private static ObjectNode stringArray() {
-    ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.put("type", "array");
-    node.set("items", string());
-    return node;
-  }
 
   private static ObjectNode enumString(String... values) {
     ObjectNode node = string();

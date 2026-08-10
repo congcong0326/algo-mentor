@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.learningplan.service;
 import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
+import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
@@ -28,8 +29,8 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
   public List<LearningPlanProblemCandidate> searchProblems(LearningPlanProblemSearch search) {
     return problemService.findProblems(new ProblemListRequest(
             search.keyword(),
-            null,
-            null,
+            difficulty(search.difficulty()),
+            search.tag(),
             null,
             null,
             null,
@@ -42,6 +43,12 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
         .stream()
         .map(this::toCandidate)
         .toList();
+  }
+
+  private ProblemDifficulty difficulty(String value) {
+    return value == null || value.isBlank()
+        ? null
+        : ProblemDifficulty.valueOf(value.trim().toUpperCase(java.util.Locale.ROOT));
   }
 
   @Override

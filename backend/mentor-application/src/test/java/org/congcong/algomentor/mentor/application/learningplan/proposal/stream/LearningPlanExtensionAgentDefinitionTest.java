@@ -49,7 +49,8 @@ class LearningPlanExtensionAgentDefinitionTest {
                 "ABILITY_TAGS", "EMPTY",
                 "ACTIVE_PLAN", "EMPTY",
                 "REVIEW_LOAD", "EMPTY"));
-    assertThat(prepared.metadata().toString()).doesNotContain("sensitive-personalization-text", "731", "41");
+    assertThat(prepared.metadata().toString()).doesNotContain("sensitive-personalization-text");
+    assertThat(prepared.metadata().values()).doesNotContain(731L, 41L, 51L);
   }
 
   @Test

@@ -29,7 +29,6 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
@@ -40,8 +39,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStructuredOutputMapper;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionToolContracts;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.congcong.algomentor.mentor.application.learningplan.stream.SingleSubscriberSynchronousPublisher;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
@@ -63,10 +61,8 @@ public class LearningPlanDraftRevisionStreamService {
   private final LearningPlanDraftRepository draftRepository;
   private final LearningPlanProposalRepository proposalRepository;
   private final LearningPlanProposalGroupService groupService;
-  private final LearningPlanDraftValidator validator;
   private final AgentRuntime agentRuntime;
   private final LearningPlanDraftRevisionStructuredOutputMapper outputMapper;
-  private final LearningPlanLoadService loadService;
   private final ObjectMapper objectMapper;
   private final TransactionOperations transactionOperations;
   private final Clock clock;
@@ -114,14 +110,12 @@ public class LearningPlanDraftRevisionStreamService {
     this.draftRepository = Objects.requireNonNull(draftRepository, "draftRepository");
     this.proposalRepository = Objects.requireNonNull(proposalRepository, "proposalRepository");
     this.groupService = Objects.requireNonNull(groupService, "groupService");
-    this.validator = Objects.requireNonNull(validator, "validator");
+    Objects.requireNonNull(validator, "validator");
     this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
-    LearningPlanDraftStructuredOutputMapper generatedContentMapper =
-        new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
-    this.outputMapper = new LearningPlanDraftRevisionStructuredOutputMapper(
-        objectMapper, generatedContentMapper, validator);
-    this.loadService = Objects.requireNonNull(loadService, "loadService");
+    Objects.requireNonNull(problemCatalog, "problemCatalog");
+    this.outputMapper = new LearningPlanDraftRevisionStructuredOutputMapper();
+    Objects.requireNonNull(loadService, "loadService");
     this.transactionOperations = Objects.requireNonNull(transactionOperations, "transactionOperations");
     this.clock = Objects.requireNonNull(clock, "clock");
     this.personalizationContextService = Objects.requireNonNull(
@@ -168,7 +162,7 @@ public class LearningPlanDraftRevisionStreamService {
             context.draft().brief().personalizationEnabled(),
             LearningPlanPersonalizationScenario.REVISION);
         agentRuntime.stream(invocation(
-            context.draft(), context.revision().instruction(), runId, personalizationSnapshot)).subscribe(new StreamSubscriber(
+            context.draft(), context.revision(), runId, personalizationSnapshot)).subscribe(new StreamSubscriber(
             publisher,
             projector,
             context.draft(),
@@ -270,7 +264,9 @@ public class LearningPlanDraftRevisionStreamService {
         proposalRepository.nextRevisionNo(group.id()),
         LearningPlanProposalRevisionStatus.GENERATING,
         instruction,
+        draft.brief(),
         draft.draftPlan(),
+        null,
         null,
         null,
         null,
@@ -284,7 +280,10 @@ public class LearningPlanDraftRevisionStreamService {
       String message,
       boolean retryable
   ) {
-    LearningPlanDraftRevision failedRevision = proposalRepository.saveDraftRevision(revision.withFailure(
+    LearningPlanDraftRevision currentRevision = proposalRepository.findDraftRevisionForUser(
+            revision.id(), revision.userId())
+        .orElse(revision);
+    LearningPlanDraftRevision failedRevision = proposalRepository.saveDraftRevision(currentRevision.withFailure(
         code,
         message,
         clock.instant()));
@@ -296,7 +295,7 @@ public class LearningPlanDraftRevisionStreamService {
 
   private AgentInvocation<LearningPlanDraftRevisionAgentInput> invocation(
       LearningPlanDraft draft,
-      String instruction,
+      LearningPlanDraftRevision revision,
       String idempotencyKey,
       LearningPlanPersonalizationSnapshot personalizationSnapshot
   ) {
@@ -305,9 +304,10 @@ public class LearningPlanDraftRevisionStreamService {
         new LearningPlanDraftRevisionAgentInput(
             draft.userId(),
             draft.id(),
-            instruction,
-            draft.brief(),
-            draft.draftPlan(),
+            revision.id(),
+            revision.instruction(),
+            revision.baseBrief(),
+            revision.basePlan(),
             idempotencyKey,
             personalizationSnapshot),
         new AgentInvocationContext(
@@ -316,7 +316,7 @@ public class LearningPlanDraftRevisionStreamService {
             idempotencyKey,
             null,
             null,
-            instruction.getBytes(java.nio.charset.StandardCharsets.UTF_8).length,
+            revision.instruction().getBytes(java.nio.charset.StandardCharsets.UTF_8).length,
             true));
   }
 
@@ -326,8 +326,8 @@ public class LearningPlanDraftRevisionStreamService {
         "开始修订学习计划",
         "正在修订",
         Map.of(
-            LearningPlanAgentToolNames.LIST_PROBLEM_FILTERS, "正在查询题库标签",
-            LearningPlanAgentToolNames.SEARCH_PROBLEMS, "正在搜索候选题"),
+            LearningPlanRevisionToolContracts.QUERY_TOOL_NAME, "正在读取计划基线",
+            LearningPlanRevisionToolContracts.COMPILE_TOOL_NAME, "正在编译修订结果"),
         24,
         Duration.ofMillis(500),
         true);
@@ -412,13 +412,21 @@ public class LearningPlanDraftRevisionStreamService {
         if (finalContent == null || finalContent.isBlank()) {
           throw new LearningPlanException("LEARNING_PLAN_FINAL_OUTPUT_MISSING", "模型未返回学习计划修订结果。");
         }
-        LearningPlanDraftRevisionOutput output = outputMapper.map(
-            objectMapper.readTree(finalContent), draft.brief());
-        LearningPlanDraftPlan plan = loadService.withLoadMetadata(
-            output.generatedPlan(),
-            LearningPlanCoveragePolicy.FIT_USER_BUDGET);
-        validator.validateGeneratedPlan(plan);
-        emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(output.resolvedBrief(), plan)));
+        LearningPlanDraftRevisionOutput output = outputMapper.map(objectMapper.readTree(finalContent));
+        if (!LearningPlanRevisionToolContracts.artifactRef(revision.id()).equals(output.artifactRef())) {
+          throw new LearningPlanException("LEARNING_PLAN_REVISION_ARTIFACT_INVALID", "模型返回的修订 artifact 无效。");
+        }
+        LearningPlanDraftRevision compiledRevision = proposalRepository.findDraftRevisionForUser(
+                revision.id(), revision.userId())
+            .orElseThrow(() -> new LearningPlanException(
+                "LEARNING_PLAN_PROPOSAL_REVISION_NOT_FOUND", "学习计划修订记录不存在。"));
+        if (compiledRevision.status() != LearningPlanProposalRevisionStatus.GENERATING
+            || compiledRevision.proposedBrief() == null
+            || compiledRevision.proposedPlan() == null) {
+          throw new LearningPlanException(
+              "LEARNING_PLAN_REVISION_ARTIFACT_MISSING", "编译工具未生成有效的学习计划修订 artifact。");
+        }
+        emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(compiledRevision)));
       } catch (JsonProcessingException exception) {
         failRevisionAndEmit("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID", "学习计划修订结构化结果解析失败。", true, exception);
       } catch (LearningPlanException exception) {
@@ -432,10 +440,7 @@ public class LearningPlanDraftRevisionStreamService {
       }
     }
 
-    private LearningPlanProposalEvent completeReadyTransition(
-        LearningPlanBrief resolvedBrief,
-        LearningPlanDraftPlan plan
-    ) {
+    private LearningPlanProposalEvent completeReadyTransition(LearningPlanDraftRevision compiledRevision) {
       LearningPlanDraft lockedDraft = draftRepository.findDraftByIdForUserForUpdate(draft.id(), draft.userId())
           .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_FOUND", "学习计划草案不存在。"));
       validateRevisionDraft(lockedDraft);
@@ -448,23 +453,26 @@ public class LearningPlanDraftRevisionStreamService {
       if (nextRevisionNo > revision.revisionNo() + 1
           || latestActiveGroup.isEmpty()
           || !Objects.equals(latestActiveGroup.get().id(), lockedGroup.id())) {
-        return staleProposalError();
+        return staleProposalError(compiledRevision);
       }
       LearningPlanDraftRevision readyRevision = proposalRepository.saveDraftRevision(
-          revision.withReady(plan, clock.instant()));
+          compiledRevision.withReady(clock.instant()));
       List<Long> superseded = proposalRepository.markReadyDraftRevisionsSuperseded(
           readyRevision.proposalGroupId(),
           readyRevision.id());
       proposalRepository.saveGroup(lockedGroup.withLatestProposalId(readyRevision.id(), clock.instant()));
-      LearningPlanDraft savedDraft = draftRepository.save(draftWithRevisionPlan(lockedDraft, resolvedBrief, plan));
+      LearningPlanDraft savedDraft = draftRepository.save(draftWithRevisionPlan(
+          lockedDraft,
+          readyRevision.proposedBrief(),
+          readyRevision.proposedPlan()));
       return new LearningPlanProposalEvent.DraftRevisionReady(LearningPlanDraftRevisionResult.fromRevision(
           readyRevision,
           superseded,
           LearningPlanDraftResult.fromDraft(savedDraft)));
     }
 
-    private LearningPlanProposalEvent staleProposalError() {
-      LearningPlanDraftRevision staleRevision = proposalRepository.saveDraftRevision(revision.withFailure(
+    private LearningPlanProposalEvent staleProposalError(LearningPlanDraftRevision compiledRevision) {
+      LearningPlanDraftRevision staleRevision = proposalRepository.saveDraftRevision(compiledRevision.withFailure(
           "LEARNING_PLAN_DRAFT_REVISION_SUPERSEDED",
           "学习计划修订结果已被更新的请求取代。",
           clock.instant()));

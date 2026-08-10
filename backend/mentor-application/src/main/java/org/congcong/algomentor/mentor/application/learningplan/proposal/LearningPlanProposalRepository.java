@@ -3,6 +3,7 @@ package org.congcong.algomentor.mentor.application.learningplan.proposal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaseSnapshot;
 
 public interface LearningPlanProposalRepository {
 
@@ -33,6 +34,18 @@ public interface LearningPlanProposalRepository {
   LearningPlanExtensionRevision saveExtensionRevision(LearningPlanExtensionRevision revision);
 
   Optional<LearningPlanDraftRevision> findDraftRevisionForUser(long revisionId, long userId);
+
+  default Optional<LearningPlanRevisionBaseSnapshot> findDraftOriginForUser(long draftId, long userId) {
+    return Optional.empty();
+  }
+
+  default Optional<LearningPlanRevisionBaseSnapshot> findPreviousDraftRevisionBaseForUser(
+      long proposalGroupId,
+      int beforeRevisionNo,
+      long userId
+  ) {
+    return Optional.empty();
+  }
 
   Optional<LearningPlanExtensionRevision> findExtensionRevisionForUser(long revisionId, long userId);
 

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftOriginRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow;
@@ -29,6 +30,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaseSnapshot;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -74,9 +76,15 @@ class MyBatisLearningPlanProposalRepositoryTest {
     ArgumentCaptor<LearningPlanDraftRevisionRow> row = ArgumentCaptor.forClass(LearningPlanDraftRevisionRow.class);
     verify(mapper).insertDraftRevision(row.capture());
     assertThat(row.getValue().revisionNo()).isEqualTo(5);
+    assertThat(row.getValue().baseBriefJson().path("objective").asText())
+        .isEqualTo("Prepare for Java interviews");
     assertSnapshotJson(row.getValue().basePlanJson(), "Base plan", "Prepare for Java interviews");
+    assertThat(row.getValue().proposedBriefJson().path("objective").asText())
+        .isEqualTo("Refine Java interview practice");
     assertSnapshotJson(row.getValue().proposedPlanJson(), "Proposed plan", "Refine Java interview practice");
+    assertThat(saved.baseBrief().objective()).isEqualTo("Prepare for Java interviews");
     assertThat(saved.basePlan().objective()).isEqualTo("Prepare for Java interviews");
+    assertThat(saved.proposedBrief().objective()).isEqualTo("Refine Java interview practice");
     assertThat(saved.proposedPlan().objective()).isEqualTo("Refine Java interview practice");
   }
 
@@ -105,6 +113,36 @@ class MyBatisLearningPlanProposalRepositoryTest {
     assertThat(saved.basePlan().objective()).isEqualTo("Prepare for Java interviews");
     assertThat(saved.basePlan().difficultyDistribution()).isEqualTo(
         new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(25, 55, 20));
+  }
+
+  @Test
+  void findDraftOriginReturnsTheFirstCompleteDraftSnapshot() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
+    LearningPlanDraftPlan originPlan = plan("AI original plan", "Build graph fundamentals");
+    LearningPlanDraftRevision revision = draftRevision(null, 1, 30);
+    when(mapper.findDraftOriginForUser(30, 7)).thenReturn(new LearningPlanDraftOriginRow(
+        objectMapper.valueToTree(revision.baseBrief()),
+        objectMapper.valueToTree(originPlan)));
+
+    Optional<LearningPlanRevisionBaseSnapshot> result = repository.findDraftOriginForUser(30, 7);
+
+    assertThat(result).isPresent();
+    assertThat(result.orElseThrow().baseBrief()).isEqualTo(revision.baseBrief());
+    assertThat(result.orElseThrow().basePlan()).isEqualTo(originPlan);
+  }
+
+  @Test
+  void findPreviousDraftRevisionBaseUsesOnlyTheTrustedGroupAndRevisionBoundary() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
+    when(mapper.findPreviousDraftRevisionForUser(20, 5, 7)).thenReturn(draftRow(100L, 4, 30));
+
+    Optional<LearningPlanRevisionBaseSnapshot> result = repository.findPreviousDraftRevisionBaseForUser(20, 5, 7);
+
+    assertThat(result).isPresent();
+    assertThat(result.orElseThrow().basePlan().title()).isEqualTo("Base plan");
+    verify(mapper).findPreviousDraftRevisionForUser(20, 5, 7);
   }
 
   @Test
@@ -281,6 +319,22 @@ class MyBatisLearningPlanProposalRepositoryTest {
   }
 
   private LearningPlanDraftRevisionRow draftRow(Long id, int revisionNo, long draftId) {
+    LearningPlanDraftPlan basePlan = plan("Base plan", "Prepare for Java interviews");
+    LearningPlanDraftPlan proposedPlan = plan("Proposed plan", "Refine Java interview practice");
+    LearningPlanDraftRevision revision = new LearningPlanDraftRevision(
+        id,
+        20,
+        draftId,
+        7,
+        revisionNo,
+        LearningPlanProposalRevisionStatus.GENERATING,
+        "revise",
+        basePlan,
+        proposedPlan,
+        null,
+        null,
+        CREATED_AT,
+        UPDATED_AT);
     return new LearningPlanDraftRevisionRow(
         id,
         20L,
@@ -289,8 +343,10 @@ class MyBatisLearningPlanProposalRepositoryTest {
         revisionNo,
         LearningPlanProposalRevisionStatus.GENERATING.name(),
         "revise",
-        objectMapper.valueToTree(plan("Base plan", "Prepare for Java interviews")),
-        objectMapper.valueToTree(plan("Proposed plan", "Refine Java interview practice")),
+        objectMapper.valueToTree(revision.baseBrief()),
+        objectMapper.valueToTree(basePlan),
+        objectMapper.valueToTree(revision.proposedBrief()),
+        objectMapper.valueToTree(proposedPlan),
         null,
         null,
         CREATED_AT,

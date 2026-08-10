@@ -9,22 +9,23 @@ import org.congcong.algomentor.mentor.application.learningplan.personalization.L
 public record LearningPlanDraftRevisionAgentInput(
     long userId,
     long draftId,
+    long revisionId,
     String instruction,
-    LearningPlanBrief brief,
-    LearningPlanDraftPlan currentPlan,
+    LearningPlanBrief baseBrief,
+    LearningPlanDraftPlan basePlan,
     String idempotencyKey,
     LearningPlanPersonalizationSnapshot personalizationSnapshot
 ) {
 
   public LearningPlanDraftRevisionAgentInput {
-    if (userId < 1 || draftId < 1) {
+    if (userId < 1 || draftId < 1 || revisionId < 1) {
       throw new IllegalArgumentException("Learning plan draft revision identity must be positive");
     }
     if (instruction == null || instruction.isBlank()) {
       throw new IllegalArgumentException("Learning plan draft revision instruction must not be blank");
     }
-    brief = Objects.requireNonNull(brief, "Learning plan draft revision brief must not be null");
-    currentPlan = Objects.requireNonNull(currentPlan, "Learning plan draft revision current plan must not be null");
+    baseBrief = Objects.requireNonNull(baseBrief, "Learning plan draft revision base brief must not be null");
+    basePlan = Objects.requireNonNull(basePlan, "Learning plan draft revision base plan must not be null");
     personalizationSnapshot = Objects.requireNonNull(
         personalizationSnapshot, "Learning plan draft revision personalization snapshot must not be null");
     if (idempotencyKey == null || idempotencyKey.isBlank()) {

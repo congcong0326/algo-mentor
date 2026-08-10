@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanActivationRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftOriginRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow;
@@ -23,6 +24,8 @@ public interface LearningPlanMapper {
   LearningPlanDraftRow findDraftByIdForUser(@Param("id") long id, @Param("userId") long userId);
 
   LearningPlanDraftRow findDraftByIdForUserForUpdate(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanDraftOriginRow findDraftOriginForUser(@Param("id") long id, @Param("userId") long userId);
 
   long insertPlan(LearningPlanRow row);
 
@@ -124,6 +127,11 @@ public interface LearningPlanMapper {
   int updateDraftRevision(LearningPlanDraftRevisionRow row);
 
   LearningPlanDraftRevisionRow findDraftRevisionForUser(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanDraftRevisionRow findPreviousDraftRevisionForUser(
+      @Param("proposalGroupId") long proposalGroupId,
+      @Param("beforeRevisionNo") int beforeRevisionNo,
+      @Param("userId") long userId);
 
   long insertExtensionRevision(LearningPlanExtensionRevisionRow row);
 

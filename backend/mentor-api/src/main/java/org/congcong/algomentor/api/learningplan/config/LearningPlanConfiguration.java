@@ -30,6 +30,11 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentDefinition;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.CompileLearningPlanRevisionAgentTool;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaselineResolver;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionCanonicalRestorer;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionModelViewProjector;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.QueryLearningPlanRevisionAgentTool;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentDefinition;
@@ -153,9 +158,61 @@ public class LearningPlanConfiguration {
   @ConditionalOnMissingBean
   public LearningPlanDraftRevisionAgentDefinition learningPlanDraftRevisionAgentDefinition(
       LearningPlanProposalPromptBuilder promptBuilder,
-      ObjectMapper objectMapper
+      ObjectMapper objectMapper,
+      LearningPlanRevisionModelViewProjector modelViewProjector
   ) {
-    return new LearningPlanDraftRevisionAgentDefinition(promptBuilder, objectMapper);
+    return new LearningPlanDraftRevisionAgentDefinition(promptBuilder, objectMapper, modelViewProjector);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanRevisionModelViewProjector learningPlanRevisionModelViewProjector(ObjectMapper objectMapper) {
+    return new LearningPlanRevisionModelViewProjector(objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanRevisionCanonicalRestorer learningPlanRevisionCanonicalRestorer(
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
+      LearningPlanDraftValidator validator
+  ) {
+    return new LearningPlanRevisionCanonicalRestorer(problemCatalog, loadService, validator);
+  }
+
+  @Bean
+  @ConditionalOnBean(LearningPlanProposalRepository.class)
+  @ConditionalOnMissingBean
+  public LearningPlanRevisionBaselineResolver learningPlanRevisionBaselineResolver(
+      LearningPlanProposalRepository proposalRepository
+  ) {
+    return new LearningPlanRevisionBaselineResolver(proposalRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(LearningPlanProposalRepository.class)
+  @ConditionalOnMissingBean
+  public QueryLearningPlanRevisionAgentTool queryLearningPlanRevisionAgentTool(
+      LearningPlanProposalRepository proposalRepository,
+      LearningPlanRevisionBaselineResolver baselineResolver
+  ) {
+    return new QueryLearningPlanRevisionAgentTool(proposalRepository, baselineResolver);
+  }
+
+  @Bean
+  @ConditionalOnBean(LearningPlanProposalRepository.class)
+  @ConditionalOnMissingBean
+  public CompileLearningPlanRevisionAgentTool compileLearningPlanRevisionAgentTool(
+      LearningPlanProposalRepository proposalRepository,
+      LearningPlanRevisionBaselineResolver baselineResolver,
+      LearningPlanRevisionCanonicalRestorer restorer,
+      Clock learningPlanClock
+  ) {
+    return new CompileLearningPlanRevisionAgentTool(
+        proposalRepository,
+        baselineResolver,
+        restorer,
+        learningPlanClock);
   }
 
   @Bean

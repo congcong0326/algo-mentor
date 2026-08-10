@@ -41,6 +41,50 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
+  void freezesAiCreatedFirstCompleteDraftAsTheSourceIndependentOrigin() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    Repositories repositories = repositories();
+    LearningPlanBrief originalBrief = brief("AI 首版学习计划", 4, 25, 55, 20);
+    LearningPlanDraftPlan originalPlan = plan("AI 首版草稿", "AI 首版学习计划", 4, 25, 55, 20);
+    LearningPlanDraft draft = repositories.plans.save(new LearningPlanDraft(
+        null,
+        userId,
+        LearningPlanDraftStatus.GENERATED,
+        originalBrief,
+        List.of("由 AI 创建第一版草稿"),
+        List.of(),
+        "已生成学习计划草案。",
+        originalPlan,
+        null,
+        CREATED_AT.plusSeconds(86_400),
+        CREATED_AT,
+        UPDATED_AT));
+
+    assertThat(repositories.proposals.findDraftOriginForUser(draft.id(), userId))
+        .get()
+        .satisfies(origin -> {
+          assertThat(origin.baseBrief()).isEqualTo(originalBrief);
+          assertThat(origin.basePlan()).isEqualTo(originalPlan);
+        });
+
+    LearningPlanBrief revisedBrief = brief("修订后的学习计划", 4, 40, 60, 0);
+    LearningPlanDraftPlan revisedPlan = plan("删减后的草稿", "修订后的学习计划", 4, 40, 60, 0);
+    repositories.plans.save(draft.withGeneratedRevision(
+        revisedBrief,
+        List.of("删除中等与困难题"),
+        revisedPlan,
+        UPDATED_AT.plusSeconds(60)));
+
+    assertThat(repositories.proposals.findDraftOriginForUser(draft.id(), userId))
+        .get()
+        .satisfies(origin -> {
+          assertThat(origin.baseBrief()).isEqualTo(originalBrief);
+          assertThat(origin.basePlan()).isEqualTo(originalPlan);
+        });
+  }
+
+  @Test
   void roundTripsDraftFormalRevisionAndExtensionSnapshotsWithoutLegacyFields() throws Exception {
     migrateLatest();
     long userId = insertUser();

@@ -55,7 +55,7 @@ class LearningPlanDraftStreamServiceTest {
 
     List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, command(), "run-1", Map.of()));
 
-    assertThat(events).extracting(LearningPlanDraftStreamEvent::eventName)
+    assertThat(events).as("stream events: %s", events).extracting(LearningPlanDraftStreamEvent::eventName)
         .contains("work_start", "work_progress", "work_done", "draft_ready");
     LearningPlanDraftStreamEvent.Draft draftEvent = (LearningPlanDraftStreamEvent.Draft) events.stream()
         .filter(event -> event.eventName().equals("draft_ready"))
@@ -152,7 +152,8 @@ class LearningPlanDraftStreamServiceTest {
 
     List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, command(), "run-error", Map.of()));
 
-    assertThat(events).extracting(LearningPlanDraftStreamEvent::eventName).contains("draft_ready");
+    assertThat(events).as("stream events: %s", events).extracting(LearningPlanDraftStreamEvent::eventName)
+        .contains("draft_ready");
     LearningPlanDraftAgentInput input = (LearningPlanDraftAgentInput) runtime.invocations.get(0).input();
     assertThat(input.personalizationSnapshot().sourceOutcomes())
         .containsEntry(LearningPlanPersonalizationSource.ACTIVE_CLAIMS,
@@ -253,9 +254,7 @@ class LearningPlanDraftStreamServiceTest {
               "focus": "Dynamic Programming",
               "problems": []
             }
-          ],
-          "metadata": {
-          }
+          ]
         }
         """.formatted(problems);
   }

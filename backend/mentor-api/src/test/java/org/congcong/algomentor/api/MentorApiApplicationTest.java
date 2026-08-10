@@ -22,6 +22,7 @@ import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.congcong.algomentor.identity.controller.AdminUserController;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentInput;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentInput;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionToolContracts;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentInput;
 import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentToolContracts;
@@ -74,7 +75,10 @@ class MentorApiApplicationTest {
       AiBusinessScenario.LEARNING_PLAN_DRAFT,
       new DefinitionExpectation(LearningPlanDraftAgentInput.class, 24, LearningPlanAgentToolNames.PLANNING_TOOLS),
       AiBusinessScenario.LEARNING_PLAN_REVISION,
-      new DefinitionExpectation(LearningPlanDraftRevisionAgentInput.class, 24, LearningPlanAgentToolNames.PLANNING_TOOLS),
+      new DefinitionExpectation(
+          LearningPlanDraftRevisionAgentInput.class,
+          24,
+          LearningPlanRevisionToolContracts.AGENT_TOOLS),
       AiBusinessScenario.LEARNING_PLAN_EXTENSION,
       new DefinitionExpectation(LearningPlanExtensionAgentInput.class, 24, LearningPlanAgentToolNames.PLANNING_TOOLS),
       AiBusinessScenario.PRACTICE_CODE_REVIEW,
