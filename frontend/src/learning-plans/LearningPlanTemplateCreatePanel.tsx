@@ -1,4 +1,4 @@
-import { Info, Layers, Sparkles } from 'lucide-react';
+import { BookOpen, Info, Layers, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   getLearningPlanTemplates,
@@ -17,6 +17,7 @@ import {
   buildStandardRhythmReference,
   estimateRhythmWeeks,
 } from './learningPlanRhythm';
+import LearningPlanTemplateDetailDialog from './LearningPlanTemplateDetailDialog';
 
 interface LearningPlanTemplateCreatePanelProps {
   loading: boolean;
@@ -51,6 +52,7 @@ export default function LearningPlanTemplateCreatePanel({
   const [listLoading, setListLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [validationError, setValidationError] = useState('');
+  const [detailTemplateId, setDetailTemplateId] = useState('');
   const selectedTemplateIdRef = useRef('');
 
   const selectedTemplate = useMemo(
@@ -61,6 +63,7 @@ export default function LearningPlanTemplateCreatePanel({
     () => filterTemplates(templates, catalogView),
     [catalogView, templates],
   );
+  const detailTemplate = templates.find((template) => template.templateId === detailTemplateId);
   const defaultRhythmSettings = selectedTemplate?.defaultRhythmSettings;
   const totalProblemCount = defaultRhythmSettings?.totalProblemCount
     ?? selectedTemplate?.plannedProblemCount
@@ -209,61 +212,78 @@ export default function LearningPlanTemplateCreatePanel({
               )}
               <div className="template-card-grid">
                 {visibleTemplates.map((template) => (
-                  <button
-                    aria-describedby={`template-preview-${template.templateId}`}
-                    aria-label={[
-                      template.title,
-                      template.summary,
-                      formatPlanLevel(template.level, resources),
-                      resources.learningPlans.templateRouteSummary(
-                        template.plannedProblemCount,
-                        template.defaultDurationWeeks,
-                        template.defaultWeeklyHours,
-                      ),
-                    ].join(', ')}
-                    aria-pressed={selectedTemplateId === template.templateId}
-                    className={`template-card${selectedTemplateId === template.templateId ? ' selected' : ''}`}
-                    disabled={loading}
+                  <article
+                    className={`template-card${selectedTemplateId === template.templateId ? ' selected' : ''}${loading || listLoading ? ' disabled' : ''}`}
                     key={template.templateId}
-                    onClick={() => selectTemplate(template)}
-                    type="button"
                   >
-                    <span className="template-card-title">
-                      <span className="template-card-icon" aria-hidden="true">
-                        <Layers />
-                      </span>
-                      <strong>{template.title}</strong>
-                      {template.recommendedOrder != null && (
-                        <span className="template-recommended-badge">{resources.learningPlans.templateRecommendedBadge}</span>
-                      )}
-                      <span className="template-card-preview-icon" aria-hidden="true">
-                        <Info />
-                      </span>
-                    </span>
-                    <span>{template.summary}</span>
-                    <span className="template-card-meta">{formatPlanLevel(template.level, resources)}</span>
-                    <span className="template-card-meta">
-                      {resources.learningPlans.templateRouteSummary(
-                        template.plannedProblemCount,
-                        template.defaultDurationWeeks,
-                        template.defaultWeeklyHours,
-                      )}
-                    </span>
-                    <span
-                      className="template-card-preview"
-                      id={`template-preview-${template.templateId}`}
-                      role="tooltip"
+                    <button
+                      aria-describedby={`template-preview-${template.templateId}`}
+                      aria-label={[
+                        template.title,
+                        template.summary,
+                        formatPlanLevel(template.level, resources),
+                        resources.learningPlans.templateRouteSummary(
+                          template.plannedProblemCount,
+                          template.defaultDurationWeeks,
+                          template.defaultWeeklyHours,
+                        ),
+                      ].join(', ')}
+                      aria-pressed={selectedTemplateId === template.templateId}
+                      className="template-card-select"
+                      disabled={loading || listLoading}
+                      onClick={() => selectTemplate(template)}
+                      type="button"
                     >
-                      <span>
-                        <small>{resources.learningPlans.templateTargetAudience}</small>
-                        <strong>{template.targetAudience}</strong>
+                      <span className="template-card-title">
+                        <span className="template-card-icon" aria-hidden="true">
+                          <Layers />
+                        </span>
+                        <strong>{template.title}</strong>
+                        {template.recommendedOrder != null && (
+                          <span className="template-recommended-badge">{resources.learningPlans.templateRecommendedBadge}</span>
+                        )}
+                        <span className="template-card-preview-icon" aria-hidden="true">
+                          <Info />
+                        </span>
                       </span>
-                      <span>
-                        <small>{resources.learningPlans.templateExpectedOutcome}</small>
-                        <strong>{template.expectedOutcome}</strong>
+                      <span>{template.summary}</span>
+                      <span className="template-card-meta">{formatPlanLevel(template.level, resources)}</span>
+                      <span className="template-card-meta">
+                        {resources.learningPlans.templateRouteSummary(
+                          template.plannedProblemCount,
+                          template.defaultDurationWeeks,
+                          template.defaultWeeklyHours,
+                        )}
                       </span>
-                    </span>
-                  </button>
+                      <span
+                        className="template-card-preview"
+                        id={`template-preview-${template.templateId}`}
+                        role="tooltip"
+                      >
+                        <span>
+                          <small>{resources.learningPlans.templateTargetAudience}</small>
+                          <strong>{template.targetAudience}</strong>
+                        </span>
+                        <span>
+                          <small>{resources.learningPlans.templateExpectedOutcome}</small>
+                          <strong>{template.expectedOutcome}</strong>
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      aria-label={resources.learningPlans.templateViewContentFor(template.title)}
+                      className="template-card-view-button"
+                      disabled={loading || listLoading}
+                      onClick={() => {
+                        selectTemplate(template);
+                        setDetailTemplateId(template.templateId);
+                      }}
+                      type="button"
+                    >
+                      <BookOpen aria-hidden="true" />
+                      <span>{resources.learningPlans.templateViewContent}</span>
+                    </button>
+                  </article>
                 ))}
               </div>
             </div>
@@ -364,6 +384,13 @@ export default function LearningPlanTemplateCreatePanel({
           <span>{loading ? resources.learningPlans.generating : resources.learningPlans.templateGenerateDraft}</span>
         </button>
       </div>
+
+      {detailTemplate && (
+        <LearningPlanTemplateDetailDialog
+          onClose={() => setDetailTemplateId('')}
+          template={detailTemplate}
+        />
+      )}
     </>
   );
 }

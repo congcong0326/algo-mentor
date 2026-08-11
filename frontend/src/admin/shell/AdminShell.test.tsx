@@ -83,6 +83,20 @@ describe('AdminShell', () => {
     expect(onNavigate).toHaveBeenCalledWith('/admin/ai?tab=pricing');
   });
 
+  it('places learning plan policies under content management', () => {
+    const onNavigate = vi.fn();
+    renderShell({
+      currentUser: { ...admin, permissions: ['policy:manage', 'problem:read'] },
+      onNavigate,
+      pathname: '/admin/learning-plan-policies',
+    });
+
+    const content = screen.getByRole('button', { name: '内容管理' });
+    expect(content).toHaveAttribute('aria-current', 'page');
+    expect(content).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: '学习计划策略' })).toHaveAttribute('aria-current', 'page');
+  });
+
   it('places the workspace brand in the sidebar and toggles the desktop sidebar', () => {
     renderShell({ pathname: '/admin' });
 

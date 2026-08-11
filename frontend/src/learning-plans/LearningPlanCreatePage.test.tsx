@@ -16,6 +16,7 @@ import {
 import type {
   ApiResponse,
   LearningPlanDraftResponse,
+  LearningPlanTemplateDetailResponse,
   LearningPlanTemplateSummaryResponse,
 } from '../types/api';
 
@@ -47,6 +48,7 @@ const setApiLocaleMock = vi.mocked(setApiLocale);
 
 beforeEach(() => {
   getLearningPlanTemplatesMock.mockResolvedValue(apiResponse(templateSummaries()));
+  getLearningPlanTemplateMock.mockResolvedValue(apiResponse(templateDetail()));
   createLearningPlanDraftFromTemplateMock.mockResolvedValue(apiResponse(generatedDraft()));
   streamLearningPlanDraftMock.mockImplementation(async (_request, options) => {
     options.onEvent({
@@ -192,7 +194,7 @@ describe('LearningPlanCreatePage', () => {
     expect(screen.getByText('NeetCode 150')).toBeInTheDocument();
     expect(getLearningPlanTemplateMock).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('combobox', { name: '编程语言' })).toHaveValue('Java'));
-    const leetCodeTemplateCard = screen.getByRole('button', { name: /LeetCode 75/ });
+    const leetCodeTemplateCard = screen.getByRole('button', { name: /^LeetCode 75,/ });
     expect(leetCodeTemplateCard).toHaveAttribute(
       'aria-describedby',
       'template-preview-leetcode_75_core_sprint',
@@ -264,7 +266,7 @@ describe('LearningPlanCreatePage', () => {
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: '从模板创建' }));
-    fireEvent.click(await screen.findByRole('button', { name: /NeetCode 150/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /^NeetCode 150,/ }));
 
     expect(screen.queryByRole('region', { name: '当前模板' })).not.toBeInTheDocument();
     expect(await screen.findByText('每天 3 题 · 每周 5 天 · 推荐 12 周')).toBeInTheDocument();
@@ -298,6 +300,32 @@ describe('LearningPlanCreatePage', () => {
     expect(getLearningPlanTemplateMock).not.toHaveBeenCalled();
   });
 
+  it('loads and displays the selected template content on demand', async () => {
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    await screen.findByText('LeetCode 75');
+    const viewButton = screen.getByRole('button', { name: '查看 LeetCode 75 的模板内容' });
+    viewButton.focus();
+    fireEvent.click(viewButton);
+
+    const dialog = await screen.findByRole('dialog', { name: 'LeetCode 75' });
+    expect(getLearningPlanTemplateMock).toHaveBeenCalledWith(
+      'leetcode_75_core_sprint',
+      expect.any(AbortSignal),
+    );
+    expect(screen.getByText('建立面试高频算法题型的稳定解题框架。')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '数组与哈希表基础' })).toBeInTheDocument();
+    expect(screen.getByText('2 周 · 30 题')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '查看原始资料' })).toHaveAttribute(
+      'href',
+      'https://leetcode.com/studyplan/leetcode-75/',
+    );
+
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'LeetCode 75' })).not.toBeInTheDocument());
+    expect(viewButton).toHaveFocus();
+  });
+
   it('reloads localized templates and preserves the selected template across UI locale changes', async () => {
     getLearningPlanTemplatesMock
       .mockResolvedValueOnce(apiResponse(templateSummaries()))
@@ -310,8 +338,8 @@ describe('LearningPlanCreatePage', () => {
       </I18nProvider>,
     );
 
-    fireEvent.click(await screen.findByRole('button', { name: /NeetCode 150/ }));
-    expect(screen.getByRole('button', { name: /NeetCode 150/ })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(await screen.findByRole('button', { name: /^NeetCode 150,/ }));
+    expect(screen.getByRole('button', { name: /^NeetCode 150,/ })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(screen.getByRole('combobox', { name: '语言' }));
     fireEvent.click(screen.getByRole('option', { name: 'English' }));
 
@@ -321,7 +349,7 @@ describe('LearningPlanCreatePage', () => {
     expect(englishLocaleCallIndex).toBeGreaterThanOrEqual(0);
     expect(setApiLocaleMock.mock.invocationCallOrder[englishLocaleCallIndex])
       .toBeLessThan(getLearningPlanTemplatesMock.mock.invocationCallOrder[1]);
-    expect(screen.getByRole('button', { name: /NeetCode 150 English/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /^NeetCode 150 English,/ })).toHaveAttribute('aria-pressed', 'true');
   });
 });
 
@@ -408,6 +436,34 @@ function templateSummaries(contentLocale: 'zh-CN' | 'en-US' = 'zh-CN'): Learning
     targetAudience: 'Learners',
     expectedOutcome: 'Complete the route',
   }));
+}
+
+function templateDetail(): LearningPlanTemplateDetailResponse {
+  return {
+    ...templateSummaries()[0],
+    goal: '建立面试高频算法题型的稳定解题框架。',
+    prerequisites: ['掌握一种编程语言的基础语法'],
+    recommendedFor: ['准备中短期算法面试'],
+    notRecommendedFor: ['完全没有编程基础'],
+    sourceName: 'LeetCode 75',
+    sourceUrl: 'https://leetcode.com/studyplan/leetcode-75/',
+    phases: [
+      {
+        phaseIndex: 1,
+        title: '数组与哈希表基础',
+        durationWeeks: 2,
+        focus: '掌握高频数据结构和查找模式。',
+        plannedProblemCount: 30,
+      },
+      {
+        phaseIndex: 2,
+        title: '树与动态规划进阶',
+        durationWeeks: 2,
+        focus: '建立递归、遍历和状态转移框架。',
+        plannedProblemCount: 45,
+      },
+    ],
+  };
 }
 
 const additionalTemplateDefinitions: Array<{

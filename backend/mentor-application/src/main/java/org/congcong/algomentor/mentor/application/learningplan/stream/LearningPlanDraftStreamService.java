@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +32,9 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProbl
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationScenario;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanDraftCreationAdmission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +53,7 @@ public class LearningPlanDraftStreamService {
   private final ObjectMapper objectMapper;
   private final Clock clock;
   private final LearningPlanPersonalizationContextService personalizationContextService;
+  private final LearningPlanCreationPolicyService creationPolicyService;
 
   public LearningPlanDraftStreamService(
       LearningPlanDraftRepository draftRepository,
@@ -69,7 +72,8 @@ public class LearningPlanDraftStreamService {
         problemCatalog,
         loadService,
         clock,
-        new LearningPlanPersonalizationContextService(null));
+        new LearningPlanPersonalizationContextService(null),
+        new LearningPlanCreationPolicyService());
   }
 
   public LearningPlanDraftStreamService(
@@ -82,6 +86,29 @@ public class LearningPlanDraftStreamService {
       Clock clock,
       LearningPlanPersonalizationContextService personalizationContextService
   ) {
+    this(
+        draftRepository,
+        validator,
+        agentRuntime,
+        objectMapper,
+        problemCatalog,
+        loadService,
+        clock,
+        personalizationContextService,
+        new LearningPlanCreationPolicyService());
+  }
+
+  public LearningPlanDraftStreamService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanDraftValidator validator,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
+      Clock clock,
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanCreationPolicyService creationPolicyService
+  ) {
     this.draftRepository = draftRepository;
     this.validator = validator;
     this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
@@ -91,6 +118,7 @@ public class LearningPlanDraftStreamService {
     this.clock = clock;
     this.personalizationContextService = Objects.requireNonNull(
         personalizationContextService, "personalizationContextService");
+    this.creationPolicyService = Objects.requireNonNull(creationPolicyService, "creationPolicyService");
   }
 
   public Flow.Publisher<LearningPlanDraftStreamEvent> stream(
@@ -146,7 +174,8 @@ public class LearningPlanDraftStreamService {
 
   private LearningPlanDraft createInitialDraft(long userId, LearningPlanBrief brief) {
     Instant now = clock.instant();
-    return draftRepository.save(new LearningPlanDraft(
+    LearningPlanDraftCreationAdmission admission = creationPolicyService.draftAdmission(userId, now);
+    LearningPlanDraft draft = new LearningPlanDraft(
         null,
         userId,
         LearningPlanDraftStatus.COLLECTING,
@@ -156,9 +185,18 @@ public class LearningPlanDraftStreamService {
         null,
         null,
         null,
-        now.plus(14, ChronoUnit.DAYS),
+        admission.expiresAt(),
         now,
-        now));
+        now);
+    return draftRepository.createWithinDailyLimit(
+            draft,
+            admission.quotaDate(),
+            admission.dailyLimit(),
+            now)
+        .orElseThrow(() -> new LearningPlanException(
+            LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE,
+            "api.error." + LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE,
+            "今天创建的学习计划草案已达到上限，请明天再试。"));
   }
 
   private AgentInvocation<LearningPlanDraftAgentInput> invocation(

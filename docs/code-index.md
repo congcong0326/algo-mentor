@@ -68,6 +68,7 @@
 - `docs/learning-plan-revision-plan-compiler-design.md`：学习计划草案修订 Plan Compiler 研发设计，定义候选蓝图、确定性编译、单次 Child Review、协议预算、canonical artifact 和未来 Workflow 迁移边界。
 - `docs/learning-plan-data-model-simplification-design.md`：学习计划业务数据模型精简研发设计，固定阶段、模板、metadata 废弃字段删除范围，定义 JSONB 与模板表迁移、Seed v3 兼容、派生展示替代和验收门禁。
 - `docs/learning-plan-ai-generation-sse-resilience-design.md`：学习计划 AI 首次草案生成研发设计，聚焦结果恢复兼容闭环、启动与观察分离、幂等和显式业务取消；修订与扩展后续复用同一模式。
+- `docs/learning-plan-creation-governance-design.md`：学习计划创建治理设计，定义正式计划总量、每日草案次数、草案过期清理和 `learning-plan.creation.v1` 通用策略契约。
 - `docs/sse-managed-connection-heartbeat-design.md`：SSE 连接管理与 heartbeat 独立研发设计，定义 `ManagedSseConnection`、连接注册表、写锁、幂等关闭、共享调度器、配置和连接指标，不拥有业务任务取消语义。
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
@@ -123,9 +124,10 @@
 - `backend/persistent-queue`：独立持久化队列模块；存储/Publisher 与 consumer worker 分为两个有序自动配置，worker 仅在 `algo-mentor.queue.consumer.enabled=true` 时启动。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan`：学习计划领域与应用服务，以 `LearningPlanBrief` 作为 AI 创建和修订的唯一规划输入，`LearningPlanDraftPlan` 保存服务端已解析的 objective、难度分布、限制和内部 metadata。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/policy` 与 `learningplan/cleanup`：按用户解析学习计划创建策略，生成每日配额和草案过期快照，并分批清理过期草案与历史用量。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/personalization`：四个聚合来源的有界个性化上下文、渲染/裁剪、低敏 metadata 与固定标签 Micrometer 指标；关闭时不读取来源，单来源失败独立降级。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/stream` 与 `learningplan/proposal/stream`：初次创建、草案修订和计划扩展的 Agent Definition/StreamService，分别使用生成内容 Schema 或 resolved Brief + 生成内容 Schema，并在每个 run 固定一次个性化 snapshot。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan`：学习计划 HTTP DTO、当前用户边界、SSE 映射、MyBatis repository 和个性化 adapter；`LearningPlanConfiguration` 负责在 Micrometer 可用时装配个性化指标。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan`：学习计划 HTTP DTO、当前用户边界、SSE 映射、MyBatis repository、个性化 adapter、`learning-plan.creation.v1` 通用策略注册和草案清理调度；`LearningPlanConfiguration` 负责统一装配。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/execution/ManagedAgentExecutor.java`：Spring 管理的 Agent 专用线程池，使用 `20/100 + SynchronousQueue + AbortPolicy`，负责 trace 透传、执行指标和限时优雅关闭。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentExecutorProperties.java`：绑定 `algo-mentor.agent.executor` 的线程数、空闲回收、关停超时和线程名前缀配置。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，包含 Agent executor 环境变量映射，默认不强制连接数据库。
@@ -136,6 +138,7 @@
 - `backend/mentor-api/src/main/resources/db/migration/V34__learner_profile_entry.sql`：已应用的旧画像表历史迁移；由 V49 以向前方式删除，不得修改该文件。
 - `backend/persistent-queue/src/main/resources/db/migration/queue/V35__persistent_queue_message.sql`：持久化 queue message、PENDING/SUCCEEDED 约束与派发/清理索引。
 - `backend/mentor-api/src/main/resources/db/migration/V36__practice_code_review_tags.sql`：正式 Review 到受信题目标签的关联表和按标签查询索引。
+- `backend/mentor-api/src/main/resources/db/migration/V60__learning_plan_creation_governance.sql`：学习计划每日草案计数表和草案到期清理索引。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedTagNormalizer.java`：题目 seed 标签 fallback、题内去重和跨题名称稳定决胜的唯一实现入口。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedImporter.java`：按 `slug` 合并题目 JSONL 与推荐理由 JSON，在一个事务中规范化并双写题目兼容数组、标签目录和关联表，提交前执行一致性校验。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/repository/ProblemTagRepository.java`：规范化标签目录 upsert 与题目标签关联完整替换的持久化边界。
@@ -195,6 +198,8 @@
 - `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与 URL 驱动的详情抽屉；支持一次性临时密码重置、单用户 AI 暂停/额度覆盖和跳转至筛选后的 AI 用量页。
 - `frontend/src/admin/monitoring/SystemMonitoringPage.tsx`：`/admin/monitoring` 运行状态页，基于 `/api/health` 展示 API 服务健康状态，支持手动与每分钟自动刷新；与 `/admin/ai` 同属系统监控分类。
 - `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、provider/model 维护、模型路由目录与用户命中模拟、按用户/模型/场景的 Token 与当前价格成本观测和模型价格编辑；路由 effort 与 provider 默认配置来自后端目录，切换模型时重置不被目标 provider 接受的 effort。
+- `frontend/src/admin/learning-plan-policies`：`/admin/learning-plan-policies` 学习计划策略管理页，固定管理 `learning-plan.creation.v1`，支持三项创建额度、用户/用户组范围和完整优先级排序。
+- `frontend/src/admin/policies/PolicySubjectScopeFieldset.tsx`：通用策略适用范围选择组件，负责用户/用户组搜索、已选主体回显与范围切换，由会话策略和学习计划策略复用。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/legal`：`/terms` 服务条款和 `/privacy` 隐私政策公共页面，包含中英文简版正文和共用阅读布局。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、教练总结候选正文与一次性采纳按钮、Review 入口、LeetCode 外链和题目完成状态。

@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicy;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
 
 class LearningPlanDraftServiceTest {
 
@@ -230,6 +233,27 @@ class LearningPlanDraftServiceTest {
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.confirmDraft(7L, collecting.id()))
         .isInstanceOf(LearningPlanException.class)
         .hasMessage("只有已生成的学习计划草案可以确认保存。");
+  }
+
+  @Test
+  void confirmDraftRejectsWhenSavedPlanLimitIsReached() {
+    LearningPlanDraft generated = saveGeneratedDraft(7L, completeBrief(4));
+    LearningPlanDraftService limitedService = new LearningPlanDraftService(
+        draftRepository,
+        planRepository,
+        new LearningPlanAgentService(new FakeProblemCatalog()),
+        new LearningPlanDraftValidator(),
+        new LearningPlanLoadService(clock),
+        new LearningPlanCreationPolicyService(
+            ignored -> new LearningPlanCreationPolicy(0, 5, 14),
+            ZoneOffset.UTC),
+        clock);
+
+    org.assertj.core.api.Assertions.assertThatThrownBy(
+            () -> limitedService.confirmDraft(7L, generated.id()))
+        .isInstanceOfSatisfying(LearningPlanException.class, exception ->
+            assertThat(exception.code()).isEqualTo(
+                LearningPlanCreationPolicyConstants.PLAN_LIMIT_EXCEEDED_CODE));
   }
 
   private LearningPlanBrief completeBrief(int durationWeeks) {

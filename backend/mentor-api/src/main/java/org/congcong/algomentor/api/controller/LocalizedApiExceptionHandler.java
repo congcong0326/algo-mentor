@@ -19,6 +19,7 @@ import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunInProgressException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
 import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentService.InvalidLearnerProfileDocumentRequestException;
 import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentService.LearnerProfileStatementNotFoundException;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
@@ -112,7 +113,13 @@ public class LocalizedApiExceptionHandler {
 
   @ExceptionHandler(LearningPlanException.class)
   public ResponseEntity<ApiResponse<Void>> learningPlanException(LearningPlanException exception) {
-    return failure(HttpStatus.BAD_REQUEST, exception.code(), exception.messageKey(), exception.getMessage());
+    HttpStatus status = switch (exception.code()) {
+      case LearningPlanCreationPolicyConstants.PLAN_LIMIT_EXCEEDED_CODE -> HttpStatus.CONFLICT;
+      case LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE -> HttpStatus.TOO_MANY_REQUESTS;
+      case LearningPlanCreationPolicyConstants.POLICY_UNAVAILABLE_CODE -> HttpStatus.SERVICE_UNAVAILABLE;
+      default -> HttpStatus.BAD_REQUEST;
+    };
+    return failure(status, exception.code(), exception.messageKey(), exception.getMessage());
   }
 
   @ExceptionHandler(ReviewException.class)

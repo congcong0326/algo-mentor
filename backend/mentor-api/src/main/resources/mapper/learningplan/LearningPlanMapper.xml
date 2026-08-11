@@ -181,6 +181,31 @@
     RETURNING id
   </select>
 
+  <select id="tryConsumeDailyDraftQuota" resultType="java.lang.Integer" affectData="true">
+    INSERT INTO learning_plan_daily_draft_usage (
+      user_id,
+      quota_date,
+      draft_count,
+      applied_limit,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{quotaDate},
+      1,
+      #{dailyLimit},
+      #{consumedAt},
+      #{consumedAt}
+    )
+    ON CONFLICT (user_id, quota_date) DO UPDATE
+    SET draft_count = learning_plan_daily_draft_usage.draft_count + 1,
+        applied_limit = EXCLUDED.applied_limit,
+        updated_at = EXCLUDED.updated_at
+    WHERE learning_plan_daily_draft_usage.draft_count &lt; EXCLUDED.applied_limit
+    RETURNING draft_count
+  </select>
+
   <update id="updateDraft">
     UPDATE learning_plan_draft
     SET status = #{status},
@@ -256,6 +281,47 @@
     FOR UPDATE
   </select>
 
+  <select id="findExpiredDraftIdsForCleanup" resultType="java.lang.Long">
+    SELECT id
+    FROM learning_plan_draft
+    WHERE expires_at &lt;= #{expiredBefore}
+    ORDER BY expires_at, id
+    LIMIT #{limit}
+    FOR UPDATE SKIP LOCKED
+  </select>
+
+  <delete id="deleteProposalGroupsForDrafts">
+    DELETE FROM learning_plan_proposal_group
+    WHERE target_type = 'DRAFT'
+      AND target_id IN
+      <foreach collection="draftIds" item="draftId" open="(" separator="," close=")">
+        #{draftId}
+      </foreach>
+  </delete>
+
+  <delete id="deleteDraftsByIds">
+    DELETE FROM learning_plan_draft
+    WHERE id IN
+      <foreach collection="draftIds" item="draftId" open="(" separator="," close=")">
+        #{draftId}
+      </foreach>
+  </delete>
+
+  <delete id="deleteDailyDraftUsageBefore">
+    WITH expired_usage AS (
+      SELECT user_id, quota_date
+      FROM learning_plan_daily_draft_usage
+      WHERE quota_date &lt; #{quotaDate}
+      ORDER BY quota_date, user_id
+      LIMIT #{limit}
+      FOR UPDATE SKIP LOCKED
+    )
+    DELETE FROM learning_plan_daily_draft_usage usage
+    USING expired_usage expired
+    WHERE usage.user_id = expired.user_id
+      AND usage.quota_date = expired.quota_date
+  </delete>
+
   <select id="insertPlan" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan (
       user_id,
@@ -274,6 +340,14 @@
       #{updatedAt}
     )
     RETURNING id
+  </select>
+
+  <select id="lockPlanCreationForUser" resultType="int">
+    SELECT 1
+    FROM (
+      SELECT pg_advisory_xact_lock(
+        hashtextextended(CONCAT('learning-plan-total:', #{userId}), 0))
+    ) locked_user
   </select>
 
   <update id="updatePlanSnapshot">

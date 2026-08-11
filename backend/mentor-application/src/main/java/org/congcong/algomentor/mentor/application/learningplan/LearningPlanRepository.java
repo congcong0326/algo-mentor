@@ -7,6 +7,14 @@ public interface LearningPlanRepository {
 
   LearningPlan save(LearningPlan plan);
 
+  /** 在用户级并发锁保护下检查正式计划总量并创建；达到上限时返回空。 */
+  default Optional<LearningPlan> createIfBelowLimit(LearningPlan plan, int maxSavedPlans) {
+    if (maxSavedPlans < 1) {
+      return Optional.empty();
+    }
+    return Optional.of(save(plan));
+  }
+
   List<LearningPlan> findByUserId(long userId);
 
   default LearningPlanPage findPageByUserId(long userId, int page, int pageSize) {

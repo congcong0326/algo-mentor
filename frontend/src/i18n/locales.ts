@@ -99,6 +99,7 @@ export interface LocaleResources {
     adminDatabaseBackup: string;
     adminSessions: string;
     adminSessionPolicies: string;
+    adminLearningPlanPolicies: string;
     adminSystemPrompts: string;
     adminAi: string;
     feedback: string;
@@ -118,7 +119,7 @@ export interface LocaleResources {
     pageNavigation: string;
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
   };
   adminFeedback: {
     listLoadFailed: string;
@@ -646,6 +647,63 @@ export interface LocaleResources {
     saving: string;
     saveFailed: string;
     saveSucceeded: string;
+    editPolicy: (name: string) => string;
+    delete: string;
+    deleting: string;
+    deleteTitle: string;
+    deleteDescription: (name: string) => string;
+    deletePolicy: (name: string) => string;
+    deleteFailed: string;
+    deleteSucceeded: string;
+  };
+  learningPlanPolicy: {
+    ariaLabel: string;
+    title: string;
+    pageDescription: string;
+    create: string;
+    createTitle: string;
+    editTitle: string;
+    dialogDescription: string;
+    refresh: string;
+    priority: string;
+    name: string;
+    description: string;
+    scope: string;
+    allUsers: string;
+    selectedSubjects: string;
+    scopeSummary: (userCount: number, groupCount: number) => string;
+    subjectType: string;
+    subjectTypes: Record<'USER' | 'GROUP', string>;
+    subjectSearchPlaceholder: string;
+    subjectLoading: string;
+    subjectLoadFailed: string;
+    savedUserSubject: string;
+    savedGroupSubject: string;
+    removeSubject: (label: string) => string;
+    remove: string;
+    subjectEmpty: string;
+    subjectRequired: string;
+    maxSavedPlans: string;
+    dailyDraftCreationLimit: string;
+    draftRetentionDays: string;
+    retentionValue: (days: string) => string;
+    status: string;
+    statuses: Record<'ENABLED' | 'DISABLED', string>;
+    updatedAt: string;
+    actions: string;
+    empty: string;
+    loading: string;
+    loadFailed: string;
+    nameRequired: string;
+    valueInvalid: string;
+    save: string;
+    saving: string;
+    saveFailed: string;
+    saveSucceeded: string;
+    moveUpPolicy: (name: string) => string;
+    moveDownPolicy: (name: string) => string;
+    orderFailed: string;
+    orderSucceeded: string;
     editPolicy: (name: string) => string;
     delete: string;
     deleting: string;
@@ -1263,6 +1321,21 @@ export interface LocaleResources {
     templateDetailLoading: string;
     templateLoadFailed: string;
     templateDetailLoadFailed: string;
+    templateViewContent: string;
+    templateViewContentFor: (title: string) => string;
+    templateDetailEyebrow: string;
+    templateOverview: string;
+    templateGoal: string;
+    templatePhaseRoute: string;
+    templatePhaseRouteTitle: string;
+    templatePhaseSummary: (weeks: number, problems: number) => string;
+    templateFitEyebrow: string;
+    templateFitTitle: string;
+    templatePrerequisites: string;
+    templateRecommendedFor: string;
+    templateNotRecommendedFor: string;
+    templateSource: string;
+    templateOpenSource: string;
     templateEmpty: string;
     templateGenerateStart: string;
     templateGenerateFailed: string;
@@ -1593,6 +1666,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminDatabaseBackup: '数据备份',
       adminSessions: '会话监控',
       adminSessionPolicies: '会话策略',
+      adminLearningPlanPolicies: '学习计划策略',
       adminSystemPrompts: '系统提示词',
       adminAi: 'AI 治理',
       feedback: '反馈',
@@ -1620,6 +1694,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         databaseBackup: '数据备份',
         sessions: '会话监控',
         sessionPolicies: '会话策略',
+        learningPlanPolicies: '学习计划策略',
         systemPrompts: '系统提示词',
         ai: 'AI 治理',
         aiPlatform: 'AI 平台',
@@ -2080,6 +2155,63 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       deletePolicy: (name) => `删除策略 ${name}`,
       deleteFailed: '会话策略删除失败。',
       deleteSucceeded: '会话策略已删除。',
+    },
+    learningPlanPolicy: {
+      ariaLabel: '学习计划策略',
+      title: '学习计划策略',
+      pageDescription: '按优先级为全体用户、用户组或指定用户配置学习计划创建额度。',
+      create: '新建策略',
+      createTitle: '新建学习计划策略',
+      editTitle: '编辑学习计划策略',
+      dialogDescription: '策略类型固定为 learning-plan.creation.v1。',
+      refresh: '刷新策略列表',
+      priority: '优先级',
+      name: '策略名称',
+      description: '说明',
+      scope: '适用范围',
+      allUsers: '全体用户',
+      selectedSubjects: '指定用户或用户组',
+      scopeSummary: (userCount, groupCount) => `指定 ${userCount} 位用户、${groupCount} 个用户组`,
+      subjectType: '主体类型',
+      subjectTypes: { USER: '用户', GROUP: '用户组' },
+      subjectSearchPlaceholder: '搜索用户昵称、邮箱或用户组名称',
+      subjectLoading: '正在查找可选对象...',
+      subjectLoadFailed: '可选用户或用户组加载失败。',
+      savedUserSubject: '已选用户',
+      savedGroupSubject: '已选用户组',
+      removeSubject: (label) => `移除 ${label}`,
+      remove: '移除',
+      subjectEmpty: '没有符合条件的可选对象。',
+      subjectRequired: '指定范围时至少需要一个用户或用户组。',
+      maxSavedPlans: '正式计划上限',
+      dailyDraftCreationLimit: '每日草案额度',
+      draftRetentionDays: '草案保留天数',
+      retentionValue: (days) => `${days} 天`,
+      status: '状态',
+      statuses: { ENABLED: '已启用', DISABLED: '已停用' },
+      updatedAt: '更新时间',
+      actions: '操作',
+      empty: '尚未配置学习计划策略，运行时使用代码默认值。',
+      loading: '正在加载学习计划策略...',
+      loadFailed: '学习计划策略列表加载失败。',
+      nameRequired: '请输入策略名称。',
+      valueInvalid: '正式计划上限和每日草案额度必须为 0–1000 的整数，草案保留天数必须为 1–365 的整数。',
+      save: '保存',
+      saving: '保存中...',
+      saveFailed: '学习计划策略保存失败。',
+      saveSucceeded: '学习计划策略已保存。',
+      moveUpPolicy: (name) => `上移策略 ${name}`,
+      moveDownPolicy: (name) => `下移策略 ${name}`,
+      orderFailed: '学习计划策略优先级更新失败。',
+      orderSucceeded: '学习计划策略优先级已更新。',
+      editPolicy: (name) => `编辑策略 ${name}`,
+      delete: '删除',
+      deleting: '删除中...',
+      deleteTitle: '删除学习计划策略',
+      deleteDescription: (name) => `将删除策略“${name}”，受影响用户会重新匹配下一条策略或使用代码默认值。`,
+      deletePolicy: (name) => `删除策略 ${name}`,
+      deleteFailed: '学习计划策略删除失败。',
+      deleteSucceeded: '学习计划策略已删除。',
     },
     adminUserAi: {
       title: 'AI 使用与控制',
@@ -2719,6 +2851,21 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateDetailLoading: '正在加载模板详情...',
       templateLoadFailed: '学习计划模板加载失败',
       templateDetailLoadFailed: '学习计划模板详情加载失败',
+      templateViewContent: '查看模板内容',
+      templateViewContentFor: (title) => `查看 ${title} 的模板内容`,
+      templateDetailEyebrow: '模板内容',
+      templateOverview: '模板概览',
+      templateGoal: '训练目标',
+      templatePhaseRoute: '训练路线',
+      templatePhaseRouteTitle: '分阶段内容',
+      templatePhaseSummary: (weeks, problems) => `${weeks} 周 · ${problems} 题`,
+      templateFitEyebrow: '使用建议',
+      templateFitTitle: '开始前请确认',
+      templatePrerequisites: '前置要求',
+      templateRecommendedFor: '推荐选择',
+      templateNotRecommendedFor: '暂不推荐',
+      templateSource: '模板来源',
+      templateOpenSource: '查看原始资料',
       templateEmpty: '暂无可用模板',
       templateGenerateStart: '正在按模板生成训练方案',
       templateGenerateFailed: '按模板生成训练方案失败',
@@ -3144,6 +3291,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminDatabaseBackup: 'Data backup',
       adminSessions: 'Session monitoring',
       adminSessionPolicies: 'Session policies',
+      adminLearningPlanPolicies: 'Learning plan policies',
       adminSystemPrompts: 'System prompts',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
@@ -3171,6 +3319,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         databaseBackup: 'Data backup',
         sessions: 'Session monitoring',
         sessionPolicies: 'Session policies',
+        learningPlanPolicies: 'Learning plan policies',
         systemPrompts: 'System prompts',
         ai: 'AI Governance',
         aiPlatform: 'AI Platform',
@@ -3636,6 +3785,63 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       deletePolicy: (name) => `Delete policy ${name}`,
       deleteFailed: 'Failed to delete session policy.',
       deleteSucceeded: 'Session policy deleted.',
+    },
+    learningPlanPolicy: {
+      ariaLabel: 'Learning plan policies',
+      title: 'Learning plan policies',
+      pageDescription: 'Configure learning plan creation limits for all users, user groups, or selected users by priority.',
+      create: 'New policy',
+      createTitle: 'New learning plan policy',
+      editTitle: 'Edit learning plan policy',
+      dialogDescription: 'The policy type is fixed to learning-plan.creation.v1.',
+      refresh: 'Refresh policy list',
+      priority: 'Priority',
+      name: 'Policy name',
+      description: 'Description',
+      scope: 'Scope',
+      allUsers: 'All users',
+      selectedSubjects: 'Selected users or groups',
+      scopeSummary: (userCount, groupCount) => `${userCount} selected users, ${groupCount} selected user groups`,
+      subjectType: 'Subject type',
+      subjectTypes: { USER: 'User', GROUP: 'User group' },
+      subjectSearchPlaceholder: 'Search name, email, or user group',
+      subjectLoading: 'Finding available subjects...',
+      subjectLoadFailed: 'Failed to load available users or user groups.',
+      savedUserSubject: 'Saved user',
+      savedGroupSubject: 'Saved user group',
+      removeSubject: (label) => `Remove ${label}`,
+      remove: 'Remove',
+      subjectEmpty: 'No available subjects match the search.',
+      subjectRequired: 'A selected scope needs at least one user or user group.',
+      maxSavedPlans: 'Saved plan limit',
+      dailyDraftCreationLimit: 'Daily draft limit',
+      draftRetentionDays: 'Draft retention days',
+      retentionValue: (days) => `${days} days`,
+      status: 'Status',
+      statuses: { ENABLED: 'Enabled', DISABLED: 'Disabled' },
+      updatedAt: 'Updated',
+      actions: 'Actions',
+      empty: 'No learning plan policies are configured. Runtime code defaults are active.',
+      loading: 'Loading learning plan policies...',
+      loadFailed: 'Failed to load learning plan policies.',
+      nameRequired: 'Enter a policy name.',
+      valueInvalid: 'Saved plan and daily draft limits must be integers from 0 to 1000. Draft retention must be an integer from 1 to 365.',
+      save: 'Save',
+      saving: 'Saving...',
+      saveFailed: 'Failed to save learning plan policy.',
+      saveSucceeded: 'Learning plan policy saved.',
+      moveUpPolicy: (name) => `Move policy ${name} up`,
+      moveDownPolicy: (name) => `Move policy ${name} down`,
+      orderFailed: 'Failed to update learning plan policy priority.',
+      orderSucceeded: 'Learning plan policy priority updated.',
+      editPolicy: (name) => `Edit policy ${name}`,
+      delete: 'Delete',
+      deleting: 'Deleting...',
+      deleteTitle: 'Delete learning plan policy',
+      deleteDescription: (name) => `Delete policy "${name}". Affected users will match the next policy or runtime defaults.`,
+      deletePolicy: (name) => `Delete policy ${name}`,
+      deleteFailed: 'Failed to delete learning plan policy.',
+      deleteSucceeded: 'Learning plan policy deleted.',
     },
     adminUserAi: {
       title: 'AI usage & controls',
@@ -4277,6 +4483,23 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateDetailLoading: 'Loading template details...',
       templateLoadFailed: 'Failed to load learning plan templates',
       templateDetailLoadFailed: 'Failed to load learning plan template details',
+      templateViewContent: 'View Template',
+      templateViewContentFor: (title) => `View ${title} template content`,
+      templateDetailEyebrow: 'Template Content',
+      templateOverview: 'Template overview',
+      templateGoal: 'Training Goal',
+      templatePhaseRoute: 'Training Route',
+      templatePhaseRouteTitle: 'Phase-by-Phase Content',
+      templatePhaseSummary: (weeks, problems) => (
+        `${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${problems} ${problems === 1 ? 'problem' : 'problems'}`
+      ),
+      templateFitEyebrow: 'Fit Check',
+      templateFitTitle: 'Before You Start',
+      templatePrerequisites: 'Prerequisites',
+      templateRecommendedFor: 'Recommended For',
+      templateNotRecommendedFor: 'Not Recommended For',
+      templateSource: 'Template source',
+      templateOpenSource: 'View source material',
       templateEmpty: 'No templates available',
       templateGenerateStart: 'Generating a plan from the template',
       templateGenerateFailed: 'Failed to generate a plan from the template',

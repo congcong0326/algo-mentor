@@ -135,6 +135,8 @@ describe('learning plan practice submissions navigation', () => {
   it('maps the session policy route as a policy-managed admin view', () => {
     expect(viewFromPath('/admin/session-policies')).toBe('adminSessionPolicies');
     expect(pathForView('adminSessionPolicies')).toBe('/admin/session-policies');
+    expect(viewFromPath('/admin/learning-plan-policies')).toBe('adminLearningPlanPolicies');
+    expect(pathForView('adminLearningPlanPolicies')).toBe('/admin/learning-plan-policies');
   });
 
   it('maps the problem library to the admin route only', () => {

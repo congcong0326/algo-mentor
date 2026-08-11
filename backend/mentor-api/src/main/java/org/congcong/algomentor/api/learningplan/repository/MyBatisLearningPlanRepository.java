@@ -62,6 +62,25 @@ public class MyBatisLearningPlanRepository
   }
 
   @Override
+  @Transactional
+  public Optional<LearningPlanDraft> createWithinDailyLimit(
+      LearningPlanDraft draft,
+      LocalDate quotaDate,
+      int dailyLimit,
+      Instant consumedAt
+  ) {
+    if (dailyLimit < 1) {
+      return Optional.empty();
+    }
+    Integer consumedCount = mapper.tryConsumeDailyDraftQuota(
+        draft.userId(), quotaDate, dailyLimit, consumedAt);
+    if (consumedCount == null) {
+      return Optional.empty();
+    }
+    return Optional.of(save(draft));
+  }
+
+  @Override
   public Optional<LearningPlanDraft> findDraftByIdForUser(long draftId, long userId) {
     return Optional.ofNullable(mapper.findDraftByIdForUser(draftId, userId)).map(this::toDraft);
   }
@@ -69,6 +88,23 @@ public class MyBatisLearningPlanRepository
   @Override
   public Optional<LearningPlanDraft> findDraftByIdForUserForUpdate(long draftId, long userId) {
     return Optional.ofNullable(mapper.findDraftByIdForUserForUpdate(draftId, userId)).map(this::toDraft);
+  }
+
+  @Override
+  @Transactional
+  public int deleteExpiredDrafts(Instant expiredBefore, int limit) {
+    List<Long> draftIds = mapper.findExpiredDraftIdsForCleanup(expiredBefore, limit);
+    if (draftIds.isEmpty()) {
+      return 0;
+    }
+    mapper.deleteProposalGroupsForDrafts(draftIds);
+    return mapper.deleteDraftsByIds(draftIds);
+  }
+
+  @Override
+  @Transactional
+  public int deleteDailyDraftUsageBefore(LocalDate quotaDate, int limit) {
+    return mapper.deleteDailyDraftUsageBefore(quotaDate, limit);
   }
 
   @Override
@@ -83,6 +119,19 @@ public class MyBatisLearningPlanRepository
     }
     replacePlanDetails(planId, plan.plan());
     return toPlan(mapper.findPlanByIdForUser(planId, plan.userId()));
+  }
+
+  @Override
+  @Transactional
+  public Optional<LearningPlan> createIfBelowLimit(LearningPlan plan, int maxSavedPlans) {
+    if (maxSavedPlans < 1) {
+      return Optional.empty();
+    }
+    mapper.lockPlanCreationForUser(plan.userId());
+    if (mapper.countPlansByUserId(plan.userId()) >= maxSavedPlans) {
+      return Optional.empty();
+    }
+    return Optional.of(save(plan));
   }
 
   @Override

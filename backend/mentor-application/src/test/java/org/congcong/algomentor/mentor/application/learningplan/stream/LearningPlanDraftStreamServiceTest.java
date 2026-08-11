@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.application.learningplan.stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
@@ -41,6 +42,9 @@ import org.congcong.algomentor.mentor.application.learningplan.personalization.L
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSource;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSourceOutcome;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanReviewLoadSummary;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicy;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
 import org.junit.jupiter.api.Test;
 
 class LearningPlanDraftStreamServiceTest {
@@ -100,6 +104,29 @@ class LearningPlanDraftStreamServiceTest {
         ((LearningPlanDraftStreamEvent.Draft) events.get(0)).event();
     assertThat(ready.draft().status()).isEqualTo(LearningPlanDraftStatus.COLLECTING);
     assertThat(ready.draft().missingFields()).contains("intent", "objective");
+    assertThat(runtime.streamCalls).isZero();
+  }
+
+  @Test
+  void rejectsAiDraftBeforeAgentRunWhenDailyCreationLimitIsReached() {
+    FakeAgentRuntime runtime = new FakeAgentRuntime(finalJson("two-sum"));
+    LearningPlanDraftStreamService service = new LearningPlanDraftStreamService(
+        draftRepository,
+        new LearningPlanDraftValidator(),
+        runtime,
+        new ObjectMapper(),
+        problemCatalog,
+        new LearningPlanLoadService(clock),
+        clock,
+        new LearningPlanPersonalizationContextService(null),
+        new LearningPlanCreationPolicyService(
+            ignored -> new LearningPlanCreationPolicy(30, 0, 14),
+            ZoneOffset.UTC));
+
+    assertThatThrownBy(() -> service.stream(7L, command(), "run-limited", Map.of()))
+        .isInstanceOfSatisfying(org.congcong.algomentor.mentor.application.learningplan.LearningPlanException.class,
+            exception -> assertThat(exception.code()).isEqualTo(
+                LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE));
     assertThat(runtime.streamCalls).isZero();
   }
 

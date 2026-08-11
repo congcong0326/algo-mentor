@@ -21,6 +21,7 @@ export const APP_ROUTES = {
   adminDatabaseBackup: '/admin/database-backup',
   adminSessions: '/admin/sessions',
   adminSessionPolicies: '/admin/session-policies',
+  adminLearningPlanPolicies: '/admin/learning-plan-policies',
   adminSystemPrompts: '/admin/system-prompts',
   adminAi: '/admin/ai',
   adminOverview: '/admin',
@@ -105,6 +106,7 @@ export type AppView =
   | 'adminDatabaseBackup'
   | 'adminSessions'
   | 'adminSessionPolicies'
+  | 'adminLearningPlanPolicies'
   | 'adminSystemPrompts'
   | 'adminAi'
   | 'adminOverview'
@@ -205,6 +207,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'policy:manage',
   },
   {
+    view: 'adminLearningPlanPolicies',
+    labelKey: 'adminLearningPlanPolicies',
+    path: APP_ROUTES.adminLearningPlanPolicies,
+    icon: SlidersHorizontal,
+    permission: 'policy:manage',
+  },
+  {
     view: 'adminSystemPrompts',
     labelKey: 'adminSystemPrompts',
     path: APP_ROUTES.adminSystemPrompts,
@@ -277,6 +286,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminSessionPolicies) {
     return 'adminSessionPolicies';
+  }
+  if (pathname === APP_ROUTES.adminLearningPlanPolicies) {
+    return 'adminLearningPlanPolicies';
   }
   if (pathname === APP_ROUTES.adminSystemPrompts) {
     return 'adminSystemPrompts';

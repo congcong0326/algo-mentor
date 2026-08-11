@@ -6,12 +6,27 @@ import static org.mockito.Mockito.when;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.util.List;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationMetrics;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.MicrometerLearningPlanPersonalizationMetrics;
+import org.congcong.algomentor.policy.type.GenericPolicyType;
+import org.congcong.algomentor.policy.type.GenericPolicyTypeExposure;
+import org.congcong.algomentor.policy.type.GenericPolicyTypeRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 
 class LearningPlanConfigurationTest {
+
+  @Test
+  void registersLearningPlanCreationAsAnInternalGenericPolicyType() {
+    GenericPolicyType<?> policyType = new LearningPlanConfiguration().learningPlanCreationPolicyType();
+    GenericPolicyTypeRegistry registry = new GenericPolicyTypeRegistry(List.of(policyType));
+
+    assertThat(policyType.typeCode()).isEqualTo(LearningPlanCreationPolicyConstants.TYPE_CODE);
+    assertThat(policyType.exposure()).isEqualTo(GenericPolicyTypeExposure.INTERNAL_ONLY);
+    assertThat(registry.require(LearningPlanCreationPolicyConstants.TYPE_CODE)).isSameAs(policyType);
+  }
 
   @Test
   void personalizationMetricsFallsBackToNoopWithoutMicrometer() {

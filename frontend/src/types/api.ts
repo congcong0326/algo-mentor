@@ -352,6 +352,12 @@ export interface UserSessionPolicyContent {
   absoluteTimeoutSeconds: number;
 }
 
+export interface LearningPlanCreationPolicyContent {
+  maxSavedPlans: number;
+  dailyDraftCreationLimit: number;
+  draftRetentionDays: number;
+}
+
 export interface AdminGenericPolicy<TContent = UserSessionPolicyContent> {
   id: number;
   typeCode: string;

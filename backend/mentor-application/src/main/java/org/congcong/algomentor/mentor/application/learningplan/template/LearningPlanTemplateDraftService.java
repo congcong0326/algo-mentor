@@ -2,7 +2,6 @@ package org.congcong.algomentor.mentor.application.learningplan.template;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,16 +23,18 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanDraftCreationAdmission;
 
 public class LearningPlanTemplateDraftService {
-
-  private static final int DRAFT_TTL_DAYS = 14;
 
   private final LearningPlanTemplateRepository templateRepository;
   private final LearningPlanDraftRepository draftRepository;
   private final LearningPlanProblemCatalog problemCatalog;
   private final LearningPlanDraftValidator validator;
   private final LearningPlanLoadService loadService;
+  private final LearningPlanCreationPolicyService creationPolicyService;
   private final Clock clock;
 
   public LearningPlanTemplateDraftService(
@@ -44,11 +45,31 @@ public class LearningPlanTemplateDraftService {
       LearningPlanLoadService loadService,
       Clock clock
   ) {
+    this(
+        templateRepository,
+        draftRepository,
+        problemCatalog,
+        validator,
+        loadService,
+        new LearningPlanCreationPolicyService(),
+        clock);
+  }
+
+  public LearningPlanTemplateDraftService(
+      LearningPlanTemplateRepository templateRepository,
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanDraftValidator validator,
+      LearningPlanLoadService loadService,
+      LearningPlanCreationPolicyService creationPolicyService,
+      Clock clock
+  ) {
     this.templateRepository = templateRepository;
     this.draftRepository = draftRepository;
     this.problemCatalog = problemCatalog;
     this.validator = validator;
     this.loadService = loadService;
+    this.creationPolicyService = creationPolicyService;
     this.clock = clock;
   }
 
@@ -107,7 +128,8 @@ public class LearningPlanTemplateDraftService {
     validator.validateTemplatePlan(draftPlan);
 
     Instant now = clock.instant();
-    LearningPlanDraft saved = draftRepository.save(new LearningPlanDraft(
+    LearningPlanDraftCreationAdmission admission = creationPolicyService.draftAdmission(userId, now);
+    LearningPlanDraft draft = new LearningPlanDraft(
         null,
         userId,
         LearningPlanDraftStatus.GENERATED,
@@ -121,9 +143,18 @@ public class LearningPlanTemplateDraftService {
             : "已根据模板生成学习计划草案。",
         draftPlan,
         null,
-        now.plus(DRAFT_TTL_DAYS, ChronoUnit.DAYS),
+        admission.expiresAt(),
         now,
-        now));
+        now);
+    LearningPlanDraft saved = draftRepository.createWithinDailyLimit(
+            draft,
+            admission.quotaDate(),
+            admission.dailyLimit(),
+            now)
+        .orElseThrow(() -> new LearningPlanException(
+            LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE,
+            "api.error." + LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE,
+            "今天创建的学习计划草案已达到上限，请明天再试。"));
     return LearningPlanDraftResult.fromDraft(saved);
   }
 

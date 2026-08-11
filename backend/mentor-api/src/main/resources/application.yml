@@ -141,6 +141,14 @@ algo-mentor:
     seed:
       enabled: ${LEARNING_PLAN_TEMPLATE_SEED_ENABLED:false}
       path: ${LEARNING_PLAN_TEMPLATE_SEED_PATH:data/learning-plan-template-seed}
+  learning-plan:
+    governance:
+      quota-zone: ${LEARNING_PLAN_QUOTA_ZONE:UTC}
+      cleanup:
+        enabled: ${LEARNING_PLAN_DRAFT_CLEANUP_ENABLED:true}
+        fixed-delay: ${LEARNING_PLAN_DRAFT_CLEANUP_FIXED_DELAY:1h}
+        batch-size: ${LEARNING_PLAN_DRAFT_CLEANUP_BATCH_SIZE:1000}
+        daily-usage-retention-days: ${LEARNING_PLAN_DRAFT_USAGE_RETENTION_DAYS:30}
   learner-memory:
     declared-update:
       enabled: ${LEARNER_MEMORY_DECLARED_UPDATE_ENABLED:false}

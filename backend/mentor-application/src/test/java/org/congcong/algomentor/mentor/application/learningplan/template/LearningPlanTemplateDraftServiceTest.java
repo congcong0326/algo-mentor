@@ -37,6 +37,9 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProbl
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicy;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
 
 class LearningPlanTemplateDraftServiceTest {
 
@@ -219,6 +222,28 @@ class LearningPlanTemplateDraftServiceTest {
         new LearningPlanTemplateDraftCommand("neetcode_150_systematic_interview", null, 11, 5)))
         .isInstanceOf(LearningPlanException.class)
         .hasMessage("每天题目数必须在 1-10 之间。");
+  }
+
+  @org.junit.jupiter.api.Test
+  void rejectsTemplateDraftWhenDailyCreationLimitIsReached() {
+    templateRepository.saveTemplate(blind75Template());
+    LearningPlanTemplateDraftService limitedService = new LearningPlanTemplateDraftService(
+        templateRepository,
+        draftRepository,
+        problemCatalog,
+        validator,
+        loadService,
+        new LearningPlanCreationPolicyService(
+            ignored -> new LearningPlanCreationPolicy(30, 0, 14),
+            ZoneOffset.UTC),
+        clock);
+
+    assertThatThrownBy(() -> limitedService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand("neetcode_blind_75_interview_core", "Java", 2, 5)))
+        .isInstanceOfSatisfying(LearningPlanException.class, exception ->
+            assertThat(exception.code()).isEqualTo(
+                LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE));
   }
 
   @org.junit.jupiter.api.Test

@@ -12,6 +12,7 @@ export type AdminPageId =
   | 'betaAccess'
   | 'sessions'
   | 'sessionPolicies'
+  | 'learningPlanPolicies'
   | 'aiProviders'
   | 'aiRouting'
   | 'aiUsage'
@@ -32,6 +33,7 @@ export type AdminNavigationLabelKey =
   | 'betaAccess'
   | 'sessions'
   | 'sessionPolicies'
+  | 'learningPlanPolicies'
   | 'modelResources'
   | 'costGovernance'
   | 'aiProviders'
@@ -140,7 +142,10 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
     id: 'content',
     labelKey: 'content',
     icon: Library,
-    items: [{ id: 'problems', labelKey: 'problems', path: APP_ROUTES.problems, permission: 'problem:read' }],
+    items: [
+      { id: 'problems', labelKey: 'problems', path: APP_ROUTES.problems, permission: 'problem:read' },
+      { id: 'learningPlanPolicies', labelKey: 'learningPlanPolicies', path: APP_ROUTES.adminLearningPlanPolicies, permission: 'policy:manage' },
+    ],
   },
   {
     id: 'operations',

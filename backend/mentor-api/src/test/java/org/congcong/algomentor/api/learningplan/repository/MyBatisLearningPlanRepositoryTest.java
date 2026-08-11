@@ -5,12 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +34,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProbl
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 
 class MyBatisLearningPlanRepositoryTest {
 
@@ -62,6 +65,106 @@ class MyBatisLearningPlanRepositoryTest {
 
     assertThat(result).isPresent();
     verify(mapper).findPlanByIdForUserForUpdate(12, 7);
+  }
+
+  @Test
+  void createDraftConsumesDailyQuotaAndInsertsInOneRepositoryOperation() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    LearningPlanDraftPlan snapshot = plan(List.of(phase(1, "base", "two-sum")));
+    LearningPlanDraft draft = new LearningPlanDraft(
+        null,
+        7L,
+        LearningPlanDraftStatus.GENERATED,
+        brief(),
+        List.of(),
+        List.of(),
+        "assistant",
+        snapshot,
+        null,
+        CREATED_AT.plusSeconds(86_400),
+        CREATED_AT,
+        CREATED_AT);
+    when(mapper.tryConsumeDailyDraftQuota(7L, LocalDate.parse("2026-01-01"), 5, CREATED_AT))
+        .thenReturn(1);
+    when(mapper.insertDraft(any())).thenReturn(12L);
+    when(mapper.findDraftByIdForUser(12L, 7L)).thenReturn(draftRow(snapshot));
+
+    Optional<LearningPlanDraft> created = repository.createWithinDailyLimit(
+        draft, LocalDate.parse("2026-01-01"), 5, CREATED_AT);
+
+    assertThat(created).isPresent();
+    InOrder order = inOrder(mapper);
+    order.verify(mapper).tryConsumeDailyDraftQuota(7L, LocalDate.parse("2026-01-01"), 5, CREATED_AT);
+    order.verify(mapper).insertDraft(any());
+  }
+
+  @Test
+  void createDraftDoesNotInsertWhenDailyQuotaIsExhausted() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    when(mapper.tryConsumeDailyDraftQuota(7L, LocalDate.parse("2026-01-01"), 5, CREATED_AT))
+        .thenReturn(null);
+
+    Optional<LearningPlanDraft> created = repository.createWithinDailyLimit(
+        new LearningPlanDraft(
+            null,
+            7L,
+            LearningPlanDraftStatus.COLLECTING,
+            brief(),
+            List.of(),
+            List.of(),
+            null,
+            null,
+            null,
+            CREATED_AT.plusSeconds(86_400),
+            CREATED_AT,
+            CREATED_AT),
+        LocalDate.parse("2026-01-01"),
+        5,
+        CREATED_AT);
+
+    assertThat(created).isEmpty();
+    verify(mapper, never()).insertDraft(any());
+  }
+
+  @Test
+  void createPlanLocksUserAndRejectsAtSavedPlanLimit() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    when(mapper.countPlansByUserId(7L)).thenReturn(30L);
+
+    Optional<LearningPlan> created = repository.createIfBelowLimit(
+        new LearningPlan(
+            null,
+            7L,
+            LearningPlanStatus.ACTIVE,
+            plan(List.of(phase(1, "base", "two-sum"))),
+            CREATED_AT,
+            CREATED_AT),
+        30);
+
+    assertThat(created).isEmpty();
+    InOrder order = inOrder(mapper);
+    order.verify(mapper).lockPlanCreationForUser(7L);
+    order.verify(mapper).countPlansByUserId(7L);
+    verify(mapper, never()).insertPlan(any());
+  }
+
+  @Test
+  void cleanupDeletesDraftProposalGroupsBeforeDraftRows() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    when(mapper.findExpiredDraftIdsForCleanup(CREATED_AT, 100)).thenReturn(List.of(10L, 11L));
+    when(mapper.deleteDraftsByIds(List.of(10L, 11L))).thenReturn(2);
+
+    int deleted = repository.deleteExpiredDrafts(CREATED_AT, 100);
+
+    assertThat(deleted).isEqualTo(2);
+    InOrder order = inOrder(mapper);
+    order.verify(mapper).findExpiredDraftIdsForCleanup(CREATED_AT, 100);
+    order.verify(mapper).deleteProposalGroupsForDrafts(List.of(10L, 11L));
+    order.verify(mapper).deleteDraftsByIds(List.of(10L, 11L));
   }
 
   @Test

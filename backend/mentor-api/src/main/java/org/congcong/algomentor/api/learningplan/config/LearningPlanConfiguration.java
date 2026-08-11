@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
+import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanupMetrics;
+import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanupScheduler;
 import org.congcong.algomentor.api.learningplan.personalization.ApiLearningPlanPersonalizationDataProvider;
+import org.congcong.algomentor.api.learningplan.policy.LearningPlanCreationPolicyContentValidator;
+import org.congcong.algomentor.api.learningplan.policy.PolicyBackedLearningPlanCreationPolicyResolver;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationRepository;
@@ -18,11 +22,16 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadS
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
+import org.congcong.algomentor.mentor.application.learningplan.cleanup.LearningPlanDraftCleanupService;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationDataProvider;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationMetrics;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.MicrometerLearningPlanPersonalizationMetrics;
 import org.congcong.algomentor.mentor.application.learningplan.TodayPackService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicy;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyResolver;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionValidator;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
@@ -49,12 +58,18 @@ import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerM
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.support.TransactionOperations;
+import org.congcong.algomentor.policy.service.GenericPolicyQueryService;
+import org.congcong.algomentor.policy.type.GenericPolicyType;
+import org.congcong.algomentor.policy.type.GenericPolicyTypeExposure;
 
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(LearningPlanGovernanceProperties.class)
 public class LearningPlanConfiguration {
 
   @Bean
@@ -73,6 +88,37 @@ public class LearningPlanConfiguration {
   @ConditionalOnMissingBean
   public LearningPlanLoadService learningPlanLoadService(Clock learningPlanClock) {
     return new LearningPlanLoadService(learningPlanClock);
+  }
+
+  @Bean("learningPlanCreationPolicyType")
+  @ConditionalOnMissingBean(name = "learningPlanCreationPolicyType")
+  public GenericPolicyType<LearningPlanCreationPolicy> learningPlanCreationPolicyType() {
+    return GenericPolicyType.of(
+        LearningPlanCreationPolicyConstants.TYPE_CODE,
+        LearningPlanCreationPolicy.class,
+        LearningPlanCreationPolicyContentValidator::validate,
+        GenericPolicyTypeExposure.INTERNAL_ONLY);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanCreationPolicyResolver learningPlanCreationPolicyResolver(
+      ObjectProvider<GenericPolicyQueryService> queryServiceProvider,
+      @Qualifier("learningPlanCreationPolicyType") GenericPolicyType<LearningPlanCreationPolicy> policyType
+  ) {
+    GenericPolicyQueryService queryService = queryServiceProvider.getIfAvailable();
+    return queryService == null
+        ? LearningPlanCreationPolicyResolver.defaults()
+        : new PolicyBackedLearningPlanCreationPolicyResolver(queryService, policyType);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanCreationPolicyService learningPlanCreationPolicyService(
+      LearningPlanCreationPolicyResolver resolver,
+      LearningPlanGovernanceProperties properties
+  ) {
+    return new LearningPlanCreationPolicyService(resolver, properties.quotaZoneId());
   }
 
   @Bean
@@ -97,8 +143,16 @@ public class LearningPlanConfiguration {
       LearningPlanAgentService agentService,
       LearningPlanDraftValidator validator,
       LearningPlanLoadService loadService,
+      LearningPlanCreationPolicyService creationPolicyService,
       Clock learningPlanClock) {
-    return new LearningPlanDraftService(draftRepository, planRepository, agentService, validator, loadService, learningPlanClock);
+    return new LearningPlanDraftService(
+        draftRepository,
+        planRepository,
+        agentService,
+        validator,
+        loadService,
+        creationPolicyService,
+        learningPlanClock);
   }
 
   @Bean
@@ -234,7 +288,8 @@ public class LearningPlanConfiguration {
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
       Clock learningPlanClock,
-      LearningPlanPersonalizationContextService personalizationContextService) {
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanCreationPolicyService creationPolicyService) {
     return new LearningPlanDraftStreamService(
         draftRepository,
         validator,
@@ -243,7 +298,8 @@ public class LearningPlanConfiguration {
         problemCatalog,
         loadService,
         learningPlanClock,
-        personalizationContextService);
+        personalizationContextService,
+        creationPolicyService);
   }
 
   @Bean
@@ -397,6 +453,7 @@ public class LearningPlanConfiguration {
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanDraftValidator validator,
       LearningPlanLoadService loadService,
+      LearningPlanCreationPolicyService creationPolicyService,
       Clock learningPlanClock) {
     return new LearningPlanTemplateDraftService(
         templateRepository,
@@ -404,7 +461,39 @@ public class LearningPlanConfiguration {
         problemCatalog,
         validator,
         loadService,
+        creationPolicyService,
         learningPlanClock);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanDraftCleanupService learningPlanDraftCleanupService(
+      LearningPlanDraftRepository draftRepository,
+      Clock learningPlanClock,
+      LearningPlanGovernanceProperties properties
+  ) {
+    return new LearningPlanDraftCleanupService(
+        draftRepository,
+        learningPlanClock,
+        properties.quotaZoneId());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanDraftCleanupMetrics learningPlanDraftCleanupMetrics(
+      ObjectProvider<MeterRegistry> meterRegistryProvider
+  ) {
+    return new LearningPlanDraftCleanupMetrics(meterRegistryProvider.getIfAvailable());
+  }
+
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  @ConditionalOnMissingBean
+  public LearningPlanDraftCleanupScheduler learningPlanDraftCleanupScheduler(
+      LearningPlanDraftCleanupService cleanupService,
+      LearningPlanGovernanceProperties properties,
+      LearningPlanDraftCleanupMetrics metrics
+  ) {
+    return new LearningPlanDraftCleanupScheduler(cleanupService, properties.getCleanup(), metrics);
   }
 
   @Bean

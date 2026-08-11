@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.learningplan.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,12 @@ public interface LearningPlanMapper {
 
   long insertDraft(LearningPlanDraftRow row);
 
+  Integer tryConsumeDailyDraftQuota(
+      @Param("userId") long userId,
+      @Param("quotaDate") LocalDate quotaDate,
+      @Param("dailyLimit") int dailyLimit,
+      @Param("consumedAt") Instant consumedAt);
+
   int updateDraft(LearningPlanDraftRow row);
 
   LearningPlanDraftRow findDraftByIdForUser(@Param("id") long id, @Param("userId") long userId);
@@ -27,7 +34,21 @@ public interface LearningPlanMapper {
 
   LearningPlanDraftOriginRow findDraftOriginForUser(@Param("id") long id, @Param("userId") long userId);
 
+  List<Long> findExpiredDraftIdsForCleanup(
+      @Param("expiredBefore") Instant expiredBefore,
+      @Param("limit") int limit);
+
+  int deleteProposalGroupsForDrafts(@Param("draftIds") List<Long> draftIds);
+
+  int deleteDraftsByIds(@Param("draftIds") List<Long> draftIds);
+
+  int deleteDailyDraftUsageBefore(
+      @Param("quotaDate") LocalDate quotaDate,
+      @Param("limit") int limit);
+
   long insertPlan(LearningPlanRow row);
+
+  int lockPlanCreationForUser(@Param("userId") long userId);
 
   int updatePlanSnapshot(LearningPlanRow row);
 

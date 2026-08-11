@@ -4,6 +4,9 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
+import org.springframework.transaction.annotation.Transactional;
 
 public class LearningPlanDraftService {
 
@@ -12,6 +15,7 @@ public class LearningPlanDraftService {
   private final LearningPlanAgentService agentService;
   private final LearningPlanDraftValidator validator;
   private final LearningPlanLoadService loadService;
+  private final LearningPlanCreationPolicyService creationPolicyService;
   private final Clock clock;
 
   public LearningPlanDraftService(
@@ -21,11 +25,30 @@ public class LearningPlanDraftService {
       LearningPlanDraftValidator validator,
       LearningPlanLoadService loadService,
       Clock clock) {
+    this(
+        draftRepository,
+        planRepository,
+        agentService,
+        validator,
+        loadService,
+        new LearningPlanCreationPolicyService(),
+        clock);
+  }
+
+  public LearningPlanDraftService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanRepository planRepository,
+      LearningPlanAgentService agentService,
+      LearningPlanDraftValidator validator,
+      LearningPlanLoadService loadService,
+      LearningPlanCreationPolicyService creationPolicyService,
+      Clock clock) {
     this.draftRepository = draftRepository;
     this.planRepository = planRepository;
     this.agentService = agentService;
     this.validator = validator;
     this.loadService = loadService;
+    this.creationPolicyService = creationPolicyService;
     this.clock = clock;
   }
 
@@ -49,8 +72,9 @@ public class LearningPlanDraftService {
     return LearningPlanDraftResult.fromDraft(advance(updated));
   }
 
+  @Transactional
   public LearningPlanConfirmResult confirmDraft(long userId, long draftId) {
-    LearningPlanDraft draft = draftRepository.findDraftByIdForUser(draftId, userId)
+    LearningPlanDraft draft = draftRepository.findDraftByIdForUserForUpdate(draftId, userId)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_FOUND", "学习计划草案不存在。"));
     if (draft.confirmedPlanId() != null) {
       return new LearningPlanConfirmResult(draft.confirmedPlanId(), draft.draftPlan().title(), LearningPlanStatus.ACTIVE);
@@ -63,13 +87,19 @@ public class LearningPlanDraftService {
         null);
     validator.validateConfirmablePlan(confirmablePlan);
     Instant now = clock.instant();
-    LearningPlan savedPlan = planRepository.save(new LearningPlan(
-        null,
-        userId,
-        LearningPlanStatus.ACTIVE,
-        confirmablePlan,
-        now,
-        now));
+    LearningPlan savedPlan = planRepository.createIfBelowLimit(
+            new LearningPlan(
+                null,
+                userId,
+                LearningPlanStatus.ACTIVE,
+                confirmablePlan,
+                now,
+                now),
+            creationPolicyService.maxSavedPlans(userId))
+        .orElseThrow(() -> new LearningPlanException(
+            LearningPlanCreationPolicyConstants.PLAN_LIMIT_EXCEEDED_CODE,
+            "api.error." + LearningPlanCreationPolicyConstants.PLAN_LIMIT_EXCEEDED_CODE,
+            "已达到可保存的学习计划数量上限，请先删除旧计划。"));
     draftRepository.save(draft.withConfirmedPlanId(savedPlan.id(), now));
     return new LearningPlanConfirmResult(savedPlan.id(), savedPlan.plan().title(), savedPlan.status());
   }
