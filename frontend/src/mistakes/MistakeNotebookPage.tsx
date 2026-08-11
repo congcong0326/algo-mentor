@@ -26,6 +26,7 @@ import type {
 } from '../types/api';
 import { formatUpcomingReviewTime } from '../utils/time';
 import ReviewCardTimeline from './ReviewCardTimeline';
+import { reviewProblemStatementMarkdown } from './reviewProblemStatement';
 
 interface MistakeNotebookPageProps {
   onNavigate: (path: string, options?: { replace?: boolean }) => void;
@@ -344,7 +345,9 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
               <p className="error-text" role="alert">{contextError}</p>
             ) : context ? (
               <div className="mistake-detail-content">
-                <section className="review-problem-content"><MarkdownView content={context.problem.contentMarkdown} /></section>
+                <section className="review-problem-content">
+                  <MarkdownView content={reviewProblemStatementMarkdown(context.problem)} />
+                </section>
                 <ProblemNoteEditor problemSlug={context.problem.slug} />
                 <section className="mistake-detail-section">
                   <h3>{resources.reviewCenter.recentHistory}</h3>

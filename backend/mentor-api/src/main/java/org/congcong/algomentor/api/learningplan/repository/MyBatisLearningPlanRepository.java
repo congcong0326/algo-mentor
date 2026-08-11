@@ -8,12 +8,15 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanActivationRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProgressSummaryRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivation;
@@ -29,6 +32,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProgressSummary;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,6 +149,7 @@ public class MyBatisLearningPlanRepository
     List<LearningPlan> items = mapper.findPlansByUserIdPage(userId, pageSize, offset).stream()
         .map(this::toPlan)
         .toList();
+    Map<Long, LearningPlanProgressSummary> progressSummaries = progressSummaries(userId, items);
     return new LearningPlanPage(
         items,
         mapper.countPlansByUserId(userId),
@@ -152,7 +157,22 @@ public class MyBatisLearningPlanRepository
         pageSize,
         mapper.countPlansByUserIdAndStatus(userId, LearningPlanStatus.ACTIVE.name()),
         mapper.countPlansByUserIdAndStatus(userId, LearningPlanStatus.ARCHIVED.name()),
-        mapper.findLatestPlanCreatedAtByUserId(userId));
+        mapper.findLatestPlanCreatedAtByUserId(userId),
+        progressSummaries);
+  }
+
+  private Map<Long, LearningPlanProgressSummary> progressSummaries(long userId, List<LearningPlan> plans) {
+    if (plans.isEmpty()) {
+      return Map.of();
+    }
+    List<Long> planIds = plans.stream().map(LearningPlan::id).toList();
+    Map<Long, LearningPlanProgressSummary> summaries = new HashMap<>();
+    for (LearningPlanProgressSummaryRow row : mapper.findProgressSummariesByPlanIds(userId, planIds)) {
+      summaries.put(
+          row.planId(),
+          LearningPlanProgressSummary.fromCounts(row.totalProblemCount(), row.completedProblemCount()));
+    }
+    return Map.copyOf(summaries);
   }
 
   @Override

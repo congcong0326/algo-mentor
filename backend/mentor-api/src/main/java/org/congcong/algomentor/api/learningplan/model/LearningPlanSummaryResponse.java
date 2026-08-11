@@ -16,6 +16,7 @@ public record LearningPlanSummaryResponse(
     LearningPlanLevel level,
     String programmingLanguage,
     int weeklyHours,
+    LearningPlanProgressSummaryResponse progressSummary,
     LearningPlanStatus status,
     Instant createdAt
 ) {

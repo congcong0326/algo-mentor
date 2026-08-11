@@ -1404,8 +1404,15 @@ export interface LearningPlanSummaryResponse {
   level: LearningPlanLevel;
   programmingLanguage?: string;
   weeklyHours: number;
+  progressSummary: LearningPlanProgressSummary;
   status: LearningPlanStatus;
   createdAt: string;
+}
+
+export interface LearningPlanProgressSummary {
+  totalProblemCount: number;
+  completedProblemCount: number;
+  progressPercent: number;
 }
 
 export interface LearningPlanListQuery {

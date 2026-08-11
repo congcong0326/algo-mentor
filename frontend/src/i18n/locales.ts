@@ -1278,14 +1278,12 @@ export interface LocaleResources {
     emptyTitle: string;
     emptyDescription: string;
     planParameters: string;
+    planProgressCount: (completed: number, total: number) => string;
+    planProgressAriaLabel: (completed: number, total: number, percent: number) => string;
+    planProgressHelper: string;
     viewPlan: (title: string) => string;
     deletePlan: (title: string) => string;
     currentRhythm: string;
-    rhythmOverview: string;
-    maintainByScenario: string;
-    maintainByScenarioDescription: string;
-    latestCreatedLabel: (date: string) => string;
-    latestCreatedDescription: string;
     unspecified: string;
     backToList: string;
     backToPlans: string;
@@ -2808,14 +2806,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       emptyTitle: '暂无正式方案',
       emptyDescription: '先新建一个训练方案，把目标、周期和题目安排统一起来。',
       planParameters: '方案参数',
+      planProgressCount: (completed, total) => `${completed} / ${total} 题`,
+      planProgressAriaLabel: (completed, total, percent) => `计划完成进度：已完成 ${completed}/${total} 题，${percent}%`,
+      planProgressHelper: '已完成',
       viewPlan: (title) => `查看 ${title}`,
       deletePlan: (title) => `删除 ${title}`,
       currentRhythm: '当前节奏',
-      rhythmOverview: '方案执行概览',
-      maintainByScenario: '按场景维护方案',
-      maintainByScenarioDescription: '面试冲刺、专题突破和长期学习不要混在同一个方案里。',
-      latestCreatedLabel: (date) => `最近创建：${date}`,
-      latestCreatedDescription: '新方案保存后会出现在方案库顶部。',
       unspecified: '未指定',
       backToList: '返回方案库',
       backToPlans: '返回方案页',
@@ -4440,14 +4436,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       emptyTitle: 'No saved plans',
       emptyDescription: 'Create a plan to keep goals, timeline, and problem work in one place.',
       planParameters: 'Plan parameters',
+      planProgressCount: (completed, total) => `${completed} / ${total} problems`,
+      planProgressAriaLabel: (completed, total, percent) => `Plan progress: ${completed} of ${total} completed, ${percent}%`,
+      planProgressHelper: 'Completed',
       viewPlan: (title) => `View ${title}`,
       deletePlan: (title) => `Delete ${title}`,
       currentRhythm: 'Current Rhythm',
-      rhythmOverview: 'Plan progress overview',
-      maintainByScenario: 'Organize by scenario',
-      maintainByScenarioDescription: 'Keep interview sprints, topic breakthroughs, and long-term learning in separate plans.',
-      latestCreatedLabel: (date) => `Latest: ${date}`,
-      latestCreatedDescription: 'Newly saved plans appear at the top of the library.',
       unspecified: 'Not specified',
       backToList: 'Back to Library',
       backToPlans: 'Back to Plans',

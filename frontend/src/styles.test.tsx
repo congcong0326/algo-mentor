@@ -85,7 +85,7 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.secondary-button \{[^}]*border: 1px solid var\(--border-strong\);[^}]*box-shadow: none;/);
     expect(styles).toMatch(/\.icon-button \{[^}]*width: 34px;[^}]*height: 34px;[^}]*border-radius: 7px;/);
     expect(styles).toMatch(/\.search-field \{[^}]*min-height: 38px;[^}]*border: 1px solid var\(--border-subtle\);/);
-    expect(styles).toMatch(/\.plan-overview,[\s\S]*?\.plan-insight-panel \{[^}]*box-shadow: none;/);
+    expect(styles).toMatch(/\.plan-overview,[\s\S]*?\.plan-list-card \{[^}]*box-shadow: none;/);
     expect(styles).toMatch(/\.my-card \{[^}]*box-shadow: none;/);
   });
 
@@ -93,6 +93,14 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.plan-stat-grid \{[^}]*gap: 0;[^}]*border-top: 1px solid var\(--border-subtle\);/);
     expect(styles).toMatch(/\.plan-stat-card \{[^}]*display: flex;[^}]*border: 0;[^}]*background: transparent;/);
     expect(styles).toMatch(/\.plan-list-row \{[^}]*min-height: 72px;[^}]*padding: 11px 12px;/);
+    expect(styles).toMatch(/\.plan-list-row \{[^}]*grid-template-columns: minmax\(0, 1fr\) 180px auto;/);
+    expect(styles).toMatch(/\.plan-progress-summary \{[^}]*width: 180px;/);
+    expect(styles).toMatch(/\.plan-progress-ring \{[^}]*width: 56px;[^}]*background: conic-gradient\(/);
+    expect(styles).toMatch(/\.plan-progress-ring::before \{[^}]*inset: 6px;/);
+    expect(styles).toMatch(/\.plan-progress-ring strong \{[^}]*color: var\(--text-primary\);/);
+    expect(styles).toMatch(/\.plan-middle-action-wrap,[\s\S]*?\.plan-row-actions \.plan-middle-action \{[^}]*width: 64px;/);
+    expect(styles).toMatch(/\.plan-row-action-tooltip \{[^}]*left: 50%;[^}]*white-space: nowrap;/);
+    expect(styles).toMatch(/@media \(max-width: 720px\) \{[\s\S]*?\.plan-progress-summary \{[^}]*width: 100%;/);
     expect(styles).toMatch(/\.my-summary-card \{[^}]*min-height: 82px;[^}]*padding: 13px;[^}]*box-shadow: none;/);
     expect(styles).toMatch(/\.my-page-kicker,[\s\S]*?\.my-section-eyebrow \{[^}]*letter-spacing: 0;[^}]*text-transform: none;/);
     expect(styles).toMatch(/@media \(max-width: 980px\) \{[\s\S]*?\.plan-stat-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
@@ -110,7 +118,7 @@ describe('LeetReviewer-inspired visual system', () => {
   });
 
   it('keeps the review center compact and list-oriented', () => {
-    expect(styles).toMatch(/\.mistake-page \{[^}]*align-content: start;[^}]*gap: 16px;[^}]*width: min\(920px, 100%\);/);
+    expect(styles).toMatch(/\.mistake-page \{[^}]*align-content: start;[^}]*gap: 16px;[^}]*width: min\(1120px, 100%\);/);
     expect(styles).toMatch(/\.mistake-stat-grid \{[^}]*border-top: 1px solid var\(--border-subtle\);[^}]*border-bottom: 1px solid var\(--border-subtle\);/);
     expect(styles).toMatch(/\.mistake-note-card \{[^}]*grid-template-columns: minmax\(0, 1fr\) 198px auto;[^}]*min-height: 64px;[^}]*padding: 10px 12px;/);
     expect(styles).toMatch(/\.review-card-timeline \{[^}]*width: 198px;[^}]*min-width: 198px;[^}]*justify-content: flex-end;/);

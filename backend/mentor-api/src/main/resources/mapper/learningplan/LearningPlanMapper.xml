@@ -50,6 +50,15 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="LearningPlanProgressSummaryRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProgressSummaryRow">
+    <constructor>
+      <arg column="plan_id" javaType="java.lang.Long"/>
+      <arg column="total_problem_count" javaType="java.lang.Integer"/>
+      <arg column="completed_problem_count" javaType="java.lang.Integer"/>
+    </constructor>
+  </resultMap>
+
   <resultMap id="LearningPlanProposalGroupRowMap"
       type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow">
     <constructor>
@@ -444,6 +453,37 @@
     ORDER BY created_at DESC, id DESC
     LIMIT #{limit}
     OFFSET #{offset}
+  </select>
+
+  <select id="findProgressSummariesByPlanIds" resultMap="LearningPlanProgressSummaryRowMap">
+    SELECT
+      plan.id AS plan_id,
+      CAST(
+        COUNT(DISTINCT (phase.phase_index, problem.slug))
+          FILTER (WHERE problem.id IS NOT NULL)
+        AS INTEGER
+      ) AS total_problem_count,
+      CAST(
+        COUNT(DISTINCT (phase.phase_index, problem.slug))
+          FILTER (WHERE progress.status = 'COMPLETED')
+        AS INTEGER
+      ) AS completed_problem_count
+    FROM learning_plan plan
+    LEFT JOIN learning_plan_phase phase
+      ON phase.plan_id = plan.id
+    LEFT JOIN learning_plan_recommended_problem problem
+      ON problem.phase_id = phase.id
+    LEFT JOIN learning_plan_problem_progress progress
+      ON progress.user_id = plan.user_id
+      AND progress.plan_id = plan.id
+      AND progress.phase_index = phase.phase_index
+      AND progress.problem_slug = problem.slug
+    WHERE plan.user_id = #{userId}
+      AND plan.id IN
+      <foreach collection="planIds" item="planId" open="(" separator="," close=")">
+        #{planId}
+      </foreach>
+    GROUP BY plan.id
   </select>
 
   <select id="countPlansByUserId" resultType="long">

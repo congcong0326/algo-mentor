@@ -11,6 +11,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProgressSummary;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 
@@ -33,6 +34,13 @@ public final class LearningPlanResponseMapper {
   }
 
   public static LearningPlanSummaryResponse toSummaryResponse(LearningPlan plan) {
+    return toSummaryResponse(plan, LearningPlanProgressSummary.notStarted(plan.plan()));
+  }
+
+  public static LearningPlanSummaryResponse toSummaryResponse(
+      LearningPlan plan,
+      LearningPlanProgressSummary progressSummary
+  ) {
     LearningPlanDraftPlan snapshot = plan.plan();
     return new LearningPlanSummaryResponse(
         plan.id(),
@@ -44,6 +52,10 @@ public final class LearningPlanResponseMapper {
         snapshot.level(),
         snapshot.programmingLanguage(),
         snapshot.weeklyHours(),
+        new LearningPlanProgressSummaryResponse(
+            progressSummary.totalProblemCount(),
+            progressSummary.completedProblemCount(),
+            progressSummary.progressPercent()),
         plan.status(),
         plan.createdAt());
   }
@@ -54,7 +66,13 @@ public final class LearningPlanResponseMapper {
 
   public static LearningPlanPageResponse toPageResponse(LearningPlanPage page, Long activePlanId) {
     return new LearningPlanPageResponse(
-        page.items().stream().map(LearningPlanResponseMapper::toSummaryResponse).toList(),
+        page.items().stream()
+            .map(plan -> toSummaryResponse(
+                plan,
+                page.progressSummaries().getOrDefault(
+                    plan.id(),
+                    LearningPlanProgressSummary.notStarted(plan.plan()))))
+            .toList(),
         page.total(),
         page.page(),
         page.pageSize(),

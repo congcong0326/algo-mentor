@@ -17,6 +17,11 @@ describe('LearningPlanListCard', () => {
       level: 'INTERMEDIATE',
       programmingLanguage: 'Java',
       weeklyHours: 6,
+      progressSummary: {
+        totalProblemCount: 75,
+        completedProblemCount: 36,
+        progressPercent: 48,
+      },
       status: 'ACTIVE',
       createdAt: '2026-06-22T00:00:00Z',
     }],
@@ -58,6 +63,11 @@ describe('LearningPlanListCard', () => {
     expect(screen.getByText('6h/周')).toBeInTheDocument();
     expect(screen.getByText('共 12 个方案')).toBeInTheDocument();
     expect(screen.getByText('方案总数')).toBeInTheDocument();
+    expect(screen.getByText('36 / 75 题')).toBeInTheDocument();
+    expect(screen.getByText('48%')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: '计划完成进度：已完成 36/75 题，48%' }))
+      .toHaveAttribute('aria-valuenow', '48');
+    expect(screen.queryByRole('heading', { name: '当前节奏' })).not.toBeInTheDocument();
     expect(screen.queryByText('今日题包')).not.toBeInTheDocument();
     expect(screen.queryByText('已设置')).not.toBeInTheDocument();
     expect(screen.queryByText('已归档')).not.toBeInTheDocument();
@@ -65,7 +75,8 @@ describe('LearningPlanListCard', () => {
     expect(screen.getByText('第 1 / 2 页')).toBeInTheDocument();
 
     const selectedRow = screen.getByTestId('learning-plan-row-900');
-    expect(selectedRow).toHaveTextContent('进行中');
+    expect(selectedRow).not.toHaveTextContent('进行中');
+    expect(selectedRow).toHaveTextContent('当前采用');
     expect(selectedRow).toHaveClass('selected');
     expect(selectedRow).toHaveAttribute('aria-current', 'true');
 
@@ -77,6 +88,55 @@ describe('LearningPlanListCard', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '删除 四周 Java 算法面试冲刺计划' }));
     expect(onDelete).toHaveBeenCalledWith(900);
+  });
+
+  it.each([
+    [0, '#B8BEC7', '#B8BEC7'],
+    [12, '#F59E0B', '#F1F3F5'],
+    [52, '#06B6D4', '#F1F3F5'],
+    [83, '#10B981', '#F1F3F5'],
+    [100, '#059669', '#F1F3F5'],
+  ])('uses the training-stage ring color for %s%% progress', (progressPercent, color, track) => {
+    render(
+      <LearningPlanListCard
+        onCreate={vi.fn()}
+        onDelete={vi.fn()}
+        onPageChange={vi.fn()}
+        page={{
+          ...page,
+          items: [{
+            ...page.items[0],
+            progressSummary: {
+              ...page.items[0].progressSummary,
+              progressPercent,
+            },
+          }],
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('progressbar')).toHaveStyle({
+      '--plan-progress-color': color,
+      '--plan-progress-track': track,
+    });
+  });
+
+  it('shows a status badge only for a non-default plan status', () => {
+    render(
+      <LearningPlanListCard
+        onCreate={vi.fn()}
+        onDelete={vi.fn()}
+        onPageChange={vi.fn()}
+        page={{
+          ...page,
+          activePlanId: null,
+          items: [{ ...page.items[0], status: 'ARCHIVED' }],
+        }}
+      />,
+    );
+
+    expect(screen.getByText('已归档')).toBeInTheDocument();
+    expect(screen.queryByText('进行中')).not.toBeInTheDocument();
   });
 
   it('renders an empty state when the page has no plans', () => {
@@ -106,6 +166,7 @@ describe('LearningPlanListCard', () => {
     const { rerender } = render(
       <LearningPlanListCard
         deletingPlanId={undefined}
+        onActivate={vi.fn()}
         onCreate={vi.fn()}
         onDelete={vi.fn()}
         onPageChange={onPageChange}
@@ -158,6 +219,7 @@ describe('LearningPlanListCard', () => {
     render(
       <LearningPlanListCard
         deletingPlanId={undefined}
+        onActivate={vi.fn()}
         onCreate={vi.fn()}
         onDelete={vi.fn()}
         onOpenTodayPack={onOpenTodayPack}
@@ -177,6 +239,11 @@ describe('LearningPlanListCard', () => {
               level: 'INTERMEDIATE',
               programmingLanguage: 'Java',
               weeklyHours: 4,
+              progressSummary: {
+                totalProblemCount: 20,
+                completedProblemCount: 0,
+                progressPercent: 0,
+              },
               status: 'ACTIVE',
               createdAt: '2026-06-23T00:00:00Z',
             },
@@ -188,9 +255,22 @@ describe('LearningPlanListCard', () => {
     );
 
     expect(within(screen.getByTestId('learning-plan-row-900')).getByRole('button', { name: '今日题包' }))
-      .toBeInTheDocument();
+      .toHaveClass('icon-button', 'plan-middle-action');
+    expect(within(screen.getByTestId('learning-plan-row-900')).getByRole('button', { name: '今日题包' }))
+      .not.toHaveTextContent('今日题包');
+    expect(within(screen.getByTestId('learning-plan-row-900')).getByRole('tooltip', { name: '今日题包' }))
+      .toHaveClass('toolbar-tooltip', 'plan-row-action-tooltip');
     expect(within(screen.getByTestId('learning-plan-row-901')).queryByRole('button', { name: '今日题包' }))
       .not.toBeInTheDocument();
+    expect(within(screen.getByTestId('learning-plan-row-901')).getByRole('button', { name: '采用' }))
+      .toHaveClass('plan-middle-action');
+
+    const activePlanButtons = within(screen.getByTestId('learning-plan-row-900')).getAllByRole('button');
+    expect(activePlanButtons.map((button) => button.getAttribute('aria-label') ?? button.textContent)).toEqual([
+      '查看 四周 Java 算法面试冲刺计划',
+      '今日题包',
+      '删除 四周 Java 算法面试冲刺计划',
+    ]);
 
     fireEvent.click(screen.getByRole('button', { name: '今日题包' }));
     expect(onOpenTodayPack).toHaveBeenCalledWith(900);

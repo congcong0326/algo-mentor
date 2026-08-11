@@ -1,4 +1,5 @@
-import { Activity, CalendarClock, CalendarDays, Eye, Layers3, Plus, Trash2 } from 'lucide-react';
+import { CalendarDays, Eye, Plus, Trash2 } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import type {
   LearningPlanPageResponse,
 } from '../types/api';
@@ -35,6 +36,43 @@ function formatLatestDate(value: string | null | undefined, locale: SupportedLoc
   }
 
   return formatShortDate(value, locale);
+}
+
+function normalizeProgressPercent(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+  return Math.min(100, Math.max(0, value));
+}
+
+type PlanProgressRingStyle = CSSProperties & {
+  '--plan-progress-angle': string;
+  '--plan-progress-color': string;
+  '--plan-progress-track': string;
+};
+
+function getPlanProgressColor(percent: number): string {
+  if (percent <= 0) {
+    return '#B8BEC7';
+  }
+  if (percent <= 30) {
+    return '#F59E0B';
+  }
+  if (percent <= 70) {
+    return '#06B6D4';
+  }
+  if (percent < 100) {
+    return '#10B981';
+  }
+  return '#059669';
+}
+
+function getPlanProgressRingStyle(percent: number): PlanProgressRingStyle {
+  return {
+    '--plan-progress-angle': `${percent * 3.6}deg`,
+    '--plan-progress-color': getPlanProgressColor(percent),
+    '--plan-progress-track': percent === 0 ? '#B8BEC7' : '#F1F3F5',
+  };
 }
 
 function inferProgrammingLanguage(
@@ -96,155 +134,161 @@ export default function LearningPlanListCard({
         </dl>
       </div>
 
-      <div className="plan-dashboard-grid">
-        <section className="plan-list-card" aria-label={resources.learningPlans.listTitle}>
-          <div className="plan-section-heading">
-            <div>
-              <h2>{resources.learningPlans.listTitle}</h2>
-              <p>{resources.learningPlans.totalPlans(page.total)}</p>
-            </div>
-            <span>{visibleRangeStart}-{visibleRangeEnd}</span>
+      <section className="plan-list-card" aria-label={resources.learningPlans.listTitle}>
+        <div className="plan-section-heading">
+          <div>
+            <h2>{resources.learningPlans.listTitle}</h2>
+            <p>{resources.learningPlans.totalPlans(page.total)}</p>
           </div>
-          <div className="plan-list">
-            {page.items.length === 0 ? (
-              <div className="empty-plan-state">
-                <h3>{resources.learningPlans.emptyTitle}</h3>
-                <p>{resources.learningPlans.emptyDescription}</p>
-              </div>
-            ) : (
-              <div className="plan-list-stack" role="list" aria-label={resources.learningPlans.listTitle}>
-                {page.items.map((plan) => {
-                  const isDeleting = deletingPlanId === plan.id;
-                  const isActivePlan = page.activePlanId === plan.id;
-                  const isActivating = activatingPlanId === plan.id;
+          <span>{visibleRangeStart}-{visibleRangeEnd}</span>
+        </div>
+        <div className="plan-list">
+          {page.items.length === 0 ? (
+            <div className="empty-plan-state">
+              <h3>{resources.learningPlans.emptyTitle}</h3>
+              <p>{resources.learningPlans.emptyDescription}</p>
+            </div>
+          ) : (
+            <div className="plan-list-stack" role="list" aria-label={resources.learningPlans.listTitle}>
+              {page.items.map((plan) => {
+                const isDeleting = deletingPlanId === plan.id;
+                const isActivePlan = page.activePlanId === plan.id;
+                const isActivating = activatingPlanId === plan.id;
+                const progressPercent = normalizeProgressPercent(plan.progressSummary.progressPercent);
+                const todayPackTooltipId = `learning-plan-today-pack-tooltip-${plan.id}`;
 
-                  return (
-                    <article
-                      aria-current={selectedPlanId === plan.id ? 'true' : undefined}
-                      className={`plan-list-row ${selectedPlanId === plan.id ? 'selected' : ''}`}
-                      data-testid={`learning-plan-row-${plan.id}`}
-                      key={plan.id}
-                      role="listitem"
-                    >
-                      <div className="plan-row-content">
-                        <div className="plan-title-line">
-                          <strong>{plan.title}</strong>
-                          {isActivePlan && (
-                            <span className="status-badge current-plan-badge">{resources.learningPlans.currentActive}</span>
-                          )}
+                return (
+                  <article
+                    aria-current={selectedPlanId === plan.id ? 'true' : undefined}
+                    className={`plan-list-row ${selectedPlanId === plan.id ? 'selected' : ''}`}
+                    data-testid={`learning-plan-row-${plan.id}`}
+                    key={plan.id}
+                    role="listitem"
+                  >
+                    <div className="plan-row-content">
+                      <div className="plan-title-line">
+                        <strong>{plan.title}</strong>
+                        {isActivePlan && (
+                          <span className="status-badge current-plan-badge">{resources.learningPlans.currentActive}</span>
+                        )}
+                        {plan.status !== 'ACTIVE' && (
                           <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
-                        </div>
-                        <div className="plan-meta-row" aria-label={resources.learningPlans.planParameters}>
-                          <span>{inferProgrammingLanguage(plan, resources.learningPlans.unspecified)}</span>
-                          <span>{formatPlanLevel(plan.level, resources)}</span>
-                          <span>{formatPlanIntent(plan.intent, resources)}</span>
-                          <span>{resources.common.week(plan.durationWeeks)}</span>
-                          <span>{resources.common.hoursPerWeek(plan.weeklyHours)}</span>
-                          <span>{formatShortDate(plan.createdAt, locale)} {resources.common.created}</span>
-                        </div>
+                        )}
                       </div>
-                      <div className="plan-row-actions">
-                        {onOpenTodayPack && isActivePlan && (
+                      <div className="plan-meta-row" aria-label={resources.learningPlans.planParameters}>
+                        <span>{inferProgrammingLanguage(plan, resources.learningPlans.unspecified)}</span>
+                        <span>{formatPlanLevel(plan.level, resources)}</span>
+                        <span>{formatPlanIntent(plan.intent, resources)}</span>
+                        <span>{resources.common.week(plan.durationWeeks)}</span>
+                        <span>{resources.common.hoursPerWeek(plan.weeklyHours)}</span>
+                        <span>{formatShortDate(plan.createdAt, locale)} {resources.common.created}</span>
+                      </div>
+                    </div>
+                    <div className="plan-progress-summary">
+                      <div
+                        aria-label={resources.learningPlans.planProgressAriaLabel(
+                          plan.progressSummary.completedProblemCount,
+                          plan.progressSummary.totalProblemCount,
+                          progressPercent,
+                        )}
+                        aria-valuemax={100}
+                        aria-valuemin={0}
+                        aria-valuenow={progressPercent}
+                        className="plan-progress-ring"
+                        role="progressbar"
+                        style={getPlanProgressRingStyle(progressPercent)}
+                      >
+                        <strong>{progressPercent}%</strong>
+                      </div>
+                      <div className="plan-progress-copy">
+                        <strong>
+                          {resources.learningPlans.planProgressCount(
+                            plan.progressSummary.completedProblemCount,
+                            plan.progressSummary.totalProblemCount,
+                          )}
+                        </strong>
+                        <span>{resources.learningPlans.planProgressHelper}</span>
+                      </div>
+                    </div>
+                    <div className="plan-row-actions">
+                      {onSelect && (
+                        <button
+                          aria-label={resources.learningPlans.viewPlan(plan.title)}
+                          className="icon-button"
+                          onClick={() => onSelect(plan.id)}
+                          title={resources.common.view}
+                          type="button"
+                        >
+                          <Eye aria-hidden="true" />
+                        </button>
+                      )}
+                      {onOpenTodayPack && isActivePlan && (
+                        <span className="toolbar-tooltip-wrap plan-middle-action-wrap">
                           <button
-                            className="secondary-button compact"
+                            aria-describedby={todayPackTooltipId}
+                            aria-label={resources.learningPlans.todayPack}
+                            className="icon-button plan-middle-action"
                             onClick={() => onOpenTodayPack(plan.id)}
                             type="button"
                           >
                             <CalendarDays aria-hidden="true" />
-                            <span>{resources.learningPlans.todayPack}</span>
                           </button>
-                        )}
-                        {onSelect && (
-                          <button
-                            aria-label={resources.learningPlans.viewPlan(plan.title)}
-                            className="icon-button"
-                            onClick={() => onSelect(plan.id)}
-                            title={resources.common.view}
-                            type="button"
+                          <span
+                            className="toolbar-tooltip plan-row-action-tooltip"
+                            id={todayPackTooltipId}
+                            role="tooltip"
                           >
-                            <Eye aria-hidden="true" />
-                          </button>
-                        )}
-                        {onActivate && !isActivePlan && (
-                          <button
-                            className="secondary-button compact"
-                            disabled={isActivating}
-                            onClick={() => onActivate(plan.id)}
-                            type="button"
-                          >
-                            {isActivating ? resources.learningPlans.activating : resources.learningPlans.activate}
-                          </button>
-                        )}
+                            {resources.learningPlans.todayPack}
+                          </span>
+                        </span>
+                      )}
+                      {onActivate && !isActivePlan && (
                         <button
-                          aria-label={resources.learningPlans.deletePlan(plan.title)}
-                          className="icon-button danger-icon-button"
-                          disabled={isDeleting}
-                          onClick={() => onDelete(plan.id)}
-                          title={isDeleting ? resources.common.deleting : resources.common.delete}
+                          className="secondary-button compact plan-middle-action"
+                          disabled={isActivating}
+                          onClick={() => onActivate(plan.id)}
                           type="button"
                         >
-                          <Trash2 aria-hidden="true" />
+                          {isActivating ? resources.learningPlans.activating : resources.learningPlans.activate}
                         </button>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <div className="pagination-row">
-            <span>{resources.common.pageStatus(page.page, totalPages)}</span>
-            <button
-              className="secondary-button compact"
-              disabled={page.page <= 1}
-              onClick={() => onPageChange(page.page - 1)}
-              type="button"
-            >
-              {resources.common.previousPage}
-            </button>
-            <button
-              className="secondary-button compact"
-              disabled={page.page >= totalPages}
-              onClick={() => onPageChange(page.page + 1)}
-              type="button"
-            >
-              {resources.common.nextPage}
-            </button>
-          </div>
-        </section>
-
-        <aside className="plan-insight-panel" aria-label={resources.learningPlans.rhythmOverview}>
-          <div className="plan-section-heading compact-heading">
-            <div>
-              <h2>{resources.learningPlans.currentRhythm}</h2>
-              <p>{resources.learningPlans.rhythmOverview}</p>
+                      )}
+                      <button
+                        aria-label={resources.learningPlans.deletePlan(plan.title)}
+                        className="icon-button danger-icon-button"
+                        disabled={isDeleting}
+                        onClick={() => onDelete(plan.id)}
+                        title={isDeleting ? resources.common.deleting : resources.common.delete}
+                        type="button"
+                      >
+                        <Trash2 aria-hidden="true" />
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
-          </div>
-          <div className="plan-insight-list">
-            <div className="plan-insight-item">
-              <Activity aria-hidden="true" />
-              <div>
-                <strong>{resources.learningPlans.overviewTitle}</strong>
-                <span>{resources.learningPlans.overviewDescription}</span>
-              </div>
-            </div>
-            <div className="plan-insight-item">
-              <Layers3 aria-hidden="true" />
-              <div>
-                <strong>{resources.learningPlans.maintainByScenario}</strong>
-                <span>{resources.learningPlans.maintainByScenarioDescription}</span>
-              </div>
-            </div>
-            <div className="plan-insight-item">
-              <CalendarClock aria-hidden="true" />
-              <div>
-                <strong>{resources.learningPlans.latestCreatedLabel(latestDate)}</strong>
-                <span>{resources.learningPlans.latestCreatedDescription}</span>
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
+          )}
+        </div>
+        <div className="pagination-row">
+          <span>{resources.common.pageStatus(page.page, totalPages)}</span>
+          <button
+            className="secondary-button compact"
+            disabled={page.page <= 1}
+            onClick={() => onPageChange(page.page - 1)}
+            type="button"
+          >
+            {resources.common.previousPage}
+          </button>
+          <button
+            className="secondary-button compact"
+            disabled={page.page >= totalPages}
+            onClick={() => onPageChange(page.page + 1)}
+            type="button"
+          >
+            {resources.common.nextPage}
+          </button>
+        </div>
+      </section>
     </section>
   );
 }

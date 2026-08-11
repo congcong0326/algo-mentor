@@ -52,6 +52,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProgressSummary;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
@@ -471,7 +472,8 @@ class LearningPlanControllerTest {
         5,
         8,
         4,
-        Instant.parse("2026-06-22T00:00:00Z")));
+        Instant.parse("2026-06-22T00:00:00Z"),
+        Map.of(900L, LearningPlanProgressSummary.fromCounts(75, 36))));
     when(planService.getPlan(42L, 900L)).thenReturn(plan);
     when(practiceSessionRepository.findProgressByPlan(42L, 900L)).thenReturn(List.of());
 
@@ -480,6 +482,9 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.items[0].id").value(900))
         .andExpect(jsonPath("$.data.items[0].title").value("四周 Java 算法面试冲刺计划"))
         .andExpect(jsonPath("$.data.items[0].objective").value("准备 Java 后端算法面试"))
+        .andExpect(jsonPath("$.data.items[0].progressSummary.totalProblemCount").value(75))
+        .andExpect(jsonPath("$.data.items[0].progressSummary.completedProblemCount").value(36))
+        .andExpect(jsonPath("$.data.items[0].progressSummary.progressPercent").value(48.0))
         .andExpect(jsonPath("$.data.total").value(12))
         .andExpect(jsonPath("$.data.page").value(2))
         .andExpect(jsonPath("$.data.pageSize").value(5))

@@ -796,7 +796,7 @@ a {
   display: grid;
   align-content: start;
   gap: 16px;
-  width: min(920px, 100%);
+  width: min(1120px, 100%);
   margin: 0 auto;
 }
 
@@ -4217,8 +4217,7 @@ textarea[aria-invalid='true'] {
 }
 
 .plan-overview,
-.plan-list-card,
-.plan-insight-panel {
+.plan-list-card {
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   background: var(--surface-card);
@@ -4299,20 +4298,9 @@ textarea[aria-invalid='true'] {
   white-space: nowrap;
 }
 
-.plan-dashboard-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
-  gap: 12px;
-  align-items: start;
-}
-
-.plan-list-card,
-.plan-insight-panel {
+.plan-list-card {
   min-height: 0;
   padding: 16px;
-}
-
-.plan-list-card {
   gap: 12px;
 }
 
@@ -4349,17 +4337,17 @@ textarea[aria-invalid='true'] {
 }
 
 .plan-list,
-.plan-list-stack,
-.plan-insight-list {
+.plan-list-stack {
   display: grid;
   align-content: start;
   gap: 7px;
 }
 
 .plan-list-row {
+  --plan-progress-center: var(--surface-card);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) 180px auto;
+  align-items: center;
   gap: 12px;
   min-height: 72px;
   padding: 11px 12px;
@@ -4371,11 +4359,13 @@ textarea[aria-invalid='true'] {
 }
 
 .plan-list-row:hover {
+  --plan-progress-center: var(--surface-muted);
   border-color: var(--border-strong);
   background: var(--surface-muted);
 }
 
 .plan-list-row.selected {
+  --plan-progress-center: var(--surface-muted);
   border-color: var(--text-primary);
   background: var(--surface-muted);
 }
@@ -4423,13 +4413,71 @@ textarea[aria-invalid='true'] {
   line-height: 1.2;
 }
 
+.plan-progress-summary {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  gap: 12px;
+  width: 180px;
+}
+
+.plan-progress-ring {
+  position: relative;
+  display: grid;
+  flex: 0 0 56px;
+  width: 56px;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--plan-progress-color) var(--plan-progress-angle),
+    var(--plan-progress-track) 0
+  );
+}
+
+.plan-progress-ring::before {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--plan-progress-center);
+  content: '';
+}
+
+.plan-progress-ring strong {
+  position: relative;
+  z-index: 1;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.plan-progress-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.plan-progress-copy strong {
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.plan-progress-copy span {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
 .plan-row-actions {
   align-items: center;
   display: flex;
   flex: 0 0 auto;
   gap: 4px;
   justify-content: flex-end;
-  align-self: start;
+  align-self: center;
 }
 
 .plan-row-actions .icon-button {
@@ -4444,52 +4492,27 @@ textarea[aria-invalid='true'] {
   height: 16px;
 }
 
+.plan-middle-action-wrap,
+.plan-row-actions .plan-middle-action {
+  flex: 0 0 64px;
+  width: 64px;
+}
+
+.plan-row-action-tooltip {
+  right: auto;
+  left: 50%;
+  transform: translate(-50%, 4px);
+  white-space: nowrap;
+}
+
+.plan-middle-action-wrap:hover .plan-row-action-tooltip,
+.plan-middle-action-wrap:focus-within .plan-row-action-tooltip {
+  transform: translate(-50%, 0);
+}
+
 .plan-row-actions .danger-icon-button:hover:not(:disabled) {
   background: var(--danger-soft);
   color: var(--danger);
-}
-
-.plan-insight-panel {
-  position: sticky;
-  top: 84px;
-  gap: 14px;
-}
-
-.plan-insight-item {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 10px;
-  padding: 12px 0;
-  border-top: 1px solid var(--border-subtle);
-}
-
-.plan-insight-item:first-child {
-  border-top: 0;
-}
-
-.plan-insight-item svg {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  color: var(--text-muted);
-}
-
-.plan-insight-item div {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.plan-insight-item strong {
-  color: var(--text-primary);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.plan-insight-item span {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.55;
 }
 
 .empty-plan-state {
@@ -9781,7 +9804,6 @@ textarea[aria-invalid='true'] {
   .problem-toolbar,
   .plan-overview,
   .plan-stat-grid,
-  .plan-dashboard-grid,
   .learning-layout,
   .learning-layout.redesigned,
   .living-contract-main,
@@ -9808,10 +9830,6 @@ textarea[aria-invalid='true'] {
 
   .plan-stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .plan-insight-panel {
-    position: static;
   }
 
   .problem-layout {
@@ -9903,14 +9921,17 @@ textarea[aria-invalid='true'] {
     grid-template-columns: 1fr;
   }
 
+  .plan-progress-summary {
+    width: 100%;
+  }
+
   .plan-row-actions {
     flex-direction: row;
     justify-content: flex-start;
   }
 
   .modal-actions .primary-button,
-  .modal-actions .secondary-button,
-  .plan-row-actions .secondary-button {
+  .modal-actions .secondary-button {
     width: 100%;
   }
 
@@ -10286,8 +10307,7 @@ textarea[aria-invalid='true'] {
   }
 
   .plan-overview,
-  .plan-list-card,
-  .plan-insight-panel {
+  .plan-list-card {
     padding: 16px;
   }
 

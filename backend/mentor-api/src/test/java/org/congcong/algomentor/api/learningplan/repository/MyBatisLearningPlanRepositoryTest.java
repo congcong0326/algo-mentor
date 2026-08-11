@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProgressSummaryRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
@@ -29,6 +30,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
@@ -149,6 +151,24 @@ class MyBatisLearningPlanRepositoryTest {
     order.verify(mapper).lockPlanCreationForUser(7L);
     order.verify(mapper).countPlansByUserId(7L);
     verify(mapper, never()).insertPlan(any());
+  }
+
+  @Test
+  void findPageLoadsProgressSummariesForCurrentPageInOneBatch() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    LearningPlanDraftPlan snapshot = plan(List.of(phase(1, "base", "two-sum")));
+    when(mapper.findPlansByUserIdPage(7L, 10, 0)).thenReturn(List.of(planRow(snapshot)));
+    when(mapper.findProgressSummariesByPlanIds(7L, List.of(12L)))
+        .thenReturn(List.of(new LearningPlanProgressSummaryRow(12L, 5, 2)));
+
+    LearningPlanPage page = repository.findPageByUserId(7L, 1, 10);
+
+    assertThat(page.progressSummaries()).containsKey(12L);
+    assertThat(page.progressSummaries().get(12L).totalProblemCount()).isEqualTo(5);
+    assertThat(page.progressSummaries().get(12L).completedProblemCount()).isEqualTo(2);
+    assertThat(page.progressSummaries().get(12L).progressPercent()).isEqualTo(40D);
+    verify(mapper).findProgressSummariesByPlanIds(7L, List.of(12L));
   }
 
   @Test

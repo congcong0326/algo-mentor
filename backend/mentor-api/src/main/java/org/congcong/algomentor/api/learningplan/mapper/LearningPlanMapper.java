@@ -13,6 +13,7 @@ import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRo
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProgressSummaryRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 
 @Mapper
@@ -80,6 +81,10 @@ public interface LearningPlanMapper {
       @Param("userId") long userId,
       @Param("limit") int limit,
       @Param("offset") int offset);
+
+  List<LearningPlanProgressSummaryRow> findProgressSummariesByPlanIds(
+      @Param("userId") long userId,
+      @Param("planIds") List<Long> planIds);
 
   long countPlansByUserId(@Param("userId") long userId);
 

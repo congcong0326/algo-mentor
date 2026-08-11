@@ -28,6 +28,7 @@ import type {
   ReviewRating,
 } from '../types/api';
 import { generateClientId } from '../utils/id';
+import { reviewProblemStatementMarkdown } from './reviewProblemStatement';
 
 interface ReviewSessionPageProps {
   onNavigate: (path: string) => void;
@@ -212,7 +213,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
         <article className="review-card-workbench">
           <div className="review-card-scroll">
             <section className="review-problem-content" aria-label={resources.reviewCenter.fullStatementAriaLabel}>
-              <MarkdownView content={context.problem.contentMarkdown} />
+              <MarkdownView content={reviewProblemStatementMarkdown(context.problem)} />
             </section>
 
             <ProblemNoteEditor onDirtyChange={setNoteDirty} problemSlug={context.problem.slug} />

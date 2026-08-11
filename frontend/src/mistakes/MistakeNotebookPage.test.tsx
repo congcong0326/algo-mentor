@@ -64,6 +64,7 @@ describe('MistakeNotebookPage', () => {
     fireEvent.click(await screen.findByRole('button', { name: '查看复习卡详情 两数之和' }));
 
     const dialog = await screen.findByRole('dialog', { name: '两数之和' });
+    expect(within(dialog).getAllByRole('heading', { name: '两数之和' })).toHaveLength(1);
     expect(within(dialog).getByText('完整题面正文。')).toBeInTheDocument();
     expect(within(dialog).getByText('良好')).toBeInTheDocument();
     expect(within(dialog).getByText('间隔 1 天 → 3 天')).toBeInTheDocument();
@@ -154,7 +155,7 @@ function reviewContext(): ReviewCardContext {
       slug: 'two-sum',
       title: '两数之和',
       difficulty: 'EASY',
-      contentMarkdown: '完整题面正文。',
+      contentMarkdown: '# 两数之和\n\n完整题面正文。',
     },
     note: problemNote(),
     recentAttempts: [{

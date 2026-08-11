@@ -1191,7 +1191,8 @@ describe('App', () => {
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/learning-plans');
     expect(screen.getAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
-    expect(screen.getAllByText('进行中')).not.toHaveLength(0);
+    expect(screen.queryByText('进行中')).not.toBeInTheDocument();
+    expect(screen.getByText('当前采用')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts/100/confirm',
       expect.objectContaining({
@@ -3329,6 +3330,11 @@ function baseLearningPlanSummary() {
     durationWeeks: 4,
     level: 'INTERMEDIATE',
     weeklyHours: 6,
+    progressSummary: {
+      totalProblemCount: 75,
+      completedProblemCount: 36,
+      progressPercent: 48,
+    },
     status: 'ACTIVE',
     createdAt: '2026-06-22T00:00:00Z',
   };

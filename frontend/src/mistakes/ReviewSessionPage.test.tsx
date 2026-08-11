@@ -50,8 +50,8 @@ describe('ReviewSessionPage', () => {
   it('shows the complete statement and all ratings without requiring note input', async () => {
     render(<ReviewSessionPage onNavigate={vi.fn()} />);
 
-    expect(await screen.findByRole('heading', { name: '完整题面' })).toBeInTheDocument();
-    expect(screen.getByText('给定整数数组和目标值，返回两个数的下标。')).toBeInTheDocument();
+    expect(await screen.findByText('给定整数数组和目标值，返回两个数的下标。')).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { name: '两数之和' })).toHaveLength(1);
     expect(screen.getByRole('button', { name: /^重来，/ })).toBeEnabled();
     expect(screen.getByRole('button', { name: /^困难，/ })).toBeEnabled();
     expect(screen.getByRole('button', { name: /^良好，/ })).toBeEnabled();
@@ -86,7 +86,7 @@ describe('ReviewSessionPage', () => {
     setBrowserLocales('en-US');
     vi.mocked(getReviewCardContext).mockResolvedValue(apiResponse(reviewContext({
       title: 'Two Sum',
-      contentMarkdown: '# Full statement\n\nReturn the two matching indices.',
+      contentMarkdown: '# Two Sum\n\nReturn the two matching indices.',
     })));
 
     render(
@@ -293,7 +293,7 @@ function reviewContext(problemOverrides: Partial<ReviewCardContext['problem']> =
       slug: 'two-sum',
       title: '两数之和',
       difficulty: 'EASY',
-      contentMarkdown: '# 完整题面\n\n给定整数数组和目标值，返回两个数的下标。',
+      contentMarkdown: '# 两数之和\n\n给定整数数组和目标值，返回两个数的下标。',
       ...problemOverrides,
     },
     note: problemNote(),
