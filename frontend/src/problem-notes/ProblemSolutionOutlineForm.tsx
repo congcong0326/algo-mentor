@@ -4,7 +4,9 @@ import type {
   ProblemComplexityValue,
   ProblemDataStructureKey,
   ProblemSolutionOutlineV1,
+  UserInputLimits,
 } from '../types/api';
+import { unicodeCodePointLength } from '../config/userInputLimits';
 import { useI18n } from '../i18n/I18nProvider';
 import {
   problemAlgorithmOptions,
@@ -14,12 +16,14 @@ import {
 
 interface ProblemSolutionOutlineFormProps {
   disabled?: boolean;
+  limits: UserInputLimits['reviewNote'];
   onChange: (outline: ProblemSolutionOutlineV1) => void;
   value: ProblemSolutionOutlineV1;
 }
 
 export default function ProblemSolutionOutlineForm({
   disabled = false,
+  limits,
   onChange,
   value,
 }: ProblemSolutionOutlineFormProps) {
@@ -34,11 +38,13 @@ export default function ProblemSolutionOutlineForm({
       <label className="problem-note-field problem-note-field-wide">
         <span>{resources.problemNotes.coreIdea}</span>
         <textarea
+          aria-invalid={unicodeCodePointLength(value.coreIdea) > limits.coreIdeaMaxChars}
           disabled={disabled}
           onChange={(event) => update({ coreIdea: event.target.value })}
           rows={4}
           value={value.coreIdea}
         />
+        <InputCounter current={unicodeCodePointLength(value.coreIdea)} max={limits.coreIdeaMaxChars} />
       </label>
 
       <OptionChecklist<ProblemDataStructureKey>
@@ -57,6 +63,8 @@ export default function ProblemSolutionOutlineForm({
           disabled={disabled}
           delimiter={locale.startsWith('zh') ? '，' : ', '}
           label={resources.problemNotes.customDataStructures}
+          maxCount={limits.customItemMaxCount}
+          maxItemChars={limits.customItemMaxChars}
           onChange={(customDataStructures) => update({ customDataStructures })}
           value={value.customDataStructures}
         />
@@ -65,11 +73,16 @@ export default function ProblemSolutionOutlineForm({
         <label className="problem-note-field problem-note-field-wide">
           <span>{resources.problemNotes.dataStructureNotes}</span>
           <textarea
+            aria-invalid={unicodeCodePointLength(value.dataStructureNotes) > limits.dataStructureNotesMaxChars}
             disabled={disabled}
             onChange={(event) => update({ dataStructureNotes: event.target.value })}
             placeholder={resources.problemNotes.dataStructureNotesPlaceholder}
             rows={3}
             value={value.dataStructureNotes}
+          />
+          <InputCounter
+            current={unicodeCodePointLength(value.dataStructureNotes)}
+            max={limits.dataStructureNotesMaxChars}
           />
         </label>
       )}
@@ -90,6 +103,8 @@ export default function ProblemSolutionOutlineForm({
           disabled={disabled}
           delimiter={locale.startsWith('zh') ? '，' : ', '}
           label={resources.problemNotes.customAlgorithms}
+          maxCount={limits.customItemMaxCount}
+          maxItemChars={limits.customItemMaxChars}
           onChange={(customAlgorithms) => update({ customAlgorithms })}
           value={value.customAlgorithms}
         />
@@ -98,11 +113,16 @@ export default function ProblemSolutionOutlineForm({
         <label className="problem-note-field problem-note-field-wide">
           <span>{resources.problemNotes.algorithmNotes}</span>
           <textarea
+            aria-invalid={unicodeCodePointLength(value.algorithmNotes) > limits.algorithmNotesMaxChars}
             disabled={disabled}
             onChange={(event) => update({ algorithmNotes: event.target.value })}
             placeholder={resources.problemNotes.algorithmNotesPlaceholder}
             rows={3}
             value={value.algorithmNotes}
+          />
+          <InputCounter
+            current={unicodeCodePointLength(value.algorithmNotes)}
+            max={limits.algorithmNotesMaxChars}
           />
         </label>
       )}
@@ -112,6 +132,7 @@ export default function ProblemSolutionOutlineForm({
         emptyLabel={resources.problemNotes.complexityEmpty}
         label={resources.problemNotes.timeComplexity}
         labels={resources.problemNotes.complexityLabels}
+        maxChars={limits.customComplexityMaxChars}
         onChange={(timeComplexity) => update({ timeComplexity })}
         value={value.timeComplexity}
       />
@@ -120,6 +141,7 @@ export default function ProblemSolutionOutlineForm({
         emptyLabel={resources.problemNotes.complexityEmpty}
         label={resources.problemNotes.spaceComplexity}
         labels={resources.problemNotes.complexityLabels}
+        maxChars={limits.customComplexityMaxChars}
         onChange={(spaceComplexity) => update({ spaceComplexity })}
         value={value.spaceComplexity}
       />
@@ -168,19 +190,28 @@ function CommaListField({
   delimiter,
   disabled,
   label,
+  maxCount,
+  maxItemChars,
   onChange,
   value,
 }: {
   delimiter: string;
   disabled: boolean;
   label: string;
+  maxCount: number;
+  maxItemChars: number;
   onChange: (value: string[]) => void;
   value: string[];
 }) {
+  const { resources } = useI18n();
+  const overLimit = value.length > maxCount
+    || value.some((item) => unicodeCodePointLength(item) > maxItemChars);
+
   return (
     <label className="problem-note-field">
       <span>{label}</span>
       <input
+        aria-invalid={overLimit}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value
           .split(/[,，]/)
@@ -188,6 +219,9 @@ function CommaListField({
           .filter(Boolean))}
         value={value.join(delimiter)}
       />
+      <small className={overLimit ? 'input-limit-counter is-over-limit' : 'input-limit-counter'}>
+        {resources.common.itemInputLimit(value.length, maxCount, maxItemChars)}
+      </small>
     </label>
   );
 }
@@ -197,6 +231,7 @@ function ComplexityField({
   emptyLabel,
   label,
   labels,
+  maxChars,
   onChange,
   value,
 }: {
@@ -204,6 +239,7 @@ function ComplexityField({
   emptyLabel: string;
   label: string;
   labels: Record<ProblemComplexityKey, string>;
+  maxChars: number;
   onChange: (value: ProblemComplexityValue) => void;
   value: ProblemComplexityValue;
 }) {
@@ -226,14 +262,27 @@ function ComplexityField({
         ))}
       </select>
       {value.key === 'OTHER' && (
-        <input
-          aria-label={resources.problemNotes.customValueAriaLabel(label)}
-          disabled={disabled}
-          onChange={(event) => onChange({ key: 'OTHER', customText: event.target.value })}
-          placeholder={resources.problemNotes.customValuePlaceholder}
-          value={value.customText ?? ''}
-        />
+        <>
+          <input
+            aria-invalid={unicodeCodePointLength(value.customText ?? '') > maxChars}
+            aria-label={resources.problemNotes.customValueAriaLabel(label)}
+            disabled={disabled}
+            onChange={(event) => onChange({ key: 'OTHER', customText: event.target.value })}
+            placeholder={resources.problemNotes.customValuePlaceholder}
+            value={value.customText ?? ''}
+          />
+          <InputCounter current={unicodeCodePointLength(value.customText ?? '')} max={maxChars} />
+        </>
       )}
     </label>
+  );
+}
+
+function InputCounter({ current, max }: { current: number; max: number }) {
+  const { resources } = useI18n();
+  return (
+    <small className={current > max ? 'input-limit-counter is-over-limit' : 'input-limit-counter'}>
+      {resources.common.characterCount(current, max)}
+    </small>
   );
 }

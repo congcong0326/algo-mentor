@@ -4,6 +4,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import type { ExtraProps } from 'react-markdown';
 import type { ComponentProps, ReactNode } from 'react';
+import SyntaxHighlightedCode from './SyntaxHighlightedCode';
 
 const BOLD_LABEL_WITHOUT_SPACE = /(^|[\s([{"'“‘])\*\*([^*\n]+[:：])\*\*(?=\S)/g;
 const BOLD_WITH_EXTRA_SPACE = /\*\*([ \t]*[^*\n]*?\S[^*\n]*?[ \t]*)\*\*/g;
@@ -14,9 +15,11 @@ const LINE_BREAK = /(\r\n|\n|\r)/;
 const FENCE_MARKER = /^ {0,3}(`{3,}|~{3,})/;
 const INLINE_CODE_SPAN = /(`+)([\s\S]*?)\1/g;
 const INLINE_CODE_SUPERSCRIPT = /<sup>([\s\S]*?)<\/sup>/g;
+const CODE_LANGUAGE_CLASS = /(?:^|\s)language-([^\s]+)/;
 
 interface MarkdownViewProps {
   content: string;
+  defaultCodeLanguage?: string;
 }
 
 export function normalizeMarkdownContent(content: string): string {
@@ -103,13 +106,32 @@ function normalizeEscapedLineBreaks(content: string): string {
   });
 }
 
-function MarkdownCode({ children, node, ...props }: ComponentProps<'code'> & ExtraProps) {
-  const isInlineCode = node?.position?.start.line === node?.position?.end.line;
+function MarkdownCode({
+  children,
+  defaultCodeLanguage,
+  node,
+  ...props
+}: ComponentProps<'code'> & ExtraProps & { defaultCodeLanguage?: string }) {
+  const code = typeof children === 'string' ? children : String(children ?? '');
+  const fencedLanguage = props.className?.match(CODE_LANGUAGE_CLASS)?.[1];
+  const isInlineCode = !fencedLanguage
+    && !code.endsWith('\n')
+    && node?.position?.start.line === node?.position?.end.line;
   const renderedChildren = isInlineCode && typeof children === 'string'
     ? renderInlineCodeSuperscripts(children)
     : children;
 
-  return <code {...props}>{renderedChildren}</code>;
+  if (isInlineCode) {
+    return <code {...props}>{renderedChildren}</code>;
+  }
+
+  return (
+    <SyntaxHighlightedCode
+      {...props}
+      code={code.replace(/\n$/, '')}
+      language={fencedLanguage ?? defaultCodeLanguage}
+    />
+  );
 }
 
 function renderInlineCodeSuperscripts(content: string): ReactNode {
@@ -123,13 +145,15 @@ function renderInlineCodeSuperscripts(content: string): ReactNode {
   ));
 }
 
-export default function MarkdownView({ content }: MarkdownViewProps) {
+export default function MarkdownView({ content, defaultCodeLanguage }: MarkdownViewProps) {
   const normalizedContent = normalizeMarkdownContent(content);
 
   return (
     <div className="markdown-view">
       <ReactMarkdown
-        components={{ code: MarkdownCode }}
+        components={{
+          code: (props) => <MarkdownCode {...props} defaultCodeLanguage={defaultCodeLanguage} />,
+        }}
         rehypePlugins={[rehypeRaw, rehypeSanitize]}
         remarkPlugins={[remarkGfm]}
       >

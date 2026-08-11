@@ -42,6 +42,44 @@ describe('MarkdownView', () => {
     expect(screen.getByText('10<sup>4</sup>').closest('code')).toBeInTheDocument();
   });
 
+  it('highlights fenced code using its explicit language', () => {
+    const { container } = render(
+      <MarkdownView content={'```java\npublic class Solution {}\n```'} defaultCodeLanguage="Python3" />,
+    );
+
+    const code = container.querySelector('code');
+    expect(code).toHaveAttribute('data-language', 'java');
+    expect(code?.querySelector('.token.keyword')).toHaveTextContent('public');
+    expect(code?.querySelector('.token.class-name')).toHaveTextContent('Solution');
+  });
+
+  it('uses the default code language for unlabeled fenced code', () => {
+    const { container } = render(
+      <MarkdownView content={'```\ndef solve(nums):\n    return nums\n```'} defaultCodeLanguage="Python3" />,
+    );
+
+    const code = container.querySelector('code');
+    expect(code).toHaveAttribute('data-language', 'python');
+    expect(code?.querySelector('.token.keyword')).toHaveTextContent('def');
+  });
+
+  it('falls back to plain code for unsupported languages', () => {
+    const { container } = render(<MarkdownView content={'```unknown-lang\nvalue := 1\n```'} />);
+
+    const code = container.querySelector('code');
+    expect(code).not.toHaveAttribute('data-language');
+    expect(code).toHaveTextContent('value := 1');
+    expect(code?.querySelector('.token')).not.toBeInTheDocument();
+  });
+
+  it('does not apply block syntax highlighting to inline code', () => {
+    const { container } = render(<MarkdownView content="调用 `public` 方法。" defaultCodeLanguage="Java" />);
+
+    const code = container.querySelector('code');
+    expect(code).not.toHaveAttribute('data-language');
+    expect(code?.querySelector('.token')).not.toBeInTheDocument();
+  });
+
   it('renders bold text with extra spaces inside delimiters', () => {
     render(<MarkdownView content="** 注意** 和 **边界 ** 都很重要。" />);
 

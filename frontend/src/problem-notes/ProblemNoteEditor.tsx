@@ -2,6 +2,7 @@ import { ChevronDown, Loader2, RefreshCw, Save, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import HeaderActionTooltip from '../app/HeaderActionTooltip';
 import MarkdownView from '../components/MarkdownView';
+import { reviewNoteExceedsLimits, useUserInputLimits } from '../config/userInputLimits';
 import { useI18n } from '../i18n/I18nProvider';
 import { ApiRequestError, getProblemNote, requireApiData, upsertProblemNote } from '../services/api';
 import type { ProblemSolutionOutlineV1, UserProblemNote } from '../types/api';
@@ -25,6 +26,7 @@ export default function ProblemNoteEditor({
   problemSlug,
 }: ProblemNoteEditorProps) {
   const { locale, resources } = useI18n();
+  const inputLimits = useUserInputLimits();
   const [open, setOpen] = useState(false);
   const [coachSummaryOpen, setCoachSummaryOpen] = useState(false);
   const [note, setNote] = useState<UserProblemNote>();
@@ -43,6 +45,10 @@ export default function ProblemNoteEditor({
     }
     return JSON.stringify(note.outline) !== JSON.stringify(draft.outline);
   }, [draft, note]);
+  const inputLimitExceeded = useMemo(
+    () => reviewNoteExceedsLimits(draft.outline, inputLimits.reviewNote),
+    [draft.outline, inputLimits.reviewNote],
+  );
 
   useEffect(() => {
     onDirtyChange?.(dirty);
@@ -78,7 +84,7 @@ export default function ProblemNoteEditor({
   }
 
   async function save() {
-    if (!note || saving || !dirty) {
+    if (!note || saving || !dirty || inputLimitExceeded) {
       return;
     }
     setSaving(true);
@@ -160,12 +166,17 @@ export default function ProblemNoteEditor({
               <>
                 <ProblemSolutionOutlineForm
                   disabled={saving}
+                  limits={inputLimits.reviewNote}
                   onChange={(outline) => setDraft((current) => ({ ...current, outline }))}
                   value={draft.outline}
                 />
-                {(error || conflict) && (
+                {(error || conflict || inputLimitExceeded) && (
                   <p className="problem-note-save-error" role="alert">
-                    {conflict ? resources.problemNotes.conflict : error}
+                    {conflict
+                      ? resources.problemNotes.conflict
+                      : inputLimitExceeded
+                        ? resources.problemNotes.inputLimitExceeded
+                        : error}
                   </p>
                 )}
                 <div className="problem-note-actions">
@@ -175,7 +186,12 @@ export default function ProblemNoteEditor({
                       <span>{resources.problemNotes.reload}</span>
                     </button>
                   )}
-                  <button className="primary-button compact" disabled={!dirty || saving} onClick={() => void save()} type="button">
+                  <button
+                    className="primary-button compact"
+                    disabled={!dirty || saving || inputLimitExceeded}
+                    onClick={() => void save()}
+                    type="button"
+                  >
                     {saving ? <Loader2 aria-hidden="true" /> : <Save aria-hidden="true" />}
                     <span>{saving ? resources.problemNotes.saving : resources.problemNotes.save}</span>
                   </button>

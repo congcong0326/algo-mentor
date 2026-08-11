@@ -43,6 +43,25 @@ management:
       application: ${spring.application.name}
 
 algo-mentor:
+  user-input-limits:
+    review-note:
+      core-idea-max-chars: ${USER_INPUT_REVIEW_CORE_IDEA_MAX_CHARS:2000}
+      data-structure-notes-max-chars: ${USER_INPUT_REVIEW_DATA_STRUCTURE_NOTES_MAX_CHARS:1000}
+      algorithm-notes-max-chars: ${USER_INPUT_REVIEW_ALGORITHM_NOTES_MAX_CHARS:1000}
+      custom-item-max-chars: ${USER_INPUT_REVIEW_CUSTOM_ITEM_MAX_CHARS:50}
+      custom-item-max-count: ${USER_INPUT_REVIEW_CUSTOM_ITEM_MAX_COUNT:10}
+      custom-complexity-max-chars: ${USER_INPUT_REVIEW_CUSTOM_COMPLEXITY_MAX_CHARS:100}
+      edge-cases-max-chars: ${USER_INPUT_REVIEW_EDGE_CASES_MAX_CHARS:1000}
+      request-max-bytes: ${USER_INPUT_REVIEW_REQUEST_MAX_BYTES:32KB}
+    learning-plan-create:
+      objective-max-chars: ${USER_INPUT_PLAN_OBJECTIVE_MAX_CHARS:300}
+      additional-constraints-max-chars: ${USER_INPUT_PLAN_ADDITIONAL_CONSTRAINTS_MAX_CHARS:1000}
+      duration-weeks-max: ${USER_INPUT_PLAN_DURATION_WEEKS_MAX:52}
+      weekly-hours-max: ${USER_INPUT_PLAN_WEEKLY_HOURS_MAX:80}
+      request-max-bytes: ${USER_INPUT_PLAN_REQUEST_MAX_BYTES:8KB}
+    practice-message:
+      message-max-bytes: ${USER_INPUT_PRACTICE_MESSAGE_MAX_BYTES:16KB}
+      request-max-bytes: ${USER_INPUT_PRACTICE_REQUEST_MAX_BYTES:20KB}
   api:
     sse:
       learning-plan-draft-timeout: ${LEARNING_PLAN_DRAFT_SSE_TIMEOUT:6m}

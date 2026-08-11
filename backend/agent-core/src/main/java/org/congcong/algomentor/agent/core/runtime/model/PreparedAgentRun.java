@@ -1,5 +1,6 @@
 package org.congcong.algomentor.agent.core.runtime.model;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentLoopDefaults;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
@@ -79,5 +80,26 @@ public record PreparedAgentRun(
       throw new IllegalArgumentException("Conversation draft max steps must be positive");
     }
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+  }
+
+  /** 返回由持久化 run 事实生成的受信身份 metadata，覆盖业务 Definition 中的同名字段。 */
+  public Map<String, Object> identityMetadata() {
+    Map<String, Object> identity = new LinkedHashMap<>();
+    identity.put(AgentRuntimeMetadataKeys.TASK_ID, taskId);
+    identity.put(AgentRuntimeMetadataKeys.TURN_ID, turnId);
+    identity.put(AgentRuntimeMetadataKeys.RUN_DB_ID, runId);
+    identity.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, runUuid);
+    if (agentKey != null) {
+      identity.put(AgentRuntimeMetadataKeys.AGENT_KEY, agentKey);
+    }
+    identity.put(AgentRuntimeMetadataKeys.INVOCATION_MODE, mode.databaseValue());
+    if (parentRunId != null) {
+      identity.put(AgentRuntimeMetadataKeys.PARENT_RUN_ID, parentRunId);
+      identity.put(AgentRuntimeMetadataKeys.PARENT_STEP_INDEX, parentStepIndex);
+    }
+    if (retryOfRunId != null) {
+      identity.put(AgentRuntimeMetadataKeys.RETRY_OF_RUN_ID, retryOfRunId);
+    }
+    return Map.copyOf(identity);
   }
 }

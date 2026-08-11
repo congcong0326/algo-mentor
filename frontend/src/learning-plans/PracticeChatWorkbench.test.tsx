@@ -110,6 +110,18 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
   });
 
+  it('blocks practice messages that exceed the UTF-8 byte limit', async () => {
+    renderWorkbench();
+
+    const composer = await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+    await waitFor(() => expect(composer).not.toBeDisabled());
+    fireEvent.change(composer, { target: { value: '你'.repeat(5_462) } });
+
+    expect(screen.getByText('16386 / 16384 字节')).toHaveClass('is-over-limit');
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    expect(streamPracticeMessage).not.toHaveBeenCalled();
+  });
+
   it('shows only decision-relevant permission details', async () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({

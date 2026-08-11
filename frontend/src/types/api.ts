@@ -16,6 +16,30 @@ export interface HealthStatus {
   status: 'UP' | 'DOWN';
 }
 
+export interface UserInputLimits {
+  reviewNote: {
+    coreIdeaMaxChars: number;
+    dataStructureNotesMaxChars: number;
+    algorithmNotesMaxChars: number;
+    customItemMaxChars: number;
+    customItemMaxCount: number;
+    customComplexityMaxChars: number;
+    edgeCasesMaxChars: number;
+    requestMaxBytes: number;
+  };
+  learningPlanCreate: {
+    objectiveMaxChars: number;
+    additionalConstraintsMaxChars: number;
+    durationWeeksMax: number;
+    weeklyHoursMax: number;
+    requestMaxBytes: number;
+  };
+  practiceMessage: {
+    messageMaxBytes: number;
+    requestMaxBytes: number;
+  };
+}
+
 export interface DatabaseRestoreResponse {
   restoredAt: string;
   tableCount: number;

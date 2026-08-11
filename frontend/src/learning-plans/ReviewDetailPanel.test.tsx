@@ -8,7 +8,7 @@ afterEach(cleanup);
 
 describe('ReviewDetailPanel', () => {
   it('shows score explanations from the progress bars and removes internal detail sections', () => {
-    render(
+    const { container } = render(
       <ReviewDetailPanel
         detail={reviewDetail()}
         passScore={6}
@@ -49,6 +49,10 @@ describe('ReviewDetailPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '查看正确性评分说明' }));
     expect(screen.getByRole('tooltip')).toHaveTextContent('slow 是下标，非空数组应返回 slow + 1。');
+
+    const codeSnapshot = container.querySelector('.review-detail-section pre code');
+    expect(codeSnapshot).toHaveAttribute('data-language', 'java');
+    expect(codeSnapshot?.querySelector('.token.keyword')).toHaveTextContent('class');
   });
 });
 

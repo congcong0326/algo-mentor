@@ -21,6 +21,9 @@ public final class ApiContractConstants {
    */
   public static final String HEALTH_PATH = "/api/health";
 
+  /** 当前生效的用户输入上限读取路径。 */
+  public static final String USER_INPUT_LIMITS_PATH = "/api/user-input-limits";
+
   /**
    * 当前用户能力画像接口根路径。
    */

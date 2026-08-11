@@ -51,12 +51,8 @@ class LearningPlanDraftValidatorTest {
         LearningPlanContentLocale.ZH_CN);
 
     assertThat(validator.missingRequiredFields(brief)).containsExactly(
-        "objective",
-        "durationWeeks",
         "level",
-        "weeklyHours",
         "difficultyDistribution",
-        "additionalConstraints",
         "topicPreferences");
   }
 

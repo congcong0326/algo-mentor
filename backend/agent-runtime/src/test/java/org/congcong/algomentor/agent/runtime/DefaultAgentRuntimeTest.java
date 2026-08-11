@@ -179,6 +179,11 @@ class DefaultAgentRuntimeTest {
 
     assertThat(failure.get()).isNull();
     assertThat(result.get().output().text()).isEqualTo("review result");
+    assertThat(result.get().metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 1L)
+        .containsEntry(AgentRuntimeMetadataKeys.AGENT_RUN_ID, "run-1")
+        .containsEntry(AgentRuntimeMetadataKeys.PARENT_RUN_ID, 41L)
+        .containsEntry(AgentRuntimeMetadataKeys.PARENT_STEP_INDEX, 2);
     assertThat(fixture.executor.executeCalls).isZero();
     assertThat(fixture.conversations.requests).singleElement().satisfies(request -> {
       assertThat(request.taskId()).isNull();
@@ -318,6 +323,11 @@ class DefaultAgentRuntimeTest {
     AgentRunResult result = runtime.execute(invocation("binary search", false));
 
     assertThat(result.output().text()).isEqualTo("prepared run");
+    assertThat(result.metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 42L)
+        .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 2L)
+        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 3L)
+        .containsEntry(AgentRuntimeMetadataKeys.AGENT_RUN_ID, "prepared-run-3");
     assertThat(fixture.conversations.requests).isEmpty();
     assertThat(releases).hasValue(1);
     assertThat(fixture.governance.repository.statuses)
@@ -355,6 +365,24 @@ class DefaultAgentRuntimeTest {
     assertThat(fixture.gateway.requests).isEmpty();
     assertThat(fixture.conversations.requests).isEmpty();
     assertThat(fixture.governance.usage.consumeCalls).isZero();
+    assertThat(releases).hasValue(1);
+  }
+
+  @Test
+  void returnsTrustedRunIdentityWhenReplayingPreparedRun() {
+    Fixture fixture = new Fixture();
+    AtomicInteger releases = new AtomicInteger();
+    DefaultAgentRuntime runtime = fixture.runtime(true, false, new PreparedRunDefinition(true, releases));
+
+    AgentRunResult result = runtime.execute(invocation("binary search", false));
+
+    assertThat(result.metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 42L)
+        .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 2L)
+        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 3L)
+        .containsEntry(AgentRuntimeMetadataKeys.AGENT_RUN_ID, "prepared-run-3");
+    assertThat(fixture.gateway.requests).isEmpty();
+    assertThat(fixture.governance.repository.statuses).isEmpty();
     assertThat(releases).hasValue(1);
   }
 

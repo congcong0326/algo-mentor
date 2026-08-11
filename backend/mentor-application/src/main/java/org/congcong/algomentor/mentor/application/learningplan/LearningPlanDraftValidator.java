@@ -13,25 +13,20 @@ public class LearningPlanDraftValidator {
     if (brief == null || brief.intent() == null) {
       invalidFields.add("intent");
     }
-    if (brief == null || brief.objective() == null || brief.objective().length() > 300) {
+    if (brief == null || brief.objective() == null) {
       invalidFields.add("objective");
     }
-    if (brief == null || brief.durationWeeks() == null
-        || brief.durationWeeks() < 1 || brief.durationWeeks() > 52) {
+    if (brief == null || brief.durationWeeks() == null || brief.durationWeeks() < 1) {
       invalidFields.add("durationWeeks");
     }
     if (brief == null || brief.level() == null) {
       invalidFields.add("level");
     }
-    if (brief == null || brief.weeklyHours() == null
-        || brief.weeklyHours() < 1 || brief.weeklyHours() > 80) {
+    if (brief == null || brief.weeklyHours() == null || brief.weeklyHours() < 1) {
       invalidFields.add("weeklyHours");
     }
     if (brief == null || brief.difficultyDistribution() == null) {
       invalidFields.add("difficultyDistribution");
-    }
-    if (brief != null && brief.additionalConstraints() != null && brief.additionalConstraints().length() > 1000) {
-      invalidFields.add("additionalConstraints");
     }
     if (brief != null && brief.intent() == LearningPlanIntent.TOPIC_BREAKTHROUGH
         && brief.topicPreferences().isEmpty()) {

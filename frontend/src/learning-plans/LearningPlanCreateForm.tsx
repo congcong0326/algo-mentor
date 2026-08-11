@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { unicodeCodePointLength, useUserInputLimits } from '../config/userInputLimits';
 import type {
   LearningPlanCreateDraftRequest,
   LearningPlanIntent,
@@ -41,6 +42,7 @@ export default function LearningPlanCreateForm({
   onSubmit,
 }: LearningPlanCreateFormProps) {
   const { resources } = useI18n();
+  const inputLimits = useUserInputLimits();
   const [intent, setIntent] = useState<LearningPlanIntent>(DEFAULT_INTENT);
   const [durationWeeks, setDurationWeeks] = useState(DEFAULT_DURATION_WEEKS);
   const [weeklyHours, setWeeklyHours] = useState(DEFAULT_WEEKLY_HOURS);
@@ -53,8 +55,14 @@ export default function LearningPlanCreateForm({
   const [personalizationEnabled, setPersonalizationEnabled] = useState(true);
   const [validationError, setValidationError] = useState('');
 
-  const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
+  const objectiveLength = unicodeCodePointLength(objective);
+  const additionalConstraintsLength = unicodeCodePointLength(additionalConstraints);
+  const textLimitExceeded = objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars
+    || additionalConstraintsLength > inputLimits.learningPlanCreate.additionalConstraintsMaxChars;
+  const numericPositive = Number.isInteger(durationWeeks) && durationWeeks > 0
     && Number.isInteger(weeklyHours) && weeklyHours > 0;
+  const numericWithinLimit = durationWeeks <= inputLimits.learningPlanCreate.durationWeeksMax
+    && weeklyHours <= inputLimits.learningPlanCreate.weeklyHoursMax;
   const selectedDifficulty = getDifficultyDistribution(difficultyValue);
   const effectiveSubmitLabel = submitLabel ?? resources.learningPlans.generateDraft;
   const totalCapacityPoints = durationWeeks > 0 && weeklyHours > 0 ? durationWeeks * weeklyHours : 0;
@@ -105,8 +113,19 @@ export default function LearningPlanCreateForm({
   }
 
   function submit() {
-    if (!numericValid) {
+    if (!numericPositive) {
       setValidationError(resources.learningPlans.validationPositiveIntegers);
+      return;
+    }
+    if (!numericWithinLimit) {
+      setValidationError(resources.learningPlans.validationNumericRange(
+        inputLimits.learningPlanCreate.durationWeeksMax,
+        inputLimits.learningPlanCreate.weeklyHoursMax,
+      ));
+      return;
+    }
+    if (textLimitExceeded) {
+      setValidationError(resources.learningPlans.validationInputLimit);
       return;
     }
     if (intent === 'TOPIC_BREAKTHROUGH' && topicPreferences.length === 0) {
@@ -162,6 +181,7 @@ export default function LearningPlanCreateForm({
             <input
               aria-label={resources.learningPlans.durationInput}
               disabled={loading}
+              max={inputLimits.learningPlanCreate.durationWeeksMax}
               min={1}
               onChange={(event) => setDurationWeeks(Number(event.target.value))}
               type="number"
@@ -173,6 +193,7 @@ export default function LearningPlanCreateForm({
             <input
               aria-label={resources.learningPlans.weeklyHours}
               disabled={loading}
+              max={inputLimits.learningPlanCreate.weeklyHoursMax}
               min={1}
               onChange={(event) => setWeeklyHours(Number(event.target.value))}
               type="number"
@@ -217,13 +238,21 @@ export default function LearningPlanCreateForm({
         <label className="topic-field">
           <span>{resources.learningPlans.objective}</span>
           <textarea
+            aria-invalid={objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars}
             aria-label={resources.learningPlans.objective}
             disabled={loading}
-            maxLength={300}
             onChange={(event) => setObjective(event.target.value)}
             rows={3}
             value={objective}
           />
+          <small className={objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars
+            ? 'input-limit-counter is-over-limit'
+            : 'input-limit-counter'}>
+            {resources.common.characterCount(
+              objectiveLength,
+              inputLimits.learningPlanCreate.objectiveMaxChars,
+            )}
+          </small>
         </label>
 
         <section className="question-block">
@@ -247,13 +276,23 @@ export default function LearningPlanCreateForm({
         <label className="topic-field">
           <span>{resources.learningPlans.additionalConstraints}</span>
           <textarea
+            aria-invalid={additionalConstraintsLength
+              > inputLimits.learningPlanCreate.additionalConstraintsMaxChars}
             aria-label={resources.learningPlans.additionalConstraints}
             disabled={loading}
-            maxLength={1000}
             onChange={(event) => setAdditionalConstraints(event.target.value)}
             rows={4}
             value={additionalConstraints}
           />
+          <small className={additionalConstraintsLength
+            > inputLimits.learningPlanCreate.additionalConstraintsMaxChars
+            ? 'input-limit-counter is-over-limit'
+            : 'input-limit-counter'}>
+            {resources.common.characterCount(
+              additionalConstraintsLength,
+              inputLimits.learningPlanCreate.additionalConstraintsMaxChars,
+            )}
+          </small>
         </label>
 
         <label className="checkbox-field">

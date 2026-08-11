@@ -22,6 +22,15 @@
   --danger: #dc2626;
   --danger-soft: #fef2f2;
   --focus-ring: #2563eb;
+  --syntax-comment: #64748b;
+  --syntax-punctuation: #475569;
+  --syntax-property: #b91c1c;
+  --syntax-number: #b45309;
+  --syntax-string: #047857;
+  --syntax-operator: #0f766e;
+  --syntax-keyword: #7e22ce;
+  --syntax-function: #1d4ed8;
+  --syntax-variable: #be123c;
   --radius-card: 20px;
   --radius-control: 10px;
   --radius-overlay: 14px;
@@ -621,6 +630,15 @@
   --danger: #fca5a5;
   --danger-soft: rgb(248 113 113 / 14%);
   --focus-ring: #93c5fd;
+  --syntax-comment: #94a3b8;
+  --syntax-punctuation: #cbd5e1;
+  --syntax-property: #fca5a5;
+  --syntax-number: #fbbf24;
+  --syntax-string: #6ee7b7;
+  --syntax-operator: #5eead4;
+  --syntax-keyword: #d8b4fe;
+  --syntax-function: #93c5fd;
+  --syntax-variable: #fda4af;
   --shadow-subtle: 0 18px 36px rgb(0 0 0 / 24%);
   --shadow-hover: 0 24px 44px rgb(0 0 0 / 34%);
   --shadow-cta: 0 14px 32px -16px rgb(255 192 30 / 52%);
@@ -667,6 +685,74 @@ textarea:disabled {
 code,
 pre {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.syntax-highlighted-code .token.comment,
+.syntax-highlighted-code .token.prolog,
+.syntax-highlighted-code .token.doctype,
+.syntax-highlighted-code .token.cdata {
+  color: var(--syntax-comment);
+  font-style: italic;
+}
+
+.syntax-highlighted-code .token.punctuation {
+  color: var(--syntax-punctuation);
+}
+
+.syntax-highlighted-code .token.property,
+.syntax-highlighted-code .token.tag,
+.syntax-highlighted-code .token.constant,
+.syntax-highlighted-code .token.symbol,
+.syntax-highlighted-code .token.deleted {
+  color: var(--syntax-property);
+}
+
+.syntax-highlighted-code .token.boolean,
+.syntax-highlighted-code .token.number {
+  color: var(--syntax-number);
+}
+
+.syntax-highlighted-code .token.selector,
+.syntax-highlighted-code .token.attr-name,
+.syntax-highlighted-code .token.string,
+.syntax-highlighted-code .token.char,
+.syntax-highlighted-code .token.builtin,
+.syntax-highlighted-code .token.inserted {
+  color: var(--syntax-string);
+}
+
+.syntax-highlighted-code .token.operator,
+.syntax-highlighted-code .token.entity,
+.syntax-highlighted-code .token.url,
+.syntax-highlighted-code.language-css .token.string,
+.syntax-highlighted-code .style .token.string {
+  color: var(--syntax-operator);
+}
+
+.syntax-highlighted-code .token.atrule,
+.syntax-highlighted-code .token.attr-value,
+.syntax-highlighted-code .token.keyword {
+  color: var(--syntax-keyword);
+}
+
+.syntax-highlighted-code .token.function,
+.syntax-highlighted-code .token.class-name {
+  color: var(--syntax-function);
+}
+
+.syntax-highlighted-code .token.regex,
+.syntax-highlighted-code .token.important,
+.syntax-highlighted-code .token.variable {
+  color: var(--syntax-variable);
+}
+
+.syntax-highlighted-code .token.bold,
+.syntax-highlighted-code .token.important {
+  font-weight: 700;
+}
+
+.syntax-highlighted-code .token.italic {
+  font-style: italic;
 }
 
 h1,
@@ -3273,6 +3359,22 @@ a {
   padding: 12px;
   resize: vertical;
   line-height: 1.55;
+}
+
+.input-limit-counter {
+  justify-self: end;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.input-limit-counter.is-over-limit {
+  color: var(--danger);
+}
+
+input[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  border-color: var(--danger);
 }
 
 .topic-field input:focus,
@@ -7131,6 +7233,16 @@ a {
   background: var(--surface-muted);
   line-height: 1.5;
   resize: vertical;
+}
+
+.practice-composer-input {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.practice-composer > button {
+  align-self: end;
 }
 
 .wizard-panel {

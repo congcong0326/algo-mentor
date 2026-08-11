@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import MarkdownView from '../components/MarkdownView';
+import SyntaxHighlightedCode from '../components/SyntaxHighlightedCode';
 import type { LocaleResources } from '../i18n/locales';
 import type { PracticeCodeReviewDetail } from '../types/api';
 import ReviewScoreBadge from './ReviewScoreBadge';
@@ -67,7 +68,7 @@ export default function ReviewDetailPanel({ detail, passScore, resources }: Revi
 
       <ReviewScoreBreakdown detail={detail} resources={resources} />
 
-      <MarkdownView content={detail.reviewMarkdown} />
+      <MarkdownView content={detail.reviewMarkdown} defaultCodeLanguage={detail.language} />
 
       <ReviewTextList title={resources.learningPlans.reviewDeductionReasons} items={deductionReasons} />
       <ReviewTextList title={resources.learningPlans.reviewImprovementSuggestions} items={improvementSuggestions} />
@@ -75,7 +76,9 @@ export default function ReviewDetailPanel({ detail, passScore, resources }: Revi
       {codeSnapshot && (
         <section className="review-detail-section">
           <h4>{resources.learningPlans.reviewCodeSnapshot}</h4>
-          <pre><code>{codeSnapshot}</code></pre>
+          <pre>
+            <SyntaxHighlightedCode code={codeSnapshot} language={detail.language} />
+          </pre>
         </section>
       )}
     </section>

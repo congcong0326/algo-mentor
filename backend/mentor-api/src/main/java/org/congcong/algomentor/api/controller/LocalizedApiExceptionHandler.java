@@ -11,6 +11,7 @@ import org.congcong.algomentor.api.controller.practice.PracticeProgressStatusInv
 import org.congcong.algomentor.api.controller.practice.PracticeSessionUnauthenticatedException;
 import org.congcong.algomentor.api.controller.profile.LearnerProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.review.ReviewUnauthenticatedException;
+import org.congcong.algomentor.api.input.UserInputValidationException;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
@@ -149,6 +150,11 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ApiResponse<Void>> invalidRequestBody(HttpMessageNotReadableException exception) {
     return failure(HttpStatus.BAD_REQUEST, REQUEST_BODY_INVALID_CODE, "请求体不是合法 JSON 或与接口结构不匹配。");
+  }
+
+  @ExceptionHandler(UserInputValidationException.class)
+  public ResponseEntity<ApiResponse<Void>> userInputValidation(UserInputValidationException exception) {
+    return failure(HttpStatus.BAD_REQUEST, exception.code(), exception.getMessage(), exception.metadata());
   }
 
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

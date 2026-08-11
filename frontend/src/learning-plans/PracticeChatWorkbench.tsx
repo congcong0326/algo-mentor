@@ -2,6 +2,7 @@ import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLin
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
+import { utf8ByteLength, useUserInputLimits } from '../config/userInputLimits';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LocaleResources, SupportedLocale } from '../i18n/locales';
@@ -486,6 +487,7 @@ export default function PracticeChatWorkbench({
   problemSlug: string;
 }) {
   const { locale, resources } = useI18n();
+  const inputLimits = useUserInputLimits();
   const phase = plan.phases.find((candidate) => candidate.phaseIndex === phaseIndex);
   const problem = phase?.problems.find((candidate) => candidate.slug === problemSlug);
   const [sessionResponse, setSessionResponse] = useState<PracticeSessionResponse>();
@@ -638,7 +640,15 @@ export default function PracticeChatWorkbench({
       || resources.learningPlans.completionGateFallback
     : undefined;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
-  const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
+  const composerText = composerValue.trim();
+  const composerBytes = utf8ByteLength(composerText);
+  const composerOverLimit = composerBytes > inputLimits.practiceMessage.messageMaxBytes;
+  const sendDisabled = !sessionId
+    || status === 'loading'
+    || status === 'streaming'
+    || hasActiveRun
+    || !composerText
+    || composerOverLimit;
   const skipDisabled = completionUpdating
     || postRunRefreshing
     || status === 'loading'
@@ -930,6 +940,10 @@ export default function PracticeChatWorkbench({
     const text = composerValue.trim();
 
     if (!text || !sessionId || status === 'loading' || status === 'streaming' || submittingRef.current) {
+      return;
+    }
+    if (utf8ByteLength(text) > inputLimits.practiceMessage.messageMaxBytes) {
+      setError(resources.learningPlans.practiceMessageTooLong(inputLimits.practiceMessage.messageMaxBytes));
       return;
     }
 
@@ -1505,13 +1519,19 @@ export default function PracticeChatWorkbench({
         {status === 'loading' && (
           <article className="practice-message assistant-message">
             <span>{resources.learningPlans.coach}</span>
-            <MarkdownView content={resources.learningPlans.loadingStatement} />
+            <MarkdownView
+              content={resources.learningPlans.loadingStatement}
+              defaultCodeLanguage={plan.programmingLanguage}
+            />
           </article>
         )}
         {status !== 'loading' && messages.length === 0 && (
           <article className="practice-message assistant-message">
             <span>{resources.learningPlans.coach}</span>
-            <MarkdownView content={resources.learningPlans.statementUnavailable} />
+            <MarkdownView
+              content={resources.learningPlans.statementUnavailable}
+              defaultCodeLanguage={plan.programmingLanguage}
+            />
           </article>
         )}
         {messages.map((message) => (
@@ -1538,7 +1558,12 @@ export default function PracticeChatWorkbench({
               <p className="practice-message-plain-text">
                 {message.contentMarkdown || resources.learningPlans.organizingThoughts}
               </p>
-            ) : message.contentMarkdown ? <MarkdownView content={message.contentMarkdown} /> : null}
+            ) : message.contentMarkdown ? (
+              <MarkdownView
+                content={message.contentMarkdown}
+                defaultCodeLanguage={plan.programmingLanguage}
+              />
+            ) : null}
             {message.role === 'ASSISTANT' && message.coachSummaryAction && (
               <div className={`practice-coach-summary-action is-${message.coachSummaryAction.status.toLowerCase()}`}>
                 {message.coachSummaryAction.status === 'PENDING' ? (
@@ -1597,13 +1622,21 @@ export default function PracticeChatWorkbench({
       )}
 
       <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>
-        <textarea
-          aria-label={resources.learningPlans.composerLabel}
-          disabled={composerInputDisabled}
-          onChange={(event) => setComposerValue(event.target.value)}
-          placeholder={resources.learningPlans.practiceComposerPlaceholderReview}
-          value={composerValue}
-        />
+        <div className="practice-composer-input">
+          <textarea
+            aria-invalid={composerOverLimit}
+            aria-label={resources.learningPlans.composerLabel}
+            disabled={composerInputDisabled}
+            onChange={(event) => setComposerValue(event.target.value)}
+            placeholder={resources.learningPlans.practiceComposerPlaceholderReview}
+            value={composerValue}
+          />
+          <small className={composerOverLimit
+            ? 'input-limit-counter is-over-limit'
+            : 'input-limit-counter'}>
+            {resources.common.byteCount(composerBytes, inputLimits.practiceMessage.messageMaxBytes)}
+          </small>
+        </div>
         <button className="primary-button compact" disabled={sendDisabled} type="submit">
           {resources.learningPlans.send}
         </button>

@@ -52,6 +52,7 @@ import type {
   CurrentUser,
   DatabaseRestoreResponse,
   HealthStatus,
+  UserInputLimits,
   LearningPlanConfirmResponse,
   LearningPlanActivationResponse,
   LearningPlanCreateDraftRequest,
@@ -178,6 +179,19 @@ export async function getHealth(signal?: AbortSignal): Promise<ApiResponse<Healt
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Health request failed');
+  }
+
+  return response.json();
+}
+
+export async function getUserInputLimits(signal?: AbortSignal): Promise<ApiResponse<UserInputLimits>> {
+  const response = await apiFetch('/api/user-input-limits', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'User input limits request failed');
   }
 
   return response.json();

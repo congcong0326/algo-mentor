@@ -205,6 +205,7 @@ public final class DefaultAgentRuntime implements AgentRuntime {
   ) {
     Map<String, Object> metadata = new LinkedHashMap<>(preparedRun.metadata());
     metadata.putAll(preparedRequest.metadata());
+    metadata.putAll(preparedRun.identityMetadata());
     if (governanceMetadata != null) {
       metadata.putAll(governanceMetadata);
     }
@@ -238,7 +239,7 @@ public final class DefaultAgentRuntime implements AgentRuntime {
     AgentException error = collector.error();
     if (result != null) {
       settleSuccess(run, collector);
-      return new RunOutcome(withRuntimeResultMetadata(result, collector), null);
+      return new RunOutcome(withRuntimeResultMetadata(result, run.request().metadata(), collector), null);
     }
     if (error == null && cancellationToken.isCancelled()) {
       error = cancelled(null);
@@ -286,8 +287,13 @@ public final class DefaultAgentRuntime implements AgentRuntime {
     }
   }
 
-  private AgentRunResult withRuntimeResultMetadata(AgentRunResult result, OutcomeCollector collector) {
-    Map<String, Object> metadata = new LinkedHashMap<>(result.metadata());
+  private AgentRunResult withRuntimeResultMetadata(
+      AgentRunResult result,
+      Map<String, Object> requestMetadata,
+      OutcomeCollector collector
+  ) {
+    Map<String, Object> metadata = new LinkedHashMap<>(requestMetadata);
+    metadata.putAll(result.metadata());
     metadata.put(AgentRuntimeMetadataKeys.RUNTIME_USAGE, collector.usage());
     if (collector.provider() != null && !collector.provider().isBlank()) {
       metadata.put(AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, collector.provider());

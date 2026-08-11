@@ -6,7 +6,6 @@ import java.util.Objects;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
-import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.ai.governance.accounting.AiLlmCallKind;
 import org.congcong.algomentor.ai.governance.execution.AiRunGovernanceLease;
@@ -53,7 +52,7 @@ public final class AgentRuntimeGovernanceService {
         context.streaming(),
         AiLlmCallKind.AGENT_STEP,
         "ALL",
-        metadata(key, context, run)));
+        metadata(run)));
     return new AgentRuntimeGovernanceLease(scenario, lease);
   }
 
@@ -97,25 +96,9 @@ public final class AgentRuntimeGovernanceService {
     };
   }
 
-  private static Map<String, Object> metadata(
-      AgentKey<?> key,
-      AgentInvocationContext context,
-      PreparedAgentRun run
-  ) {
+  private static Map<String, Object> metadata(PreparedAgentRun run) {
     Map<String, Object> metadata = new LinkedHashMap<>(run.metadata());
-    metadata.put(AgentRuntimeMetadataKeys.TASK_ID, run.taskId());
-    metadata.put(AgentRuntimeMetadataKeys.TURN_ID, run.turnId());
-    metadata.put(AgentRuntimeMetadataKeys.RUN_DB_ID, run.runId());
-    metadata.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, run.runUuid());
-    metadata.put(AgentRuntimeMetadataKeys.AGENT_KEY, key.value());
-    metadata.put(AgentRuntimeMetadataKeys.INVOCATION_MODE, context.mode().databaseValue());
-    if (run.parentRunId() != null) {
-      metadata.put(AgentRuntimeMetadataKeys.PARENT_RUN_ID, run.parentRunId());
-      metadata.put(AgentRuntimeMetadataKeys.PARENT_STEP_INDEX, run.parentStepIndex());
-    }
-    if (run.retryOfRunId() != null) {
-      metadata.put(AgentRuntimeMetadataKeys.RETRY_OF_RUN_ID, run.retryOfRunId());
-    }
+    metadata.putAll(run.identityMetadata());
     return Map.copyOf(metadata);
   }
 }

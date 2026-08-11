@@ -758,6 +758,9 @@ export interface LocaleResources {
     empty: string;
     week: (count: number) => string;
     hoursPerWeek: (count: number) => string;
+    characterCount: (current: number, max: number) => string;
+    byteCount: (current: number, max: number) => string;
+    itemInputLimit: (count: number, maxCount: number, maxChars: number) => string;
     created: string;
     close: string;
   };
@@ -1132,6 +1135,7 @@ export interface LocaleResources {
     reload: string;
     saving: string;
     save: string;
+    inputLimitExceeded: string;
     coreIdea: string;
     dataStructures: string;
     customDataStructures: string;
@@ -1323,6 +1327,8 @@ export interface LocaleResources {
     additionalConstraints: string;
     personalizationEnabled: string;
     validationPositiveIntegers: string;
+    validationNumericRange: (maxWeeks: number, maxHours: number) => string;
+    validationInputLimit: string;
     validationTopicRequired: string;
     confirmDiscard: string;
     difficultyDistribution: string;
@@ -1472,6 +1478,7 @@ export interface LocaleResources {
     sendMessage: string;
     composerLabel: string;
     composerPlaceholder: string;
+    practiceMessageTooLong: (maxBytes: number) => string;
     send: string;
     waitingGenerate: string;
     generatingPlan: string;
@@ -2185,6 +2192,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       empty: '暂无',
       week: (count) => `${count} 周`,
       hoursPerWeek: (count) => `${count}h/周`,
+      characterCount: (current, max) => `${current} / ${max} 字`,
+      byteCount: (current, max) => `${current} / ${max} 字节`,
+      itemInputLimit: (count, maxCount, maxChars) => `${count} / ${maxCount} 项，每项最多 ${maxChars} 字`,
       created: '创建',
       close: '关闭',
     },
@@ -2570,6 +2580,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reload: '重新加载',
       saving: '保存中',
       save: '保存笔记',
+      inputLimitExceeded: '有内容超过输入上限，请根据计数提示调整后再保存。',
       coreIdea: '核心思路',
       dataStructures: '数据结构',
       customDataStructures: '自定义数据结构',
@@ -2790,6 +2801,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       additionalConstraints: '其他限制（可选）',
       personalizationEnabled: '参考我的学习数据',
       validationPositiveIntegers: '周期和每周投入必须是正整数。',
+      validationNumericRange: (maxWeeks, maxHours) => `训练周期最多 ${maxWeeks} 周，每周投入最多 ${maxHours} 小时。`,
+      validationInputLimit: '有内容超过输入上限，请根据计数提示调整后再生成。',
       validationTopicRequired: '专项突破需要至少选择一个主题。',
       confirmDiscard: '放弃当前填写的方案问卷？',
       difficultyDistribution: '难度分布',
@@ -2973,6 +2986,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       sendMessage: '发送消息',
       composerLabel: '输入你的思路、问题、代码或 LeetCode 反馈',
       composerPlaceholder: '输入你的思路、问题、代码或 LeetCode 反馈...',
+      practiceMessageTooLong: (maxBytes) => `消息最多允许 ${maxBytes} 字节，请缩短后再发送。`,
       send: '发送',
       waitingGenerate: '等待生成',
       generatingPlan: '正在生成训练方案',
@@ -3734,6 +3748,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       empty: 'None',
       week: (count) => `${count} ${count === 1 ? 'week' : 'weeks'}`,
       hoursPerWeek: (count) => `${count}h/week`,
+      characterCount: (current, max) => `${current} / ${max} characters`,
+      byteCount: (current, max) => `${current} / ${max} bytes`,
+      itemInputLimit: (count, maxCount, maxChars) => `${count} / ${maxCount} items, ${maxChars} characters each`,
       created: 'created',
       close: 'Close',
     },
@@ -4121,6 +4138,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reload: 'Reload',
       saving: 'Saving',
       save: 'Save Note',
+      inputLimitExceeded: 'Some content exceeds its input limit. Use the counters to shorten it before saving.',
       coreIdea: 'Core Idea',
       dataStructures: 'Data Structures',
       customDataStructures: 'Custom Data Structures',
@@ -4345,6 +4363,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       additionalConstraints: 'Additional constraints (optional)',
       personalizationEnabled: 'Use my learning data as reference',
       validationPositiveIntegers: 'Duration and weekly hours must be positive integers.',
+      validationNumericRange: (maxWeeks, maxHours) => `Duration is limited to ${maxWeeks} weeks and weekly time to ${maxHours} hours.`,
+      validationInputLimit: 'Some content exceeds its input limit. Use the counters to shorten it before generating.',
       validationTopicRequired: 'Topic breakthrough requires at least one selected topic.',
       confirmDiscard: 'Discard the current plan questionnaire?',
       difficultyDistribution: 'Difficulty Distribution',
@@ -4532,6 +4552,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       sendMessage: 'Send message',
       composerLabel: 'Enter your approach, question, code, or LeetCode feedback',
       composerPlaceholder: 'Enter your approach, question, code, or LeetCode feedback...',
+      practiceMessageTooLong: (maxBytes) => `Messages are limited to ${maxBytes} bytes. Shorten this message before sending.`,
       send: 'Send',
       waitingGenerate: 'Waiting to generate',
       generatingPlan: 'Generating learning plan',

@@ -1450,13 +1450,17 @@ describe('App', () => {
     expect(screen.getByText('1. 两数之和')).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: /V2/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /V1/ })).toBeInTheDocument();
-    expect(await screen.findByText('第二版通过。')).toBeInTheDocument();
-    expect(screen.getByText('class Solution { version2(); }')).toBeInTheDocument();
+    const secondReview = await screen.findByText('第二版通过。');
+    const secondCodeSnapshot = secondReview.closest('.review-detail-panel')?.querySelector('pre code');
+    expect(secondCodeSnapshot).toHaveTextContent('class Solution { version2(); }');
+    expect(secondCodeSnapshot).toHaveAttribute('data-language', 'java');
 
     fireEvent.click(screen.getByRole('button', { name: /V1/ }));
 
-    expect(await screen.findByText('第一版还要修复边界。')).toBeInTheDocument();
-    expect(screen.getByText('class Solution { version1(); }')).toBeInTheDocument();
+    const firstReview = await screen.findByText('第一版还要修复边界。');
+    const firstCodeSnapshot = firstReview.closest('.review-detail-panel')?.querySelector('pre code');
+    expect(firstCodeSnapshot).toHaveTextContent('class Solution { version1(); }');
+    expect(firstCodeSnapshot).toHaveAttribute('data-language', 'java');
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/practice-sessions/50/reviews',
       expect.objectContaining({ credentials: 'same-origin' }),

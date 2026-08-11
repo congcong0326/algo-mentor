@@ -34,6 +34,9 @@ public final class MentorConfigurationKeys {
    */
   public static final String API_SSE_PREFIX = "algo-mentor.api.sse";
 
+  /** 用户提交内容的统一上限配置前缀。 */
+  public static final String USER_INPUT_LIMITS_PREFIX = "algo-mentor.user-input-limits";
+
   /**
    * OpenAI provider 配置前缀。
    */
