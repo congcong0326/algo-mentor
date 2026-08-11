@@ -15,8 +15,8 @@ describe('LearningPlanCreateModal', () => {
 
     expect(screen.getByRole('dialog', { name: '新建训练方案' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '面试冲刺' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('textbox', { name: '具体目标（可选）' })).toHaveAttribute('maxlength', '300');
-    expect(screen.getByRole('textbox', { name: '其他限制（可选）' })).toHaveAttribute('maxlength', '1000');
+    expect(screen.getByText('0 / 300 字')).toBeInTheDocument();
+    expect(screen.getByText('0 / 1000 字')).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: '参考我的学习数据' })).toBeChecked();
     fireEvent.change(screen.getByRole('spinbutton', { name: '训练周期' }), { target: { value: '6' } });
     fireEvent.change(screen.getByRole('spinbutton', { name: '每周投入' }), { target: { value: '8' } });

@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type {
   ProblemAlgorithmKey,
   ProblemComplexityKey,
@@ -28,6 +29,9 @@ export default function ProblemSolutionOutlineForm({
   value,
 }: ProblemSolutionOutlineFormProps) {
   const { locale, resources } = useI18n();
+  const coreIdeaCounterId = useId();
+  const dataStructureNotesCounterId = useId();
+  const algorithmNotesCounterId = useId();
 
   function update(patch: Partial<ProblemSolutionOutlineV1>) {
     onChange({ ...value, ...patch });
@@ -38,13 +42,19 @@ export default function ProblemSolutionOutlineForm({
       <label className="problem-note-field problem-note-field-wide">
         <span>{resources.problemNotes.coreIdea}</span>
         <textarea
+          aria-describedby={coreIdeaCounterId}
           aria-invalid={unicodeCodePointLength(value.coreIdea) > limits.coreIdeaMaxChars}
+          aria-label={resources.problemNotes.coreIdea}
           disabled={disabled}
           onChange={(event) => update({ coreIdea: event.target.value })}
           rows={4}
           value={value.coreIdea}
         />
-        <InputCounter current={unicodeCodePointLength(value.coreIdea)} max={limits.coreIdeaMaxChars} />
+        <InputCounter
+          current={unicodeCodePointLength(value.coreIdea)}
+          id={coreIdeaCounterId}
+          max={limits.coreIdeaMaxChars}
+        />
       </label>
 
       <OptionChecklist<ProblemDataStructureKey>
@@ -73,7 +83,9 @@ export default function ProblemSolutionOutlineForm({
         <label className="problem-note-field problem-note-field-wide">
           <span>{resources.problemNotes.dataStructureNotes}</span>
           <textarea
+            aria-describedby={dataStructureNotesCounterId}
             aria-invalid={unicodeCodePointLength(value.dataStructureNotes) > limits.dataStructureNotesMaxChars}
+            aria-label={resources.problemNotes.dataStructureNotes}
             disabled={disabled}
             onChange={(event) => update({ dataStructureNotes: event.target.value })}
             placeholder={resources.problemNotes.dataStructureNotesPlaceholder}
@@ -82,6 +94,7 @@ export default function ProblemSolutionOutlineForm({
           />
           <InputCounter
             current={unicodeCodePointLength(value.dataStructureNotes)}
+            id={dataStructureNotesCounterId}
             max={limits.dataStructureNotesMaxChars}
           />
         </label>
@@ -113,7 +126,9 @@ export default function ProblemSolutionOutlineForm({
         <label className="problem-note-field problem-note-field-wide">
           <span>{resources.problemNotes.algorithmNotes}</span>
           <textarea
+            aria-describedby={algorithmNotesCounterId}
             aria-invalid={unicodeCodePointLength(value.algorithmNotes) > limits.algorithmNotesMaxChars}
+            aria-label={resources.problemNotes.algorithmNotes}
             disabled={disabled}
             onChange={(event) => update({ algorithmNotes: event.target.value })}
             placeholder={resources.problemNotes.algorithmNotesPlaceholder}
@@ -122,6 +137,7 @@ export default function ProblemSolutionOutlineForm({
           />
           <InputCounter
             current={unicodeCodePointLength(value.algorithmNotes)}
+            id={algorithmNotesCounterId}
             max={limits.algorithmNotesMaxChars}
           />
         </label>
@@ -204,6 +220,7 @@ function CommaListField({
   value: string[];
 }) {
   const { resources } = useI18n();
+  const counterId = useId();
   const overLimit = value.length > maxCount
     || value.some((item) => unicodeCodePointLength(item) > maxItemChars);
 
@@ -211,7 +228,9 @@ function CommaListField({
     <label className="problem-note-field">
       <span>{label}</span>
       <input
+        aria-describedby={counterId}
         aria-invalid={overLimit}
+        aria-label={label}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value
           .split(/[,，]/)
@@ -219,7 +238,10 @@ function CommaListField({
           .filter(Boolean))}
         value={value.join(delimiter)}
       />
-      <small className={overLimit ? 'input-limit-counter is-over-limit' : 'input-limit-counter'}>
+      <small
+        className={overLimit ? 'input-limit-counter is-over-limit' : 'input-limit-counter'}
+        id={counterId}
+      >
         {resources.common.itemInputLimit(value.length, maxCount, maxItemChars)}
       </small>
     </label>
@@ -244,11 +266,13 @@ function ComplexityField({
   value: ProblemComplexityValue;
 }) {
   const { resources } = useI18n();
+  const counterId = useId();
 
   return (
     <label className="problem-note-field">
       <span>{label}</span>
       <select
+        aria-label={label}
         disabled={disabled}
         onChange={(event) => {
           const key = event.target.value as ProblemComplexityKey | '';
@@ -264,6 +288,7 @@ function ComplexityField({
       {value.key === 'OTHER' && (
         <>
           <input
+            aria-describedby={counterId}
             aria-invalid={unicodeCodePointLength(value.customText ?? '') > maxChars}
             aria-label={resources.problemNotes.customValueAriaLabel(label)}
             disabled={disabled}
@@ -271,17 +296,24 @@ function ComplexityField({
             placeholder={resources.problemNotes.customValuePlaceholder}
             value={value.customText ?? ''}
           />
-          <InputCounter current={unicodeCodePointLength(value.customText ?? '')} max={maxChars} />
+          <InputCounter
+            current={unicodeCodePointLength(value.customText ?? '')}
+            id={counterId}
+            max={maxChars}
+          />
         </>
       )}
     </label>
   );
 }
 
-function InputCounter({ current, max }: { current: number; max: number }) {
+function InputCounter({ current, id, max }: { current: number; id: string; max: number }) {
   const { resources } = useI18n();
   return (
-    <small className={current > max ? 'input-limit-counter is-over-limit' : 'input-limit-counter'}>
+    <small
+      className={current > max ? 'input-limit-counter is-over-limit' : 'input-limit-counter'}
+      id={id}
+    >
       {resources.common.characterCount(current, max)}
     </small>
   );

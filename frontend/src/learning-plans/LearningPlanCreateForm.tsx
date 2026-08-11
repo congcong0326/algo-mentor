@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { unicodeCodePointLength, useUserInputLimits } from '../config/userInputLimits';
 import type {
   LearningPlanCreateDraftRequest,
@@ -54,6 +54,8 @@ export default function LearningPlanCreateForm({
   const [additionalConstraints, setAdditionalConstraints] = useState('');
   const [personalizationEnabled, setPersonalizationEnabled] = useState(true);
   const [validationError, setValidationError] = useState('');
+  const objectiveCounterId = useId();
+  const additionalConstraintsCounterId = useId();
 
   const objectiveLength = unicodeCodePointLength(objective);
   const additionalConstraintsLength = unicodeCodePointLength(additionalConstraints);
@@ -238,6 +240,7 @@ export default function LearningPlanCreateForm({
         <label className="topic-field">
           <span>{resources.learningPlans.objective}</span>
           <textarea
+            aria-describedby={objectiveCounterId}
             aria-invalid={objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars}
             aria-label={resources.learningPlans.objective}
             disabled={loading}
@@ -245,9 +248,12 @@ export default function LearningPlanCreateForm({
             rows={3}
             value={objective}
           />
-          <small className={objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars
-            ? 'input-limit-counter is-over-limit'
-            : 'input-limit-counter'}>
+          <small
+            className={objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars
+              ? 'input-limit-counter is-over-limit'
+              : 'input-limit-counter'}
+            id={objectiveCounterId}
+          >
             {resources.common.characterCount(
               objectiveLength,
               inputLimits.learningPlanCreate.objectiveMaxChars,
@@ -276,6 +282,7 @@ export default function LearningPlanCreateForm({
         <label className="topic-field">
           <span>{resources.learningPlans.additionalConstraints}</span>
           <textarea
+            aria-describedby={additionalConstraintsCounterId}
             aria-invalid={additionalConstraintsLength
               > inputLimits.learningPlanCreate.additionalConstraintsMaxChars}
             aria-label={resources.learningPlans.additionalConstraints}
@@ -284,10 +291,13 @@ export default function LearningPlanCreateForm({
             rows={4}
             value={additionalConstraints}
           />
-          <small className={additionalConstraintsLength
-            > inputLimits.learningPlanCreate.additionalConstraintsMaxChars
-            ? 'input-limit-counter is-over-limit'
-            : 'input-limit-counter'}>
+          <small
+            className={additionalConstraintsLength
+              > inputLimits.learningPlanCreate.additionalConstraintsMaxChars
+              ? 'input-limit-counter is-over-limit'
+              : 'input-limit-counter'}
+            id={additionalConstraintsCounterId}
+          >
             {resources.common.characterCount(
               additionalConstraintsLength,
               inputLimits.learningPlanCreate.additionalConstraintsMaxChars,
