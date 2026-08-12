@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import org.congcong.algomentor.agent.core.prompt.AgentPromptMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
@@ -47,10 +48,30 @@ class ContextAssemblerTest {
         .containsEntry(AgentRuntimeMetadataKeys.CONTEXT_POLICY, "legacy-policy")
         .containsEntry(AgentRuntimeMetadataKeys.CONTEXT_POLICY_VERSION, "v2")
         .containsEntry(AgentRuntimeMetadataKeys.TOKEN_BUDGET, 8_000)
-        .containsKey(AgentRuntimeMetadataKeys.TOKEN_ESTIMATE);
-    assertThat(context.metadata().keySet())
-        .doesNotContain("promptProfile", "promptContentHashes");
+        .containsKey(AgentRuntimeMetadataKeys.TOKEN_ESTIMATE)
+        .containsEntry(AgentPromptMetadataKeys.PROMPT_PROFILE, "LEGACY_CONTEXT_V1")
+        .containsKey(AgentPromptMetadataKeys.PROMPT_CONTENT_HASHES)
+        .containsKey(AgentPromptMetadataKeys.PROMPT_SECTION_SNAPSHOTS);
     assertThat(context.tokenEstimate()).isEqualTo(context.metadata().get(AgentRuntimeMetadataKeys.TOKEN_ESTIMATE));
+  }
+
+  @Test
+  void retainsPromptBudgetDecisionsForTheFinalRequestAuditSnapshot() {
+    ContextAssembler assembler = new ContextAssembler(new ContextAssemblyPolicy(1, 2, "legacy-policy", "v2"));
+
+    AssembledContext context = assembler.assemble(
+        "s",
+        "summary",
+        List.of(message(1, 1, AgentMessage.Role.USER, "old user")),
+        "q");
+
+    assertThat(context.metadata().get(AgentRuntimeMetadataKeys.DROPPED_SECTION_IDS))
+        .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.LIST)
+        .contains("legacy.context.active-summary", "legacy.context.history.1");
+    assertThat(context.metadata().get(AgentPromptMetadataKeys.PROMPT_SECTION_ACTIONS))
+        .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.MAP)
+        .containsEntry("legacy.context.active-summary", "DROP")
+        .containsEntry("legacy.context.history.1", "DROP");
   }
 
   @Test

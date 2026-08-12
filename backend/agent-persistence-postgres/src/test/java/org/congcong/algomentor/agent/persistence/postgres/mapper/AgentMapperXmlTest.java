@@ -44,6 +44,8 @@ class AgentMapperXmlTest {
         "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper.insertToolStart")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper.insertBlob")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentAuditMapper.findRuns")).isTrue();
     boolean hasPrimitiveLongConstructorArg = configuration.getResultMap(
             "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper.AgentMessageMap")
         .getConstructorResultMappings()
@@ -102,6 +104,67 @@ class AgentMapperXmlTest {
         .contains("#{retryOfRunId}");
   }
 
+  @Test
+  void auditRunListSqlUsesStableStartTimeOrderingAndSupportsAllFilters() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentAuditMapper.xml");
+
+    assertThat(sql)
+        .contains("ORDER BY r.started_at")
+        .contains("r.id <choose><when test=\"filter.direction.name() == 'ASC'\">ASC</when><otherwise>DESC</otherwise></choose>")
+        .contains("filter.taskId != null")
+        .contains("filter.turnId != null")
+        .contains("filter.finishReason != null")
+        .contains("filter.purpose != null")
+        .contains("filter.source != null")
+        .contains("filter.minCachedTokens != null")
+        .contains("filter.maxCachedTokens != null")
+        .contains("filter.minCacheRatio != null")
+        .contains("filter.maxCacheRatio != null")
+        .contains("filter.sort.name() == 'OVER_BUDGET'")
+        .contains("filter.sort.name() == 'CACHE_RATIO'")
+        .contains("filter.direction.name() == 'ASC'")
+        .contains("findRunStatistics")
+        .contains("COUNT(*) FILTER (WHERE metrics.compaction_applied)")
+        .contains("LIMIT #{filter.pageSize} OFFSET #{filter.offset}");
+  }
+
+  @Test
+  void auditToolResultSqlScopesContentToItsRunAndUsesBoundedReads() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentAuditMapper.xml");
+
+    assertThat(sql)
+        .contains("SUBSTRING(COALESCE(blob.content_text, '') FROM #{offset} + 1 FOR #{limit})")
+        .contains("WHERE tc.run_id = #{runId} AND tc.tool_call_id = #{toolCallId}")
+        .contains("r.diagnostic_redacted_at IS NULL")
+        .contains("r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW()");
+  }
+
+  @Test
+  void auditSnapshotAndToolSqlGateDiagnosticContentByRunRetention() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentAuditMapper.xml");
+
+    assertThat(sql)
+        .contains("JOIN agent_run r ON r.id = s.run_id")
+        .contains("r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW()")
+        .contains("THEN tc.arguments_json ELSE NULL END AS arguments")
+        .contains("THEN tc.result_preview_json ELSE NULL END AS preview")
+        .contains("THEN LEFT(u.content, 4000) ELSE NULL END)")
+        .contains("AS user_message")
+        .contains("THEN LEFT(a.content, 4000) ELSE NULL END)")
+        .contains("AS assistant_message")
+        .contains("includeRequestSnapshot");
+  }
+
+  @Test
+  void auditStepTimelineProjectsMessageRolesWithoutLoadingMessageContent() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentAuditMapper.xml");
+
+    assertThat(sql)
+        .contains("jsonb_array_elements(cs.messages_json) AS message(value)")
+        .contains("jsonb_build_object('role', message.value ->> 'role')")
+        .doesNotContain("cs.messages_json AS messages, NULL::JSONB AS tools");
+  }
+
   private String normalizedResourceText(String resource) throws Exception {
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
       return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8).replaceAll("\\s+", " ");
@@ -115,6 +178,7 @@ class AgentMapperXmlTest {
         "mapper/agent/AgentRunTraceMapper.xml",
         "mapper/agent/AgentContentBlobMapper.xml",
         "mapper/agent/AgentContextSnapshotMapper.xml",
-        "mapper/agent/AgentArtifactMapper.xml");
+        "mapper/agent/AgentArtifactMapper.xml",
+        "mapper/agent/AgentAuditMapper.xml");
   }
 }

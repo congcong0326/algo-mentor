@@ -276,7 +276,12 @@ provider, model
 status, finishReason
 hasTools, hasCompaction, overBudget
 minCachedTokens, maxCachedTokens
+minCacheRatio, maxCacheRatio
+sort, direction
 ```
+
+`sort` 仅允许 `requestedAt`、`overBudget`、`cacheRatio`；`direction` 仅允许 `asc`、`desc`。缺省为
+`requestedAt desc`。后端必须将其映射为枚举和固定 SQL 分支，禁止把客户端字段直接拼接到 `ORDER BY`。
 
 响应：
 
@@ -296,7 +301,7 @@ minCachedTokens, maxCachedTokens
       "stepCount": 2,
       "toolCallCount": 1,
       "promptTokenBudget": 8000,
-      "finalEstimateMax": 7920,
+      "finalRequestTokenEstimate": 7920,
       "actualInputTokens": 8762,
       "cachedTokens": 0,
       "overBudgetTokens": 762,
@@ -307,11 +312,24 @@ minCachedTokens, maxCachedTokens
   ],
   "total": 1,
   "page": 1,
-  "pageSize": 20
+  "pageSize": 20,
+  "statistics": {
+    "runCount": 1,
+    "overBudgetRunCount": 1,
+    "overBudgetRate": 1.0,
+    "compactionRunCount": 0,
+    "compactionRate": 0.0,
+    "usageReportedRunCount": 1,
+    "inputTokens": 8762,
+    "cachedTokens": 0,
+    "cacheRatio": 0.0
+  }
 }
 ```
 
 列表响应不得包含完整 messages、tools schema 或工具结果正文。
+`statistics` 使用与列表完全相同的筛选条件，但不受分页限制；仅返回计数、预算异常率、压缩率和已上报
+provider usage 的缓存汇总，不返回任何原始 JSON。
 
 ### 7.2 Run 详情
 
@@ -487,10 +505,10 @@ UNKNOWN_PROVIDER_USAGE
 
 ### 阶段 3：完整预算和压缩可观测性
 
-- 在最终出站请求前计算 messages + tools schema 的完整估算；
-- 将 run-local compaction metadata 结构化写入 snapshot/step；
-- 展示估算与实际 usage 偏差；
-- 增加超预算和缓存命中率筛选、排序和统计。
+- [x] 在最终出站请求前计算 messages + tools schema 的完整估算；
+- [x] 将 run-local compaction metadata 结构化写入 snapshot/step；
+- [x] 展示估算与实际 usage 偏差；
+- [x] 增加超预算和缓存命中率筛选、排序和统计。
 
 验收：中文、长代码、工具调用和多 step 样本均能显示预算分项、压缩动作和 provider 实际结果。
 
@@ -549,3 +567,30 @@ UNKNOWN_PROVIDER_USAGE
 5. 页面能明确标记压缩、截断、丢弃、preview、引用和超预算状态。
 6. `8,000` 预算与 `8,762` 实际输入的历史样本可以被复现和解释。
 7. 权限、脱敏、retention 和管理员查看审计均通过测试。
+
+### 14.1 完成证据（2026-08-12）
+
+1. `AdminAiAuditController`、`AgentAuditMapper`、`PostgresAgentAuditQuery` 与 `AiAuditPanel` 已形成只读
+   列表、run、step、工具结果读取链路；页面提供筛选、分页、时间线、快照标签页、会话入口和当前请求
+   实际引用的历史消息 section。
+2. `AgentAuditRunFilter` 将 `requestedAt`、`overBudget`、`cacheRatio` 排序和 `asc`/`desc` 方向限制为
+   后端枚举；列表响应同时返回同一筛选范围内的超预算、缓存和压缩聚合统计。
+3. PostgreSQL 集成样本覆盖 `8,000` 预算、`7,920` 最终估算、`8,762` provider 实际输入及 `640`
+   cached tokens，并验证缓存比例排序和统计汇总。
+4. 最终请求 metadata 在出站前持久化完整估算与压缩动作；provider 返回后，step metadata 追加实际
+   input/cached/output/reasoning/total usage 与预算状态。历史内联大工具结果和按需读取结果均限制为
+   `4,000` 字符审计 preview，完整正文只能通过受 retention 和范围限制的 blob 读取链路取得。
+5. 已验证命令：
+
+   ```text
+   npm --cache ./.npm --prefix frontend test -- --run src/admin/ai/AiAuditPanel.test.tsx
+   mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository \
+     -pl mentor-api -am \
+     -Dtest='AgentMapperXmlTest,PostgresAgentAuditQueryTest,AdminAiAuditControllerTest' test
+   mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository \
+     -pl mentor-api -am \
+     -Dtest=NoUnitTestsSpecified -Dit.test=AgentAuditMapperIT verify
+   ```
+
+   上述测试覆盖排序/统计、权限边界、脱敏、retention、原始 JSON 与完整工具结果查看审计，以及
+   空工具结果、失败工具、缺失 provider usage 和重试 run 的边界。

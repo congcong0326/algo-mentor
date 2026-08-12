@@ -65,7 +65,42 @@ public final class RunMessageCompactor {
     if (compactedToolResults == 0 && snippedGroups == 0) {
       return new RunMessageCompactionResult(compacted, Map.of());
     }
-    return new RunMessageCompactionResult(compacted, Map.of(AgentRuntimeMetadataKeys.RUN_CONTEXT_COMPACTION, metadata));
+    return new RunMessageCompactionResult(compacted, Map.of(AgentRuntimeMetadataKeys.RUN_CONTEXT_COMPACTION,
+        auditMetadata(metadata, compactedToolResults, snippedGroups)));
+  }
+
+  private Map<String, Object> auditMetadata(
+      Map<String, Object> metadata,
+      int compactedToolResults,
+      int snippedGroups
+  ) {
+    Map<String, Object> audit = new LinkedHashMap<>(metadata);
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_APPLIED, true);
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_POLICY_VERSION,
+        ToolResultCompactionPolicy.POLICY_VERSION);
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_BEFORE_CHARS,
+        metadata.get(AgentRuntimeMetadataKeys.BEFORE_CHAR_COUNT));
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_AFTER_CHARS,
+        metadata.get(AgentRuntimeMetadataKeys.AFTER_CHAR_COUNT));
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_BEFORE_TOKEN_ESTIMATE,
+        tokenEstimate(metadata.get(AgentRuntimeMetadataKeys.BEFORE_CHAR_COUNT)));
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_AFTER_TOKEN_ESTIMATE,
+        tokenEstimate(metadata.get(AgentRuntimeMetadataKeys.AFTER_CHAR_COUNT)));
+    audit.put(AgentRuntimeMetadataKeys.SNIPPED_MESSAGE_GROUP_COUNT, snippedGroups);
+    audit.put(AgentRuntimeMetadataKeys.TOOL_RESULT_COMPACTED_COUNT, compactedToolResults);
+    List<String> actions = new ArrayList<>();
+    if (compactedToolResults > 0) {
+      actions.add("old_tool_result_compacted");
+    }
+    if (snippedGroups > 0) {
+      actions.add("group_snip");
+    }
+    audit.put(AgentRuntimeMetadataKeys.COMPACTION_ACTIONS, List.copyOf(actions));
+    return Map.copyOf(audit);
+  }
+
+  private int tokenEstimate(Object chars) {
+    return chars instanceof Number number ? Math.max(0, number.intValue() / 4) : 0;
   }
 
   List<RunMessageGroup> parseGroups(List<LlmMessage> messages) {

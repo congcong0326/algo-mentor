@@ -53,6 +53,9 @@ class DefaultPromptAssemblerTest {
     assertThat(assembly.canonicalMessages())
         .extracting(LlmMessage::text)
         .containsExactly("Be a mentor", "Earlier answer", "How do I solve it?");
+    assertThat(assembly.canonicalMessages())
+        .extracting(message -> message.metadata().get(AgentPromptMetadataKeys.AUDIT_MESSAGE_SOURCE))
+        .containsExactly("SYSTEM_STATIC", "MODEL_GENERATED", "USER_INPUT");
     assertThat(assembly.snapshots())
         .extracting(PromptSectionSnapshot::id)
         .containsExactlyInAnyOrder("static", "history", "current");

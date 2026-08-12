@@ -6,11 +6,13 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.agent.core.runtime.audit.AgentAuditQuery;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentArtifactMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentAuditMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
@@ -20,6 +22,7 @@ import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAge
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentRunTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentConversationRepository;
+import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentAuditQuery;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresToolResultStore;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -96,6 +99,20 @@ public class AgentPostgresPersistenceConfiguration {
   @ConditionalOnMissingBean
   public AgentArtifactMapper agentArtifactMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(AgentArtifactMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
+  public AgentAuditMapper agentAuditMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(AgentAuditMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(AgentAuditMapper.class)
+  @ConditionalOnMissingBean
+  public AgentAuditQuery agentAuditQuery(AgentAuditMapper mapper) {
+    return new PostgresAgentAuditQuery(mapper);
   }
 
   @Bean

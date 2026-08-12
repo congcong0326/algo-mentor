@@ -643,6 +643,214 @@ export interface AdminAiUsageByUserQuery extends AdminAiUsageQuery {
   pageSize?: number;
 }
 
+export interface AdminAiAuditUsage {
+  inputTokens?: number | null;
+  cachedTokens?: number | null;
+  uncachedInputTokens?: number | null;
+  outputTokens?: number | null;
+  reasoningTokens?: number | null;
+  totalTokens?: number | null;
+  cacheRatio?: number | null;
+}
+
+export interface AdminAiAuditRun {
+  runId: number;
+  runUuid?: string | null;
+  taskId: number;
+  turnId: number;
+  userId?: number | null;
+  userDisplayName?: string | null;
+  scenario?: string | null;
+  purpose?: string | null;
+  source?: string | null;
+  provider?: string | null;
+  model?: string | null;
+  status?: string | null;
+  finishReason?: string | null;
+  stepCount: number;
+  failedStepCount: number;
+  toolCallCount: number;
+  failedToolCallCount: number;
+  promptTokenBudget?: number | null;
+  assemblyTokenEstimate?: number | null;
+  finalRequestTokenEstimate?: number | null;
+  actualInputTokens?: number | null;
+  cachedTokens?: number | null;
+  overBudgetTokens?: number | null;
+  compactionApplied: boolean;
+  compactionActionCount: number;
+  providerError: boolean;
+  startedAt?: string | null;
+  endedAt?: string | null;
+}
+
+export interface AdminAiAuditRunPage {
+  items: AdminAiAuditRun[];
+  total: number;
+  page: number;
+  pageSize: number;
+  statistics?: AdminAiAuditRunStatistics | null;
+}
+
+export interface AdminAiAuditRunStatistics {
+  runCount: number;
+  overBudgetRunCount: number;
+  overBudgetRate?: number | null;
+  compactionRunCount: number;
+  compactionRate?: number | null;
+  usageReportedRunCount: number;
+  inputTokens?: number | null;
+  cachedTokens?: number | null;
+  cacheRatio?: number | null;
+}
+
+export interface AdminAiAuditTurn {
+  turnId: number;
+  sequenceNo: number;
+  status?: string | null;
+  userMessage?: string | null;
+  userMessageAt?: string | null;
+  assistantMessage?: string | null;
+  assistantMessageAt?: string | null;
+  runAttemptCount: number;
+  runAttempts: AdminAiAuditRunAttempt[];
+  hasTools: boolean;
+  usage: AdminAiAuditUsage;
+  overBudgetTokens?: number | null;
+}
+
+export interface AdminAiAuditRunAttempt {
+  runId: number;
+  attemptNo: number;
+  status?: string | null;
+}
+
+export interface AdminAiAuditStep {
+  stepIndex: number;
+  status?: string | null;
+  provider?: string | null;
+  model?: string | null;
+  finishReason?: string | null;
+  startedAt?: string | null;
+  endedAt?: string | null;
+  messageCount?: number | null;
+  roleCounts?: Record<string, number>;
+  messageTokenEstimate?: number | null;
+  toolsCount?: number | null;
+  toolsTokenEstimate?: number | null;
+  providerOverheadTokenEstimate?: number | null;
+  finalRequestTokenEstimate?: number | null;
+  promptTokenBudget?: number | null;
+  remainingBudgetTokens?: number | null;
+  usage: AdminAiAuditUsage;
+  compactionApplied: boolean;
+  compaction?: Record<string, unknown> | null;
+  snapshotAvailable: boolean;
+  toolCallCount: number;
+  failedToolCallCount: number;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+}
+
+export interface AdminAiAuditToolCall {
+  toolCallId: string;
+  toolName?: string | null;
+  status?: string | null;
+  arguments?: unknown;
+  result?: unknown;
+  preview?: unknown;
+  resultStorageMode?: string | null;
+  resultRef?: string | null;
+  resultSha256?: string | null;
+  argumentCharCount?: number | null;
+  argumentTokenEstimate?: number | null;
+  resultCharCount?: number | null;
+  resultTokenEstimate?: number | null;
+  resultLineCount?: number | null;
+  durationMillis?: number | null;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  redactionPolicyVersion?: string | null;
+  startedAt?: string | null;
+  endedAt?: string | null;
+}
+
+export interface AdminAiAuditStepDetail {
+  step: AdminAiAuditStep;
+  snapshotId?: number | null;
+  requestSnapshot?: unknown;
+  messages?: unknown[] | null;
+  tools?: unknown[] | null;
+  toolChoice?: unknown;
+  generationOptions?: unknown;
+  requestHash?: string | null;
+  redactionPolicyVersion?: string | null;
+  snapshotRetentionExpiresAt?: string | null;
+  metadata?: Record<string, unknown> | null;
+  toolCalls: AdminAiAuditToolCall[];
+}
+
+export interface AdminAiAuditRunDetail {
+  run: AdminAiAuditRun;
+  attemptNo: number;
+  retryOfRunId?: number | null;
+  maxSteps: number;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  diagnosticRetentionExpiresAt?: string | null;
+  diagnosticRedactedAt?: string | null;
+  currentTurn?: AdminAiAuditTurn | null;
+  taskTurns: AdminAiAuditTurn[];
+  steps: AdminAiAuditStep[];
+  totalUsage: AdminAiAuditUsage;
+}
+
+export interface AdminAiAuditToolResult {
+  runId: number;
+  stepIndex: number;
+  toolCallId: string;
+  toolName?: string | null;
+  status?: string | null;
+  storageMode?: string | null;
+  resultRef?: string | null;
+  sha256?: string | null;
+  charCount?: number | null;
+  lineCount?: number | null;
+  preview?: unknown;
+  content?: string | null;
+  contentAvailable: boolean;
+  retentionActive: boolean;
+  retentionExpiresAt?: string | null;
+}
+
+export interface AdminAiAuditRunQuery {
+  from?: string;
+  to?: string;
+  page?: number;
+  pageSize?: number;
+  userId?: number;
+  scenario?: string;
+  purpose?: string;
+  source?: string;
+  taskId?: number;
+  turnId?: number;
+  runId?: number;
+  provider?: string;
+  model?: string;
+  status?: string;
+  finishReason?: string;
+  hasTools?: boolean;
+  hasCompaction?: boolean;
+  overBudget?: boolean;
+  providerError?: boolean;
+  minCachedTokens?: number;
+  maxCachedTokens?: number;
+  minCacheRatio?: number;
+  maxCacheRatio?: number;
+  sort?: 'requestedAt' | 'overBudget' | 'cacheRatio';
+  direction?: 'asc' | 'desc';
+}
+
 export type FeedbackCategory = 'BUG' | 'SUGGESTION' | 'OTHER';
 export type FeedbackStatus = 'OPEN' | 'CLOSED';
 export type FeedbackSenderType = 'USER' | 'ADMIN';

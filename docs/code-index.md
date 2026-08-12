@@ -9,6 +9,7 @@
 - `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
 - `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，固定移除 common pool、Agent 工作线程同步投递 SSE、`20/100` 无队列执行池、暂缓独立准入和 Tomcat 保持默认配置。
+- `docs/agent-execution-group-bulkhead-design.md`：Agent 执行组舱壁隔离研发设计，定义 Definition 代码声明执行组、`27/2/1` 严格容量、按组信号量、容量总和推导物理线程池上限、CHILD 内联继承和组级指标。
 - `docs/agent-conversation-context-recall-design.md`：Agent 多轮上下文召回与压缩研发设计，说明会话存储、运行轨迹、压缩策略和上下文快照。
 - `docs/agent-structured-output-design.md`：Agent 结构化输出与最终结果捕获设计，说明执行配置、provider-native structured output、AgentOutput 和最终输出持久化边界。
 - `docs/agent-run-tool-result-compaction-design.md`：Agent run 内工具结果压缩设计，说明大结果预览、blob 引用、范围读取工具和 run-local 上下文预算。
@@ -153,6 +154,9 @@
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`：Agent conversation 自动配置，显式排在持久化、AI 治理、队列和可观测性自动配置之后。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/PracticeCodeReviewConfiguration.java`：由默认开启的 `algo-mentor.practice.code-review.enabled` 控制的强依赖装配边界，完整注册 CommitService、ReviewService、AgentTool 与权限 hook；启用时任一核心依赖缺失都会阻止应用启动。
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/config`：PostgreSQL persistence auto-configuration，装配 MyBatis `SqlSessionFactory`、mapper 和持久化 bean。
+- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime/audit`：Agent run 只读审计查询端口及 run、step、tool result 的低敏领域 DTO；列表与详情严格分离大 JSON。
+- `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/repository/PostgresAgentAuditQuery.java`：管理员请求审计的 PostgreSQL 查询适配器，聚合 task/turn/run/step/tool usage、预算与压缩元数据，并对过期诊断数据做读取时隔离。
+- `backend/agent-persistence-postgres/src/main/resources/mapper/agent/AgentAuditMapper.xml`：请求审计分页、筛选、延迟 snapshot/blob 读取 SQL；所有诊断正文受 run retention 状态约束。
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/mapper`：agent runtime MyBatis mapper interface 和 mapper 参数/结果模型。
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/json`：PostgreSQL JSONB 与 agent message role 的 MyBatis type handler。
 - `backend/agent-persistence-postgres/src/main/resources/mapper/agent`：agent runtime MyBatis XML mapper 目录，SQL 只保存在 persistence 模块。
@@ -167,7 +171,7 @@
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/pricing` 与 `adminquery`：当前模型价格管理、Decimal 成本计算及按用户、模型、业务场景聚合的管理查询。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/provider` 与 `routing`：`V41` provider instance/显式模型持久化、版本化 SDK Client、稳定场景路由策略、执行快照和无 fallback 的路由解析；路由 policy/snapshot 保留可空 reasoning effort，metrics 固定输出 provider type、effort 与状态。
 - `backend/ai-governance/src/main/resources/db/migration/ai/V54__ai_llm_call_usage_reasoning_effort.sql`：为 `ai_llm_call_usage` 添加可空且受约束的 `reasoning_effort`，历史记录保持 `NULL`。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/ai`：AI 设置、单用户策略、provider/model、模型路由、模型价格和用量查询的管理员 HTTP 契约、DTO 映射与错误响应；provider type 目录驱动显示名、安全默认配置和 effort 子集，避免 provider 特判。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/ai`：AI 设置、单用户策略、provider/model、模型路由、模型价格、用量和请求审计的管理员 HTTP 契约、DTO 映射与错误响应；provider type 目录驱动显示名、安全默认配置和 effort 子集，避免 provider 特判。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/admin/audit`：管理员审计 PostgreSQL/MyBatis 实现，以独立 `REQUIRES_NEW` 事务写入并对失败计数降级。
 - `backend/mentor-api/src/main/resources/db/migration/V30__admin_audit_and_user_feedback.sql`：提前固定管理员审计和用户反馈表结构，本阶段只启用审计写入。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。

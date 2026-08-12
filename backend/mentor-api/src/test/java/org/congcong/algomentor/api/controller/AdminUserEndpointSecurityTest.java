@@ -77,6 +77,10 @@ class AdminUserEndpointSecurityTest {
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_ID_PATH,
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_ROUTING_SCENARIOS_PATH,
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_ROUTING_EFFECTIVE_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.AUDIT_RUNS_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.AUDIT_RUN_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.AUDIT_STEP_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.AUDIT_TOOL_RESULT_PATH,
         AdminAiApiContractConstants.ADMIN_USERS_BASE_PATH + AdminAiApiContractConstants.USER_AI_POLICY_PATH);
 
     assertTrue(mappedPaths.containsAll(expectedPaths), () -> "Missing mappings: " + expectedPaths.stream()
@@ -150,6 +154,10 @@ class AdminUserEndpointSecurityTest {
             .with(authentication(authenticationToken("ROLE_USER"))))
         .andExpect(status().isForbidden());
 
+    mockMvc.perform(get(AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.AUDIT_RUNS_PATH)
+            .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+
     mockMvc.perform(get(DatabaseBackupApiContractConstants.ADMIN_DATABASE_BASE_PATH
             + DatabaseBackupApiContractConstants.BACKUP_PATH)
             .with(authentication(authenticationToken("ROLE_USER"))))
@@ -158,6 +166,27 @@ class AdminUserEndpointSecurityTest {
     mockMvc.perform(post(AdminPasswordResetApiContractConstants.BASE_PATH + "/42/password-reset")
             .with(csrf())
             .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void aiGovernanceAuthorityDoesNotGrantReadOnlyAuditAccess() throws Exception {
+    String auditBase = AdminAiApiContractConstants.ADMIN_AI_BASE_PATH;
+    UsernamePasswordAuthenticationToken governanceManager = authenticationToken("ai-governance:manage");
+
+    mockMvc.perform(get(auditBase + AdminAiApiContractConstants.AUDIT_RUNS_PATH)
+            .with(authentication(governanceManager)))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(get(auditBase + AdminAiApiContractConstants.AUDIT_RUN_PATH.replace("{runId}", "17"))
+            .with(authentication(governanceManager)))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(get(auditBase + AdminAiApiContractConstants.AUDIT_STEP_PATH
+            .replace("{runId}", "17").replace("{stepIndex}", "1"))
+            .with(authentication(governanceManager)))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(get(auditBase + AdminAiApiContractConstants.AUDIT_TOOL_RESULT_PATH
+            .replace("{runId}", "17").replace("{toolCallId}", "call-1"))
+            .with(authentication(governanceManager)))
         .andExpect(status().isForbidden());
   }
 

@@ -43,9 +43,29 @@ public final class AgentPromptMetadataKeys {
   public static final String PROMPT_TRUNCATED_SECTIONS = "promptTruncatedSections";
 
   /**
+   * 按 section 记录的预算动作，用于审计展示而不包含 section 正文。
+   */
+  public static final String PROMPT_SECTION_ACTIONS = "promptSectionActions";
+
+  /**
    * Prompt section 内容 hash 映射。
    */
   public static final String PROMPT_CONTENT_HASHES = "promptContentHashes";
+
+  /**
+   * 脱敏后的 section 审计快照；仅包含来源、信任等级、预算决策和 hash，不包含正文。
+   */
+  public static final String PROMPT_SECTION_SNAPSHOTS = "promptSectionSnapshots";
+
+  /**
+   * 最终请求审计快照中消息的来源等级，不参与 provider 请求映射。
+   */
+  public static final String AUDIT_MESSAGE_SOURCE = "auditSource";
+
+  /**
+   * 最终请求审计快照中消息对应的 Prompt section 标识。
+   */
+  public static final String AUDIT_MESSAGE_SECTION_ID = "auditSectionId";
 
   private AgentPromptMetadataKeys() {
   }

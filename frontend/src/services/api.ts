@@ -21,6 +21,11 @@ import type {
   AdminAiModelPrice,
   AdminAiModelPricePage,
   AdminAiModelPriceWriteRequest,
+  AdminAiAuditRunDetail,
+  AdminAiAuditRunPage,
+  AdminAiAuditRunQuery,
+  AdminAiAuditStepDetail,
+  AdminAiAuditToolResult,
   AdminAiSettings,
   AdminAiSettingsUpdateRequest,
   AdminAiUsageByModel,
@@ -1255,6 +1260,66 @@ export async function getAdminAiUsageBySource(
   return response.json();
 }
 
+export async function getAdminAiAuditRuns(
+  query: AdminAiAuditRunQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiAuditRunPage>> {
+  const response = await apiFetch(`/api/admin/ai/audit/runs${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI audit run list request failed');
+  }
+  return response.json();
+}
+
+export async function getAdminAiAuditRun(
+  runId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiAuditRunDetail>> {
+  const response = await apiFetch(`/api/admin/ai/audit/runs/${encodeURIComponent(String(runId))}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI audit run request failed');
+  }
+  return response.json();
+}
+
+export async function getAdminAiAuditStep(
+  runId: number,
+  stepIndex: number,
+  query: { raw?: boolean } = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiAuditStepDetail>> {
+  const response = await apiFetch(
+    `/api/admin/ai/audit/runs/${encodeURIComponent(String(runId))}/steps/${encodeURIComponent(String(stepIndex))}${toQueryString(query)}`,
+    { headers: jsonHeaders, signal },
+  );
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI audit step request failed');
+  }
+  return response.json();
+}
+
+export async function getAdminAiAuditToolResult(
+  runId: number,
+  toolCallId: string,
+  query: { includeContent?: boolean; offset?: number; limit?: number } = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiAuditToolResult>> {
+  const response = await apiFetch(
+    `/api/admin/ai/audit/runs/${encodeURIComponent(String(runId))}/tool-results/${encodeURIComponent(toolCallId)}${toQueryString(query)}`,
+    { headers: jsonHeaders, signal },
+  );
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI audit tool result request failed');
+  }
+  return response.json();
+}
+
 export async function createFeedback(request: FeedbackCreateRequest): Promise<ApiResponse<FeedbackThreadDetail>> {
   return jsonRequest('/api/feedback', 'POST', request, 'Feedback create request failed');
 }
@@ -1974,6 +2039,10 @@ interface TodayPackQuery {
   packOffset?: number;
 }
 
+interface AdminAiAuditStepQuery {
+  raw?: boolean;
+}
+
 type QueryParams =
   | ProblemListQuery
   | LearningPlanListQuery
@@ -1984,6 +2053,8 @@ type QueryParams =
   | UserGroupMemberListQuery
   | AdminAiUsageQuery
   | AdminAiUsageByUserQuery
+  | AdminAiAuditRunQuery
+  | AdminAiAuditStepQuery
   | LearnerProfileEvidenceQuery
   | ReviewCardListQuery
   | TodayPackQuery

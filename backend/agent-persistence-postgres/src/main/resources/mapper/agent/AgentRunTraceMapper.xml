@@ -41,6 +41,7 @@
         model = COALESCE(#{model}, model),
         finish_reason = #{finishReason},
         usage = #{usage,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        metadata = metadata || #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         ended_at = #{endedAt}
     WHERE run_id = #{runId}
       AND step_index = #{stepIndex}

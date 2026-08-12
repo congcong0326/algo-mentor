@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
     AdminUserAiPolicyController.class,
     AdminAiModelPriceController.class,
     AdminAiUsageController.class,
+    AdminAiAuditController.class,
     AdminAiProviderController.class,
     AdminAiModelRoutingController.class
 })

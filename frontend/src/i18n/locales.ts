@@ -120,7 +120,7 @@ export interface LocaleResources {
     pageNavigation: string;
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'learningPlanAiRevisionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'learningPlanAiRevisionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'aiAudit' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
   };
   adminFeedback: {
     listLoadFailed: string;
@@ -530,6 +530,110 @@ export interface LocaleResources {
     historicalPriceNotice: string;
     updatedBy: string;
     updatedAt: string;
+    auditTitle: string;
+    auditDescription: string;
+    auditLoadFailed: string;
+    auditRunLoadFailed: string;
+    auditStepLoadFailed: string;
+    auditToolResultLoadFailed: string;
+    auditRefresh: string;
+    auditFrom: string;
+    auditTo: string;
+    auditScenario: string;
+    auditTaskId: string;
+    auditTurnId: string;
+    auditStatus: string;
+    auditFinishReason: string;
+    auditAttempt: string;
+    auditRunId: string;
+    auditMinCachedTokens: string;
+    auditMaxCachedTokens: string;
+    auditMinCacheRatio: string;
+    auditMaxCacheRatio: string;
+    auditSort: string;
+    auditSortDirection: string;
+    auditSortRequestedAt: string;
+    auditSortOverBudget: string;
+    auditSortCacheRatio: string;
+    auditSortDescending: string;
+    auditSortAscending: string;
+    auditStatistics: string;
+    auditStatisticsRuns: string;
+    auditStatisticsOverBudget: string;
+    auditStatisticsCache: string;
+    auditStatisticsCompaction: string;
+    auditFilter: string;
+    auditClear: string;
+    auditOnlyWithTools: string;
+    auditOnlyCompacted: string;
+    auditOnlyOverBudget: string;
+    auditOnlyProviderError: string;
+    auditNoResults: string;
+    auditTime: string;
+    auditRun: string;
+    auditUser: string;
+    auditProviderModel: string;
+    auditSteps: string;
+    auditTools: string;
+    auditEstimateBudget: string;
+    auditActualInput: string;
+    auditCached: string;
+    auditOutputTokens: string;
+    auditReasoningTokens: string;
+    auditTotalTokens: string;
+    auditCompaction: string;
+    auditState: string;
+    auditOpen: string;
+    auditBackToRuns: string;
+    auditTimeline: string;
+    auditSessionTurns: string;
+    auditRequest: string;
+    auditMessages: string;
+    auditRawJson: string;
+    auditOverview: string;
+    auditToolCalls: string;
+    auditNoSnapshot: string;
+    auditMessageCount: string;
+    auditToolsCount: string;
+    auditFinalEstimate: string;
+    auditAssemblyEstimate: string;
+    auditRemainingBudget: string;
+    auditCacheRatio: string;
+    auditDuration: string;
+    auditBudgetStatus: string;
+    auditFailedTools: string;
+    auditUncachedInput: string;
+    auditStartedAt: string;
+    auditMessageRole: string;
+    auditMessageRoles: string;
+    auditMessageSource: string;
+    auditMessageSection: string;
+    auditMessageToolCallId: string;
+    auditMessageCharacters: string;
+    auditMessageTokenEstimate: string;
+    auditMessageContent: string;
+    auditHistoricalMessages: string;
+    auditNoHistoricalMessages: string;
+    auditToolSchema: string;
+    auditToolSchemaCount: string;
+    auditToolSchemaEstimate: string;
+    auditToolName: string;
+    auditToolDescription: string;
+    auditToolParameters: string;
+    auditToolArguments: string;
+    auditToolResult: string;
+    auditToolResultPreview: string;
+    auditToolResultStorageMode: string;
+    auditToolResultReference: string;
+    auditCompactionBefore: string;
+    auditCompactionAfter: string;
+    auditCompactionActions: string;
+    auditRunAttempts: string;
+    auditError: string;
+    auditViewContent: string;
+    auditContentUnavailable: string;
+    auditPrevious: string;
+    auditNext: string;
   };
   adminMonitoring: {
     ariaLabel: string;
@@ -1708,6 +1812,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         aiRouting: '模型路由',
         aiUsage: '用量与成本',
         aiPricing: '模型定价',
+        aiAudit: '请求审计',
         content: '内容管理',
         feedback: '反馈与支持',
         users: '用户管理',
@@ -2032,6 +2137,110 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       historicalPriceNotice: '历史区间会按当前启用价格重新估算。',
       updatedBy: '更新人',
       updatedAt: '更新时间',
+      auditTitle: '请求审计',
+      auditDescription: '只读还原 Agent 的最终脱敏请求、工具交互、上下文压缩与 provider 用量。',
+      auditLoadFailed: '审计 run 列表加载失败。',
+      auditRunLoadFailed: '审计 run 详情加载失败。',
+      auditStepLoadFailed: '审计 step 详情加载失败。',
+      auditToolResultLoadFailed: '工具结果加载失败。',
+      auditRefresh: '刷新审计列表',
+      auditFrom: '开始时间',
+      auditTo: '结束时间',
+      auditScenario: '场景',
+      auditTaskId: 'Task ID',
+      auditTurnId: 'Turn ID',
+      auditStatus: '状态',
+      auditFinishReason: '完成原因',
+      auditAttempt: '运行尝试',
+      auditRunId: 'Run ID',
+      auditMinCachedTokens: '最少缓存 Token',
+      auditMaxCachedTokens: '最多缓存 Token',
+      auditMinCacheRatio: '最小缓存比例',
+      auditMaxCacheRatio: '最大缓存比例',
+      auditSort: '排序字段',
+      auditSortDirection: '排序方向',
+      auditSortRequestedAt: '最近请求时间',
+      auditSortOverBudget: '超预算 Token',
+      auditSortCacheRatio: '缓存比例',
+      auditSortDescending: '降序',
+      auditSortAscending: '升序',
+      auditStatistics: '当前筛选统计',
+      auditStatisticsRuns: 'Run 数',
+      auditStatisticsOverBudget: '超预算',
+      auditStatisticsCache: '缓存 Token / 输入',
+      auditStatisticsCompaction: '发生压缩',
+      auditFilter: '筛选',
+      auditClear: '清除',
+      auditOnlyWithTools: '仅工具调用',
+      auditOnlyCompacted: '仅发生压缩',
+      auditOnlyOverBudget: '仅超预算',
+      auditOnlyProviderError: '仅 provider 错误',
+      auditNoResults: '没有符合条件的审计 run。',
+      auditTime: '时间',
+      auditRun: 'Task / Turn / Run',
+      auditUser: '用户',
+      auditProviderModel: 'Provider / 模型',
+      auditSteps: '步骤',
+      auditTools: '工具',
+      auditEstimateBudget: '估算 / 预算',
+      auditActualInput: '实际输入',
+      auditCached: '缓存',
+      auditOutputTokens: '输出 Token',
+      auditReasoningTokens: '推理 Token',
+      auditTotalTokens: '总 Token',
+      auditCompaction: '压缩',
+      auditState: '状态',
+      auditOpen: '查看',
+      auditBackToRuns: '返回列表',
+      auditTimeline: '执行时间线',
+      auditSessionTurns: '所在会话',
+      auditRequest: '请求快照',
+      auditMessages: 'Messages',
+      auditRawJson: 'Raw JSON',
+      auditOverview: '概要',
+      auditToolCalls: '工具调用',
+      auditNoSnapshot: '该 step 没有可用的请求快照。',
+      auditMessageCount: 'Messages 估算',
+      auditToolsCount: '工具 Schema 估算',
+      auditFinalEstimate: '最终请求估算',
+      auditAssemblyEstimate: 'Prompt Assembly 估算',
+      auditRemainingBudget: '剩余预算',
+      auditCacheRatio: '缓存命中',
+      auditDuration: '耗时',
+      auditBudgetStatus: '预算状态',
+      auditFailedTools: '失败工具',
+      auditUncachedInput: '未缓存输入',
+      auditStartedAt: '开始时间',
+      auditMessageRole: '角色',
+      auditMessageRoles: '角色分布',
+      auditMessageSource: '来源',
+      auditMessageSection: 'Prompt Section',
+      auditMessageToolCallId: '工具调用 ID',
+      auditMessageCharacters: '字符数',
+      auditMessageTokenEstimate: 'Token 估算',
+      auditMessageContent: '脱敏正文',
+      auditHistoricalMessages: '当前请求使用的历史消息',
+      auditNoHistoricalMessages: '当前请求未使用历史消息。',
+      auditToolSchema: '工具 Schema',
+      auditToolSchemaCount: 'Schema 数量',
+      auditToolSchemaEstimate: 'Schema 估算',
+      auditToolName: '名称',
+      auditToolDescription: '描述',
+      auditToolParameters: '参数 Schema',
+      auditToolArguments: '调用参数',
+      auditToolResult: '工具结果',
+      auditToolResultPreview: '工具结果 Preview',
+      auditToolResultStorageMode: '结果存储方式',
+      auditToolResultReference: '原始结果引用',
+      auditCompactionBefore: '压缩前',
+      auditCompactionAfter: '压缩后',
+      auditCompactionActions: '压缩动作',
+      auditRunAttempts: '关联运行',
+      auditError: '错误',
+      auditViewContent: '读取结果内容',
+      auditContentUnavailable: '结果正文不可用或已超出留存期。',
+      auditPrevious: '上一页',
+      auditNext: '下一页',
     },
     adminMonitoring: {
       ariaLabel: '系统监控',
@@ -3335,6 +3544,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         aiRouting: 'Model routing',
         aiUsage: 'Usage & Cost',
         aiPricing: 'Model pricing',
+        aiAudit: 'Request audit',
         content: 'Content',
         feedback: 'Feedback & Support',
         users: 'Users',
@@ -3664,6 +3874,110 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       historicalPriceNotice: 'Historical ranges are recalculated at current enabled prices.',
       updatedBy: 'Updated by',
       updatedAt: 'Updated at',
+      auditTitle: 'Request audit',
+      auditDescription: 'Read-only reconstruction of redacted final requests, tool interactions, context compaction, and provider usage.',
+      auditLoadFailed: 'Failed to load audit runs.',
+      auditRunLoadFailed: 'Failed to load audit run details.',
+      auditStepLoadFailed: 'Failed to load audit step details.',
+      auditToolResultLoadFailed: 'Failed to load tool results.',
+      auditRefresh: 'Refresh audit runs',
+      auditFrom: 'From',
+      auditTo: 'To',
+      auditScenario: 'Scenario',
+      auditTaskId: 'Task ID',
+      auditTurnId: 'Turn ID',
+      auditStatus: 'Status',
+      auditFinishReason: 'Finish reason',
+      auditAttempt: 'Run attempt',
+      auditRunId: 'Run ID',
+      auditMinCachedTokens: 'Min cached tokens',
+      auditMaxCachedTokens: 'Max cached tokens',
+      auditMinCacheRatio: 'Min cache ratio',
+      auditMaxCacheRatio: 'Max cache ratio',
+      auditSort: 'Sort field',
+      auditSortDirection: 'Sort direction',
+      auditSortRequestedAt: 'Most recent request',
+      auditSortOverBudget: 'Over-budget tokens',
+      auditSortCacheRatio: 'Cache ratio',
+      auditSortDescending: 'Descending',
+      auditSortAscending: 'Ascending',
+      auditStatistics: 'Current filter statistics',
+      auditStatisticsRuns: 'Runs',
+      auditStatisticsOverBudget: 'Over budget',
+      auditStatisticsCache: 'Cached / input tokens',
+      auditStatisticsCompaction: 'Compacted',
+      auditFilter: 'Filter',
+      auditClear: 'Clear',
+      auditOnlyWithTools: 'Tools only',
+      auditOnlyCompacted: 'Compacted only',
+      auditOnlyOverBudget: 'Over budget only',
+      auditOnlyProviderError: 'Provider errors only',
+      auditNoResults: 'No audit runs match the current filters.',
+      auditTime: 'Time',
+      auditRun: 'Task / Turn / Run',
+      auditUser: 'User',
+      auditProviderModel: 'Provider / Model',
+      auditSteps: 'Steps',
+      auditTools: 'Tools',
+      auditEstimateBudget: 'Estimate / Budget',
+      auditActualInput: 'Actual input',
+      auditCached: 'Cached',
+      auditOutputTokens: 'Output tokens',
+      auditReasoningTokens: 'Reasoning tokens',
+      auditTotalTokens: 'Total tokens',
+      auditCompaction: 'Compaction',
+      auditState: 'State',
+      auditOpen: 'Open',
+      auditBackToRuns: 'Back to runs',
+      auditTimeline: 'Execution timeline',
+      auditSessionTurns: 'Conversation turns',
+      auditRequest: 'Request snapshot',
+      auditMessages: 'Messages',
+      auditRawJson: 'Raw JSON',
+      auditOverview: 'Overview',
+      auditToolCalls: 'Tool calls',
+      auditNoSnapshot: 'No request snapshot is available for this step.',
+      auditMessageCount: 'Messages estimate',
+      auditToolsCount: 'Tool schema estimate',
+      auditFinalEstimate: 'Final request estimate',
+      auditAssemblyEstimate: 'Prompt assembly estimate',
+      auditRemainingBudget: 'Remaining budget',
+      auditCacheRatio: 'Cache hit',
+      auditDuration: 'Duration',
+      auditBudgetStatus: 'Budget status',
+      auditFailedTools: 'Failed tools',
+      auditUncachedInput: 'Uncached input',
+      auditStartedAt: 'Started at',
+      auditMessageRole: 'Role',
+      auditMessageRoles: 'Role counts',
+      auditMessageSource: 'Source',
+      auditMessageSection: 'Prompt section',
+      auditMessageToolCallId: 'Tool call ID',
+      auditMessageCharacters: 'Characters',
+      auditMessageTokenEstimate: 'Token estimate',
+      auditMessageContent: 'Redacted content',
+      auditHistoricalMessages: 'Historical messages used by this request',
+      auditNoHistoricalMessages: 'This request did not use historical messages.',
+      auditToolSchema: 'Tool schema',
+      auditToolSchemaCount: 'Schema count',
+      auditToolSchemaEstimate: 'Schema estimate',
+      auditToolName: 'Name',
+      auditToolDescription: 'Description',
+      auditToolParameters: 'Parameter schema',
+      auditToolArguments: 'Call arguments',
+      auditToolResult: 'Tool result',
+      auditToolResultPreview: 'Tool result preview',
+      auditToolResultStorageMode: 'Result storage mode',
+      auditToolResultReference: 'Original result reference',
+      auditCompactionBefore: 'Before compaction',
+      auditCompactionAfter: 'After compaction',
+      auditCompactionActions: 'Compaction actions',
+      auditRunAttempts: 'Linked runs',
+      auditError: 'Error',
+      auditViewContent: 'Read result content',
+      auditContentUnavailable: 'Result content is unavailable or outside its retention period.',
+      auditPrevious: 'Previous',
+      auditNext: 'Next',
     },
     adminMonitoring: {
       ariaLabel: 'System monitoring',

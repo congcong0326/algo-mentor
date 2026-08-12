@@ -115,7 +115,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   if (view === 'adminBetaAccess' && !hasPermission(user, 'beta-access:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
-  if (view === 'adminAi' && !hasPermission(user, 'ai-governance:manage')) {
+  if (view === 'adminAi'
+      && !hasPermission(user, 'ai-governance:manage')
+      && !hasPermission(user, 'ai-run:read')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminMonitoring' && !hasPermission(user, 'admin-overview:read')) {
@@ -807,8 +809,14 @@ export default function App() {
       : <UserGroupManagementPage onNavigate={navigateToPath} />
     : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
     ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
-    : activeView === 'adminAi' && hasPermission(currentUser, 'ai-governance:manage')
-    ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
+    : activeView === 'adminAi'
+        && (hasPermission(currentUser, 'ai-governance:manage') || hasPermission(currentUser, 'ai-run:read'))
+    ? <AiGovernancePage
+        canManage={hasPermission(currentUser, 'ai-governance:manage')}
+        canReadAudit={hasPermission(currentUser, 'ai-run:read')}
+        onNavigate={navigateToPath}
+        search={search}
+      />
     : activeView === 'adminMonitoring' && hasPermission(currentUser, 'admin-overview:read')
     ? <SystemMonitoringPage />
     : activeView === 'adminDatabaseBackup' && hasPermission(currentUser, 'database-backup:manage')

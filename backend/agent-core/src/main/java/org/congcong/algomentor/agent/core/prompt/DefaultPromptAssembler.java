@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 
 public class DefaultPromptAssembler implements PromptAssembler {
@@ -206,7 +207,14 @@ public class DefaultPromptAssembler implements PromptAssembler {
         request.tokenBudget() > 0 ? request.tokenBudget() : profile.tokenBudget());
     metadata.put(AgentPromptMetadataKeys.PROMPT_TOKEN_ESTIMATE, tokenEstimate);
     metadata.put(AgentPromptMetadataKeys.PROMPT_TRUNCATED_SECTIONS, changedSectionIds(renderedSections));
+    metadata.put(AgentRuntimeMetadataKeys.TRUNCATED_SECTION_IDS,
+        sectionIdsWithAction(renderedSections, PromptBudgetDecision::truncated));
+    metadata.put(AgentRuntimeMetadataKeys.DROPPED_SECTION_IDS,
+        sectionIdsWithAction(renderedSections,
+            decision -> decision.action() == PromptBudgetAction.DROP));
+    metadata.put(AgentPromptMetadataKeys.PROMPT_SECTION_ACTIONS, sectionActions(renderedSections));
     metadata.put(AgentPromptMetadataKeys.PROMPT_CONTENT_HASHES, contentHashes(snapshots));
+    metadata.put(AgentPromptMetadataKeys.PROMPT_SECTION_SNAPSHOTS, snapshots);
     return Map.copyOf(metadata);
   }
 
@@ -224,6 +232,26 @@ public class DefaultPromptAssembler implements PromptAssembler {
         .filter(rendered -> rendered.budgetDecision().action() != PromptBudgetAction.KEEP)
         .map(rendered -> rendered.section().id())
         .toList();
+  }
+
+  private List<String> sectionIdsWithAction(
+      List<RenderedPromptSection> renderedSections,
+      java.util.function.Predicate<PromptBudgetDecision> predicate
+  ) {
+    return renderedSections.stream()
+        .filter(rendered -> predicate.test(rendered.budgetDecision()))
+        .map(rendered -> rendered.section().id())
+        .toList();
+  }
+
+  private Map<String, String> sectionActions(List<RenderedPromptSection> renderedSections) {
+    return renderedSections.stream()
+        .filter(rendered -> rendered.budgetDecision().action() != PromptBudgetAction.KEEP)
+        .collect(Collectors.toMap(
+            rendered -> rendered.section().id(),
+            rendered -> rendered.budgetDecision().action().name(),
+            (left, right) -> right,
+            LinkedHashMap::new));
   }
 
   private Map<String, String> contentHashes(List<PromptSectionSnapshot> snapshots) {

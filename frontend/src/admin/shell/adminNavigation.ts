@@ -18,6 +18,7 @@ export type AdminPageId =
   | 'aiRouting'
   | 'aiUsage'
   | 'aiPricing'
+  | 'aiAudit'
   | 'systemPrompts'
   | 'problems'
   | 'monitoring'
@@ -42,6 +43,7 @@ export type AdminNavigationLabelKey =
   | 'aiRouting'
   | 'aiUsage'
   | 'aiPricing'
+  | 'aiAudit'
   | 'systemPrompts'
   | 'problems'
   | 'systemStatus'
@@ -137,6 +139,13 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
           },
         ],
       },
+      {
+        id: 'aiAudit',
+        labelKey: 'aiAudit',
+        path: APP_ROUTES.adminAi,
+        permission: 'ai-run:read',
+        query: { tab: 'audit' },
+      },
       { id: 'systemPrompts', labelKey: 'systemPrompts', path: APP_ROUTES.adminSystemPrompts, permission: 'policy:manage' },
     ],
   },
@@ -180,21 +189,35 @@ export function adminPageHref(page: AdminPageDefinition): string {
 
 export function accessibleAdminModules(permissions: ReadonlySet<AuthPermission>): AdminModuleDefinition[] {
   return ADMIN_MODULES.map((module) => {
-    const items = module.items.reduce<AdminNavigationEntry[]>((visible, entry) => {
-      if (!isAdminPageGroup(entry)) {
-        if (permissions.has(entry.permission)) {
-          visible.push(entry);
-        }
-        return visible;
-      }
-      const visibleItems = entry.items.filter((item) => permissions.has(item.permission));
-      if (visibleItems.length > 0) {
-        visible.push({ ...entry, items: visibleItems });
-      }
-      return visible;
-    }, []);
+    const items = visibleEntries(module.items, permissions);
     return { ...module, items };
   }).filter((module) => module.items.length > 0);
+}
+
+function visibleEntries(
+  entries: AdminNavigationEntry[],
+  permissions: ReadonlySet<AuthPermission>,
+): AdminNavigationEntry[] {
+  return entries.reduce<AdminNavigationEntry[]>((visible, entry) => {
+    if (!isAdminPageGroup(entry)) {
+      if (permissions.has(entry.permission)) {
+        visible.push(entry);
+      }
+      return visible;
+    }
+    const visibleItems = visiblePages(entry.items, permissions);
+    if (visibleItems.length > 0) {
+      visible.push({ ...entry, items: visibleItems });
+    }
+    return visible;
+  }, []);
+}
+
+function visiblePages(
+  pages: AdminPageDefinition[],
+  permissions: ReadonlySet<AuthPermission>,
+): AdminPageDefinition[] {
+  return pages.filter((page) => permissions.has(page.permission));
 }
 
 export function adminPageFromLocation(

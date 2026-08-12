@@ -1,7 +1,9 @@
 package org.congcong.algomentor.agent.core.runtime.context;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.prompt.AgentPromptMetadataKeys;
 import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
 import org.congcong.algomentor.agent.core.prompt.PromptAssembly;
 import org.congcong.algomentor.agent.core.prompt.PromptAssemblyRequest;
@@ -61,14 +63,44 @@ public class ContextAssembler {
             Map.of()));
 
     int legacyTokenEstimate = estimateTokens(assembly.canonicalMessages());
+    Map<String, Object> metadata = new LinkedHashMap<>();
+    copyPromptAuditMetadata(assembly.metadata(), metadata);
+    metadata.put(AgentRuntimeMetadataKeys.CONTEXT_POLICY, effectivePolicy.policyName());
+    metadata.put(AgentRuntimeMetadataKeys.CONTEXT_POLICY_VERSION, effectivePolicy.policyVersion());
+    metadata.put(AgentRuntimeMetadataKeys.TOKEN_BUDGET, effectivePolicy.tokenBudget());
+    metadata.put(AgentRuntimeMetadataKeys.TOKEN_ESTIMATE, legacyTokenEstimate);
     return new AssembledContext(
         assembly.canonicalMessages(),
-        Map.of(
-            AgentRuntimeMetadataKeys.CONTEXT_POLICY, effectivePolicy.policyName(),
-            AgentRuntimeMetadataKeys.CONTEXT_POLICY_VERSION, effectivePolicy.policyVersion(),
-            AgentRuntimeMetadataKeys.TOKEN_BUDGET, effectivePolicy.tokenBudget(),
-            AgentRuntimeMetadataKeys.TOKEN_ESTIMATE, legacyTokenEstimate),
+        Map.copyOf(metadata),
         legacyTokenEstimate);
+  }
+
+  /**
+   * 保留 Prompt Assembly 已脱敏的审计决策，供最终请求快照说明裁剪与丢弃原因。
+   *
+   * <p>不能复制任意组装 metadata，避免以后新增的运行期输入意外进入 Agent 请求 metadata。</p>
+   */
+  private void copyPromptAuditMetadata(Map<String, Object> source, Map<String, Object> target) {
+    List<String> keys = List.of(
+        AgentPromptMetadataKeys.PROMPT_PROFILE,
+        AgentPromptMetadataKeys.PROMPT_PROFILE_VERSION,
+        AgentPromptMetadataKeys.PROMPT_SECTION_VERSIONS,
+        AgentPromptMetadataKeys.PROMPT_POLICY,
+        AgentPromptMetadataKeys.PROMPT_POLICY_VERSION,
+        AgentPromptMetadataKeys.PROMPT_TOKEN_BUDGET,
+        AgentPromptMetadataKeys.PROMPT_TOKEN_ESTIMATE,
+        AgentPromptMetadataKeys.PROMPT_TRUNCATED_SECTIONS,
+        AgentPromptMetadataKeys.PROMPT_SECTION_ACTIONS,
+        AgentPromptMetadataKeys.PROMPT_CONTENT_HASHES,
+        AgentPromptMetadataKeys.PROMPT_SECTION_SNAPSHOTS,
+        AgentRuntimeMetadataKeys.TRUNCATED_SECTION_IDS,
+        AgentRuntimeMetadataKeys.DROPPED_SECTION_IDS);
+    for (String key : keys) {
+      Object value = source.get(key);
+      if (value != null) {
+        target.put(key, value);
+      }
+    }
   }
 
   private int estimateTokens(List<LlmMessage> messages) {

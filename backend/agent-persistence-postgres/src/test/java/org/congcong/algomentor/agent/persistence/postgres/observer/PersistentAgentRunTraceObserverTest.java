@@ -100,6 +100,9 @@ class PersistentAgentRunTraceObserverTest {
     assertThat(mapper.stepEnd.model()).isEqualTo("gpt-test");
     assertThat(mapper.stepEnd.finishReason()).isEqualTo("TOOL_CALLS");
     assertThat(mapper.stepEnd.usage().get("totalTokens").asInt()).isEqualTo(15);
+    assertThat(mapper.stepEnd.metadata().get("actualInputTokens").asInt()).isEqualTo(10);
+    assertThat(mapper.stepEnd.metadata().get("cachedTokens").asInt()).isZero();
+    assertThat(mapper.stepEnd.metadata().get("totalTokens").asInt()).isEqualTo(15);
     assertThat(mapper.stepEnd.toString()).doesNotContain("run-trace-continuation-sentinel", "providerContinuation");
   }
 

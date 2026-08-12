@@ -104,6 +104,23 @@ describe('AiGovernancePage', () => {
       }),
     ));
   });
+
+  it('does not mount the audit panel or request audit data without ai-run:read', async () => {
+    const fetchMock = governanceFetch();
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(
+      <I18nProvider>
+        <AiGovernancePage canManage canReadAudit={false} onNavigate={vi.fn()} search="?tab=audit" />
+      </I18nProvider>,
+    );
+
+    await screen.findByText('已准入入口请求');
+
+    expect(screen.queryByRole('heading', { name: '请求审计' })).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.map(([url]) => String(url)).some((url) => url.startsWith('/api/admin/ai/audit/')))
+      .toBe(false);
+  });
 });
 
 function renderPage(onNavigate = vi.fn(), search = '') {

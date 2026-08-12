@@ -78,9 +78,26 @@ describe('AdminShell', () => {
     expect(screen.getByText('成本治理')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '模型路由' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('button', { name: '系统提示词' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '请求审计' })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '模型定价' }));
     expect(onNavigate).toHaveBeenCalledWith('/admin/ai?tab=pricing');
+  });
+
+  it('opens request audit directly for users with only the read-only run authority', () => {
+    const onNavigate = vi.fn();
+    renderShell({
+      currentUser: { ...admin, permissions: ['ai-run:read'] },
+      onNavigate,
+      pathname: '/admin/ai',
+      search: '?tab=audit',
+    });
+
+    const aiPlatform = screen.getByRole('button', { name: 'AI 平台' });
+    expect(aiPlatform).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(aiPlatform);
+    expect(onNavigate).toHaveBeenCalledWith('/admin/ai?tab=audit');
+    expect(screen.queryByRole('button', { name: '模型路由' })).not.toBeInTheDocument();
   });
 
   it('places learning plan policies under content management', () => {

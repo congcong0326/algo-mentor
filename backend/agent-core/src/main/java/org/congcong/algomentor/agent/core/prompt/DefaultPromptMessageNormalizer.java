@@ -2,6 +2,8 @@ package org.congcong.algomentor.agent.core.prompt;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 
 public class DefaultPromptMessageNormalizer implements PromptMessageNormalizer {
@@ -28,11 +30,16 @@ public class DefaultPromptMessageNormalizer implements PromptMessageNormalizer {
   }
 
   private static LlmMessage toMessage(RenderedPromptSection rendered) {
-    String text = rendered.renderedText();
-    return switch (rendered.section().targetRole()) {
-      case SYSTEM -> LlmMessage.system(text);
-      case USER -> LlmMessage.user(text);
-      case ASSISTANT -> LlmMessage.assistant(text);
+    PromptSection section = rendered.section();
+    return switch (section.targetRole()) {
+      case SYSTEM, USER, ASSISTANT -> new LlmMessage(
+          section.targetRole(),
+          List.of(new LlmContentPart.Text(rendered.renderedText())),
+          null,
+          null,
+          Map.of(
+              AgentPromptMetadataKeys.AUDIT_MESSAGE_SOURCE, section.trustLevel().name(),
+              AgentPromptMetadataKeys.AUDIT_MESSAGE_SECTION_ID, section.id()));
       case TOOL -> throw new PromptAssemblyException("Tool messages require provider-specific tool call ids");
     };
   }

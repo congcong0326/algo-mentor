@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.agent.persistence.postgres.mapper.AgentAuditMapper">
+
+  <sql id="AuditRunProjection">
+    r.id AS run_id,
+    r.run_uuid,
+    r.task_id,
+    r.turn_id,
+    t.user_id,
+    COALESCE(r.agent_key, t.metadata ->> 'scenario') AS scenario,
+    COALESCE(latest_snapshot.metadata ->> 'aiPurpose', latest_snapshot.metadata ->> 'purpose') AS purpose,
+    COALESCE(latest_snapshot.metadata ->> 'aiSource', latest_snapshot.metadata ->> 'source') AS source,
+    COALESCE(r.provider, latest_step.provider, latest_snapshot.provider) AS provider,
+    COALESCE(r.model, latest_step.model, latest_snapshot.model) AS model,
+    UPPER(r.status) AS status,
+    r.finish_reason,
+    COALESCE(step_counts.step_count, 0) AS step_count,
+    COALESCE(step_counts.failed_step_count, 0) AS failed_step_count,
+    COALESCE(tool_counts.tool_call_count, 0) AS tool_call_count,
+    COALESCE(tool_counts.failed_tool_call_count, 0) AS failed_tool_call_count,
+    COALESCE(
+      NULLIF(latest_snapshot.token_budget, 0),
+      agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')::INT
+    ) AS prompt_token_budget,
+    agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'assemblyTokenEstimate')::INT AS assembly_token_estimate,
+    COALESCE(
+      agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'finalRequestTokenEstimate')::INT,
+      latest_snapshot.token_estimate
+    ) AS final_request_token_estimate,
+    COALESCE(
+      agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+      agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens')
+    ) AS actual_input_tokens,
+    COALESCE(
+      agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+      agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens')
+    ) AS cached_tokens,
+    CASE
+      WHEN COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+        agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')) IS NULL THEN 0
+      ELSE GREATEST(
+        0,
+        COALESCE(
+          agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'finalRequestTokenEstimate'),
+          latest_snapshot.token_estimate,
+          0
+        ) - COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget'))
+      )
+    END AS over_budget_tokens,
+    COALESCE((latest_snapshot.metadata ->> 'compactionApplied') = 'true', FALSE) AS compaction_applied,
+    COALESCE(jsonb_array_length(
+      CASE WHEN jsonb_typeof(latest_snapshot.metadata -> 'compactionActions') = 'array'
+        THEN latest_snapshot.metadata -> 'compactionActions' ELSE '[]'::jsonb END
+    ), 0) AS compaction_action_count,
+    (r.status IN ('failed', 'cancelled') OR COALESCE(step_counts.failed_step_count, 0) &gt; 0) AS provider_error,
+    r.started_at,
+    r.ended_at
+  </sql>
+
+  <sql id="AuditRunJoins">
+    FROM agent_run r
+    JOIN agent_task t ON t.id = r.task_id
+    LEFT JOIN LATERAL (
+      SELECT COUNT(*)::INT AS step_count,
+        COUNT(*) FILTER (WHERE status = 'failed')::INT AS failed_step_count
+      FROM agent_run_step
+      WHERE run_id = r.id
+    ) step_counts ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT COUNT(*)::INT AS tool_call_count,
+        COUNT(*) FILTER (WHERE status = 'failed')::INT AS failed_tool_call_count
+      FROM agent_tool_call
+      WHERE run_id = r.id
+    ) tool_counts ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT s.provider, s.model
+      FROM agent_run_step s
+      WHERE s.run_id = r.id
+      ORDER BY s.step_index DESC
+      LIMIT 1
+    ) latest_step ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT cs.*
+      FROM agent_context_snapshot cs
+      WHERE cs.run_id = r.id
+        AND r.diagnostic_redacted_at IS NULL
+        AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+      ORDER BY cs.step_index DESC, cs.id DESC
+      LIMIT 1
+    ) latest_snapshot ON TRUE
+    LEFT JOIN LATERAL (
+      SELECT s.usage
+      FROM agent_run_step s
+      WHERE s.run_id = r.id AND s.usage &lt;&gt; '{}'::jsonb
+      ORDER BY s.step_index DESC
+      LIMIT 1
+    ) latest_usage ON TRUE
+  </sql>
+
+  <sql id="AuditRunFilters">
+    <where>
+      <if test="filter.from != null">r.started_at &gt;= #{filter.from}</if>
+      <if test="filter.to != null">AND r.started_at &lt; #{filter.to}</if>
+      <if test="filter.userId != null">AND t.user_id = #{filter.userId}</if>
+      <if test="filter.scenario != null and filter.scenario != ''">
+        AND COALESCE(r.agent_key, t.metadata ->> 'scenario') = #{filter.scenario}
+      </if>
+      <if test="filter.purpose != null and filter.purpose != ''">
+        AND COALESCE(latest_snapshot.metadata ->> 'aiPurpose', latest_snapshot.metadata ->> 'purpose') = #{filter.purpose}
+      </if>
+      <if test="filter.source != null and filter.source != ''">
+        AND COALESCE(latest_snapshot.metadata ->> 'aiSource', latest_snapshot.metadata ->> 'source') = #{filter.source}
+      </if>
+      <if test="filter.taskId != null">AND r.task_id = #{filter.taskId}</if>
+      <if test="filter.turnId != null">AND r.turn_id = #{filter.turnId}</if>
+      <if test="filter.runId != null">AND r.id = #{filter.runId}</if>
+      <if test="filter.provider != null and filter.provider != ''">
+        AND COALESCE(r.provider, latest_step.provider, latest_snapshot.provider) = #{filter.provider}
+      </if>
+      <if test="filter.model != null and filter.model != ''">
+        AND COALESCE(r.model, latest_step.model, latest_snapshot.model) = #{filter.model}
+      </if>
+      <if test="filter.status != null and filter.status != ''">AND UPPER(r.status) = UPPER(#{filter.status})</if>
+      <if test="filter.finishReason != null and filter.finishReason != ''">AND r.finish_reason = #{filter.finishReason}</if>
+      <if test="filter.hasTools != null and filter.hasTools">AND COALESCE(tool_counts.tool_call_count, 0) &gt; 0</if>
+      <if test="filter.hasTools != null and !filter.hasTools">AND COALESCE(tool_counts.tool_call_count, 0) = 0</if>
+      <if test="filter.hasCompaction != null and filter.hasCompaction">
+        AND COALESCE((latest_snapshot.metadata ->> 'compactionApplied') = 'true', FALSE)
+      </if>
+      <if test="filter.hasCompaction != null and !filter.hasCompaction">
+        AND NOT COALESCE((latest_snapshot.metadata ->> 'compactionApplied') = 'true', FALSE)
+      </if>
+      <if test="filter.overBudget != null and filter.overBudget">
+        AND COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')) &gt; 0
+        AND COALESCE(
+          agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'finalRequestTokenEstimate'),
+          latest_snapshot.token_estimate,
+          0
+        ) &gt; COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget'))
+      </if>
+      <if test="filter.overBudget != null and !filter.overBudget">
+        AND (COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')) IS NULL OR COALESCE(
+          agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'finalRequestTokenEstimate'),
+          latest_snapshot.token_estimate,
+          0
+        ) &lt;= COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')))
+      </if>
+      <if test="filter.providerError != null and filter.providerError">
+        AND (r.status IN ('failed', 'cancelled') OR COALESCE(step_counts.failed_step_count, 0) &gt; 0)
+      </if>
+      <if test="filter.providerError != null and !filter.providerError">
+        AND r.status NOT IN ('failed', 'cancelled') AND COALESCE(step_counts.failed_step_count, 0) = 0
+      </if>
+      <if test="filter.minCachedTokens != null">
+        AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens'), 0) &gt;= #{filter.minCachedTokens}
+      </if>
+      <if test="filter.maxCachedTokens != null">
+        AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens'), 0) &lt;= #{filter.maxCachedTokens}
+      </if>
+      <if test="filter.minCacheRatio != null">
+        AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'), 0) &gt; 0
+        AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens'), 0)::NUMERIC
+          / COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+            agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'), 0) &gt;= #{filter.minCacheRatio}
+      </if>
+      <if test="filter.maxCacheRatio != null">
+        AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'), 0) &gt; 0
+        AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+          agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens'), 0)::NUMERIC
+          / COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+            agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'), 0) &lt;= #{filter.maxCacheRatio}
+      </if>
+    </where>
+  </sql>
+
+  <sql id="AuditRunMetrics">
+    COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+      agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')) AS prompt_token_budget,
+    COALESCE(
+      agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+      agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'),
+      agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'finalRequestTokenEstimate'),
+      latest_snapshot.token_estimate
+    ) AS audited_input_tokens,
+    COALESCE(
+      agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+      agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens')
+    ) AS reported_input_tokens,
+    COALESCE(
+      agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+      agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens')
+    ) AS audited_cached_tokens,
+    COALESCE((latest_snapshot.metadata ->> 'compactionApplied') = 'true', FALSE) AS compaction_applied
+  </sql>
+
+  <sql id="AuditRunOrder">
+    <choose>
+      <when test="filter.sort.name() == 'OVER_BUDGET'">
+        ORDER BY
+        CASE WHEN COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+          agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')) &gt; 0
+          THEN GREATEST(0, COALESCE(
+            agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+            agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'),
+            agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'finalRequestTokenEstimate'),
+            latest_snapshot.token_estimate,
+            0
+          ) - COALESCE(NULLIF(latest_snapshot.token_budget, 0),
+            agent_audit_nonnegative_bigint(latest_snapshot.metadata ->> 'promptTokenBudget')))
+          ELSE 0 END
+        <choose><when test="filter.direction.name() == 'ASC'">ASC</when><otherwise>DESC</otherwise></choose>,
+        r.started_at DESC, r.id DESC
+      </when>
+      <when test="filter.sort.name() == 'CACHE_RATIO'">
+        ORDER BY
+        CASE WHEN COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+            agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens')) &gt; 0
+          AND COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+            agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens')) IS NOT NULL
+          THEN COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'cachedTokens'),
+            agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens'))::NUMERIC
+            / COALESCE(agent_audit_nonnegative_bigint(latest_usage.usage ->> 'inputTokens'),
+              agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'))
+          ELSE NULL END
+        <choose><when test="filter.direction.name() == 'ASC'">ASC NULLS LAST</when><otherwise>DESC NULLS LAST</otherwise></choose>,
+        r.started_at DESC, r.id DESC
+      </when>
+      <otherwise>
+        ORDER BY r.started_at
+        <choose><when test="filter.direction.name() == 'ASC'">ASC</when><otherwise>DESC</otherwise></choose>,
+        r.id
+        <choose><when test="filter.direction.name() == 'ASC'">ASC</when><otherwise>DESC</otherwise></choose>
+      </otherwise>
+    </choose>
+  </sql>
+
+  <select id="findRuns" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditRunRow">
+    SELECT <include refid="AuditRunProjection"/>
+    <include refid="AuditRunJoins"/>
+    <include refid="AuditRunFilters"/>
+    <include refid="AuditRunOrder"/>
+    LIMIT #{filter.pageSize} OFFSET #{filter.offset}
+  </select>
+
+  <select id="countRuns" resultType="long">
+    SELECT COUNT(*)
+    <include refid="AuditRunJoins"/>
+    <include refid="AuditRunFilters"/>
+  </select>
+
+  <select id="findRunStatistics" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditRunStatisticsRow">
+    SELECT
+      COUNT(*) AS run_count,
+      COUNT(*) FILTER (WHERE metrics.prompt_token_budget &gt; 0
+        AND COALESCE(metrics.audited_input_tokens, 0) &gt; metrics.prompt_token_budget) AS over_budget_run_count,
+      COUNT(*) FILTER (WHERE metrics.compaction_applied) AS compaction_run_count,
+      COUNT(*) FILTER (WHERE metrics.reported_input_tokens IS NOT NULL) AS usage_reported_run_count,
+      SUM(metrics.reported_input_tokens) AS input_tokens,
+      SUM(metrics.audited_cached_tokens) AS cached_tokens
+    FROM (
+      SELECT r.id,
+        <include refid="AuditRunMetrics"/>
+      <include refid="AuditRunJoins"/>
+      <include refid="AuditRunFilters"/>
+    ) metrics
+  </select>
+
+  <select id="findRun" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditRunDetailRow">
+    SELECT <include refid="AuditRunProjection"/>,
+      r.attempt_no,
+      r.retry_of_run_id,
+      r.max_steps,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN r.error ELSE NULL END AS error,
+      r.diagnostic_retention_expires_at,
+      r.diagnostic_redacted_at
+    <include refid="AuditRunJoins"/>
+    WHERE r.id = #{runId}
+  </select>
+
+  <select id="findTaskTurns" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditTurnRow">
+    SELECT
+      t.id AS turn_id,
+      t.sequence_no,
+      t.status,
+      MAX(CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at > NOW())
+        THEN LEFT(u.content, 4000) ELSE NULL END) AS user_message,
+      u.created_at AS user_message_at,
+      MAX(CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at > NOW())
+        THEN LEFT(a.content, 4000) ELSE NULL END) AS assistant_message,
+      a.created_at AS assistant_message_at,
+      COUNT(r.id)::INT AS run_attempt_count,
+      COALESCE(
+        jsonb_agg(jsonb_build_object(
+          'runId', r.id,
+          'attemptNo', r.attempt_no,
+          'status', UPPER(r.status)
+        ) ORDER BY r.attempt_no ASC, r.id ASC) FILTER (WHERE r.id IS NOT NULL),
+        '[]'::jsonb
+      ) AS run_attempts,
+      BOOL_OR(EXISTS (SELECT 1 FROM agent_tool_call tc WHERE tc.run_id = r.id)) AS has_tools,
+      SUM(agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens')) AS input_tokens,
+      SUM(agent_audit_nonnegative_bigint(r.usage ->> 'cachedTokens')) AS cached_tokens,
+      SUM(agent_audit_nonnegative_bigint(r.usage ->> 'outputTokens')) AS output_tokens,
+      SUM(agent_audit_nonnegative_bigint(r.usage ->> 'reasoningTokens')) AS reasoning_tokens,
+      SUM(agent_audit_nonnegative_bigint(r.usage ->> 'totalTokens')) AS total_tokens,
+      MAX(CASE WHEN COALESCE(NULLIF(cs.token_budget, 0),
+        agent_audit_nonnegative_bigint(cs.metadata ->> 'promptTokenBudget')) &gt; 0 THEN GREATEST(0,
+        COALESCE(agent_audit_nonnegative_bigint(r.usage ->> 'inputTokens'),
+          agent_audit_nonnegative_bigint(cs.metadata ->> 'finalRequestTokenEstimate'), cs.token_estimate, 0) - COALESCE(
+            NULLIF(cs.token_budget, 0), agent_audit_nonnegative_bigint(cs.metadata ->> 'promptTokenBudget')))
+        ELSE 0 END) AS over_budget_tokens
+    FROM agent_turn t
+    LEFT JOIN agent_message u ON u.id = t.user_message_id AND u.status = 'active'
+    LEFT JOIN agent_message a ON a.id = t.assistant_message_id AND a.status = 'active'
+    LEFT JOIN agent_run r ON r.turn_id = t.id
+    LEFT JOIN LATERAL (
+      SELECT * FROM agent_context_snapshot snapshot
+      WHERE snapshot.run_id = r.id
+        AND r.diagnostic_redacted_at IS NULL
+        AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at > NOW())
+      ORDER BY snapshot.step_index DESC LIMIT 1
+    ) cs ON TRUE
+    WHERE t.task_id = #{taskId}
+    GROUP BY t.id, u.id, a.id
+    ORDER BY t.sequence_no ASC
+  </select>
+
+  <select id="findSteps" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditStepRow">
+    SELECT
+      s.step_index,
+      UPPER(s.status) AS status,
+      s.provider,
+      s.model,
+      s.finish_reason,
+      s.started_at,
+      s.ended_at,
+      s.usage,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN s.error ELSE NULL END AS error,
+      cs.id AS snapshot_id,
+      COALESCE(NULLIF(cs.token_budget, 0),
+        agent_audit_nonnegative_bigint(cs.metadata ->> 'promptTokenBudget')::INT) AS prompt_token_budget,
+      CASE WHEN cs.id IS NULL THEN NULL ELSE COALESCE((
+        SELECT jsonb_agg(jsonb_build_object('role', message.value ->> 'role'))
+        FROM jsonb_array_elements(cs.messages_json) AS message(value)
+      ), '[]'::jsonb) END AS messages,
+      NULL::JSONB AS tools,
+      NULL::JSONB AS tool_choice,
+      NULL::JSONB AS generation_options,
+      NULL::JSONB AS request_snapshot,
+      cs.request_hash,
+      cs.redaction_policy_version,
+      cs.retention_expires_at AS snapshot_retention_expires_at,
+      cs.metadata AS snapshot_metadata,
+      s.metadata AS step_metadata,
+      COALESCE(tool_counts.tool_call_count, 0) AS tool_call_count,
+      COALESCE(tool_counts.failed_tool_call_count, 0) AS failed_tool_call_count
+    FROM agent_run_step s
+    JOIN agent_run r ON r.id = s.run_id
+    LEFT JOIN agent_context_snapshot cs ON cs.id = s.request_snapshot_id
+      AND r.diagnostic_redacted_at IS NULL
+      AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+    LEFT JOIN LATERAL (
+      SELECT COUNT(*)::INT AS tool_call_count,
+        COUNT(*) FILTER (WHERE status = 'failed')::INT AS failed_tool_call_count
+      FROM agent_tool_call tc WHERE tc.run_id = s.run_id AND tc.step_index = s.step_index
+    ) tool_counts ON TRUE
+    WHERE s.run_id = #{runId}
+    ORDER BY s.step_index ASC
+  </select>
+
+  <select id="findStep" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditStepRow">
+    SELECT
+      s.step_index,
+      UPPER(s.status) AS status,
+      s.provider,
+      s.model,
+      s.finish_reason,
+      s.started_at,
+      s.ended_at,
+      s.usage,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN s.error ELSE NULL END AS error,
+      cs.id AS snapshot_id,
+      COALESCE(NULLIF(cs.token_budget, 0),
+        agent_audit_nonnegative_bigint(cs.metadata ->> 'promptTokenBudget')::INT) AS prompt_token_budget,
+      cs.messages_json AS messages,
+      cs.tools_json AS tools,
+      cs.tool_choice_json AS tool_choice,
+      cs.generation_options,
+      <choose>
+        <when test="includeRequestSnapshot">cs.request_snapshot_json</when>
+        <otherwise>NULL</otherwise>
+      </choose> AS request_snapshot,
+      cs.request_hash,
+      cs.redaction_policy_version,
+      cs.retention_expires_at AS snapshot_retention_expires_at,
+      cs.metadata AS snapshot_metadata,
+      s.metadata AS step_metadata,
+      COALESCE(tool_counts.tool_call_count, 0) AS tool_call_count,
+      COALESCE(tool_counts.failed_tool_call_count, 0) AS failed_tool_call_count
+    FROM agent_run_step s
+    JOIN agent_run r ON r.id = s.run_id
+    LEFT JOIN agent_context_snapshot cs ON cs.id = s.request_snapshot_id
+      AND r.diagnostic_redacted_at IS NULL
+      AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+    LEFT JOIN LATERAL (
+      SELECT COUNT(*)::INT AS tool_call_count,
+        COUNT(*) FILTER (WHERE status = 'failed')::INT AS failed_tool_call_count
+      FROM agent_tool_call tc WHERE tc.run_id = s.run_id AND tc.step_index = s.step_index
+    ) tool_counts ON TRUE
+    WHERE s.run_id = #{runId} AND s.step_index = #{stepIndex}
+  </select>
+
+  <select id="findToolCalls" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditToolCallRow">
+    SELECT
+      tc.tool_call_id,
+      tc.tool_name,
+      UPPER(tc.status) AS status,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.arguments_json ELSE NULL END AS arguments,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_json ELSE NULL END AS result,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_preview_json ELSE NULL END AS preview,
+      tc.result_storage_mode,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_blob_id ELSE NULL END AS result_blob_id,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_ref ELSE NULL END AS result_ref,
+      tc.result_sha256,
+      tc.argument_char_count,
+      tc.argument_token_estimate,
+      tc.result_char_count,
+      tc.result_token_estimate,
+      tc.result_line_count,
+      tc.duration_millis,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.error ELSE NULL END AS error,
+      tc.redaction_policy_version,
+      tc.started_at,
+      tc.ended_at
+    FROM agent_tool_call tc
+    JOIN agent_run r ON r.id = tc.run_id
+    WHERE tc.run_id = #{runId} AND tc.step_index = #{stepIndex}
+    ORDER BY tc.started_at ASC, tc.id ASC
+  </select>
+
+  <select id="findToolResult" resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentAuditToolResultRow">
+    SELECT
+      tc.run_id,
+      tc.step_index,
+      tc.tool_call_id,
+      tc.tool_name,
+      UPPER(tc.status) AS status,
+      tc.result_storage_mode,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_ref ELSE NULL END AS result_ref,
+      COALESCE(tc.result_sha256, blob.sha256) AS result_sha256,
+      COALESCE(tc.result_char_count, blob.char_count) AS result_char_count,
+      COALESCE(tc.result_line_count, blob.line_count) AS result_line_count,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_json ELSE NULL END AS result,
+      CASE WHEN r.diagnostic_redacted_at IS NULL
+          AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN tc.result_preview_json ELSE NULL END AS preview,
+      <choose>
+        <when test="includeContent">
+          CASE
+            WHEN r.diagnostic_redacted_at IS NULL
+              AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+              THEN SUBSTRING(COALESCE(blob.content_text, '') FROM #{offset} + 1 FOR #{limit})
+            ELSE NULL
+          END
+        </when>
+        <otherwise>NULL</otherwise>
+      </choose> AS content,
+      CASE WHEN blob.id IS NOT NULL AND r.diagnostic_redacted_at IS NULL
+        AND (r.diagnostic_retention_expires_at IS NULL OR r.diagnostic_retention_expires_at &gt; NOW())
+        THEN TRUE ELSE FALSE END AS content_available,
+      r.diagnostic_retention_expires_at,
+      r.diagnostic_redacted_at
+    FROM agent_tool_call tc
+    JOIN agent_run r ON r.id = tc.run_id
+    LEFT JOIN agent_content_blob blob ON blob.id = tc.result_blob_id
+    WHERE tc.run_id = #{runId} AND tc.tool_call_id = #{toolCallId}
+    ORDER BY tc.step_index DESC
+    LIMIT 1
+  </select>
+</mapper>

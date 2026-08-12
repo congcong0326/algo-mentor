@@ -6,19 +6,30 @@ import AiModelPricingPanel from './AiModelPricingPanel';
 import AiModelRoutingPanel from './AiModelRoutingPanel';
 import AiProviderModelPanel from './AiProviderModelPanel';
 import AiRuntimePolicyBar from './AiRuntimePolicyBar';
+import AiAuditPanel from './AiAuditPanel';
 import AiUsagePanel, { type AiUsageDimension, type AiUsageRouteState } from './AiUsagePanel';
 import { aiGovernanceTabFromParam, type AiGovernanceTab } from './aiGovernanceRoute';
 import { isoDateToday } from './aiFormat';
 
 interface AiGovernancePageProps {
+  canManage?: boolean;
+  canReadAudit?: boolean;
   onNavigate: (path: string) => void;
   search: string;
 }
 
-export default function AiGovernancePage({ onNavigate, search }: AiGovernancePageProps) {
+export default function AiGovernancePage({
+  canManage = true,
+  canReadAudit = false,
+  onNavigate,
+  search,
+}: AiGovernancePageProps) {
   const { resources } = useI18n();
   const t = resources.adminAi;
   const route = routeFromSearch(search);
+  const selectedTab: AiGovernanceTab = route.tab === 'audit'
+    ? (canReadAudit ? 'audit' : 'usage')
+    : (!canManage && canReadAudit ? 'audit' : route.tab);
   const [settings, setSettings] = useState<AdminAiSettings>();
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsUpdating, setSettingsUpdating] = useState(false);
@@ -27,10 +38,14 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
   const settingsRequestIdRef = useRef(0);
 
   useEffect(() => {
+    if (!canManage || selectedTab === 'audit') {
+      setSettingsLoading(false);
+      return undefined;
+    }
     const controller = new AbortController();
     void loadSettings(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [canManage, selectedTab]);
 
   async function loadSettings(signal?: AbortSignal) {
     const requestId = settingsRequestIdRef.current + 1;
@@ -75,20 +90,21 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
 
   return (
     <section className="ai-governance-page" aria-label={t.ariaLabel}>
-      <AiRuntimePolicyBar
-        error={settingsError}
-        loading={settingsLoading}
-        onRefresh={() => void loadSettings()}
-        onUpdate={updateSettings}
-        settings={settings}
-        updating={settingsUpdating}
-      />
+      {selectedTab === 'audit' ? <AiAuditPanel /> : <>
+        <AiRuntimePolicyBar
+          error={settingsError}
+          loading={settingsLoading}
+          onRefresh={() => void loadSettings()}
+          onUpdate={updateSettings}
+          settings={settings}
+          updating={settingsUpdating}
+        />
 
-      {route.tab === 'providers' ? (
+      {selectedTab === 'providers' ? (
         <div><AiProviderModelPanel /></div>
-      ) : route.tab === 'routing' ? (
+      ) : selectedTab === 'routing' ? (
         <div><AiModelRoutingPanel /></div>
-      ) : route.tab === 'usage' ? (
+      ) : selectedTab === 'usage' ? (
         <div>
           <AiUsagePanel
             filters={route.filters}
@@ -107,6 +123,7 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
           />
         </div>
       )}
+      </>}
     </section>
   );
 }

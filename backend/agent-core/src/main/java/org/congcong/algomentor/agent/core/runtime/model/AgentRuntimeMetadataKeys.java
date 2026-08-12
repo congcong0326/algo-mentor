@@ -32,6 +32,78 @@ public final class AgentRuntimeMetadataKeys {
    */
   public static final String TOKEN_ESTIMATE = "tokenEstimate";
 
+  /** Prompt Assembly 在工具调用前得到的输入 token 估算。 */
+  public static final String ASSEMBLY_TOKEN_ESTIMATE = "assemblyTokenEstimate";
+
+  /** 最终出站 messages 的 token 估算。 */
+  public static final String MESSAGE_TOKEN_ESTIMATE = "messageTokenEstimate";
+
+  /** 最终出站 tools schema 的 token 估算。 */
+  public static final String TOOLS_TOKEN_ESTIMATE = "toolsTokenEstimate";
+
+  /** provider 消息封装的固定估算开销。 */
+  public static final String PROVIDER_OVERHEAD_TOKEN_ESTIMATE = "providerOverheadTokenEstimate";
+
+  /** messages、tools schema 和 provider 封装开销组成的最终请求估算。 */
+  public static final String FINAL_REQUEST_TOKEN_ESTIMATE = "finalRequestTokenEstimate";
+
+  /** 审计用预算状态，不参与运行时裁剪决策。 */
+  public static final String BUDGET_STATUS = "budgetStatus";
+
+  /** provider 实际输入相对 prompt budget 的超出 token 数。 */
+  public static final String OVER_BUDGET_TOKENS = "overBudgetTokens";
+
+  /** provider 完成后返回的实际输入 token 数。 */
+  public static final String ACTUAL_INPUT_TOKENS = "actualInputTokens";
+
+  /** provider 完成后返回的缓存命中 token 数。 */
+  public static final String CACHED_TOKENS = "cachedTokens";
+
+  /** provider 完成后返回的输出 token 数。 */
+  public static final String OUTPUT_TOKENS = "outputTokens";
+
+  /** provider 完成后返回的推理 token 数。 */
+  public static final String REASONING_TOKENS = "reasoningTokens";
+
+  /** provider 完成后返回的总 token 数。 */
+  public static final String TOTAL_TOKENS = "totalTokens";
+
+  /** run-local 上下文压缩是否改变了模型可见消息。 */
+  public static final String COMPACTION_APPLIED = "compactionApplied";
+
+  /** run-local 上下文压缩策略版本。 */
+  public static final String COMPACTION_POLICY_VERSION = "compactionPolicyVersion";
+
+  /** 审计可展示的压缩动作列表。 */
+  public static final String COMPACTION_ACTIONS = "compactionActions";
+
+  /** 压缩前模型可见字符数。 */
+  public static final String COMPACTION_BEFORE_CHARS = "compactionBeforeChars";
+
+  /** 压缩后模型可见字符数。 */
+  public static final String COMPACTION_AFTER_CHARS = "compactionAfterChars";
+
+  /** 压缩前模型可见 token 估算。 */
+  public static final String COMPACTION_BEFORE_TOKEN_ESTIMATE = "compactionBeforeTokenEstimate";
+
+  /** 压缩后模型可见 token 估算。 */
+  public static final String COMPACTION_AFTER_TOKEN_ESTIMATE = "compactionAfterTokenEstimate";
+
+  /** 被裁剪的 prompt section ID 列表。 */
+  public static final String TRUNCATED_SECTION_IDS = "truncatedSectionIds";
+
+  /** 被丢弃的 prompt section ID 列表。 */
+  public static final String DROPPED_SECTION_IDS = "droppedSectionIds";
+
+  /** run-local 被 snip 的消息组数量。 */
+  public static final String SNIPPED_MESSAGE_GROUP_COUNT = "snippedMessageGroupCount";
+
+  /** 当前请求中以 preview 形式可见的工具结果数量。 */
+  public static final String TOOL_RESULT_PREVIEW_COUNT = "toolResultPreviewCount";
+
+  /** 当前请求中被占位压缩的旧工具结果数量。 */
+  public static final String TOOL_RESULT_COMPACTED_COUNT = "toolResultCompactedCount";
+
   /**
    * 上下文组装策略名称。
    */

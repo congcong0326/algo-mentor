@@ -11,6 +11,7 @@ public record RunStepEndUpdate(
     String model,
     String finishReason,
     JsonNode usage,
+    JsonNode metadata,
     Instant endedAt
 ) {
 }

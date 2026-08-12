@@ -19,6 +19,10 @@ public final class AdminAiApiContractConstants {
   public static final String MODEL_ROUTING_SCENARIOS_PATH = "/model-routing/scenarios";
   public static final String MODEL_ROUTING_EFFECTIVE_PATH =
       "/model-routing/scenarios/{scenarioCode}/effective";
+  public static final String AUDIT_RUNS_PATH = "/audit/runs";
+  public static final String AUDIT_RUN_PATH = "/audit/runs/{runId}";
+  public static final String AUDIT_STEP_PATH = "/audit/runs/{runId}/steps/{stepIndex}";
+  public static final String AUDIT_TOOL_RESULT_PATH = "/audit/runs/{runId}/tool-results/{toolCallId}";
   public static final String ADMIN_USERS_BASE_PATH = "/api/admin/users";
   public static final String USER_AI_POLICY_PATH = "/{userId}/ai-policy";
 

@@ -20,6 +20,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContentBl
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContentBlobRow;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStorageUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolResultProvenanceRow;
+import org.congcong.algomentor.agent.persistence.postgres.observer.AgentTraceRedactor;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 public class PostgresToolResultStore implements ToolResultStore {
@@ -31,6 +32,7 @@ public class PostgresToolResultStore implements ToolResultStore {
   private final AgentContentBlobMapper blobMapper;
   private final AgentRunTraceMapper traceMapper;
   private final ObjectMapper objectMapper;
+  private final AgentTraceRedactor redactor;
   private final Clock clock;
 
   public PostgresToolResultStore(
@@ -50,6 +52,7 @@ public class PostgresToolResultStore implements ToolResultStore {
     this.blobMapper = blobMapper;
     this.traceMapper = traceMapper;
     this.objectMapper = objectMapper;
+    this.redactor = new AgentTraceRedactor(objectMapper);
     this.clock = clock;
   }
 
@@ -63,15 +66,15 @@ public class PostgresToolResultStore implements ToolResultStore {
       String contentType,
       String redactionPolicyVersion
   ) {
+    String text = serializedRedactedResult(redactedResult);
     Long runDbId = longMetadata(context, AgentRuntimeMetadataKeys.RUN_DB_ID);
     if (runDbId == null) {
-      return fallback(serializedResult, contentType);
+      return fallback(text, contentType);
     }
     Long toolCallDbId = traceMapper.findToolCallDbId(runDbId, stepIndex, toolCall.id());
     if (toolCallDbId == null) {
-      return fallback(serializedResult, contentType);
+      return fallback(text, contentType);
     }
-    String text = serializedResult == null ? "" : serializedResult;
     String sha256 = sha256(text);
     ContentBlobInsertRow row = new ContentBlobInsertRow(
         null,
@@ -164,6 +167,14 @@ public class PostgresToolResultStore implements ToolResultStore {
         null,
         null,
         ToolResultProvenance.unknown());
+  }
+
+  private String serializedRedactedResult(JsonNode result) {
+    try {
+      return objectMapper.writeValueAsString(redactor.redact(result));
+    } catch (com.fasterxml.jackson.core.JsonProcessingException exception) {
+      throw new IllegalStateException("Failed to serialize redacted tool result", exception);
+    }
   }
 
   private Long parseBlobId(String resultRef) {

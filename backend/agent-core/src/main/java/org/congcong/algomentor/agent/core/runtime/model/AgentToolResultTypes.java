@@ -21,6 +21,11 @@ public final class AgentToolResultTypes {
   public static final String COMPACTED = "tool_result_compacted";
 
   /**
+   * 审计读取时为历史内联大结果生成的有界预览，不会写回原始工具结果。
+   */
+  public static final String AUDIT_PREVIEW = "audit_tool_result_preview";
+
+  /**
    * 权限流程拒绝执行工具时回填给模型的合成结果。
    */
   public static final String TOOL_PERMISSION_DENIED = "tool_permission_denied";

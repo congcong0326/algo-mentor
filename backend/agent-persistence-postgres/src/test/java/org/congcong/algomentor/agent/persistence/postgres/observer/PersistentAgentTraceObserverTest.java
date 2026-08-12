@@ -12,6 +12,7 @@ import java.util.Set;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.prompt.AgentPromptMetadataKeys;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContextSnapshotRow;
@@ -28,6 +29,7 @@ import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderContinuation;
 import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.junit.jupiter.api.Test;
@@ -63,7 +65,12 @@ class PersistentAgentTraceObserverTest {
             LlmModelId.of("gpt-test"),
             Set.of(),
             "practice-chat"))
-        .messages(List.of(LlmMessage.user("question")))
+        .messages(List.of(new LlmMessage(
+            LlmMessage.Role.USER,
+            List.of(new LlmContentPart.Text("question")),
+            null,
+            null,
+            Map.of(AgentPromptMetadataKeys.AUDIT_MESSAGE_SOURCE, "USER_INPUT"))))
         .build();
 
     observer.onLlmRequestReady(context, 1, request);
@@ -83,11 +90,16 @@ class PersistentAgentTraceObserverTest {
     assertThat(row.snapshotStorageMode()).isEqualTo("inline");
     assertThat(row.requestSnapshotJson().get("modelSelector").get("providerId").asText()).isEqualTo("openai");
     assertThat(row.messagesJson().isArray()).isTrue();
+    assertThat(row.messagesJson().get(0).get("auditSource").asText()).isEqualTo("USER_INPUT");
     assertThat(row.toolsJson().isArray()).isTrue();
     assertThat(row.generationOptions().isObject()).isTrue();
     assertThat(row.requestHash()).hasSize(64);
     assertThat(row.redactionPolicyVersion()).isEqualTo(PersistentAgentTraceObserver.REDACTION_POLICY_VERSION);
     assertThat(row.metadata().toString()).contains("[REDACTED]");
+    assertThat(row.metadata().get("finalRequestTokenEstimate").asInt()).isPositive();
+    assertThat(row.metadata().get("messageTokenEstimate").asInt()).isPositive();
+    assertThat(row.metadata().get("toolsTokenEstimate").asInt()).isZero();
+    assertThat(row.metadata().get("budgetStatus").asText()).isEqualTo("WITHIN_ESTIMATE");
     assertThat(row.createdAt()).isEqualTo(NOW);
     assertThat(runTraceMapper.attachedSnapshot).isEqualTo(new AttachedSnapshot(31L, 1, 51L));
   }
@@ -120,6 +132,37 @@ class PersistentAgentTraceObserverTest {
         .doesNotContain(sentinel, "providerContinuation", "payload");
     assertThat(mapper.row.requestSnapshotJson().toString())
         .doesNotContain(sentinel, "providerContinuation", "payload");
+    assertThat(mapper.row.messagesJson())
+        .extracting(message -> message.get("auditSource").asText())
+        .containsExactly("MODEL_GENERATED", "TOOL_OUTPUT");
+  }
+
+  @Test
+  void fallsBackToPromptAssemblyBudgetAndCapturesCompleteRequestEstimate() {
+    Map<String, Object> metadata = Map.of(
+        AgentRuntimeMetadataKeys.TASK_ID, 11L,
+        AgentRuntimeMetadataKeys.RUN_DB_ID, 31L,
+        AgentPromptMetadataKeys.PROMPT_TOKEN_BUDGET, 8_000,
+        AgentPromptMetadataKeys.PROMPT_TOKEN_ESTIMATE, 3_500);
+    AgentLoopContext context = new AgentLoopContext(
+        "agent-run-id",
+        new AgentRequest("agent-run-id", "request-id", List.of(LlmMessage.user("question")), metadata),
+        4,
+        metadata);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(new LlmModelSelector(LlmProviderId.of("openai"), LlmModelId.of("gpt-test"), Set.of(), null))
+        .messages(List.of(LlmMessage.user("question")))
+        .tools(List.of(new org.congcong.algomentor.llm.core.tool.LlmToolSpec(
+            "lookup", "look up data", com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode(), false)))
+        .build();
+
+    observer.onLlmRequestReady(context, 1, request);
+
+    assertThat(mapper.row.tokenBudget()).isEqualTo(8_000);
+    assertThat(mapper.row.metadata().get("assemblyTokenEstimate").asInt()).isEqualTo(3_500);
+    assertThat(mapper.row.metadata().get("toolsTokenEstimate").asInt()).isPositive();
+    assertThat(mapper.row.metadata().get("finalRequestTokenEstimate").asInt())
+        .isGreaterThan(mapper.row.metadata().get("messageTokenEstimate").asInt());
   }
 
   private static final class FakeSnapshotMapper implements AgentContextSnapshotMapper {

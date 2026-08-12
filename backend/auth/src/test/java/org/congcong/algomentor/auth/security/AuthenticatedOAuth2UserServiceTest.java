@@ -58,7 +58,11 @@ class AuthenticatedOAuth2UserServiceTest {
     assertThat(principal.roles()).containsExactly(AuthRole.USER);
     assertThat(user.getAuthorities())
         .extracting("authority")
-        .containsExactly("ROLE_USER");
+        .containsExactly(
+            "ROLE_USER",
+            "learning-plan:read:own",
+            "learning-plan:write:own",
+            "practice-session:write:own");
     assertThat(user.getAttributes()).containsEntry("sub", "google-sub-1");
     assertThat(user.getName()).isEqualTo("1");
   }

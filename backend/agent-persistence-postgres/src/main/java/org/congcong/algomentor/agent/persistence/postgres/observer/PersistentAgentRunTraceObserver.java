@@ -13,6 +13,7 @@ import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.prompt.AgentPromptMetadataKeys;
 import org.congcong.algomentor.agent.core.AgentStepResult;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
@@ -110,6 +111,7 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
         stepBuffer.model,
         result.finishReason().name(),
         jsonNode(usageMap(stepBuffer.usage)),
+        jsonNode(auditUsageMetadata(context, stepBuffer.usage)),
         clock.instant()));
   }
 
@@ -248,6 +250,43 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     values.put(LlmMetadataKeys.REASONING_TOKENS, usage.reasoningTokens());
     values.put(LlmMetadataKeys.TOTAL_TOKENS, usage.totalTokens());
     return values;
+  }
+
+  /** 将 provider 已返回的用量作为 step 审计 metadata 持久化，不回写出站前的请求快照。 */
+  private Map<String, Object> auditUsageMetadata(AgentLoopContext context, LlmUsage usage) {
+    if (usage == null) {
+      return Map.of();
+    }
+    Map<String, Object> values = new HashMap<>();
+    values.put(AgentRuntimeMetadataKeys.ACTUAL_INPUT_TOKENS, usage.inputTokens());
+    values.put(AgentRuntimeMetadataKeys.CACHED_TOKENS, usage.cachedTokens());
+    values.put(AgentRuntimeMetadataKeys.OUTPUT_TOKENS, usage.outputTokens());
+    values.put(AgentRuntimeMetadataKeys.REASONING_TOKENS, usage.reasoningTokens());
+    values.put(AgentRuntimeMetadataKeys.TOTAL_TOKENS, usage.totalTokens());
+    Integer budget = integerMetadata(context, AgentRuntimeMetadataKeys.TOKEN_BUDGET);
+    if (budget == null) {
+      budget = integerMetadata(context, AgentPromptMetadataKeys.PROMPT_TOKEN_BUDGET);
+    }
+    if (budget != null && budget > 0 && usage.inputTokens() > budget) {
+      values.put(AgentRuntimeMetadataKeys.BUDGET_STATUS, "PROVIDER_ACTUAL_OVER_BUDGET");
+      values.put(AgentRuntimeMetadataKeys.OVER_BUDGET_TOKENS, usage.inputTokens() - budget);
+    }
+    return values;
+  }
+
+  private Integer integerMetadata(AgentLoopContext context, String key) {
+    Object value = context.metadata().get(key);
+    if (value instanceof Number number) {
+      return number.intValue();
+    }
+    if (value instanceof String text && !text.isBlank()) {
+      try {
+        return Integer.valueOf(text);
+      } catch (NumberFormatException ignored) {
+        return null;
+      }
+    }
+    return null;
   }
 
   private Map<String, Object> errorMap(AgentException error) {

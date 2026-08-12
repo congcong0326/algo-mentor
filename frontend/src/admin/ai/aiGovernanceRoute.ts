@@ -1,4 +1,4 @@
-export const AI_GOVERNANCE_TABS = ['providers', 'routing', 'usage', 'pricing'] as const;
+export const AI_GOVERNANCE_TABS = ['providers', 'routing', 'usage', 'pricing', 'audit'] as const;
 
 export type AiGovernanceTab = (typeof AI_GOVERNANCE_TABS)[number];
 

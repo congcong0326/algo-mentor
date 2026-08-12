@@ -40,7 +40,7 @@ class LearnerMemoryToolResultIT extends PostgresIntegrationTestSupport {
         3,
         "memory-call",
         LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
-        JsonNodeFactory.instance.objectNode(),
+        JsonNodeFactory.instance.objectNode().putArray("items").add("bounded learner memory"),
         "SUCCEEDED",
         0,
         0,
