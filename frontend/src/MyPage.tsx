@@ -2,7 +2,6 @@ import {
   Activity,
   AlertCircle,
   Gauge,
-  X,
   Sparkles,
   Target,
   Trophy,
@@ -12,7 +11,6 @@ import type { CSSProperties } from 'react';
 import AbilityBubbleChart from './ability/AbilityBubbleChart';
 import {
   defaultAbilityTagKeys,
-  findBreakthroughTag,
   formatAbilityScore,
   summarizeAbilityProfile,
 } from './ability/abilityProfile';
@@ -28,7 +26,6 @@ import type {
 } from './types/api';
 
 const maxAbilityBubbleCount = 12;
-const minAbilityBubbleCount = 3;
 export default function MyPage({
   onProfileAnchorHandled,
   profileAnchor,
@@ -41,8 +38,6 @@ export default function MyPage({
   const [abilityLoading, setAbilityLoading] = useState(true);
   const [abilityError, setAbilityError] = useState('');
   const [selectedAbilityTags, setSelectedAbilityTags] = useState<string[]>([]);
-  const [abilityDialogOpen, setAbilityDialogOpen] = useState(false);
-  const [abilitySelectionNotice, setAbilitySelectionNotice] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -60,9 +55,11 @@ export default function MyPage({
       setSelectedAbilityTags((currentTags) => {
         const availableTags = new Set(profile.tags.map((tag) => tag.tag));
         const retainedTags = currentTags.filter((tag) => availableTags.has(tag));
-        return retainedTags.length >= minAbilityBubbleCount ? retainedTags : defaultAbilityTagKeys(profile);
+        const retainedTagSet = new Set(retainedTags);
+        const replacementTags = defaultAbilityTagKeys(profile)
+          .filter((tag) => !retainedTagSet.has(tag));
+        return [...retainedTags, ...replacementTags].slice(0, maxAbilityBubbleCount);
       });
-      setAbilitySelectionNotice('');
     } catch (error) {
       if (signal?.aborted) {
         return;
@@ -79,12 +76,10 @@ export default function MyPage({
   const selectedAbilityTagScores = selectedAbilityTags
     .map((tag) => abilityProfile?.tags.find((item) => item.tag === tag))
     .filter((tag): tag is AbilityTagScore => Boolean(tag));
-  const defaultAbilityTags = new Set(abilityProfile ? defaultAbilityTagKeys(abilityProfile) : []);
   const averageScore = formatAbilityScore(abilitySummary.averageScore, locale);
   const strongestScore = abilitySummary.strongestTag
     ? formatAbilityScore(abilitySummary.strongestTag.abilityScore, locale)
     : resources.myPage.noData;
-  const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
   const summaryCards = [
     {
       className: 'scope',
@@ -126,21 +121,14 @@ export default function MyPage({
     },
   ];
 
-  function toggleAbilityTag(tag: AbilityTagScore) {
+  function selectAbilityTag(tag: AbilityTagScore) {
     setSelectedAbilityTags((currentTags) => {
       if (currentTags.includes(tag.tag)) {
-        if (currentTags.length <= minAbilityBubbleCount) {
-          setAbilitySelectionNotice(resources.myPage.minimumSelectionNotice(minAbilityBubbleCount));
-          return currentTags;
-        }
-        setAbilitySelectionNotice('');
-        return currentTags.filter((selectedTag) => selectedTag !== tag.tag);
-      }
-      if (currentTags.length >= maxAbilityBubbleCount) {
-        setAbilitySelectionNotice(resources.myPage.maximumSelectionNotice(maxAbilityBubbleCount));
         return currentTags;
       }
-      setAbilitySelectionNotice('');
+      if (currentTags.length >= maxAbilityBubbleCount) {
+        return [...currentTags.slice(1), tag.tag];
+      }
       return [...currentTags, tag.tag];
     });
   }
@@ -165,16 +153,14 @@ export default function MyPage({
         <div className="ability-heatmap-grid">
           {abilityProfile.tags.map((tag) => {
             const selected = selectedAbilityTags.includes(tag.tag);
-            const disabled = !selected && selectedAbilityTags.length >= maxAbilityBubbleCount;
             return (
               <button
-                aria-label={selected ? resources.myPage.removeHeatmapTag(tag.label) : resources.myPage.addHeatmapTag(tag.label)}
+                aria-label={selected ? resources.myPage.selectedHeatmapTag(tag.label) : resources.myPage.addHeatmapTag(tag.label)}
                 aria-pressed={selected}
                 className={`ability-heatmap-cell ${selected ? 'selected' : ''}`}
                 data-testid="ability-heatmap-tag"
-                disabled={disabled}
                 key={tag.tag}
-                onClick={() => toggleAbilityTag(tag)}
+                onClick={() => selectAbilityTag(tag)}
                 style={heatmapCellStyle(tag.abilityScore)}
                 type="button"
               >
@@ -189,9 +175,6 @@ export default function MyPage({
             );
           })}
         </div>
-        {abilitySelectionNotice ? (
-          <p className="ability-selection-notice" role="status">{abilitySelectionNotice}</p>
-        ) : null}
       </section>
     );
   }
@@ -260,104 +243,30 @@ export default function MyPage({
               </button>
             </div>
           ) : abilityProfile ? (
-            <div className="ability-profile-layout">
-              <button
-                aria-label={resources.myPage.expandAbilityProfile}
-                className="ability-bubble-open-button"
-                onClick={() => setAbilityDialogOpen(true)}
-                type="button"
-              >
-                <AbilityBubbleChart profile={abilityProfile} tags={selectedAbilityTagScores} />
-              </button>
-              <aside className="ability-diagnostics" aria-labelledby="ability-diagnostics-title">
-                <h3 id="ability-diagnostics-title">{resources.myPage.diagnosisSummaryTitle}</h3>
-                <div className="ability-diagnostic-panel">
-                  <div className="ability-diagnostic-row">
-                    <span>{resources.myPage.currentStrength}</span>
-                    <strong>{abilitySummary.strongestTag?.label ?? resources.myPage.noData}</strong>
+            <>
+              <div className="ability-profile-visual-grid">
+                <div className="ability-profile-bubble-stage">
+                  <AbilityBubbleChart profile={abilityProfile} tags={selectedAbilityTagScores} />
+                </div>
+                <aside className="ability-profile-selection" aria-label={resources.myPage.selectedAbilityTags}>
+                  <div className="ability-profile-selection-count">
+                    <strong>{resources.myPage.selectedTagCount(selectedAbilityTagScores.length, maxAbilityBubbleCount)}</strong>
+                    <span>{resources.myPage.abilityReplacementHint}</span>
                   </div>
-                  <p>
-                    {abilitySummary.strongestTag
-                      ? resources.myPage.currentStrengthDetail(
-                        abilitySummary.strongestTag.label,
-                        resources.myPage.scoreValue(strongestScore),
-                        abilitySummary.strongestTag.reviewedProblemCount,
-                      )
-                      : resources.myPage.noTopAbilities}
-                  </p>
-                </div>
-                <div className="ability-diagnostic-panel advice">
-                  <span>{resources.myPage.breakthroughAdvice}</span>
-                  <p>
-                    {breakthroughTag
-                      ? resources.myPage.breakthroughAdviceDetail(breakthroughTag.label)
-                      : resources.myPage.noTopAbilities}
-                  </p>
-                </div>
-              </aside>
-            </div>
+                  <div className="ability-chip-list">
+                    {selectedAbilityTagScores.map((tag) => (
+                      <span className="ability-chip" key={tag.tag}>{tag.label}</span>
+                    ))}
+                  </div>
+                </aside>
+              </div>
+              {renderAbilityHeatmap('profile-ability-heatmap-title', 'ability-profile-heatmap')}
+            </>
           ) : (
             <div className="ability-state">{resources.home.abilityEmpty}</div>
           )}
         </article>
-        {renderAbilityHeatmap('profile-ability-heatmap-title', 'my-card profile-heatmap-section')}
       </div>
-      {abilityDialogOpen && abilityProfile ? (
-        <div className="ability-dialog-backdrop">
-          <section
-            aria-labelledby="ability-dialog-title"
-            aria-modal="true"
-            className="ability-dialog"
-            role="dialog"
-          >
-            <header className="ability-dialog-heading">
-              <div>
-                <p className="my-section-eyebrow">{resources.myPage.abilityPanelEyebrow}</p>
-                <h2 id="ability-dialog-title">{resources.myPage.abilityDetailTitle}</h2>
-                <p>{resources.myPage.abilityDetailSubtitle(maxAbilityBubbleCount)}</p>
-              </div>
-              <button
-                aria-label={resources.myPage.closeAbilityDetail}
-                className="icon-button"
-                onClick={() => setAbilityDialogOpen(false)}
-                type="button"
-              >
-                <X aria-hidden="true" />
-              </button>
-            </header>
-            <div className="ability-dialog-visual-grid">
-              <div className="ability-dialog-bubble-stage">
-                <AbilityBubbleChart profile={abilityProfile} tags={selectedAbilityTagScores} />
-              </div>
-              <aside className="ability-dialog-selection" aria-label={resources.myPage.selectedAbilityTags}>
-                <div className="ability-dialog-selection-count">
-                  <strong>{resources.myPage.selectedTagCount(selectedAbilityTagScores.length, maxAbilityBubbleCount)}</strong>
-                  <span>{resources.myPage.minimumTagCount(minAbilityBubbleCount)}</span>
-                </div>
-                <div className="ability-chip-list">
-                  {selectedAbilityTagScores.map((tag) => (
-                    defaultAbilityTags.has(tag.tag) ? (
-                      <span className="ability-chip fixed" key={tag.tag}>{tag.label}</span>
-                    ) : (
-                      <button
-                        aria-label={resources.myPage.removeSelectedTag(tag.label)}
-                        className="ability-chip"
-                        key={tag.tag}
-                        onClick={() => toggleAbilityTag(tag)}
-                        type="button"
-                      >
-                        <span>{tag.label}</span>
-                        <X aria-hidden="true" />
-                      </button>
-                    )
-                  ))}
-                </div>
-              </aside>
-            </div>
-            {renderAbilityHeatmap('ability-dialog-heatmap-title')}
-          </section>
-        </div>
-      ) : null}
     </section>
   );
 }

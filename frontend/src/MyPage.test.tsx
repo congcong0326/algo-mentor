@@ -111,6 +111,28 @@ describe('MyPage learning memory', () => {
     expect(screen.getByText('ABILITY COVERAGE')).toBeInTheDocument();
     expect(getAbilityProfile).toHaveBeenCalledTimes(2);
   });
+
+  it('shows inline ability details and replaces the earliest bubble from the heatmap', async () => {
+    vi.mocked(getAbilityProfile).mockResolvedValue(apiResponse(abilityProfileWithTags(13)));
+
+    render(
+      <I18nProvider>
+        <MyPage />
+      </I18nProvider>,
+    );
+
+    expect(await screen.findByRole('heading', { name: '全量 tag 能力热力图' })).toBeInTheDocument();
+    expect(screen.queryByText('诊断报告摘要')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '放大能力画像' })).not.toBeInTheDocument();
+    expect(screen.getByText('12/12 个 tag')).toBeInTheDocument();
+    expect(screen.getAllByTestId('ability-bubble-node')).toHaveLength(12);
+
+    fireEvent.click(screen.getByRole('button', { name: '添加 能力 13' }));
+
+    expect(screen.getAllByTestId('ability-bubble-node')).toHaveLength(12);
+    expect(screen.getByRole('button', { name: '添加 能力 1' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '已选择 能力 13' })).toHaveAttribute('aria-pressed', 'true');
+  });
 });
 
 function LocaleSwitch() {
@@ -145,5 +167,19 @@ function abilityProfileWithLabel(label: string): AbilityProfileResponse {
       rawAverageScore: 8,
       abilityScore: 3.4,
     }],
+  };
+}
+
+function abilityProfileWithTags(count: number): AbilityProfileResponse {
+  return {
+    ...abilityProfile(),
+    tags: Array.from({ length: count }, (_, index) => ({
+      tag: `ability-${index + 1}`,
+      label: `能力 ${index + 1}`,
+      problemCount: 40 + index,
+      reviewedProblemCount: index + 1,
+      rawAverageScore: 8,
+      abilityScore: 4 + index * 0.5,
+    })),
   };
 }

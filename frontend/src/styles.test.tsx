@@ -147,10 +147,10 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/@media \(max-width: 980px\) \{[\s\S]*?\.today-pack-problem-row \{[^}]*grid-template-columns: 40px minmax\(0, 1fr\) auto 18px;/);
   });
 
-  it('keeps the ability detail dialog above the fixed app header with top safe spacing', () => {
-    expect(styles).toMatch(/\.app-header \{[^}]*z-index: 100;/);
-    expect(styles).toMatch(/\.ability-dialog-backdrop \{[^}]*z-index: 160;/);
-    expect(styles).toMatch(/\.ability-dialog-backdrop \{[^}]*padding: 88px 24px 24px;/);
+  it('renders the expanded ability details inline without an overlay', () => {
+    expect(styles).toMatch(/\.ability-profile-visual-grid \{[^}]*grid-template-columns: minmax\(0, 1fr\) minmax\(260px, 0\.34fr\);/);
+    expect(styles).toMatch(/\.ability-profile-heatmap \{[^}]*border-top: 1px solid var\(--border-subtle\);/);
+    expect(styles).not.toContain('.ability-dialog-backdrop');
   });
 
   it('moves ability bubbles without scaling or rotating their rendered text', () => {

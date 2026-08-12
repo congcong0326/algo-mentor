@@ -595,9 +595,9 @@ describe('App', () => {
     expect(screen.queryByRole('heading', { name: '复习设置' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /English/ })).not.toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '能力水球图' })).toBeInTheDocument();
-    expect(await screen.findAllByTestId('ability-bubble-node')).toHaveLength(8);
-    expect(screen.getByRole('heading', { name: '诊断报告摘要' })).toBeInTheDocument();
-    expect(screen.getByText('突破建议')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('ability-bubble-node')).toHaveLength(12);
+    expect(screen.getByText('12/12 个 tag')).toBeInTheDocument();
+    expect(screen.getByText('能力覆盖')).toBeInTheDocument();
     expect(screen.queryByText('下一次回复生效')).not.toBeInTheDocument();
     expect(screen.queryByText('Applies to the next reply')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
@@ -605,16 +605,14 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: '学习画像' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '设置' })).toBeInTheDocument();
     expect(document.querySelector('.my-card.ability-card')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '放大能力画像' })).toHaveClass('ability-bubble-open-button');
-    expect(screen.getByRole('heading', { name: '全量 tag 能力热力图' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '放大能力画像' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getAllByTestId('ability-heatmap-tag')).toHaveLength(23);
-    expect(screen.getByText('二分查找')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '添加 二分查找' }));
-    expect(screen.getAllByTestId('ability-bubble-node')).toHaveLength(9);
+    expect(screen.getAllByText('二分查找').length).toBeGreaterThan(0);
     expect(window.location.pathname).toBe('/me');
   });
 
-  it('opens the full learning profile with the heatmap from the home dashboard', async () => {
+  it('opens the inline ability details from the home dashboard', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/');
 
@@ -625,63 +623,41 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/me');
     expect(await screen.findByRole('heading', { name: '全量 tag 能力热力图' })).toBeInTheDocument();
     expect(screen.getAllByTestId('ability-heatmap-tag')).toHaveLength(23);
+    expect(screen.queryByRole('button', { name: '放大能力画像' })).not.toBeInTheDocument();
   });
 
-  it('opens ability details, edits bubble tags from the heatmap, caps selection, and keeps page state after close', async () => {
+  it('replaces the earliest ability bubble when a new heatmap tag is selected', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/me');
 
     render(<App />);
 
     await screen.findByRole('heading', { name: '能力水球图' });
-    expect(await screen.findAllByTestId('ability-bubble-node')).toHaveLength(8);
-
-    fireEvent.click(screen.getByRole('button', { name: '放大能力画像' }));
-
-    const dialog = await screen.findByRole('dialog', { name: '能力画像详情' });
-    expect(within(dialog).getByRole('heading', { name: '能力画像详情' })).toBeInTheDocument();
-    expect(within(dialog).getAllByTestId('ability-bubble-node')).toHaveLength(8);
-    expect(within(dialog).getAllByTestId('ability-heatmap-tag')).toHaveLength(23);
-
-    fireEvent.click(within(dialog).getByRole('button', { name: /添加 二分查找/ }));
-    expect(within(dialog).getAllByTestId('ability-bubble-node')).toHaveLength(9);
-
-    ['树', '广度优先搜索', '矩阵'].forEach((label) => {
-      fireEvent.click(within(dialog).getByRole('button', { name: new RegExp(`添加 ${label}`) }));
-    });
-    expect(within(dialog).getAllByTestId('ability-bubble-node')).toHaveLength(12);
-    expect(within(dialog).getByRole('button', { name: /添加 双指针/ })).toBeDisabled();
-    const selectionPanel = within(dialog).getByText('12/12 个 tag').closest('aside');
+    expect(await screen.findAllByTestId('ability-bubble-node')).toHaveLength(12);
+    const selectionPanel = screen.getByText('12/12 个 tag').closest('aside');
     expect(selectionPanel).not.toBeNull();
-    expect(within(selectionPanel as HTMLElement).queryByRole('button', { name: '移除 动态规划' })).not.toBeInTheDocument();
-    expect(within(selectionPanel as HTMLElement).getByRole('button', { name: '移除 二分查找' })).toBeInTheDocument();
+    expect(within(selectionPanel as HTMLElement).getByText('动态规划')).toBeInTheDocument();
 
-    fireEvent.click(within(dialog).getByRole('button', { name: '关闭能力画像详情' }));
-    await waitFor(() => expect(screen.queryByRole('dialog', { name: '能力画像详情' })).not.toBeInTheDocument());
+    fireEvent.click(screen.getByRole('button', { name: '添加 双指针' }));
 
-    fireEvent.click(screen.getByRole('button', { name: '放大能力画像' }));
-    const reopenedDialog = await screen.findByRole('dialog', { name: '能力画像详情' });
-    expect(within(reopenedDialog).getAllByTestId('ability-bubble-node')).toHaveLength(12);
+    expect(screen.getAllByTestId('ability-bubble-node')).toHaveLength(12);
+    expect(within(selectionPanel as HTMLElement).queryByText('动态规划')).not.toBeInTheDocument();
+    expect(within(selectionPanel as HTMLElement).getByText('双指针')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '添加 动态规划' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '已选择 双指针' })).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('keeps at least three ability tags selected in the detail heatmap', async () => {
+  it('keeps selected heatmap tags in place when they are clicked again', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/me');
 
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: '放大能力画像' }));
+    await screen.findByRole('heading', { name: '全量 tag 能力热力图' });
+    fireEvent.click(screen.getByRole('button', { name: '已选择 动态规划' }));
 
-    const dialog = await screen.findByRole('dialog', { name: '能力画像详情' });
-    ['动态规划', '数组', '字符串', '哈希表', '数学'].forEach((label) => {
-      fireEvent.click(within(dialog).getByRole('button', { name: new RegExp(`移除 ${label}`) }));
-    });
-
-    expect(within(dialog).getAllByTestId('ability-bubble-node')).toHaveLength(3);
-    fireEvent.click(within(dialog).getByRole('button', { name: /移除 排序/ }));
-
-    expect(within(dialog).getAllByTestId('ability-bubble-node')).toHaveLength(3);
-    expect(within(dialog).getByText('至少保留 3 个 tag，让能力图谱保持有效。')).toBeInTheDocument();
+    expect(screen.getAllByTestId('ability-bubble-node')).toHaveLength(12);
+    expect(screen.getByRole('button', { name: '已选择 动态规划' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('updates AI coach preferences from the settings page', async () => {

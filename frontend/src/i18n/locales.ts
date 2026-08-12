@@ -927,10 +927,12 @@ export interface LocaleResources {
     minimumSelectionNotice: (min: number) => string;
     maximumSelectionNotice: (max: number) => string;
     removeSelectedTag: (label: string) => string;
+    abilityReplacementHint: string;
     abilityHeatmapEyebrow: string;
     abilityHeatmapTitle: string;
     abilityHeatmapHint: string;
     addHeatmapTag: (label: string) => string;
+    selectedHeatmapTag: (label: string) => string;
     removeHeatmapTag: (label: string) => string;
     catalogProblemsValue: (count: number) => string;
     noTopAbilities: string;
@@ -2439,10 +2441,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       minimumSelectionNotice: (min) => `至少保留 ${min} 个 tag，让能力图谱保持有效。`,
       maximumSelectionNotice: (max) => `最多选择 ${max} 个 tag。`,
       removeSelectedTag: (label) => `移除 ${label}`,
+      abilityReplacementHint: '从下方选择新 tag 后，会替换最早加入的一项。',
       abilityHeatmapEyebrow: '能力覆盖',
       abilityHeatmapTitle: '全量 tag 能力热力图',
       abilityHeatmapHint: '色块深浅按能力分展示',
       addHeatmapTag: (label) => `添加 ${label}`,
+      selectedHeatmapTag: (label) => `已选择 ${label}`,
       removeHeatmapTag: (label) => `移除 ${label}`,
       catalogProblemsValue: (count) => `题库 ${count} 题`,
       noTopAbilities: '完成更多代码复盘后，这里会显示优势标签。',
@@ -4067,10 +4071,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       minimumSelectionNotice: (min) => `Keep at least ${min} tags so the ability map remains useful.`,
       maximumSelectionNotice: (max) => `Select up to ${max} tags.`,
       removeSelectedTag: (label) => `Remove ${label}`,
+      abilityReplacementHint: 'Selecting a new tag below replaces the earliest selected tag.',
       abilityHeatmapEyebrow: 'ABILITY COVERAGE',
       abilityHeatmapTitle: 'All-tag Ability Heatmap',
       abilityHeatmapHint: 'Cell intensity follows ability score',
       addHeatmapTag: (label) => `Add ${label}`,
+      selectedHeatmapTag: (label) => `${label} is selected`,
       removeHeatmapTag: (label) => `Remove ${label}`,
       catalogProblemsValue: (count) => `${count} catalog ${count === 1 ? 'problem' : 'problems'}`,
       noTopAbilities: 'Finish more code reviews to surface top ability tags here.',

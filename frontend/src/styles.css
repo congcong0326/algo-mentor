@@ -9100,45 +9100,25 @@ textarea[aria-invalid='true'] {
   height: 24px;
 }
 
-.ability-profile-layout {
+.ability-profile-visual-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(230px, 0.65fr);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.34fr);
   gap: 0;
   align-items: stretch;
 }
 
-.ability-bubble-open-button {
+.ability-profile-bubble-stage {
   display: grid;
   place-items: center;
   min-width: 0;
-  min-height: 450px;
-  padding: 20px;
-  border: 0;
+  min-height: 540px;
+  padding: 18px;
   border-right: 1px solid var(--border-subtle);
-  border-radius: 0;
   background: var(--surface-muted);
 }
 
-.ability-bubble-open-button {
-  width: 100%;
-  color: inherit;
-  cursor: zoom-in;
-  transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
-}
-
-.ability-bubble-open-button:hover {
-  transform: none;
-  background: var(--surface-card);
-  box-shadow: inset 0 0 0 1px rgb(15 118 110 / 18%);
-}
-
-.ability-bubble-open-button:focus-visible {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: 3px;
+.ability-profile-bubble-stage .ability-bubbles {
+  width: min(100%, 720px);
 }
 
 .ability-bubbles {
@@ -9382,14 +9362,6 @@ textarea[aria-invalid='true'] {
   font-size: clamp(11px, 28cqw, 15px);
 }
 
-.ability-bubble-open-button:hover .ability-bubble-node {
-  border-color: color-mix(in srgb, var(--bubble-border) 62%, var(--text-primary));
-  box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 52%),
-    inset 0 10px 22px rgb(255 255 255 / 28%),
-    0 12px 24px -13px rgb(15 23 42 / 54%);
-}
-
 @keyframes ability-liquid-wave {
   from {
     transform: translateX(-6%) translateY(0);
@@ -9418,77 +9390,36 @@ textarea[aria-invalid='true'] {
   }
 }
 
-.ability-diagnostics {
+.ability-profile-selection {
   display: grid;
-  align-content: center;
-  gap: 14px;
+  align-content: start;
+  gap: 16px;
   min-width: 0;
-  padding: 22px;
+  padding: 20px;
   background: var(--surface-card);
 }
 
-.ability-diagnostics h3 {
-  margin: 0;
+.ability-profile-selection-count {
+  display: grid;
+  gap: 6px;
+}
+
+.ability-profile-selection-count strong {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+
+.ability-profile-selection-count span {
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  line-height: 1.35;
-  text-transform: uppercase;
+  line-height: 1.55;
 }
 
-.ability-diagnostic-panel {
-  display: grid;
-  gap: 8px;
-  min-width: 0;
-  padding: 14px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  background: var(--surface-muted);
-}
-
-.ability-diagnostic-panel.advice {
-  border-color: var(--accent-warm-border);
-  background: var(--accent-warm-soft);
-}
-
-.ability-diagnostic-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  min-width: 0;
-}
-
-.ability-diagnostic-row span,
-.ability-diagnostic-panel > span {
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 760;
-}
-
-.ability-diagnostic-row strong {
-  min-width: 0;
-  overflow: hidden;
-  color: #0369a1;
-  font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ability-diagnostic-panel.advice > span {
-  color: var(--accent-warm-text);
-}
-
-.ability-diagnostic-panel p {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.ability-diagnostic-panel.advice p {
-  color: color-mix(in srgb, var(--accent-warm-text) 78%, var(--text-secondary));
+.ability-profile-heatmap {
+  padding: 20px;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .ability-insights-empty {
@@ -9508,7 +9439,7 @@ textarea[aria-invalid='true'] {
 .ability-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   max-width: 100%;
   min-height: 28px;
   padding: 0 10px;
@@ -9520,36 +9451,6 @@ textarea[aria-invalid='true'] {
   font-weight: 720;
 }
 
-.ability-chip svg,
-.ability-dialog-heading .icon-button svg {
-  width: 15px;
-  height: 15px;
-}
-
-.ability-dialog-backdrop {
-  position: fixed;
-  z-index: 160;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 88px 24px 24px;
-  background: rgb(15 23 42 / 52%);
-}
-
-.ability-dialog {
-  display: grid;
-  gap: 18px;
-  width: min(1120px, 100%);
-  max-height: calc(100vh - 112px);
-  overflow: auto;
-  padding: 22px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-overlay);
-  background: var(--surface-card);
-  box-shadow: var(--shadow-elevated);
-}
-
-.ability-dialog-heading,
 .ability-heatmap-heading {
   display: flex;
   align-items: flex-start;
@@ -9557,7 +9458,6 @@ textarea[aria-invalid='true'] {
   gap: 16px;
 }
 
-.ability-dialog-heading h2,
 .ability-heatmap-heading h2,
 .ability-heatmap-heading h3 {
   margin: 4px 0 6px;
@@ -9565,7 +9465,6 @@ textarea[aria-invalid='true'] {
   line-height: 1.25;
 }
 
-.ability-dialog-heading p:last-child,
 .ability-heatmap-heading span {
   margin: 0;
   color: var(--text-secondary);
@@ -9573,81 +9472,21 @@ textarea[aria-invalid='true'] {
   line-height: 1.5;
 }
 
-.ability-dialog-visual-grid {
+.ability-profile-selection .ability-chip-list {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.32fr);
-  gap: 16px;
-  align-items: stretch;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.ability-dialog-bubble-stage {
-  display: grid;
-  place-items: center;
-  min-height: 540px;
-  padding: 18px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  background: var(--surface-muted);
-}
-
-.ability-dialog-bubble-stage .ability-bubbles {
-  width: min(100%, 720px);
-}
-
-.ability-dialog-selection {
-  display: grid;
-  align-content: start;
-  gap: 14px;
+.ability-profile-selection .ability-chip {
   min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  background: var(--surface-muted);
-}
-
-.ability-dialog-selection-count {
-  display: grid;
-  gap: 4px;
-}
-
-.ability-dialog-selection-count strong {
-  color: var(--text-primary);
-  font-size: 18px;
-}
-
-.ability-dialog-selection-count span,
-.ability-selection-notice {
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.ability-chip {
-  cursor: pointer;
-}
-
-.ability-chip.fixed {
-  color: var(--text-secondary);
-}
-
-.ability-selection-notice {
-  margin: 0;
-  color: var(--accent-warm-text);
-  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ability-heatmap-section {
   display: grid;
   gap: 12px;
-}
-
-.profile-heatmap-section {
-  gap: 16px;
-  padding: 20px;
-}
-
-.profile-heatmap-section .ability-heatmap-heading {
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .ability-heatmap-grid {
@@ -9726,10 +9565,6 @@ textarea[aria-invalid='true'] {
 
 :root[data-theme="dark"] .my-summary-card.strength .my-summary-icon {
   color: #a5b4fc;
-}
-
-:root[data-theme="dark"] .ability-diagnostic-row strong {
-  color: #7dd3fc;
 }
 
 :root[data-theme="dark"] .ability-heatmap-cell.selected {
@@ -9886,11 +9721,7 @@ textarea[aria-invalid='true'] {
   }
 
   .my-workspace-grid,
-  .ability-profile-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .ability-dialog-visual-grid {
+  .ability-profile-visual-grid {
     grid-template-columns: 1fr;
   }
 
@@ -9902,7 +9733,7 @@ textarea[aria-invalid='true'] {
     position: static;
   }
 
-  .ability-bubble-open-button {
+  .ability-profile-bubble-stage {
     min-height: 500px;
     border-right: 0;
     border-bottom: 1px solid var(--border-subtle);
@@ -10251,9 +10082,12 @@ textarea[aria-invalid='true'] {
     justify-self: start;
   }
 
-  .ai-preference-card,
-  .ability-card {
+  .ai-preference-card {
     padding: 20px;
+  }
+
+  .ability-card {
+    padding: 0;
   }
 
   .current-coach-strip {
@@ -10265,27 +10099,19 @@ textarea[aria-invalid='true'] {
     left: 0;
   }
 
-  .ability-bubble-open-button {
+  .ability-profile-bubble-stage {
     min-height: 340px;
     padding: 12px;
   }
 
-  .ability-dialog-backdrop {
-    padding: 0;
-  }
-
-  .ability-dialog {
-    width: 100%;
-    max-height: 100dvh;
-    min-height: 100dvh;
+  .ability-profile-selection,
+  .ability-profile-heatmap {
     padding: 16px;
-    border: 0;
-    border-radius: 0;
   }
 
-  .ability-dialog-bubble-stage {
-    min-height: 280px;
-    padding: 8px;
+  .ability-heatmap-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .ability-bubble-evidence {

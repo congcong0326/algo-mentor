@@ -1,6 +1,6 @@
 import type { AbilityProfileResponse, AbilityTagScore } from '../types/api';
 
-export const DEFAULT_ABILITY_BUBBLE_COUNT = 8;
+export const DEFAULT_ABILITY_BUBBLE_COUNT = 12;
 
 export interface AbilitySummary {
   averageScore: number;
