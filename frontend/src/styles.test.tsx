@@ -162,8 +162,8 @@ describe('LeetReviewer-inspired visual system', () => {
   });
 
   it('keeps chat and review problem Markdown rendering aligned', () => {
-    expect(styles).toContain('.practice-message .markdown-view,\n.review-problem-content .markdown-view {\n  margin: 0;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
-    expect(styles).toContain('.review-problem-full .markdown-view {\n  margin-top: 12px;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
+    expect(styles).toMatch(/\.practice-message \.markdown-view,[\s\S]*?\.review-problem-content \.markdown-view \{[^}]*width: 100%;[^}]*min-width: 0;[^}]*overflow: hidden;/);
+    expect(styles).toMatch(/\.review-problem-full \.markdown-view \{[^}]*min-height: 0;[^}]*overflow: visible;/);
     expect(styles).toContain('line-height: 1.55;\n  white-space: normal;');
     expect(styles).toContain('margin-bottom: 10px;');
     expect(styles).toContain('.practice-message .markdown-view p,\n.practice-message .markdown-view li,\n.review-problem-content .markdown-view p,\n.review-problem-content .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
@@ -174,6 +174,9 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('.review-problem-full .markdown-view li > p {\n  display: inline;');
     expect(styles).toContain('.practice-message .markdown-view > :last-child,\n.review-problem-content .markdown-view > :last-child {\n  margin-bottom: 0;');
     expect(styles).toContain('.review-problem-full .markdown-view > :last-child {\n  margin-bottom: 0;');
+    expect(styles).toMatch(/\.review-problem-content \.markdown-view > \* \{[^}]*width: 100%;[^}]*min-width: 0;/);
+    expect(styles).toMatch(/\.review-problem-content \.markdown-view pre \{[^}]*inline-size: 100%;[^}]*overflow: hidden;[^}]*white-space: pre-wrap;[^}]*overflow-wrap: anywhere;/);
+    expect(styles).toMatch(/\.review-problem-content \.markdown-view pre code \{[^}]*display: block;[^}]*min-width: 0;[^}]*max-width: 100%;/);
   });
 
   it('collapses source newlines and keeps code review Markdown compact', () => {
@@ -184,6 +187,14 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.review-detail-panel \.markdown-view > :first-child \{[^}]*margin-top: 0;/);
     expect(styles).toMatch(/\.review-detail-panel \.markdown-view li \{[^}]*margin: 3px 0;/);
     expect(styles).toMatch(/\.review-detail-panel \.markdown-view > :last-child \{[^}]*margin-bottom: 0;/);
+  });
+
+  it('contains long problem detail content inside its card', () => {
+    expect(styles).toMatch(/\.problem-detail-panel \{[^}]*min-width: 0;[^}]*overflow-x: hidden;[^}]*overflow-y: auto;/);
+    expect(styles).toMatch(/\.problem-detail-panel \.markdown-view \{[^}]*overflow-wrap: anywhere;/);
+    expect(styles).toMatch(/\.problem-detail-panel \.markdown-view > \* \{[^}]*width: 100%;[^}]*min-width: 0;/);
+    expect(styles).toMatch(/\.problem-detail-panel \.markdown-view pre,[\s\S]*?\.problem-detail-panel \.code-section pre \{[^}]*overflow-x: hidden;[^}]*white-space: pre-wrap;[^}]*overflow-wrap: anywhere;/);
+    expect(styles).toMatch(/\.problem-detail-panel \.markdown-view pre code,[\s\S]*?\.problem-detail-panel \.code-section pre code \{[^}]*display: block;[^}]*min-width: 0;[^}]*max-width: 100%;/);
   });
 
   it('keeps fixed review suggestion lists close to their headings', () => {

@@ -1627,6 +1627,9 @@ a {
   align-content: start;
   gap: 0;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   overflow-y: auto;
   scrollbar-gutter: stable;
   padding: 24px;
@@ -1634,6 +1637,9 @@ a {
 
 .review-problem-content {
   min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   padding-bottom: 24px;
 }
 
@@ -4014,7 +4020,24 @@ textarea[aria-invalid='true'] {
 }
 
 .problem-detail-panel {
-  overflow: auto;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.problem-detail-panel > *,
+.problem-detail-panel .markdown-view,
+.problem-detail-panel .code-section {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  contain: inline-size;
+}
+
+.problem-detail-panel .detail-heading > div {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .detail-heading {
@@ -4033,6 +4056,7 @@ textarea[aria-invalid='true'] {
   margin-bottom: 0;
   color: var(--text-secondary);
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 .external-link {
@@ -4076,10 +4100,12 @@ textarea[aria-invalid='true'] {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 .markdown-view,
 .code-section pre {
+  max-width: 100%;
   margin: 0;
   overflow: auto;
   padding: 14px;
@@ -4088,7 +4114,65 @@ textarea[aria-invalid='true'] {
 }
 
 .markdown-view {
+  width: 100%;
   min-height: 260px;
+  overflow-x: hidden;
+}
+
+.problem-detail-panel .markdown-view {
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.problem-detail-panel .markdown-view > * {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.problem-detail-panel .markdown-view p,
+.problem-detail-panel .markdown-view li,
+.problem-detail-panel .markdown-view blockquote,
+.problem-detail-panel .markdown-view th,
+.problem-detail-panel .markdown-view td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.problem-detail-panel .markdown-view pre,
+.problem-detail-panel .code-section pre {
+  box-sizing: border-box;
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.problem-detail-panel .markdown-view pre code,
+.problem-detail-panel .code-section pre code {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
+}
+
+.problem-detail-panel .markdown-view table {
+  display: block;
+  width: 100%;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.problem-detail-panel .markdown-view img {
+  max-width: 100%;
+  height: auto;
 }
 
 .code-section {
@@ -7379,13 +7463,22 @@ textarea[aria-invalid='true'] {
 .practice-message .markdown-view,
 .review-problem-content .markdown-view {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 0;
   padding: 0;
   border: 0;
   background: transparent;
-  overflow: visible;
+  overflow: hidden;
   line-height: 1.55;
   white-space: normal;
+}
+
+.review-problem-content .markdown-view > * {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .practice-message-plain-text {
@@ -7485,6 +7578,9 @@ textarea[aria-invalid='true'] {
 
 .practice-message .markdown-view pre,
 .review-problem-content .markdown-view pre {
+  box-sizing: border-box;
+  display: block;
+  inline-size: 100%;
   max-width: 100%;
   padding: 12px;
   border: 1px solid var(--border-strong);
@@ -7492,14 +7588,23 @@ textarea[aria-invalid='true'] {
   border-radius: 10px;
   background: var(--surface-soft);
   color: var(--text-primary);
-  overflow: auto;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .practice-message .markdown-view pre code,
 .review-problem-content .markdown-view pre code {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   padding: 0;
   background: transparent;
   color: inherit;
+  white-space: inherit;
+  overflow-wrap: inherit;
+  word-break: inherit;
 }
 
 .practice-message .markdown-view table,
