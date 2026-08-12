@@ -664,6 +664,15 @@ class DefaultAgentRuntimeTest {
     ) {
       return List.of();
     }
+
+    @Override
+    public List<org.congcong.algomentor.agent.core.runtime.model.AgentMessage> recentMessagesBeforeTurn(
+        long taskId,
+        long turnId,
+        int messageLimit
+    ) {
+      return List.of();
+    }
   }
 
   private static final class RecordingGateway implements LlmGateway {

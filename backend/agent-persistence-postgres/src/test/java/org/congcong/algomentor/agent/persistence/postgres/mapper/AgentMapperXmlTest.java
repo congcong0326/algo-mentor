@@ -72,6 +72,17 @@ class AgentMapperXmlTest {
   }
 
   @Test
+  void recentMessagesBeforeTurnSqlExcludesCurrentTurn() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
+
+    assertThat(sql).contains(
+        "JOIN agent_turn message_turn ON message_turn.id = message.turn_id");
+    assertThat(sql).contains(
+        "message_turn.sequence_no &lt; ( SELECT current_turn.sequence_no FROM agent_turn current_turn "
+            + "WHERE current_turn.id = #{turnId} AND current_turn.task_id = #{taskId} )");
+  }
+
+  @Test
   void newRunsPersistDiagnosticRetentionExpiry() throws Exception {
     String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
 

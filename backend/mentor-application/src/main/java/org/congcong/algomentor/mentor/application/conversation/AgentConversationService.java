@@ -336,7 +336,8 @@ public class AgentConversationService {
     LearnerMemoryRecallSnapshot learnerMemorySnapshot = null;
     try {
     PracticeChatContext practiceContext = practiceChatContext(command.practiceChat(), command.userId());
-    List<AgentMessage> history = conversationRepository.recentMessages(draft.taskId(), contextPolicy.recentTurns() * 2);
+    List<AgentMessage> history = conversationRepository.recentMessagesBeforeTurn(
+        draft.taskId(), draft.turnId(), contextPolicy.recentTurns() * 2);
     PracticeCoachStyle coachStyle = PracticeCoachStyle.from(
         command.governanceMetadata().get(PracticeChatPromptConstants.METADATA_COACH_STYLE));
     PracticeResponseLanguage responseLanguage = PracticeResponseLanguage.from(

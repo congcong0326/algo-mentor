@@ -118,6 +118,18 @@ class PostgresAgentConversationRepositoryTest {
   }
 
   @Test
+  void recentMessagesBeforeTurnReturnsChronologicalMessages() {
+    mapper.recentMessagesBeforeTurn = List.of(
+        new AgentMessage(2L, 101L, 2L, AgentMessage.Role.ASSISTANT, "answer", Instant.parse("2026-01-01T00:01:00Z")),
+        new AgentMessage(1L, 101L, 1L, AgentMessage.Role.USER, "question", Instant.parse("2026-01-01T00:00:00Z")));
+
+    List<AgentMessage> messages = repository.recentMessagesBeforeTurn(101L, 201L, 3);
+
+    assertThat(messages).extracting(AgentMessage::sequenceNo).containsExactly(1L, 2L);
+    assertThat(mapper.calls).containsExactly("recentMessagesBeforeTurn:101:201:3");
+  }
+
+  @Test
   void passesUserMessageMetadataWhenPreparingRun() {
     FakeConversationMapper mapper = new FakeConversationMapper();
     PostgresAgentConversationRepository repository = new PostgresAgentConversationRepository(mapper);
@@ -342,6 +354,7 @@ class PostgresAgentConversationRepositoryTest {
     private AgentMessage messageById;
     private AgentActiveRun activeRun;
     private List<AgentMessage> recentMessages = List.of();
+    private List<AgentMessage> recentMessagesBeforeTurn = List.of();
     private Map<String, Object> lastUserMessageMetadata = Map.of();
     private Map<String, Object> lastSeedMetadata = Map.of();
     private Map<String, Object> lastTaskMetadata = Map.of();
@@ -446,6 +459,12 @@ class PostgresAgentConversationRepositoryTest {
     public List<AgentMessage> recentMessages(long taskId, int messageLimit) {
       calls.add("recentMessages:" + taskId + ":" + messageLimit);
       return recentMessages;
+    }
+
+    @Override
+    public List<AgentMessage> recentMessagesBeforeTurn(long taskId, long turnId, int messageLimit) {
+      calls.add("recentMessagesBeforeTurn:" + taskId + ":" + turnId + ":" + messageLimit);
+      return recentMessagesBeforeTurn;
     }
 
     @Override

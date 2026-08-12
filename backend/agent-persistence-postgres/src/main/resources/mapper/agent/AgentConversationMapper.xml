@@ -271,6 +271,23 @@
     LIMIT #{messageLimit}
   </select>
 
+  <select id="recentMessagesBeforeTurn" resultMap="AgentMessageMap">
+    SELECT message.id, message.task_id, message.sequence_no, message.role,
+           message.content, message.created_at, message.metadata
+    FROM agent_message message
+    JOIN agent_turn message_turn ON message_turn.id = message.turn_id
+    WHERE message.task_id = #{taskId}
+      AND message.status = 'active'
+      AND message_turn.sequence_no &lt; (
+        SELECT current_turn.sequence_no
+        FROM agent_turn current_turn
+        WHERE current_turn.id = #{turnId}
+          AND current_turn.task_id = #{taskId}
+      )
+    ORDER BY message.sequence_no DESC
+    LIMIT #{messageLimit}
+  </select>
+
   <select id="messages" resultMap="AgentMessageMap">
     SELECT id, task_id, sequence_no, role, content, created_at, metadata
     FROM agent_message

@@ -80,6 +80,13 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
   }
 
   @Override
+  public List<AgentMessage> recentMessagesBeforeTurn(long taskId, long turnId, int messageLimit) {
+    return conversationMapper.recentMessagesBeforeTurn(taskId, turnId, messageLimit).stream()
+        .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
+        .toList();
+  }
+
+  @Override
   @Transactional
   public AgentTaskRef createTask(AgentTaskCreationRequest request) {
     long taskId = conversationMapper.insertTask(

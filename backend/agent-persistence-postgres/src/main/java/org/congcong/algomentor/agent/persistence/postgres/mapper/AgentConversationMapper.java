@@ -66,6 +66,12 @@ public interface AgentConversationMapper {
       @Param("messageLimit") int messageLimit
   );
 
+  List<AgentMessage> recentMessagesBeforeTurn(
+      @Param("taskId") long taskId,
+      @Param("turnId") long turnId,
+      @Param("messageLimit") int messageLimit
+  );
+
   List<AgentMessage> messages(
       @Param("taskId") long taskId,
       @Param("messageLimit") int messageLimit

@@ -765,5 +765,10 @@ class PracticeCodeReviewFlowTest {
     public List<AgentMessage> recentMessages(long taskId, int messageLimit) {
       return List.of();
     }
+
+    @Override
+    public List<AgentMessage> recentMessagesBeforeTurn(long taskId, long turnId, int messageLimit) {
+      return List.of();
+    }
   }
 }

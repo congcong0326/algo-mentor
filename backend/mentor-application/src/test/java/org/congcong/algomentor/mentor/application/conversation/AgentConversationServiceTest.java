@@ -156,6 +156,44 @@ class AgentConversationServiceTest {
   }
 
   @Test
+  void excludesCurrentTurnFromHistoryAndAppendsCurrentUserMessageOnce() {
+    CapturingRepository repository = new CapturingRepository();
+    repository.messagesBeforeTurn = List.of(new AgentMessage(
+        1,
+        11,
+        1,
+        AgentMessage.Role.USER,
+        "历史消息",
+        Instant.parse("2026-01-01T00:00:00Z"),
+        Map.of(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT)));
+    repository.messages.addAll(repository.messagesBeforeTurn);
+    repository.messages.add(new AgentMessage(
+        2,
+        11,
+        2,
+        AgentMessage.Role.USER,
+        "本轮输入",
+        Instant.parse("2026-01-01T00:00:01Z"),
+        Map.of(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT)));
+    AgentConversationService service = new AgentConversationService(
+        repository,
+        new ContextAssembler(),
+        new InMemoryPlanRepository(plan()),
+        new FakePracticeProblemCatalog());
+
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "本轮输入", "idem-current-message", PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN));
+
+    assertThat(repository.historyTurnId).isEqualTo(21L);
+    assertThat(run.agentRequest().messages())
+        .filteredOn(message -> message.text().equals("本轮输入"))
+        .hasSize(1);
+    assertThat(run.agentRequest().messages())
+        .extracting(LlmMessage::text)
+        .contains("历史消息", "本轮输入");
+  }
+
+  @Test
   void opensLearnerMemorySnapshotOnceBeforeAssemblyAndKeepsClaimTextOutOfMetadata() {
     CapturingRepository repository = new CapturingRepository();
     LearnerMemoryRecallPromptSectionProvider recallProvider = new LearnerMemoryRecallPromptSectionProvider(
@@ -274,6 +312,8 @@ class AgentConversationServiceTest {
 
     private final List<AgentMessage> messages = new ArrayList<>();
     private AgentRunPreparationRequest lastRequest;
+    private Long historyTurnId;
+    private List<AgentMessage> messagesBeforeTurn;
 
     @Override
     public PreparedAgentRun createOrReuseRun(AgentRunPreparationRequest request) {
@@ -307,6 +347,14 @@ class AgentConversationServiceTest {
       assertThat(taskId).isEqualTo(11);
       assertThat(messageLimit).isEqualTo(16);
       return messages;
+    }
+
+    @Override
+    public List<AgentMessage> recentMessagesBeforeTurn(long taskId, long turnId, int messageLimit) {
+      assertThat(taskId).isEqualTo(11);
+      assertThat(messageLimit).isEqualTo(16);
+      historyTurnId = turnId;
+      return messagesBeforeTurn == null ? messages : messagesBeforeTurn;
     }
   }
 
