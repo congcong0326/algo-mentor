@@ -28,6 +28,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftSource;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
@@ -320,6 +321,7 @@ public class MyBatisLearningPlanRepository
     return new LearningPlanDraftRow(
         draft.id(),
         draft.userId(),
+        draft.source().name(),
         draft.status().name(),
         json(draft.brief()),
         json(draft.messages()),
@@ -347,6 +349,7 @@ public class MyBatisLearningPlanRepository
     return new LearningPlanDraft(
         row.id(),
         row.userId(),
+        LearningPlanDraftSource.valueOf(row.draftSource()),
         LearningPlanDraftStatus.valueOf(row.status()),
         read(row.commandJson(), LearningPlanBrief.class),
         read(row.messagesJson(), STRING_LIST),

@@ -4739,6 +4739,10 @@ textarea[aria-invalid='true'] {
   gap: 10px;
 }
 
+.draft-confirm-row {
+  justify-content: flex-end;
+}
+
 .load-summary-line {
   margin: 0;
   color: var(--text-secondary);

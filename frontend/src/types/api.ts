@@ -358,6 +358,12 @@ export interface LearningPlanCreationPolicyContent {
   draftRetentionDays: number;
 }
 
+export interface LearningPlanAiRevisionPolicyContent {
+  templateDraftRevisionEnabled: boolean;
+  savedPlanRevisionEnabled: boolean;
+  personalizedDraftRevisionEnabled: boolean;
+}
+
 export interface AdminGenericPolicy<TContent = UserSessionPolicyContent> {
   id: number;
   typeCode: string;
@@ -1377,10 +1383,17 @@ export interface LearningPlanDraftPlan {
 
 export interface LearningPlanDraftResponse {
   draftId: number;
+  source?: 'TEMPLATE' | 'AI_PERSONALIZED';
   status: LearningPlanDraftStatus;
   assistantMessage?: string;
   missingFields: string[];
   draftPlan?: LearningPlanDraftPlan | null;
+}
+
+export interface LearningPlanAiRevisionCapabilities {
+  templateDraftRevisionEnabled: boolean;
+  savedPlanRevisionEnabled: boolean;
+  personalizedDraftRevisionEnabled: boolean;
 }
 
 export interface LearningPlanConfirmResponse {

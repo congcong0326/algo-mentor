@@ -22,10 +22,11 @@ import {
   activateLearningPlan,
   deleteLearningPlan,
   getLearningPlanDetail,
+  getLearningPlanAiRevisionCapabilities,
   getLearningPlans,
   requireApiData,
 } from './services/api';
-import type { LearningPlanConfirmResponse, LearningPlanDetailResponse, LearningPlanPageResponse } from './types/api';
+import type { LearningPlanAiRevisionCapabilities, LearningPlanConfirmResponse, LearningPlanDetailResponse, LearningPlanPageResponse } from './types/api';
 
 interface LearningPlansProps {
   pathname: string;
@@ -42,6 +43,11 @@ const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
   archivedCount: 0,
   latestCreatedAt: null,
 };
+const DISABLED_AI_REVISION_CAPABILITIES: LearningPlanAiRevisionCapabilities = {
+  templateDraftRevisionEnabled: false,
+  savedPlanRevisionEnabled: false,
+  personalizedDraftRevisionEnabled: false,
+};
 
 const PracticeChatWorkbench = lazy(() => import('./learning-plans/PracticeChatWorkbench'));
 const PracticeSubmissionHistoryPage = lazy(() => import('./learning-plans/PracticeSubmissionHistoryPage'));
@@ -55,6 +61,7 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   const [deletingPlanId, setDeletingPlanId] = useState<number>();
   const [activatingPlanId, setActivatingPlanId] = useState<number>();
   const [error, setError] = useState('');
+  const [aiRevisionCapabilities, setAiRevisionCapabilities] = useState<LearningPlanAiRevisionCapabilities>(DISABLED_AI_REVISION_CAPABILITIES);
   const practiceChatRoute = learningPlanPracticeChatRouteFromPath(pathname);
   const practiceSubmissionsRoute = learningPlanPracticeSubmissionsRouteFromPath(pathname);
   const practiceSubmissionsOptions = learningPlanPracticeSubmissionsOptionsFromSearch(search);
@@ -62,6 +69,15 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   const selectedPlanId = practiceChatRoute?.planId
     ?? practiceSubmissionsRoute?.planId
     ?? learningPlanIdFromPath(pathname);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getLearningPlanAiRevisionCapabilities(controller.signal)
+      .then((response) => setAiRevisionCapabilities(response.success && response.data
+        ? response.data : DISABLED_AI_REVISION_CAPABILITIES))
+      .catch(() => setAiRevisionCapabilities(DISABLED_AI_REVISION_CAPABILITIES));
+    return () => controller.abort();
+  }, [pathname, selectedPlanId]);
 
   useEffect(() => {
     if (pathname === APP_ROUTES.learningPlanNew || selectedPlanId !== undefined) {
@@ -177,6 +193,7 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
       <LearningPlanCreatePage
         onBackToPlans={() => onNavigate(APP_ROUTES.learningPlans)}
         onSaved={handlePlanSaved}
+        capabilities={aiRevisionCapabilities}
       />
     );
   }
@@ -281,6 +298,7 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
                 onNavigate(learningPlanPracticeChatPath(planDetail.id, phaseIndex, problemSlug));
               }}
               plan={planDetail}
+              capabilities={aiRevisionCapabilities}
             />
           )
         ) : null}

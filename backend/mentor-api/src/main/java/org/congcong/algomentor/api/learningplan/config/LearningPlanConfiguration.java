@@ -10,6 +10,8 @@ import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanup
 import org.congcong.algomentor.api.learningplan.personalization.ApiLearningPlanPersonalizationDataProvider;
 import org.congcong.algomentor.api.learningplan.policy.LearningPlanCreationPolicyContentValidator;
 import org.congcong.algomentor.api.learningplan.policy.PolicyBackedLearningPlanCreationPolicyResolver;
+import org.congcong.algomentor.api.learningplan.policy.LearningPlanAiRevisionPolicyContentValidator;
+import org.congcong.algomentor.api.learningplan.policy.PolicyBackedLearningPlanAiRevisionPolicyResolver;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationRepository;
@@ -31,6 +33,12 @@ import org.congcong.algomentor.mentor.application.learningplan.TodayPackService;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicy;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyResolver;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionPolicy;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionPolicyConstants;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionPolicyResolver;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessMetrics;
+import org.congcong.algomentor.mentor.application.learningplan.policy.MicrometerLearningPlanAiRevisionAccessMetrics;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionValidator;
@@ -98,6 +106,45 @@ public class LearningPlanConfiguration {
         LearningPlanCreationPolicy.class,
         LearningPlanCreationPolicyContentValidator::validate,
         GenericPolicyTypeExposure.INTERNAL_ONLY);
+  }
+
+  @Bean("learningPlanAiRevisionPolicyType")
+  @ConditionalOnMissingBean(name = "learningPlanAiRevisionPolicyType")
+  public GenericPolicyType<LearningPlanAiRevisionPolicy> learningPlanAiRevisionPolicyType() {
+    return GenericPolicyType.of(
+        LearningPlanAiRevisionPolicyConstants.TYPE_CODE,
+        LearningPlanAiRevisionPolicy.class,
+        LearningPlanAiRevisionPolicyContentValidator::validate,
+        GenericPolicyTypeExposure.INTERNAL_ONLY);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanAiRevisionPolicyResolver learningPlanAiRevisionPolicyResolver(
+      ObjectProvider<GenericPolicyQueryService> queryServiceProvider,
+      @Qualifier("learningPlanAiRevisionPolicyType") GenericPolicyType<LearningPlanAiRevisionPolicy> policyType) {
+    GenericPolicyQueryService queryService = queryServiceProvider.getIfAvailable();
+    return queryService == null
+        ? LearningPlanAiRevisionPolicyResolver.defaults()
+        : new PolicyBackedLearningPlanAiRevisionPolicyResolver(queryService, policyType);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanAiRevisionAccessService learningPlanAiRevisionAccessService(
+      LearningPlanAiRevisionPolicyResolver resolver,
+      LearningPlanAiRevisionAccessMetrics metrics) {
+    return new LearningPlanAiRevisionAccessService(resolver, metrics);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanAiRevisionAccessMetrics learningPlanAiRevisionAccessMetrics(
+      ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null
+        ? LearningPlanAiRevisionAccessMetrics.NOOP
+        : new MicrometerLearningPlanAiRevisionAccessMetrics(registry);
   }
 
   @Bean
@@ -344,7 +391,8 @@ public class LearningPlanConfiguration {
       LearningPlanLoadService loadService,
       TransactionOperations transactionOperations,
       Clock learningPlanClock,
-      LearningPlanPersonalizationContextService personalizationContextService) {
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanAiRevisionAccessService aiRevisionAccessService) {
     return new LearningPlanDraftRevisionStreamService(
         draftRepository,
         proposalRepository,
@@ -356,7 +404,8 @@ public class LearningPlanConfiguration {
         loadService,
         transactionOperations,
         learningPlanClock,
-        personalizationContextService);
+        personalizationContextService,
+        aiRevisionAccessService);
   }
 
   @Bean
@@ -377,7 +426,8 @@ public class LearningPlanConfiguration {
       LearningPlanProblemCatalog problemCatalog,
       TransactionOperations transactionOperations,
       Clock learningPlanClock,
-      LearningPlanPersonalizationContextService personalizationContextService) {
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanAiRevisionAccessService aiRevisionAccessService) {
     return new LearningPlanExtensionProposalStreamService(
         planRepository,
         proposalRepository,
@@ -389,7 +439,8 @@ public class LearningPlanConfiguration {
         problemCatalog,
         transactionOperations,
         learningPlanClock,
-        personalizationContextService);
+        personalizationContextService,
+        aiRevisionAccessService);
   }
 
   @Bean

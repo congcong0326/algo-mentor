@@ -4,11 +4,21 @@ import java.util.List;
 
 public record LearningPlanDraftResult(
     long draftId,
+    LearningPlanDraftSource source,
     LearningPlanDraftStatus status,
     String assistantMessage,
     List<String> missingFields,
     LearningPlanDraftPlan draftPlan
 ) {
+
+  public LearningPlanDraftResult(
+      long draftId,
+      LearningPlanDraftStatus status,
+      String assistantMessage,
+      List<String> missingFields,
+      LearningPlanDraftPlan draftPlan) {
+    this(draftId, LearningPlanDraftSource.AI_PERSONALIZED, status, assistantMessage, missingFields, draftPlan);
+  }
 
   public LearningPlanDraftResult {
     missingFields = missingFields == null ? List.of() : List.copyOf(missingFields);
@@ -17,6 +27,7 @@ public record LearningPlanDraftResult(
   public static LearningPlanDraftResult fromDraft(LearningPlanDraft draft) {
     return new LearningPlanDraftResult(
         draft.id(),
+        draft.source(),
         draft.status(),
         draft.assistantMessage(),
         draft.missingFields(),

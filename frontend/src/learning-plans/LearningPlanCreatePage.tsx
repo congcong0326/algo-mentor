@@ -16,6 +16,7 @@ import type {
   LearningPlanDraftRevisionReadyEvent,
   LearningPlanDraftResponse,
   LearningPlanTemplateDraftRequest,
+  LearningPlanAiRevisionCapabilities,
   SseStreamEvent,
 } from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
@@ -30,9 +31,10 @@ type LearningPlanCreateMode = 'ai' | 'template';
 interface LearningPlanCreatePageProps {
   onBackToPlans: () => void;
   onSaved: (confirmed: LearningPlanConfirmResponse) => void;
+  capabilities?: LearningPlanAiRevisionCapabilities;
 }
 
-export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: LearningPlanCreatePageProps) {
+export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabilities }: LearningPlanCreatePageProps) {
   const { resources } = useI18n();
   const [formKey, setFormKey] = useState(0);
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
@@ -222,6 +224,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
               onRetryCreate={retryCreateDraft}
               onReviseDraft={reviseDraft}
               onSendFollowUp={sendFollowUp}
+              capabilities={capabilities}
             />
           </>
         ) : (

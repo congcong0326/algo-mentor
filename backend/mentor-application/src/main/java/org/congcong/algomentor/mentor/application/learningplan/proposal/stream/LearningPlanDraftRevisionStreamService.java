@@ -30,6 +30,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
@@ -67,6 +68,7 @@ public class LearningPlanDraftRevisionStreamService {
   private final TransactionOperations transactionOperations;
   private final Clock clock;
   private final LearningPlanPersonalizationContextService personalizationContextService;
+  private final LearningPlanAiRevisionAccessService aiRevisionAccessService;
 
   public LearningPlanDraftRevisionStreamService(
       LearningPlanDraftRepository draftRepository,
@@ -91,7 +93,7 @@ public class LearningPlanDraftRevisionStreamService {
         loadService,
         transactionOperations,
         clock,
-        new LearningPlanPersonalizationContextService(null));
+        new LearningPlanPersonalizationContextService(null), null);
   }
 
   public LearningPlanDraftRevisionStreamService(
@@ -107,6 +109,24 @@ public class LearningPlanDraftRevisionStreamService {
       Clock clock,
       LearningPlanPersonalizationContextService personalizationContextService
   ) {
+    this(draftRepository, proposalRepository, groupService, validator, agentRuntime, objectMapper,
+        problemCatalog, loadService, transactionOperations, clock, personalizationContextService, null);
+  }
+
+  public LearningPlanDraftRevisionStreamService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanProposalRepository proposalRepository,
+      LearningPlanProposalGroupService groupService,
+      LearningPlanDraftValidator validator,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
+      TransactionOperations transactionOperations,
+      Clock clock,
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanAiRevisionAccessService aiRevisionAccessService
+  ) {
     this.draftRepository = Objects.requireNonNull(draftRepository, "draftRepository");
     this.proposalRepository = Objects.requireNonNull(proposalRepository, "proposalRepository");
     this.groupService = Objects.requireNonNull(groupService, "groupService");
@@ -120,6 +140,7 @@ public class LearningPlanDraftRevisionStreamService {
     this.clock = Objects.requireNonNull(clock, "clock");
     this.personalizationContextService = Objects.requireNonNull(
         personalizationContextService, "personalizationContextService");
+    this.aiRevisionAccessService = aiRevisionAccessService;
   }
 
   public Flow.Publisher<LearningPlanProposalStreamEvent> stream(
@@ -227,6 +248,9 @@ public class LearningPlanDraftRevisionStreamService {
   ) {
     LearningPlanDraft lockedDraft = draftRepository.findDraftByIdForUserForUpdate(draftId, userId)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_FOUND", "学习计划草案不存在。"));
+    if (aiRevisionAccessService != null) {
+      aiRevisionAccessService.requireDraftRevision(userId, lockedDraft.source());
+    }
     validateRevisionDraft(lockedDraft);
     LearningPlanProposalGroup group = latestActiveGroup(userId, draftId)
         .orElseGet(() -> groupService.createGroup(

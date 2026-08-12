@@ -9,6 +9,7 @@
     <constructor>
       <arg column="id" javaType="java.lang.Long"/>
       <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="draft_source" javaType="string"/>
       <arg column="status" javaType="string"/>
       <arg column="command_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
@@ -155,6 +156,7 @@
   <select id="insertDraft" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan_draft (
       user_id,
+      draft_source,
       status,
       command_json,
       messages_json,
@@ -170,6 +172,7 @@
     )
     VALUES (
       #{userId},
+      #{draftSource},
       #{status},
       #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{messagesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
@@ -218,6 +221,7 @@
   <update id="updateDraft">
     UPDATE learning_plan_draft
     SET status = #{status},
+        draft_source = #{draftSource},
         command_json = #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         messages_json = #{messagesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         missing_fields_json = #{missingFieldsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
@@ -244,6 +248,7 @@
     SELECT
       id,
       user_id,
+      draft_source,
       status,
       command_json,
       messages_json,
@@ -274,6 +279,7 @@
     SELECT
       id,
       user_id,
+      draft_source,
       status,
       command_json,
       messages_json,

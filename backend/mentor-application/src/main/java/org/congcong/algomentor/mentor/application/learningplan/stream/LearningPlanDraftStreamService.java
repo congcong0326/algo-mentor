@@ -24,6 +24,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftSource;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
@@ -178,6 +179,7 @@ public class LearningPlanDraftStreamService {
     LearningPlanDraft draft = new LearningPlanDraft(
         null,
         userId,
+        LearningPlanDraftSource.AI_PERSONALIZED,
         LearningPlanDraftStatus.COLLECTING,
         brief,
         List.of(),

@@ -29,6 +29,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionResult;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionRevision;
@@ -74,6 +75,7 @@ public class LearningPlanExtensionProposalStreamService {
   private final TransactionOperations transactionOperations;
   private final Clock clock;
   private final LearningPlanPersonalizationContextService personalizationContextService;
+  private final LearningPlanAiRevisionAccessService aiRevisionAccessService;
 
   public LearningPlanExtensionProposalStreamService(
       LearningPlanRepository learningPlanRepository,
@@ -98,7 +100,7 @@ public class LearningPlanExtensionProposalStreamService {
         problemCatalog,
         transactionOperations,
         clock,
-        new LearningPlanPersonalizationContextService(null));
+        new LearningPlanPersonalizationContextService(null), null);
   }
 
   public LearningPlanExtensionProposalStreamService(
@@ -114,6 +116,25 @@ public class LearningPlanExtensionProposalStreamService {
       Clock clock,
       LearningPlanPersonalizationContextService personalizationContextService
   ) {
+    this(learningPlanRepository, proposalRepository, groupService, practiceSessionRepository, validator,
+        agentRuntime, objectMapper, problemCatalog, transactionOperations, clock,
+        personalizationContextService, null);
+  }
+
+  public LearningPlanExtensionProposalStreamService(
+      LearningPlanRepository learningPlanRepository,
+      LearningPlanProposalRepository proposalRepository,
+      LearningPlanProposalGroupService groupService,
+      PracticeSessionRepository practiceSessionRepository,
+      LearningPlanExtensionValidator validator,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      TransactionOperations transactionOperations,
+      Clock clock,
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanAiRevisionAccessService aiRevisionAccessService
+  ) {
     this.learningPlanRepository = Objects.requireNonNull(learningPlanRepository, "learningPlanRepository");
     this.proposalRepository = Objects.requireNonNull(proposalRepository, "proposalRepository");
     this.groupService = Objects.requireNonNull(groupService, "groupService");
@@ -126,6 +147,7 @@ public class LearningPlanExtensionProposalStreamService {
     this.clock = Objects.requireNonNull(clock, "clock");
     this.personalizationContextService = Objects.requireNonNull(
         personalizationContextService, "personalizationContextService");
+    this.aiRevisionAccessService = aiRevisionAccessService;
   }
 
   public Flow.Publisher<LearningPlanProposalStreamEvent> streamFirstRevision(
@@ -251,6 +273,9 @@ public class LearningPlanExtensionProposalStreamService {
       Map<String, Object> metadata,
       List<PracticeProgress> progress
   ) {
+    if (aiRevisionAccessService != null) {
+      aiRevisionAccessService.requireSavedPlanRevision(userId);
+    }
     LearningPlan lockedPlan = lockActivePlan(userId, planId);
     LearningPlanProposalGroup group = latestActiveGroup(userId, planId)
         .orElseGet(() -> groupService.createGroup(
@@ -297,6 +322,9 @@ public class LearningPlanExtensionProposalStreamService {
       Map<String, Object> metadata,
       List<PracticeProgress> progress
   ) {
+    if (aiRevisionAccessService != null) {
+      aiRevisionAccessService.requireSavedPlanRevision(userId);
+    }
     LearningPlan lockedPlan = lockActivePlan(userId, planId);
     LearningPlanProposalGroup group = proposalRepository.findGroupForUserForUpdate(proposalGroupId, userId)
         .orElseThrow(() -> new LearningPlanException(

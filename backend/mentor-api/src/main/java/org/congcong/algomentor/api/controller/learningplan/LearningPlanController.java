@@ -37,6 +37,9 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContr
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionCapabilities;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
@@ -87,6 +90,7 @@ public class LearningPlanController {
   private final ObjectProvider<LearningPlanContractStateRepository> contractStateRepositoryProvider;
   private final ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider;
   private final ObjectProvider<LearningPlanActivationService> activationServiceProvider;
+  private final LearningPlanAiRevisionAccessService aiRevisionAccessService;
   private final LearningPlanLoadService loadService;
   private final LearningPlanContractService contractService;
   private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
@@ -111,6 +115,7 @@ public class LearningPlanController {
       ObjectProvider<LearningPlanActivationService> activationServiceProvider,
       ObjectProvider<LearningPlanLoadService> loadServiceProvider,
       ObjectProvider<LearningPlanContractService> contractServiceProvider,
+      ObjectProvider<LearningPlanAiRevisionAccessService> aiRevisionAccessServiceProvider,
       ApiSseProperties sseProperties,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
       ObjectProvider<LearningOpsRecorder> learningOpsRecorder) {
@@ -128,6 +133,9 @@ public class LearningPlanController {
     this.activationServiceProvider = activationServiceProvider;
     this.loadService = loadServiceProvider.getIfAvailable(LearningPlanLoadService::new);
     this.contractService = contractServiceProvider.getIfAvailable(LearningPlanContractService::new);
+    this.aiRevisionAccessService = aiRevisionAccessServiceProvider.getIfAvailable(
+        () -> new LearningPlanAiRevisionAccessService(
+            ignored -> LearningPlanAiRevisionCapabilities.disabled()));
     this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
     this.proposalStreamSseMapper = new LearningPlanProposalStreamSseMapper();
     this.sseProperties = sseProperties;
@@ -179,6 +187,10 @@ public class LearningPlanController {
       @PathVariable long draftId,
       @RequestBody LearningPlanRevisionRequest request) {
     long userId = requireCurrentUserId();
+    LearningPlanDraft draft = draftService.findDraft(userId, draftId);
+    if (draft != null) {
+      aiRevisionAccessService.requireDraftRevision(userId, draft.source());
+    }
     String instruction = normalizedInstruction(request);
     return proposalStream(runId -> requiredDraftRevisionStreamService()
         .stream(userId, draftId, instruction, runId, Map.of()));
@@ -190,6 +202,7 @@ public class LearningPlanController {
       @PathVariable long planId,
       @RequestBody LearningPlanRevisionRequest request) {
     long userId = requireCurrentUserId();
+    aiRevisionAccessService.requireSavedPlanRevision(userId);
     String instruction = normalizedInstruction(request);
     return proposalStream(runId -> requiredExtensionProposalStreamService()
         .streamFirstRevision(userId, planId, instruction, runId, Map.of()));
@@ -202,9 +215,16 @@ public class LearningPlanController {
       @PathVariable long proposalGroupId,
       @RequestBody LearningPlanRevisionRequest request) {
     long userId = requireCurrentUserId();
+    aiRevisionAccessService.requireSavedPlanRevision(userId);
     String instruction = normalizedInstruction(request);
     return proposalStream(runId -> requiredExtensionProposalStreamService()
         .streamNextRevision(userId, planId, proposalGroupId, instruction, runId, Map.of()));
+  }
+
+  @GetMapping("/ai-revision-capabilities")
+  public ApiResponse<LearningPlanAiRevisionCapabilities> aiRevisionCapabilities(HttpServletResponse response) {
+    response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
+    return ApiResponse.success(aiRevisionAccessService.capabilities(requireCurrentUserId()));
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH

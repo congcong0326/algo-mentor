@@ -100,6 +100,7 @@ export interface LocaleResources {
     adminSessions: string;
     adminSessionPolicies: string;
     adminLearningPlanPolicies: string;
+    adminLearningPlanAiRevisionPolicies: string;
     adminSystemPrompts: string;
     adminAi: string;
     feedback: string;
@@ -119,7 +120,7 @@ export interface LocaleResources {
     pageNavigation: string;
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'learningPlanAiRevisionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
   };
   adminFeedback: {
     listLoadFailed: string;
@@ -1667,6 +1668,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminSessions: '会话监控',
       adminSessionPolicies: '会话策略',
       adminLearningPlanPolicies: '学习计划策略',
+      adminLearningPlanAiRevisionPolicies: '学习计划 AI 修订策略',
       adminSystemPrompts: '系统提示词',
       adminAi: 'AI 治理',
       feedback: '反馈',
@@ -1695,6 +1697,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         sessions: '会话监控',
         sessionPolicies: '会话策略',
         learningPlanPolicies: '学习计划策略',
+        learningPlanAiRevisionPolicies: '学习计划 AI 修订策略',
         systemPrompts: '系统提示词',
         ai: 'AI 治理',
         aiPlatform: 'AI 平台',
@@ -3292,6 +3295,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminSessions: 'Session monitoring',
       adminSessionPolicies: 'Session policies',
       adminLearningPlanPolicies: 'Learning plan policies',
+      adminLearningPlanAiRevisionPolicies: 'Learning plan AI revision policies',
       adminSystemPrompts: 'System prompts',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
@@ -3320,6 +3324,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         sessions: 'Session monitoring',
         sessionPolicies: 'Session policies',
         learningPlanPolicies: 'Learning plan policies',
+        learningPlanAiRevisionPolicies: 'Learning plan AI revision policies',
         systemPrompts: 'System prompts',
         ai: 'AI Governance',
         aiPlatform: 'AI Platform',

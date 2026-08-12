@@ -122,6 +122,37 @@ describe('LearningPlanDraftPanel', () => {
     expect(screen.getByRole('button', { name: '按要求调整计划' })).toBeDisabled();
   });
 
+  it('keeps the save action when template revision is disabled', () => {
+    const onConfirm = vi.fn();
+    render(
+      <LearningPlanDraftPanel
+        capabilities={{
+          templateDraftRevisionEnabled: false,
+          savedPlanRevisionEnabled: false,
+          personalizedDraftRevisionEnabled: true,
+        }}
+        draft={{
+          draftId: 100,
+          source: 'TEMPLATE',
+          status: 'GENERATED',
+          assistantMessage: '已生成训练方案草案。',
+          missingFields: [],
+          draftPlan,
+        }}
+        loading={false}
+        onConfirm={onConfirm}
+        onReturnToWizard={vi.fn()}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    expect(screen.queryByRole('textbox', { name: '对当前计划不满意？输入调整要求' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '按要求调整计划' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '保存方案' }));
+    expect(onConfirm).toHaveBeenCalled();
+  });
+
   it('sends trimmed revision instructions', () => {
     const onReviseDraft = vi.fn(() => Promise.resolve(false));
     const draft: LearningPlanDraftResponse = {

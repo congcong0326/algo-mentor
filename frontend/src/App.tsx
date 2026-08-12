@@ -17,6 +17,7 @@ import DatabaseBackupPage from './admin/database-backup/DatabaseBackupPage';
 import SessionMonitoringPage from './admin/sessions/SessionMonitoringPage';
 import SessionPolicyPage from './admin/session-policies/SessionPolicyPage';
 import LearningPlanPolicyPage from './admin/learning-plan-policies/LearningPlanPolicyPage';
+import LearningPlanAiRevisionPolicyPage from './admin/learning-plan-ai-revision-policies/LearningPlanAiRevisionPolicyPage';
 import SystemPromptManagementPage from './admin/system-prompts/SystemPromptManagementPage';
 import FeedbackManagementPage from './admin/feedback/FeedbackManagementPage';
 import AdminOverviewPage from './admin/overview/AdminOverviewPage';
@@ -130,6 +131,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminLearningPlanPolicies' && !hasPermission(user, 'policy:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminLearningPlanAiRevisionPolicies' && !hasPermission(user, 'policy:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminSystemPrompts' && !hasPermission(user, 'policy:manage')) {
@@ -815,6 +819,8 @@ export default function App() {
     ? <SessionPolicyPage />
     : activeView === 'adminLearningPlanPolicies' && hasPermission(currentUser, 'policy:manage')
     ? <LearningPlanPolicyPage />
+    : activeView === 'adminLearningPlanAiRevisionPolicies' && hasPermission(currentUser, 'policy:manage')
+    ? <LearningPlanAiRevisionPolicyPage />
     : activeView === 'adminSystemPrompts' && hasPermission(currentUser, 'policy:manage')
     ? <SystemPromptManagementPage />
     : activeView === 'adminOverview' && hasPermission(currentUser, 'admin-overview:read')

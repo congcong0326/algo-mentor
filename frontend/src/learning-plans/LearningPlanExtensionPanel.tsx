@@ -6,6 +6,7 @@ import type {
   LearningPlanContentLocale,
   LearningPlanExtensionReadyEvent,
   LearningPlanPhaseDraft,
+  LearningPlanAiRevisionCapabilities,
 } from '../types/api';
 import { getPhaseDisplayTags } from './phaseTags';
 
@@ -17,6 +18,7 @@ interface LearningPlanExtensionPanelProps {
   onRevise: (proposalGroupId: number, instruction: string) => Promise<boolean>;
   onApply: (proposalGroupId: number) => Promise<void>;
   onDiscard: (proposalGroupId: number) => Promise<void>;
+  capabilities?: LearningPlanAiRevisionCapabilities;
 }
 
 function ExtensionPhaseBlock({
@@ -68,6 +70,7 @@ export default function LearningPlanExtensionPanel({
   onRevise,
   onApply,
   onDiscard,
+  capabilities = { templateDraftRevisionEnabled: true, savedPlanRevisionEnabled: true, personalizedDraftRevisionEnabled: true },
 }: LearningPlanExtensionPanelProps) {
   const { resources } = useI18n();
   const [instruction, setInstruction] = useState('');
@@ -77,9 +80,14 @@ export default function LearningPlanExtensionPanel({
     ? `learning-plan-extension-${extension.proposalGroupId}-revision`
     : 'learning-plan-extension-revision';
 
+  const canRevise = capabilities.savedPlanRevisionEnabled;
+  if (!canRevise && !extension) {
+    return null;
+  }
+
   return (
     <section className="learning-plan-extension-panel">
-      <label className="topic-field" htmlFor={generateInstructionId}>
+      {canRevise && <label className="topic-field" htmlFor={generateInstructionId}>
         <span>{resources.learningPlans.extensionEntryLabel}</span>
         <textarea
           disabled={loading}
@@ -88,8 +96,8 @@ export default function LearningPlanExtensionPanel({
           rows={3}
           value={instruction}
         />
-      </label>
-      <button
+      </label>}
+      {canRevise && <button
         className="primary-button"
         disabled={loading || !instruction.trim()}
         onClick={() => {
@@ -105,7 +113,7 @@ export default function LearningPlanExtensionPanel({
       >
         <Send aria-hidden="true" />
         <span>{resources.learningPlans.generateExtension}</span>
-      </button>
+      </button>}
 
       {extension ? (
         <div className="pending-extension-block">
@@ -127,7 +135,7 @@ export default function LearningPlanExtensionPanel({
             ))}
           </div>
           <div className="draft-revision-panel extension-revision-panel">
-            <label className="topic-field" htmlFor={revisionInstructionId}>
+            {canRevise && <label className="topic-field" htmlFor={revisionInstructionId}>
               <span>{resources.learningPlans.reviseExtensionLabel}</span>
               <textarea
                 disabled={loading}
@@ -136,9 +144,9 @@ export default function LearningPlanExtensionPanel({
                 rows={3}
                 value={revisionInstruction}
               />
-            </label>
+            </label>}
             <div className="draft-action-row extension-action-row">
-              <button
+              {canRevise && <button
                 className="secondary-button"
                 disabled={loading || !revisionInstruction.trim()}
                 onClick={() => {
@@ -154,7 +162,7 @@ export default function LearningPlanExtensionPanel({
               >
                 <Send aria-hidden="true" />
                 <span>{resources.learningPlans.reviseExtension}</span>
-              </button>
+              </button>}
               <button
                 className="primary-button"
                 disabled={loading}

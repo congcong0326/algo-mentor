@@ -1,7 +1,7 @@
 import { Check, FileText, MessageSquare, Send } from 'lucide-react';
 import { useState } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
-import type { AgentWorkStatusEvent, LearningPlanDraftResponse } from '../types/api';
+import type { AgentWorkStatusEvent, LearningPlanAiRevisionCapabilities, LearningPlanDraftResponse } from '../types/api';
 import PlanPreview from './PlanPreview';
 
 interface LearningPlanDraftPanelProps {
@@ -13,6 +13,7 @@ interface LearningPlanDraftPanelProps {
   onReturnToWizard?: () => void;
   onSendFollowUp: (message: string) => Promise<boolean>;
   onReviseDraft: (instruction: string) => Promise<boolean>;
+  capabilities?: LearningPlanAiRevisionCapabilities;
 }
 
 export default function LearningPlanDraftPanel({
@@ -24,6 +25,7 @@ export default function LearningPlanDraftPanel({
   onReturnToWizard,
   onSendFollowUp,
   onReviseDraft,
+  capabilities = { templateDraftRevisionEnabled: true, savedPlanRevisionEnabled: true, personalizedDraftRevisionEnabled: true },
 }: LearningPlanDraftPanelProps) {
   const { resources } = useI18n();
   const [followUp, setFollowUp] = useState('');
@@ -70,6 +72,9 @@ export default function LearningPlanDraftPanel({
   }
 
   if (draft.status === 'GENERATED' && draft.draftPlan) {
+    const revisionEnabled = draft.source === 'TEMPLATE'
+      ? capabilities.templateDraftRevisionEnabled
+      : capabilities.personalizedDraftRevisionEnabled;
     return (
       <article className="learning-panel">
         <div className="panel-title">
@@ -80,7 +85,7 @@ export default function LearningPlanDraftPanel({
           <p>{draft.draftPlan.objective}</p>
         </div>
         <PlanPreview plan={draft.draftPlan} />
-        <div className="draft-revision-panel">
+        {revisionEnabled ? <div className="draft-revision-panel">
           <label className="topic-field" htmlFor={revisionInstructionId}>
             <span>{resources.learningPlans.revisionInstructionLabel}</span>
             <textarea
@@ -110,11 +115,13 @@ export default function LearningPlanDraftPanel({
               <Send aria-hidden="true" />
               <span>{resources.learningPlans.reviseDraft}</span>
             </button>
-            <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
-              <Check aria-hidden="true" />
-              <span>{resources.learningPlans.savePlan}</span>
-            </button>
           </div>
+        </div> : null}
+        <div className="draft-action-row draft-confirm-row">
+          <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
+            <Check aria-hidden="true" />
+            <span>{resources.learningPlans.savePlan}</span>
+          </button>
         </div>
       </article>
     );

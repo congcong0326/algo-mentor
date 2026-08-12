@@ -2223,6 +2223,18 @@ function authCapabilitiesResponse(): Response {
   });
 }
 
+function learningPlanAiRevisionCapabilitiesResponse(): Response {
+  return jsonResponse({
+    success: true,
+    data: {
+      templateDraftRevisionEnabled: true,
+      savedPlanRevisionEnabled: true,
+      personalizedDraftRevisionEnabled: true,
+    },
+    timestamp: '2026-08-12T00:00:00Z',
+  });
+}
+
 function authenticatedUserResponse(): Response {
   return authenticatedUserResponseWithPermissions([
     'learning-plan:read:own',
@@ -2285,6 +2297,9 @@ function mockAuthenticatedAppFetch() {
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/learning-plans/ai-revision-capabilities') {
+      return Promise.resolve(learningPlanAiRevisionCapabilitiesResponse());
     }
     if (url === '/api/me/ai-preferences' && (!init?.method || init.method === 'GET')) {
       return Promise.resolve(userAiPreferenceResponse(preference));
@@ -2431,6 +2446,9 @@ function mockLearningPlanAndProblemFetch() {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
     }
+    if (url === '/api/learning-plans/ai-revision-capabilities') {
+      return Promise.resolve(learningPlanAiRevisionCapabilitiesResponse());
+    }
     if (url === '/api/me/ai-preferences') {
       return Promise.resolve(userAiPreferenceResponse());
     }
@@ -2576,6 +2594,10 @@ function mockLearningPlanFetch(options: {
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (url === '/api/learning-plans/ai-revision-capabilities') {
+      return Promise.resolve(learningPlanAiRevisionCapabilitiesResponse());
     }
 
     if (isTodayPackUrl(url)) {
@@ -2869,6 +2891,10 @@ function mockLearningPlanFollowUpFailureFetch() {
       return Promise.resolve(authenticatedUserResponse());
     }
 
+    if (url === '/api/learning-plans/ai-revision-capabilities') {
+      return Promise.resolve(learningPlanAiRevisionCapabilitiesResponse());
+    }
+
     if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -3055,6 +3081,10 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (url === '/api/learning-plans/ai-revision-capabilities') {
+      return Promise.resolve(learningPlanAiRevisionCapabilitiesResponse());
     }
 
     if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {

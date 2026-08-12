@@ -13,6 +13,7 @@ export type AdminPageId =
   | 'sessions'
   | 'sessionPolicies'
   | 'learningPlanPolicies'
+  | 'learningPlanAiRevisionPolicies'
   | 'aiProviders'
   | 'aiRouting'
   | 'aiUsage'
@@ -34,6 +35,7 @@ export type AdminNavigationLabelKey =
   | 'sessions'
   | 'sessionPolicies'
   | 'learningPlanPolicies'
+  | 'learningPlanAiRevisionPolicies'
   | 'modelResources'
   | 'costGovernance'
   | 'aiProviders'
@@ -145,6 +147,7 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
     items: [
       { id: 'problems', labelKey: 'problems', path: APP_ROUTES.problems, permission: 'problem:read' },
       { id: 'learningPlanPolicies', labelKey: 'learningPlanPolicies', path: APP_ROUTES.adminLearningPlanPolicies, permission: 'policy:manage' },
+      { id: 'learningPlanAiRevisionPolicies', labelKey: 'learningPlanAiRevisionPolicies', path: APP_ROUTES.adminLearningPlanAiRevisionPolicies, permission: 'policy:manage' },
     ],
   },
   {

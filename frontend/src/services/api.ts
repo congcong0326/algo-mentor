@@ -58,6 +58,7 @@ import type {
   LearningPlanCreateDraftRequest,
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
+  LearningPlanAiRevisionCapabilities,
   LearningPlanExtensionApplyResponse,
   LearningPlanListQuery,
   LearningPlanMessageRequest,
@@ -1717,6 +1718,20 @@ export async function getLearningPlanTemplates(
     throw await toApiRequestError(response, 'Learning plan templates request failed');
   }
 
+  return response.json();
+}
+
+export async function getLearningPlanAiRevisionCapabilities(
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanAiRevisionCapabilities>> {
+  const response = await apiFetch('/api/learning-plans/ai-revision-capabilities', {
+    headers: { ...jsonHeaders, 'Cache-Control': 'no-cache' },
+    cache: 'no-store',
+    signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan AI revision capabilities request failed');
+  }
   return response.json();
 }
 

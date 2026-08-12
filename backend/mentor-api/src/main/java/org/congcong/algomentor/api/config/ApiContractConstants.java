@@ -69,6 +69,9 @@ public final class ApiContractConstants {
    */
   public static final String LEARNING_PLANS_BASE_PATH = "/api/learning-plans";
 
+  public static final String LEARNING_PLAN_AI_REVISION_CAPABILITIES_PATH =
+      LEARNING_PLANS_BASE_PATH + "/ai-revision-capabilities";
+
   /**
    * 今日题包接口根路径。
    */

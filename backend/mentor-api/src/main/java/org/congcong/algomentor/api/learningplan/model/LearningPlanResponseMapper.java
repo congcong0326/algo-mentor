@@ -23,6 +23,7 @@ public final class LearningPlanResponseMapper {
   public static LearningPlanDraftResponse toDraftResponse(LearningPlanDraftResult result) {
     return new LearningPlanDraftResponse(
         result.draftId(),
+        result.source(),
         result.status(),
         result.assistantMessage(),
         result.missingFields(),

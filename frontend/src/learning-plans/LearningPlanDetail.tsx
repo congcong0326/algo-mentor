@@ -15,6 +15,7 @@ import type {
   LearningPlanDetailResponse,
   LearningPlanDraftErrorEvent,
   LearningPlanExtensionReadyEvent,
+  LearningPlanAiRevisionCapabilities,
   SseStreamEvent,
 } from '../types/api';
 import AgentWorkIndicator from './AgentWorkIndicator';
@@ -26,11 +27,13 @@ export default function LearningPlanDetail({
   onPlanUpdated,
   onProblemSelect,
   plan,
+  capabilities,
 }: {
   onBack: () => void;
   onPlanUpdated: () => Promise<void>;
   onProblemSelect: (phaseIndex: number, problemSlug: string) => void;
   plan: LearningPlanDetailResponse;
+  capabilities?: LearningPlanAiRevisionCapabilities;
 }) {
   const { resources } = useI18n();
   const [extension, setExtension] = useState<LearningPlanExtensionReadyEvent>();
@@ -228,6 +231,7 @@ export default function LearningPlanDetail({
         onDiscard={discardExtension}
         onGenerate={generateExtension}
         onRevise={reviseExtension}
+        capabilities={capabilities}
       />
     </article>
   );

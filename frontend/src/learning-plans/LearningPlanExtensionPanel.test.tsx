@@ -204,4 +204,57 @@ describe('LearningPlanExtensionPanel', () => {
     await waitFor(() => expect(onRevise).toHaveBeenCalledWith(30, '降低难度'));
     expect(textarea).toHaveValue('降低难度');
   });
+
+  it('keeps apply and discard available when AI revision is disabled', () => {
+    const onApply = vi.fn(() => Promise.resolve());
+    const onDiscard = vi.fn(() => Promise.resolve());
+
+    render(
+      <LearningPlanExtensionPanel
+        capabilities={{
+          templateDraftRevisionEnabled: false,
+          savedPlanRevisionEnabled: false,
+          personalizedDraftRevisionEnabled: false,
+        }}
+        contentLocale="zh-CN"
+        extension={extension}
+        loading={false}
+        onApply={onApply}
+        onDiscard={onDiscard}
+        onGenerate={vi.fn(() => Promise.resolve(false))}
+        onRevise={vi.fn(() => Promise.resolve(false))}
+      />,
+    );
+
+    expect(screen.queryByRole('textbox', { name: '想继续学习？描述接下来的目标' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: '对扩展建议不满意？输入调整要求' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '生成扩展建议' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '按要求调整扩展' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '应用扩展' }));
+    fireEvent.click(screen.getByRole('button', { name: '放弃' }));
+
+    expect(onApply).toHaveBeenCalledWith(30);
+    expect(onDiscard).toHaveBeenCalledWith(30);
+  });
+
+  it('does not render an empty extension panel when AI revision is disabled', () => {
+    render(
+      <LearningPlanExtensionPanel
+        capabilities={{
+          templateDraftRevisionEnabled: false,
+          savedPlanRevisionEnabled: false,
+          personalizedDraftRevisionEnabled: false,
+        }}
+        contentLocale="zh-CN"
+        loading={false}
+        onApply={vi.fn(() => Promise.resolve())}
+        onDiscard={vi.fn(() => Promise.resolve())}
+        onGenerate={vi.fn(() => Promise.resolve(false))}
+        onRevise={vi.fn(() => Promise.resolve(false))}
+      />,
+    );
+
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
+  });
 });

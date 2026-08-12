@@ -47,6 +47,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
+import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionCapabilities;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
@@ -134,7 +136,16 @@ class LearningPlanControllerTest {
   private LearningPlanTemplateDraftService templateDraftService;
 
   @MockBean
+  private LearningPlanAiRevisionAccessService aiRevisionAccessService;
+
+  @MockBean
   private ApiSseProperties sseProperties;
+
+  @org.junit.jupiter.api.BeforeEach
+  void enableAiRevisionCapabilitiesForControllerTests() {
+    when(aiRevisionAccessService.capabilities(42L))
+        .thenReturn(new LearningPlanAiRevisionCapabilities(true, true, true));
+  }
 
   @Test
   void createDraftWithoutStreamIsNotExposed() throws Exception {

@@ -66,6 +66,7 @@
 - `docs/learning-plan-personalized-generation-redesign-tasks/`：上述重构的一把梭哈研发任务包，使用 `CURRENT.md` 恢复指针、`CONTRACTS.md` 固定契约和 `LPGR-00` 至 `LPGR-10` 分波次实施任务控制上下文、依赖与验收门禁。
 - `docs/learning-plan-revision-performance-incident-2026-08-04.md`：学习计划草案修订 Agent 性能问题记录，包含 Provider 默认与 `low` 的单样本 A/B、LLM/Tool 耗时归因和后续优化基线。
 - `docs/learning-plan-revision-plan-compiler-design.md`：学习计划草案修订 Plan Compiler 研发设计，定义候选蓝图、确定性编译、单次 Child Review、协议预算、canonical artifact 和未来 Workflow 迁移边界。
+- `docs/learning-plan-ai-revision-access-design.md`：学习计划三条 AI 修订链路的用户/用户组灰度设计，定义 `learning-plan.ai-revision-access.v1`、草案来源持久化、前后端双重门禁、管理页和发布回滚边界。
 - `docs/learning-plan-data-model-simplification-design.md`：学习计划业务数据模型精简研发设计，固定阶段、模板、metadata 废弃字段删除范围，定义 JSONB 与模板表迁移、Seed v3 兼容、派生展示替代和验收门禁。
 - `docs/learning-plan-ai-generation-sse-resilience-design.md`：学习计划 AI 首次草案生成研发设计，聚焦结果恢复兼容闭环、启动与观察分离、幂等和显式业务取消；修订与扩展后续复用同一模式。
 - `docs/learning-plan-creation-governance-design.md`：学习计划创建治理设计，定义正式计划总量、每日草案次数、草案过期清理和 `learning-plan.creation.v1` 通用策略契约。

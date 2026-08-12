@@ -72,6 +72,11 @@ public class LearningPlanDraftService {
     return LearningPlanDraftResult.fromDraft(advance(updated));
   }
 
+  public LearningPlanDraft findDraft(long userId, long draftId) {
+    return draftRepository.findDraftByIdForUser(draftId, userId)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_FOUND", "学习计划草案不存在。"));
+  }
+
   @Transactional
   public LearningPlanConfirmResult confirmDraft(long userId, long draftId) {
     LearningPlanDraft draft = draftRepository.findDraftByIdForUserForUpdate(draftId, userId)

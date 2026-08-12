@@ -6,6 +6,7 @@ import java.util.List;
 public record LearningPlanDraft(
     Long id,
     long userId,
+    LearningPlanDraftSource source,
     LearningPlanDraftStatus status,
     LearningPlanBrief brief,
     List<String> messages,
@@ -18,6 +19,15 @@ public record LearningPlanDraft(
     Instant updatedAt
 ) {
 
+  public LearningPlanDraft(
+      Long id, long userId, LearningPlanDraftStatus status, LearningPlanBrief brief,
+      List<String> messages, List<String> missingFields, String assistantMessage,
+      LearningPlanDraftPlan draftPlan, Long confirmedPlanId, Instant expiresAt,
+      Instant createdAt, Instant updatedAt) {
+    this(id, userId, LearningPlanDraftSource.AI_PERSONALIZED, status, brief, messages,
+        missingFields, assistantMessage, draftPlan, confirmedPlanId, expiresAt, createdAt, updatedAt);
+  }
+
   public LearningPlanDraft {
     messages = messages == null ? List.of() : List.copyOf(messages);
     missingFields = missingFields == null ? List.of() : List.copyOf(missingFields);
@@ -27,6 +37,7 @@ public record LearningPlanDraft(
     return new LearningPlanDraft(
         nextId,
         userId,
+        source,
         status,
         brief,
         messages,
@@ -48,6 +59,7 @@ public record LearningPlanDraft(
     return new LearningPlanDraft(
         id,
         userId,
+        source,
         nextStatus,
         brief,
         messages,
@@ -64,6 +76,7 @@ public record LearningPlanDraft(
     return new LearningPlanDraft(
         id,
         userId,
+        source,
         status,
         nextBrief,
         nextMessages,
@@ -85,6 +98,7 @@ public record LearningPlanDraft(
     return new LearningPlanDraft(
         id,
         userId,
+        source,
         LearningPlanDraftStatus.GENERATED,
         nextBrief,
         nextMessages,
@@ -101,6 +115,7 @@ public record LearningPlanDraft(
     return new LearningPlanDraft(
         id,
         userId,
+        source,
         LearningPlanDraftStatus.CONFIRMED,
         brief,
         messages,
