@@ -14,7 +14,9 @@ import org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys;
 public class AiRunLockService {
 
   private static final String AI_LOCK_KEY_PREFIX = "user:";
-  private static final String AI_LOCK_KEY_SUFFIX = ":ai:all";
+  /** 单个用户同时允许执行的 AI run 数。 */
+  private static final int MAX_CONCURRENT_RUNS_PER_USER = 2;
+  private static final String AI_LOCK_KEY_SUFFIX = ":ai:all:slot:";
 
   private final AgentRunLockManager lockManager;
   private final AgentRunLockOwnerProvider ownerProvider;
@@ -31,19 +33,27 @@ public class AiRunLockService {
     lockMetadata.put(AiGovernanceMetadataKeys.USER_ID, userId);
     lockMetadata.put(AiGovernanceMetadataKeys.RUN_ID, runId);
     lockMetadata.putAll(metadata == null ? Map.of() : metadata);
-    AgentRunLockAcquireResult result = lockManager.tryAcquire(new AgentRunLockRequest(
-        lockKey(userId),
-        ownerProvider.ownerId(),
-        ttl,
-        lockMetadata));
-    return result.acquired() ? Optional.of(result.token()) : Optional.empty();
+    for (int slot = 1; slot <= MAX_CONCURRENT_RUNS_PER_USER; slot++) {
+      AgentRunLockAcquireResult result = lockManager.tryAcquire(new AgentRunLockRequest(
+          lockKey(userId, slot),
+          ownerProvider.ownerId(),
+          ttl,
+          lockMetadata));
+      if (result.acquired()) {
+        return Optional.of(result.token());
+      }
+    }
+    return Optional.empty();
   }
 
   public void release(AgentRunLockToken token) {
     lockManager.release(token);
   }
 
-  public String lockKey(long userId) {
-    return AI_LOCK_KEY_PREFIX + userId + AI_LOCK_KEY_SUFFIX;
+  public String lockKey(long userId, int slot) {
+    if (slot < 1 || slot > MAX_CONCURRENT_RUNS_PER_USER) {
+      throw new IllegalArgumentException("AI run lock slot is outside the supported range");
+    }
+    return AI_LOCK_KEY_PREFIX + userId + AI_LOCK_KEY_SUFFIX + slot;
   }
 }

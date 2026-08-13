@@ -1396,6 +1396,7 @@ export interface LocaleResources {
     unspecified: string;
     backToList: string;
     backToPlans: string;
+    backToCreate: string;
     backToPlanDetail: string;
     backToPracticeChat: string;
     backToLearnerProfile: string;
@@ -3035,6 +3036,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       unspecified: '未指定',
       backToList: '返回方案库',
       backToPlans: '返回方案页',
+      backToCreate: '返回新建方案',
       backToPlanDetail: '返回方案',
       backToPracticeChat: '返回聊天',
       backToLearnerProfile: '返回学习画像',
@@ -4776,6 +4778,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       unspecified: 'Not specified',
       backToList: 'Back to Library',
       backToPlans: 'Back to Plans',
+      backToCreate: 'Back to New Plan',
       backToPlanDetail: 'Back to Plan',
       backToPracticeChat: 'Back to Chat',
       backToLearnerProfile: 'Back to Learning Profile',

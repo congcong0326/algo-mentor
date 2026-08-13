@@ -11,26 +11,30 @@ import org.junit.jupiter.api.Test;
 class AiRunLockServiceTest {
 
   @Test
-  void usesPerUserAllAiLockKey() {
+  void usesFirstPerUserAiRunSlot() {
     InMemoryAgentRunLockManager manager = new InMemoryAgentRunLockManager();
     AiRunLockService service = new AiRunLockService(manager, () -> "node-1", Duration.ofMinutes(30));
 
     AgentRunLockToken token = service.tryAcquire(7L, "run-1", Map.of("purpose", "LEARNING_CHAT"))
         .orElseThrow();
 
-    assertThat(token.lockKey()).isEqualTo("user:7:ai:all");
+    assertThat(token.lockKey()).isEqualTo("user:7:ai:all:slot:1");
     assertThat(token.ownerId()).isEqualTo("node-1");
     manager.release(token);
   }
 
   @Test
-  void returnsEmptyWhenSameUserAlreadyHasActiveAiRun() {
+  void allowsTwoActiveAiRunsPerUserAndRejectsTheThird() {
     InMemoryAgentRunLockManager manager = new InMemoryAgentRunLockManager();
     AiRunLockService service = new AiRunLockService(manager, () -> "node-1", Duration.ofMinutes(30));
-    AgentRunLockToken token = service.tryAcquire(7L, "run-1", Map.of()).orElseThrow();
+    AgentRunLockToken first = service.tryAcquire(7L, "run-1", Map.of()).orElseThrow();
+    AgentRunLockToken second = service.tryAcquire(7L, "run-2", Map.of()).orElseThrow();
 
-    assertThat(service.tryAcquire(7L, "run-2", Map.of())).isEmpty();
+    assertThat(second.lockKey()).isEqualTo("user:7:ai:all:slot:2");
+    assertThat(service.tryAcquire(7L, "run-3", Map.of())).isEmpty();
 
-    manager.release(token);
+    manager.release(first);
+    assertThat(service.tryAcquire(7L, "run-4", Map.of())).isPresent();
+    manager.release(second);
   }
 }

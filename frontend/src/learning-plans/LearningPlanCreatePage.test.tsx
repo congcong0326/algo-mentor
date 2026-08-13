@@ -185,8 +185,9 @@ describe('LearningPlanCreatePage', () => {
     );
   });
 
-  it('creates a generated draft from a selected template and can revise it from preview', async () => {
-    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+  it('returns from a generated draft to the new-plan wizard instead of the plan list', async () => {
+    const onBackToPlans = vi.fn();
+    render(<LearningPlanCreatePage onBackToPlans={onBackToPlans} onSaved={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: '从模板创建' }));
 
@@ -217,7 +218,7 @@ describe('LearningPlanCreatePage', () => {
     fireEvent.click(screen.getByRole('button', { name: '按模板生成草案' }));
 
     await screen.findByRole('heading', { name: '训练方案' });
-    expect(screen.getByRole('button', { name: '返回方案页' }).closest('.learning-create-content'))
+    expect(screen.getByRole('button', { name: '返回新建方案' }).closest('.learning-create-content'))
       .toHaveClass('learning-create-content--preview');
     expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'leetcode_75_core_sprint',
@@ -241,6 +242,13 @@ describe('LearningPlanCreatePage', () => {
     ));
     expect(await screen.findByText('动态规划基础强化')).toBeInTheDocument();
     expect(screen.getAllByText('爬楼梯').length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole('button', { name: '返回新建方案' }));
+
+    expect(onBackToPlans).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', { name: '新建方案' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '返回方案页' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '训练方案' })).not.toBeInTheDocument();
   });
 
   it('submits custom rhythm settings for template drafts', async () => {

@@ -231,16 +231,24 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     setFormKey((current) => current + 1);
   }
 
+  function handleBack() {
+    if (draft) {
+      retryCreateDraft();
+      return;
+    }
+    onBackToPlans();
+  }
+
   return (
     <>
       <section className="learning-shell learning-create-shell" aria-label={resources.learningPlans.createAriaLabel}>
       <div className={`learning-create-content${draft ? ' learning-create-content--preview' : ''}`}>
         <div className="learning-create-heading">
           <button
-            aria-label={resources.learningPlans.backToPlans}
+            aria-label={draft ? resources.learningPlans.backToCreate : resources.learningPlans.backToPlans}
             className="icon-button learning-create-back"
             disabled={flowState === 'generating' || flowState === 'confirming'}
-            onClick={onBackToPlans}
+            onClick={handleBack}
             type="button"
           >
             <ArrowLeft aria-hidden="true" />

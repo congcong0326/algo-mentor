@@ -15,7 +15,7 @@ class AiPurposePolicyResolverTest {
     AiPurposePolicy chat = resolver.resolve(AiPurpose.LEARNING_CHAT);
 
     assertThat(learningPlan.dailyRequestLimit()).isEqualTo(50);
-    assertThat(learningPlan.maxConcurrentRunsPerUser()).isEqualTo(1);
+    assertThat(learningPlan.maxConcurrentRunsPerUser()).isEqualTo(2);
     assertThat(learningPlan.toolsAllowed()).isTrue();
     assertThat(learningPlan.structuredOutputRequired()).isTrue();
     assertThat(chat.streamingAllowed()).isTrue();

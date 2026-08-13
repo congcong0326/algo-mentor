@@ -64,10 +64,10 @@ public class AiGovernanceProperties {
     // 目前写死的是治理策略默认值；不是业务常量，未来可迁移为数据库/配置中心驱动的动态配置。
     EnumMap<AiPurpose, PurposeProperties> defaults = new EnumMap<>(AiPurpose.class);
     defaults.put(AiPurpose.LEARNING_PLAN, new PurposeProperties(
-        true, 50, 1, 32768, 4096, 12, false, true, true, false,
+        true, 50, 2, 32768, 4096, 12, false, true, true, false,
         null, null, "learning-plan-p0"));
     defaults.put(AiPurpose.LEARNING_CHAT, new PurposeProperties(
-        true, 50, 1, 16384, 2048, 8, true, true, false, false,
+        true, 50, 2, 16384, 2048, 8, true, true, false, false,
         null, null, "learning-chat-p0"));
     return defaults;
   }
