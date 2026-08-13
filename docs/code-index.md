@@ -8,7 +8,7 @@
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
-- `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，固定移除 common pool、Agent 工作线程同步投递 SSE、`20/100` 无队列执行池、暂缓独立准入和 Tomcat 保持默认配置。
+- `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，固定移除 common pool、Agent 工作线程同步投递 SSE 和无队列执行池；执行组舱壁另见执行组设计。
 - `docs/agent-execution-group-bulkhead-design.md`：Agent 执行组舱壁隔离研发设计，定义 Definition 代码声明执行组、`27/2/1` 严格容量、按组信号量、容量总和推导物理线程池上限、CHILD 内联继承和组级指标。
 - `docs/agent-conversation-context-recall-design.md`：Agent 多轮上下文召回与压缩研发设计，说明会话存储、运行轨迹、压缩策略和上下文快照。
 - `docs/agent-structured-output-design.md`：Agent 结构化输出与最终结果捕获设计，说明执行配置、provider-native structured output、AgentOutput 和最终输出持久化边界。
@@ -130,7 +130,8 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/personalization`：四个聚合来源的有界个性化上下文、渲染/裁剪、低敏 metadata 与固定标签 Micrometer 指标；关闭时不读取来源，单来源失败独立降级。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/learningplan/stream` 与 `learningplan/proposal/stream`：初次创建、草案修订和计划扩展的 Agent Definition/StreamService，分别使用生成内容 Schema 或 resolved Brief + 生成内容 Schema，并在每个 run 固定一次个性化 snapshot。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan`：学习计划 HTTP DTO、当前用户边界、SSE 映射、MyBatis repository、个性化 adapter、`learning-plan.creation.v1` 通用策略注册和草案清理调度；`LearningPlanConfiguration` 负责统一装配。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/execution/ManagedAgentExecutor.java`：Spring 管理的 Agent 专用线程池，使用 `20/100 + SynchronousQueue + AbortPolicy`，负责 trace 透传、执行指标和限时优雅关闭。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/execution/ManagedAgentExecutor.java`：Spring 管理的 Agent 专用线程池，使用执行组容量总和推导上限、`SynchronousQueue + AbortPolicy`，负责 trace 透传、执行指标和限时优雅关闭。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/execution/AgentExecutionBulkheadRegistry.java`：按当前生效 Definition 建立严格执行组信号量，校验稳定容量配置并暴露组级指标。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentExecutorProperties.java`：绑定 `algo-mentor.agent.executor` 的线程数、空闲回收、关停超时和线程名前缀配置。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，包含 Agent executor 环境变量映射，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。

@@ -11,6 +11,7 @@ import org.congcong.algomentor.agent.core.AgentExecutionOptions;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentLoopPolicy;
@@ -37,6 +38,40 @@ class AgentDefinitionRegistryTest {
         .isThrownBy(() -> new AgentDefinitionRegistry(List.of(definition("topic"), definition("topic"))))
         .withMessage("Duplicate agent definition key: topic");
     assertThat(registry.definitions()).singleElement().isSameAs(registry.resolve(new AgentKey<>("topic", String.class)));
+  }
+
+  @Test
+  void rejectsDefinitionsWithoutAnExecutionGroup() {
+    AgentDefinition<String> missingGroup = new AgentDefinition<>() {
+      @Override
+      public AgentKey<String> key() {
+        return new AgentKey<>("missing-group", String.class);
+      }
+
+      @Override
+      public AgentExecutionGroup executionGroup() {
+        return null;
+      }
+
+      @Override
+      public AgentLoopPolicy loopPolicy() {
+        return new AgentLoopPolicy(1);
+      }
+
+      @Override
+      public AgentOutputContract outputContract() {
+        return AgentOutputContract.defaults();
+      }
+
+      @Override
+      public AgentPreparedRequest prepare(String input, AgentInvocationContext context) {
+        throw new UnsupportedOperationException();
+      }
+    };
+
+    assertThatThrownBy(() -> new AgentDefinitionRegistry(List.of(missingGroup)))
+        .isInstanceOf(NullPointerException.class)
+        .hasMessage("Agent definition execution group must not be null: missing-group");
   }
 
   @Test
@@ -89,6 +124,11 @@ class AgentDefinitionRegistryTest {
       @Override
       public AgentKey<String> key() {
         return agentKey;
+      }
+
+      @Override
+      public AgentExecutionGroup executionGroup() {
+        return AgentExecutionGroup.PRACTICE;
       }
 
       @Override

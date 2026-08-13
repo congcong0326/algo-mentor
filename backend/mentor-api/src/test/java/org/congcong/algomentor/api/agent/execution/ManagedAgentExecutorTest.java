@@ -4,15 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionPermit;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentLoopPolicy;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentOutputContract;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentPreparedRequest;
+import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
 import org.congcong.algomentor.api.config.AgentExecutorProperties;
 import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.junit.jupiter.api.Test;
@@ -20,156 +27,181 @@ import org.junit.jupiter.api.Test;
 class ManagedAgentExecutorTest {
 
   @Test
-  void usesConfirmedPoolShapeAndPropagatesTraceContext() {
-    SimpleMeterRegistry registry = new SimpleMeterRegistry();
-    ManagedAgentExecutor executor = new ManagedAgentExecutor(new AgentExecutorProperties(), registry);
-    AtomicReference<String> threadName = new AtomicReference<>();
-    AtomicReference<String> requestId = new AtomicReference<>();
+  void derivesPhysicalPoolShapeAndPropagatesExecutionGroupContext() {
+    SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    ManagedAgentExecutor executor = executor(Map.of(
+        "practice", 27,
+        "learning-plan", 2,
+        "learner-profile-background", 1), meterRegistry);
     CountDownLatch completed = new CountDownLatch(1);
+    AtomicReference<String> requestId = new AtomicReference<>();
+    AtomicReference<AgentExecutionGroup> currentGroup = new AtomicReference<>();
 
     try (RequestTraceContext.RequestTraceScope ignored = RequestTraceContext.withRequestId("request-agent-pool")) {
-      executor.execute(() -> {
-        threadName.set(Thread.currentThread().getName());
+      executor.execute(AgentExecutionGroup.PRACTICE, () -> {
         requestId.set(RequestTraceContext.currentRequestId().orElse(null));
+        currentGroup.set(executor.currentExecutionGroup().orElse(null));
         completed.countDown();
       });
     }
 
     await(completed);
     ThreadPoolExecutor pool = executor.threadPoolExecutor();
-    assertThat(pool.getCorePoolSize()).isEqualTo(20);
-    assertThat(pool.getMaximumPoolSize()).isEqualTo(100);
-    assertThat(pool.getKeepAliveTime(TimeUnit.SECONDS)).isEqualTo(60);
+    assertThat(pool.getCorePoolSize()).isEqualTo(10);
+    assertThat(pool.getMaximumPoolSize()).isEqualTo(30);
     assertThat(pool.allowsCoreThreadTimeOut()).isTrue();
-    assertThat(pool.getQueue()).isInstanceOf(SynchronousQueue.class).isEmpty();
-    assertThat(pool.getRejectedExecutionHandler()).isInstanceOf(ThreadPoolExecutor.AbortPolicy.class);
-    assertThat(threadName.get()).startsWith("agent-loop-");
     assertThat(requestId).hasValue("request-agent-pool");
+    assertThat(currentGroup).hasValue(AgentExecutionGroup.PRACTICE);
+    assertThat(meterRegistry.get(AgentExecutorMetrics.GROUP_LIMIT).tag("group", "practice").gauge().value()).isEqualTo(27);
     executor.shutdown();
-    assertThat(registry.get(AgentExecutorMetrics.COMPLETED).functionCounter().count()).isEqualTo(1.0);
-    assertThat(registry.get(AgentExecutorMetrics.QUEUE_SIZE).gauge().value()).isZero();
-    assertThat(registry.get(AgentExecutorMetrics.REJECTED).counter().count()).isZero();
   }
 
   @Test
-  void rejectsImmediatelyWhenMaximumPoolSizeIsBusy() {
-    AgentExecutorProperties properties = singleThreadProperties();
-    SimpleMeterRegistry registry = new SimpleMeterRegistry();
-    ManagedAgentExecutor executor = new ManagedAgentExecutor(properties, registry);
-    CountDownLatch workerStarted = new CountDownLatch(1);
-    CountDownLatch releaseWorker = new CountDownLatch(1);
-    executor.execute(() -> {
-      workerStarted.countDown();
-      await(releaseWorker);
-    });
-    await(workerStarted);
-
+  void appliesStrictGroupBulkheadsAndReleasesPermitAfterTaskCompletion() {
+    ManagedAgentExecutor executor = executor(Map.of(
+        "practice", 1,
+        "learning-plan", 1,
+        "learner-profile-background", 1), new SimpleMeterRegistry());
+    CountDownLatch practiceStarted = new CountDownLatch(1);
+    CountDownLatch releasePractice = new CountDownLatch(1);
+    CountDownLatch otherGroupsCompleted = new CountDownLatch(2);
     try {
-      assertThatThrownBy(() -> executor.execute(() -> {
-      }))
+      executor.execute(AgentExecutionGroup.PRACTICE, () -> {
+        practiceStarted.countDown();
+        await(releasePractice);
+      });
+      await(practiceStarted);
+
+      assertThatThrownBy(() -> executor.execute(AgentExecutionGroup.PRACTICE, () -> { }))
           .isInstanceOf(AgentExecutionRejectedException.class)
           .extracting(error -> ((AgentExecutionRejectedException) error).reason())
-          .isEqualTo(AgentExecutionRejectionReason.SATURATED);
-      assertThat(executor.threadPoolExecutor().getQueue()).isEmpty();
-      assertThat(registry.get(AgentExecutorMetrics.REJECTED).counter().count()).isEqualTo(1.0);
+          .isEqualTo(AgentExecutionRejectionReason.GROUP_SATURATED);
+      executor.execute(AgentExecutionGroup.LEARNING_PLAN, otherGroupsCompleted::countDown);
+      executor.execute(AgentExecutionGroup.LEARNER_PROFILE_BACKGROUND, otherGroupsCompleted::countDown);
+      await(otherGroupsCompleted);
+      assertThat(executor.threadPoolExecutor().getMaximumPoolSize()).isEqualTo(3);
     } finally {
-      releaseWorker.countDown();
+      releasePractice.countDown();
       executor.shutdown();
     }
   }
 
   @Test
-  void distinguishesShutdownRejection() {
-    SimpleMeterRegistry registry = new SimpleMeterRegistry();
-    ManagedAgentExecutor executor = new ManagedAgentExecutor(singleThreadProperties(), registry);
+  void rejectsDuringShutdownWithoutLeakingGroupPermit() {
+    AgentExecutionBulkheadRegistry bulkheads = bulkheads(Map.of(
+        "practice", 1,
+        "learning-plan", 1,
+        "learner-profile-background", 1));
+    AgentExecutorProperties properties = properties(Map.of(
+        "practice", 1,
+        "learning-plan", 1,
+        "learner-profile-background", 1));
+    ManagedAgentExecutor executor = new ManagedAgentExecutor(properties, bulkheads, new SimpleMeterRegistry());
     executor.shutdown();
 
-    assertThatThrownBy(() -> executor.execute(() -> {
-    }))
+    assertThatThrownBy(() -> executor.execute(AgentExecutionGroup.PRACTICE, () -> { }))
         .isInstanceOf(AgentExecutionRejectedException.class)
         .extracting(error -> ((AgentExecutionRejectedException) error).reason())
         .isEqualTo(AgentExecutionRejectionReason.SHUTDOWN);
-    assertThat(registry.get(AgentExecutorMetrics.REJECTED).counter().count()).isEqualTo(1.0);
+    assertThat(bulkheads.available(AgentExecutionGroup.PRACTICE)).isEqualTo(1);
   }
 
   @Test
-  void marksExecutorThreadsWithoutDependingOnTheirNamesAndRestoresTraceContext() throws Exception {
-    ManagedAgentExecutor executor = new ManagedAgentExecutor(singleThreadProperties(), new SimpleMeterRegistry());
-    AtomicReference<Boolean> markedDuringManagedTask = new AtomicReference<>();
-    AtomicReference<String> tracedRequestId = new AtomicReference<>();
-    AtomicReference<Boolean> rawTaskMarked = new AtomicReference<>();
-    AtomicReference<String> rawTaskRequestId = new AtomicReference<>();
-    AtomicReference<Boolean> renamedWorkerStillMarked = new AtomicReference<>();
-    CountDownLatch firstManagedTaskDone = new CountDownLatch(1);
-    CountDownLatch secondManagedTaskDone = new CountDownLatch(1);
+  void validatesConfigurationAndKeepsInactiveGroupOutsideThePhysicalCapacity() {
+    AgentDefinitionRegistry registry = new AgentDefinitionRegistry(List.of(
+        definition("practice", AgentExecutionGroup.PRACTICE)));
+    AgentExecutionBulkheadRegistry bulkheads = new AgentExecutionBulkheadRegistry(
+        registry,
+        properties(Map.of(
+            "practice", 2,
+            "learning-plan", 2,
+            "learner-profile-background", 1)),
+        null);
 
-    try {
-      try (RequestTraceContext.RequestTraceScope ignored = RequestTraceContext.withRequestId("request-executor-marker")) {
-        executor.execute(() -> {
-          markedDuringManagedTask.set(executor.inExecutorThread());
-          tracedRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
-          Thread.currentThread().setName("renamed-agent-worker");
-          firstManagedTaskDone.countDown();
-        });
-      }
-      await(firstManagedTaskDone);
-      awaitIdle(executor.threadPoolExecutor());
-
-      Future<?> rawTask = submitRaw(executor.threadPoolExecutor(), () -> {
-        rawTaskMarked.set(executor.inExecutorThread());
-        rawTaskRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
-      });
-      rawTask.get(5, TimeUnit.SECONDS);
-
-      executor.execute(() -> {
-        renamedWorkerStillMarked.set(executor.inExecutorThread());
-        secondManagedTaskDone.countDown();
-      });
-      await(secondManagedTaskDone);
-
-      assertThat(markedDuringManagedTask).hasValue(true);
-      assertThat(tracedRequestId).hasValue("request-executor-marker");
-      assertThat(rawTaskMarked).hasValue(false);
-      assertThat(rawTaskRequestId).hasValue(null);
-      assertThat(renamedWorkerStillMarked).hasValue(true);
-    } finally {
-      executor.shutdown();
-    }
+    assertThat(bulkheads.totalCapacity()).isEqualTo(2);
+    assertThatThrownBy(() -> new AgentExecutionBulkheadRegistry(registry, properties(Map.of(
+        "unknown", 1)), null))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Unknown Agent execution group configuration: unknown");
+    assertThatThrownBy(() -> new AgentExecutionBulkheadRegistry(registry, properties(Map.of(
+        "practice", 0)), null))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Agent executor group capacity must be positive: practice");
   }
 
   @Test
-  void clearsExecutorThreadMarkerWhenTaskFails() {
-    ManagedAgentExecutor executor = new ManagedAgentExecutor(singleThreadProperties(), new SimpleMeterRegistry());
-    CountDownLatch failedTaskEntered = new CountDownLatch(1);
-    AtomicReference<Boolean> rawTaskMarked = new AtomicReference<>();
+  void permitsAreIdempotentAndOnlyEnteredTasksCountAsCompleted() {
+    SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    AgentExecutionBulkheadRegistry bulkheads = bulkheads(Map.of(
+        "practice", 1,
+        "learning-plan", 1,
+        "learner-profile-background", 1), meterRegistry);
 
-    try {
-      executor.execute(() -> {
-        failedTaskEntered.countDown();
-        throw new IllegalStateException("expected task failure");
-      });
-      await(failedTaskEntered);
-      awaitIdle(executor.threadPoolExecutor());
+    AgentExecutionPermit permit = bulkheads.tryAcquire(AgentExecutionGroup.PRACTICE).orElseThrow();
+    assertThat(bulkheads.available(AgentExecutionGroup.PRACTICE)).isZero();
+    permit.close();
+    permit.close();
 
-      Future<?> rawTask = submitRaw(
-          executor.threadPoolExecutor(),
-          () -> rawTaskMarked.set(executor.inExecutorThread()));
-      rawTask.get(5, TimeUnit.SECONDS);
-
-      assertThat(rawTaskMarked).hasValue(false);
-    } catch (Exception exception) {
-      throw new AssertionError(exception);
-    } finally {
-      executor.shutdown();
-    }
+    assertThat(bulkheads.available(AgentExecutionGroup.PRACTICE)).isEqualTo(1);
+    assertThat(meterRegistry.get(AgentExecutorMetrics.GROUP_COMPLETED)
+        .tag("group", "practice").functionCounter().count()).isZero();
   }
 
-  private static AgentExecutorProperties singleThreadProperties() {
+  private static ManagedAgentExecutor executor(Map<String, Integer> capacities, SimpleMeterRegistry meterRegistry) {
+    return new ManagedAgentExecutor(properties(capacities), bulkheads(capacities, meterRegistry), meterRegistry);
+  }
+
+  private static AgentExecutorProperties properties(Map<String, Integer> capacities) {
     AgentExecutorProperties properties = new AgentExecutorProperties();
-    properties.setCorePoolSize(1);
-    properties.setMaxPoolSize(1);
+    properties.setGroups(capacities);
     properties.setShutdownTimeout(java.time.Duration.ofSeconds(1));
     return properties;
+  }
+
+  private static AgentExecutionBulkheadRegistry bulkheads(Map<String, Integer> capacities) {
+    return bulkheads(capacities, null);
+  }
+
+  private static AgentExecutionBulkheadRegistry bulkheads(
+      Map<String, Integer> capacities,
+      SimpleMeterRegistry meterRegistry
+  ) {
+    return new AgentExecutionBulkheadRegistry(
+        new AgentDefinitionRegistry(List.of(
+            definition("practice", AgentExecutionGroup.PRACTICE),
+            definition("plan", AgentExecutionGroup.LEARNING_PLAN),
+            definition("profile", AgentExecutionGroup.LEARNER_PROFILE_BACKGROUND))),
+        properties(capacities),
+        meterRegistry);
+  }
+
+  private static AgentDefinition<String> definition(String key, AgentExecutionGroup group) {
+    return new AgentDefinition<>() {
+      @Override
+      public AgentKey<String> key() {
+        return new AgentKey<>(key, String.class);
+      }
+
+      @Override
+      public AgentExecutionGroup executionGroup() {
+        return group;
+      }
+
+      @Override
+      public AgentLoopPolicy loopPolicy() {
+        return new AgentLoopPolicy(1);
+      }
+
+      @Override
+      public AgentOutputContract outputContract() {
+        return AgentOutputContract.defaults();
+      }
+
+      @Override
+      public AgentPreparedRequest prepare(String input, org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext context) {
+        throw new UnsupportedOperationException();
+      }
+    };
   }
 
   private static void await(CountDownLatch latch) {
@@ -179,27 +211,5 @@ class ManagedAgentExecutorTest {
       Thread.currentThread().interrupt();
       throw new AssertionError(interrupted);
     }
-  }
-
-  private static void awaitIdle(ThreadPoolExecutor executor) {
-    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-    while (executor.getActiveCount() > 0 && System.nanoTime() < deadline) {
-      Thread.onSpinWait();
-    }
-    assertThat(executor.getActiveCount()).isZero();
-  }
-
-  private static Future<?> submitRaw(ThreadPoolExecutor executor, Runnable task) {
-    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-    RejectedExecutionException lastFailure = null;
-    while (System.nanoTime() < deadline) {
-      try {
-        return executor.submit(task);
-      } catch (RejectedExecutionException rejected) {
-        lastFailure = rejected;
-        Thread.onSpinWait();
-      }
-    }
-    throw lastFailure == null ? new IllegalStateException("Raw agent executor task was not submitted") : lastFailure;
   }
 }

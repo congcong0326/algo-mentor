@@ -30,6 +30,7 @@ import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactor;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
@@ -128,16 +129,16 @@ class DefaultAgentRuntimeTest {
   }
 
   @Test
-  void runsInlineWhenAlreadyOnAnAgentExecutorThread() {
+  void rejectsUserEntryInvocationFromAnAgentExecutorThread() {
     Fixture fixture = new Fixture();
-    fixture.gateway.responses.add(response("inline"));
     DefaultAgentRuntime runtime = fixture.runtime(true, false);
 
-    assertThat(runtime.execute(invocation("binary search", false)).output().text()).isEqualTo("inline");
+    assertThatThrownBy(() -> runtime.execute(invocation("binary search", false)))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Agent USER_ENTRY invocation must not start inside an Agent executor thread");
 
     assertThat(fixture.executor.executeCalls).isZero();
-    assertThat(fixture.governance.repository.statuses)
-        .containsExactly(AiRunStatus.RUNNING, AiRunStatus.COMPLETED);
+    assertThat(fixture.governance.repository.statuses).isEmpty();
   }
 
   @Test
@@ -149,7 +150,7 @@ class DefaultAgentRuntimeTest {
         new LlmStreamEvent.ContentDelta("structured result"),
         new LlmStreamEvent.Usage(usage),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
-    DefaultAgentRuntime runtime = fixture.runtime(true, false);
+    DefaultAgentRuntime runtime = fixture.runtime(false, false);
 
     AgentRunResult result = runtime.execute(invocation("binary search", false));
 
@@ -201,40 +202,35 @@ class DefaultAgentRuntimeTest {
   }
 
   @Test
-  void submitsPracticeReviewChildFromAnExternalThreadWithoutUsingUserEntryResources() {
+  void rejectsPracticeReviewChildFromAnExternalThread() {
     Fixture fixture = new Fixture();
-    fixture.gateway.responses.add(response("review result"));
     DefaultAgentRuntime runtime = fixture.runtime(false, false, new TextDefinition(false, PRACTICE_REVIEW_KEY));
 
-    assertThat(runtime.execute(childInvocation()).output().text()).isEqualTo("review result");
+    assertThatThrownBy(() -> runtime.execute(childInvocation()))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Agent CHILD invocation must execute inside an Agent executor thread");
 
-    assertThat(fixture.executor.executeCalls).isEqualTo(1);
+    assertThat(fixture.executor.executeCalls).isZero();
     assertThat(fixture.governance.usage.consumeCalls).isZero();
     assertThat(fixture.governance.locks.acquireCalls).isZero();
     assertThat(fixture.governance.locks.releaseCalls).isZero();
   }
 
   @Test
-  void runsLearnerMemoryCodeReviewBackgroundWithoutParentOrUserEntryResources() {
+  void rejectsBackgroundInvocationFromAnAgentExecutorThread() {
     Fixture fixture = new Fixture();
-    fixture.gateway.responses.add(response("profile result"));
     DefaultAgentRuntime runtime = fixture.runtime(true, false,
         new TextDefinition(false, CODE_REVIEW_PROFILE_KEY));
 
-    assertThat(runtime.execute(backgroundInvocation()).output().text()).isEqualTo("profile result");
+    assertThatThrownBy(() -> runtime.execute(backgroundInvocation()))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("Agent BACKGROUND invocation must not start inside an Agent executor thread");
 
-    assertThat(fixture.conversations.requests).singleElement().satisfies(request -> {
-      assertThat(request.userId()).isEqualTo(7L);
-      assertThat(request.agentKey()).isEqualTo(CODE_REVIEW_PROFILE_KEY.value());
-      assertThat(request.mode()).isEqualTo(AgentInvocationMode.BACKGROUND);
-      assertThat(request.parentRunId()).isNull();
-      assertThat(request.parentStepIndex()).isNull();
-    });
+    assertThat(fixture.conversations.requests).isEmpty();
     assertThat(fixture.governance.usage.consumeCalls).isZero();
     assertThat(fixture.governance.locks.acquireCalls).isZero();
     assertThat(fixture.governance.locks.releaseCalls).isZero();
-    assertThat(fixture.governance.routes.lastScenario)
-        .isEqualTo(AiBusinessScenario.CODE_REVIEW_PROFILE_UPDATE);
+    assertThat(fixture.governance.routes.lastScenario).isNull();
   }
 
   @Test
@@ -372,7 +368,7 @@ class DefaultAgentRuntimeTest {
   void returnsTrustedRunIdentityWhenReplayingPreparedRun() {
     Fixture fixture = new Fixture();
     AtomicInteger releases = new AtomicInteger();
-    DefaultAgentRuntime runtime = fixture.runtime(true, false, new PreparedRunDefinition(true, releases));
+    DefaultAgentRuntime runtime = fixture.runtime(false, false, new PreparedRunDefinition(true, releases));
 
     AgentRunResult result = runtime.execute(invocation("binary search", false));
 
@@ -517,6 +513,11 @@ class DefaultAgentRuntimeTest {
     }
 
     @Override
+    public AgentExecutionGroup executionGroup() {
+      return groupFor(key);
+    }
+
+    @Override
     public AgentLoopPolicy loopPolicy() {
       return new AgentLoopPolicy(1);
     }
@@ -564,6 +565,11 @@ class DefaultAgentRuntimeTest {
     }
 
     @Override
+    public AgentExecutionGroup executionGroup() {
+      return AgentExecutionGroup.PRACTICE;
+    }
+
+    @Override
     public AgentLoopPolicy loopPolicy() {
       return new AgentLoopPolicy(maxSteps);
     }
@@ -608,7 +614,7 @@ class DefaultAgentRuntimeTest {
     private boolean reject;
 
     @Override
-    public void execute(Runnable task) {
+    public void execute(AgentExecutionGroup group, Runnable task) {
       executeCalls++;
       if (reject) {
         throw new java.util.concurrent.RejectedExecutionException("saturated");
@@ -625,6 +631,19 @@ class DefaultAgentRuntimeTest {
     public boolean inExecutorThread() {
       return executorThread;
     }
+
+    @Override
+    public java.util.Optional<AgentExecutionGroup> currentExecutionGroup() {
+      return executorThread ? java.util.Optional.of(AgentExecutionGroup.PRACTICE) : java.util.Optional.empty();
+    }
+  }
+
+  private static AgentExecutionGroup groupFor(AgentKey<String> key) {
+    return key.equals(CODE_REVIEW_PROFILE_KEY)
+        ? AgentExecutionGroup.LEARNER_PROFILE_BACKGROUND
+        : key.equals(KEY) || key.equals(PRACTICE_REVIEW_KEY)
+            ? AgentExecutionGroup.PRACTICE
+            : AgentExecutionGroup.LEARNING_PLAN;
   }
 
   private static final class RecordingConversations implements AgentConversationRepository {

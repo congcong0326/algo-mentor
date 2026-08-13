@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
@@ -62,7 +63,7 @@ class AgentLoopRunnerTest {
   private static final AtomicInteger WORKER_SEQUENCE = new AtomicInteger(1);
   private static final AgentExecutor TEST_EXECUTOR = new AgentExecutor() {
     @Override
-    public void execute(Runnable task) {
+    public void execute(AgentExecutionGroup group, Runnable task) {
       Thread worker = new Thread(
           RequestTraceContext.wrap(task),
           "agent-loop-test-" + WORKER_SEQUENCE.getAndIncrement());
@@ -265,7 +266,7 @@ class AgentLoopRunnerTest {
     };
     AgentExecutor rejectingExecutor = new AgentExecutor() {
       @Override
-      public void execute(Runnable task) {
+      public void execute(AgentExecutionGroup group, Runnable task) {
         throw new AgentExecutionRejectedException(
             AgentExecutionRejectionReason.SATURATED,
             "saturated",
@@ -313,7 +314,7 @@ class AgentLoopRunnerTest {
     };
     AgentExecutor failingExecutor = new AgentExecutor() {
       @Override
-      public void execute(Runnable task) {
+      public void execute(AgentExecutionGroup group, Runnable task) {
         throw new IllegalStateException("executor unavailable");
       }
 

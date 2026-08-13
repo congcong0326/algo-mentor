@@ -24,6 +24,7 @@ import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
@@ -64,7 +65,7 @@ class PracticeCodeReviewFlowTest {
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final AgentExecutor TEST_EXECUTOR = new AgentExecutor() {
     @Override
-    public void execute(Runnable task) {
+    public void execute(AgentExecutionGroup group, Runnable task) {
       Thread worker = new Thread(task, "practice-review-agent-test");
       worker.setDaemon(true);
       worker.start();

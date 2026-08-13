@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.congcong.algomentor.agent.core.AgentExecutionOptions;
 import org.congcong.algomentor.agent.core.AgentStructuredOutputOptions;
 import org.congcong.algomentor.agent.core.StructuredOutputStrategy;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
@@ -46,6 +47,11 @@ public final class LearnerMemoryCodeReviewUpdateAgentDefinition implements Agent
   @Override
   public AgentKey<LearnerMemoryCodeReviewUpdateAgentInput> key() {
     return KEY;
+  }
+
+  @Override
+  public AgentExecutionGroup executionGroup() {
+    return AgentExecutionGroup.LEARNER_PROFILE_BACKGROUND;
   }
 
   @Override

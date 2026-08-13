@@ -6,7 +6,7 @@
 - 日期：2026-07-23
 - 部署基线：单实例 `mentor-api`，4 核 CPU、8 GB 内存，机器资源主要供 Java 进程使用
 - 第一阶段：移除 Agent SSE 事件投递对 `ForkJoinPool.commonPool()` 的依赖
-- 第二阶段：使用 `20/100 + SynchronousQueue + AbortPolicy` 的专用 Agent 执行池
+- 第二阶段：使用执行组容量总和推导最大线程数（当前默认 `27/2/1 => 30`）的专用 Agent 执行池
 - 当前不实施：独立的用户等级、业务 purpose、provider 和系统总容量准入限流
 - Tomcat：保持 Spring Boot/Tomcat 默认线程与连接参数，暂不在配置文件中覆盖
 
@@ -72,7 +72,7 @@ SSE 默认超时为 6 分钟。正常的多步骤 Agent run 可能先被 SSE 层
 - 让一个慢客户端只影响自己的 Agent run，不占用 JVM 公共线程池。
 - 使用自然背压限制单条流的内存增长，不为慢客户端无限缓存 token。
 - 把每次创建线程改为 Spring 管理的无队列、有最大线程数的 Agent 执行池。
-- 以 100 个 Agent 工作线程作为当前单实例的执行硬上限。
+- 以当前生效执行组容量总和作为 Agent 工作线程硬上限，并保留代码级 100 线程安全上限。
 - 线程池饱和时立即拒绝新任务，不让长时间 Agent run 在内存队列中等待。
 - 覆盖成功、异常、超时、客户端断连、任务取消和线程池拒绝的资源释放路径。
 
@@ -187,7 +187,8 @@ AgentExecutor 工作线程
 ## 第二阶段：Agent 执行线程池
 
 第一阶段稳定后，将 `new Thread(...)` 替换为 Spring 管理的专用 `AgentExecutor`。当前参数以单实例
-4 核 CPU、8 GB 内存和最多约 100 条同时运行的 Agent 流为基线。
+4 核 CPU、8 GB 内存和执行组容量总和为基线；业务舱壁配置详见
+`agent-execution-group-bulkhead-design.md`。
 
 - 使用平台线程和有界 `ThreadPoolExecutor`，适配当前 JDK 17 与阻塞式 OpenAI 流。
 - 使用 `SynchronousQueue`，不在执行池内存中保存等待任务。
@@ -201,8 +202,8 @@ AgentExecutor 工作线程
 已确认参数：
 
 ```text
-core pool size:       20
-max pool size:        100
+core pool size:       min(10, 当前生效执行组容量总和)
+max pool size:        当前生效执行组容量总和（默认 30）
 work queue:           SynchronousQueue（零容量）
 keep alive:           60s
 allow core timeout:   true
@@ -210,7 +211,8 @@ rejection policy:     AbortPolicy
 ```
 
 `SynchronousQueue` 只负责把任务直接交给空闲工作线程，不保存排队任务。当没有空闲线程且当前线程数低于
-100 时，执行池继续创建工作线程；达到 100 后，新任务立即触发 `RejectedExecutionException`。
+当前生效执行组容量总和时，执行池继续创建工作线程；达到该总和后，新任务立即触发
+`RejectedExecutionException`。
 
 当前不通过 `activeCount`、`poolSize` 等近似统计提前判断是否存在可用线程，也不改造
 `ThreadPoolExecutor` 内部调度逻辑。任务直接提交给执行池，由执行池的原子调度和拒绝机制维护硬边界。

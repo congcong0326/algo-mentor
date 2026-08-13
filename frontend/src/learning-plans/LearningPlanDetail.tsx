@@ -2,6 +2,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { formatPlanIntent } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
+import AiCapacityUnavailableDialog from '../components/AiCapacityUnavailableDialog';
+import { isAgentExecutorOverloaded } from '../services/agentCapacity';
 import {
   applyLearningPlanExtensionProposal,
   discardLearningPlanExtensionProposal,
@@ -40,13 +42,21 @@ export default function LearningPlanDetail({
   const [extensionWorkEvent, setExtensionWorkEvent] = useState<AgentWorkStatusEvent>();
   const [extensionLoading, setExtensionLoading] = useState(false);
   const [extensionError, setExtensionError] = useState('');
+  const [capacityUnavailable, setCapacityUnavailable] = useState(false);
+
+  function capacityUnavailableMessage() {
+    setCapacityUnavailable(true);
+    return resources.common.aiCapacityUnavailable;
+  }
 
   function handleExtensionStreamEvent(event: SseStreamEvent) {
     if (event.eventName.startsWith('work_')) {
       const nextWorkEvent = event.data as AgentWorkStatusEvent;
       setExtensionWorkEvent(nextWorkEvent);
       if (event.eventName === 'work_error') {
-        setExtensionError(nextWorkEvent.message || resources.learningPlans.extensionFailed);
+        setExtensionError(isAgentExecutorOverloaded(nextWorkEvent)
+          ? capacityUnavailableMessage()
+          : nextWorkEvent.message || resources.learningPlans.extensionFailed);
       }
       return;
     }
@@ -59,7 +69,9 @@ export default function LearningPlanDetail({
     }
     if (event.eventName === 'plan_extension_error') {
       const extensionStreamError = event.data as LearningPlanDraftErrorEvent;
-      setExtensionError(extensionStreamError.message || resources.learningPlans.extensionFailed);
+      setExtensionError(isAgentExecutorOverloaded(extensionStreamError)
+        ? capacityUnavailableMessage()
+        : extensionStreamError.message || resources.learningPlans.extensionFailed);
       setExtensionWorkEvent(undefined);
       setExtensionLoading(false);
     }
@@ -83,13 +95,17 @@ export default function LearningPlanDetail({
           }
           if (event.eventName === 'plan_extension_error') {
             extensionFailed = true;
-            terminalErrorMessage = (event.data as LearningPlanDraftErrorEvent).message
-              || resources.learningPlans.extensionFailed;
+            const streamError = event.data as LearningPlanDraftErrorEvent;
+            terminalErrorMessage = isAgentExecutorOverloaded(streamError)
+              ? resources.common.aiCapacityUnavailable
+              : streamError.message || resources.learningPlans.extensionFailed;
           }
           if (event.eventName === 'work_error') {
             extensionFailed = true;
-            terminalErrorMessage = (event.data as AgentWorkStatusEvent).message
-              || resources.learningPlans.extensionFailed;
+            const workError = event.data as AgentWorkStatusEvent;
+            terminalErrorMessage = isAgentExecutorOverloaded(workError)
+              ? resources.common.aiCapacityUnavailable
+              : workError.message || resources.learningPlans.extensionFailed;
           }
           handleExtensionStreamEvent(event);
         },
@@ -107,7 +123,9 @@ export default function LearningPlanDetail({
       }
       return extensionReady && !extensionFailed;
     } catch (nextError) {
-      setExtensionError(nextError instanceof Error ? nextError.message : resources.learningPlans.extensionFailed);
+      setExtensionError(isAgentExecutorOverloaded(nextError)
+        ? capacityUnavailableMessage()
+        : nextError instanceof Error ? nextError.message : resources.learningPlans.extensionFailed);
       setExtensionWorkEvent(undefined);
       setExtensionLoading(false);
       return false;
@@ -132,13 +150,17 @@ export default function LearningPlanDetail({
           }
           if (event.eventName === 'plan_extension_error') {
             extensionFailed = true;
-            terminalErrorMessage = (event.data as LearningPlanDraftErrorEvent).message
-              || resources.learningPlans.extensionFailed;
+            const streamError = event.data as LearningPlanDraftErrorEvent;
+            terminalErrorMessage = isAgentExecutorOverloaded(streamError)
+              ? resources.common.aiCapacityUnavailable
+              : streamError.message || resources.learningPlans.extensionFailed;
           }
           if (event.eventName === 'work_error') {
             extensionFailed = true;
-            terminalErrorMessage = (event.data as AgentWorkStatusEvent).message
-              || resources.learningPlans.extensionFailed;
+            const workError = event.data as AgentWorkStatusEvent;
+            terminalErrorMessage = isAgentExecutorOverloaded(workError)
+              ? resources.common.aiCapacityUnavailable
+              : workError.message || resources.learningPlans.extensionFailed;
           }
           handleExtensionStreamEvent(event);
         },
@@ -156,7 +178,9 @@ export default function LearningPlanDetail({
       }
       return extensionReady && !extensionFailed;
     } catch (nextError) {
-      setExtensionError(nextError instanceof Error ? nextError.message : resources.learningPlans.extensionFailed);
+      setExtensionError(isAgentExecutorOverloaded(nextError)
+        ? capacityUnavailableMessage()
+        : nextError instanceof Error ? nextError.message : resources.learningPlans.extensionFailed);
       setExtensionWorkEvent(undefined);
       setExtensionLoading(false);
       return false;
@@ -201,7 +225,8 @@ export default function LearningPlanDetail({
   }
 
   return (
-    <article className="learning-panel">
+    <>
+      <article className="learning-panel">
       <button className="secondary-button compact detail-back-button" onClick={onBack} type="button">
         <ArrowLeft aria-hidden="true" />
         <span>{resources.learningPlans.backToList}</span>
@@ -233,6 +258,11 @@ export default function LearningPlanDetail({
         onRevise={reviseExtension}
         capabilities={capabilities}
       />
-    </article>
+      </article>
+      <AiCapacityUnavailableDialog
+        onClose={() => setCapacityUnavailable(false)}
+        open={capacityUnavailable}
+      />
+    </>
   );
 }

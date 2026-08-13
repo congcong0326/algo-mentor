@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionPermit;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.api.config.AgentExecutorProperties;
 import org.congcong.algomentor.common.trace.RequestTraceContext;
@@ -25,19 +27,26 @@ import org.slf4j.LoggerFactory;
 public final class ManagedAgentExecutor implements AgentExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(ManagedAgentExecutor.class);
-  private static final ThreadLocal<Integer> EXECUTOR_DEPTH = new ThreadLocal<>();
+  private static final ThreadLocal<ExecutionContext> EXECUTOR_CONTEXT = new ThreadLocal<>();
 
   private final ThreadPoolExecutor executor;
+  private final AgentExecutionBulkheadRegistry bulkheadRegistry;
   private final Duration shutdownTimeout;
   private final Counter rejectedCounter;
   private final AtomicBoolean shutdownStarted = new AtomicBoolean(false);
 
-  public ManagedAgentExecutor(AgentExecutorProperties properties, MeterRegistry meterRegistry) {
+  public ManagedAgentExecutor(
+      AgentExecutorProperties properties,
+      AgentExecutionBulkheadRegistry bulkheadRegistry,
+      MeterRegistry meterRegistry
+  ) {
     Objects.requireNonNull(properties, "properties must not be null");
+    this.bulkheadRegistry = Objects.requireNonNull(bulkheadRegistry, "Agent execution bulkhead registry must not be null");
     this.shutdownTimeout = properties.getShutdownTimeout();
+    int maximumPoolSize = bulkheadRegistry.totalCapacity();
     this.executor = new ThreadPoolExecutor(
-        properties.getCorePoolSize(),
-        properties.getMaxPoolSize(),
+        Math.min(10, maximumPoolSize),
+        maximumPoolSize,
         properties.getKeepAlive().toMillis(),
         TimeUnit.MILLISECONDS,
         new SynchronousQueue<>(),
@@ -55,28 +64,23 @@ public final class ManagedAgentExecutor implements AgentExecutor {
   }
 
   @Override
-  public void execute(Runnable task) {
+  public void execute(AgentExecutionGroup group, Runnable task) {
+    AgentExecutionGroup executionGroup = Objects.requireNonNull(group, "Agent execution group must not be null");
     Objects.requireNonNull(task, "task must not be null");
+    if (executor.isShutdown()) {
+      throw rejected(AgentExecutionRejectionReason.SHUTDOWN, executionGroup, null);
+    }
+    AgentExecutionPermit permit = bulkheadRegistry.tryAcquire(executionGroup)
+        .orElseThrow(() -> rejected(AgentExecutionRejectionReason.GROUP_SATURATED, executionGroup, null));
     try {
       Runnable traceAwareTask = RequestTraceContext.wrap(task);
-      executor.execute(() -> runInExecutorThread(traceAwareTask));
+      executor.execute(() -> runInExecutorThread(executionGroup, traceAwareTask, permit));
     } catch (RejectedExecutionException rejected) {
-      if (rejectedCounter != null) {
-        rejectedCounter.increment();
-      }
+      permit.close();
       AgentExecutionRejectionReason reason = executor.isShutdown()
           ? AgentExecutionRejectionReason.SHUTDOWN
           : AgentExecutionRejectionReason.SATURATED;
-      log.warn(
-          "Agent executor rejected task. reason={} active={} poolSize={} maximumPoolSize={}",
-          reason,
-          executor.getActiveCount(),
-          executor.getPoolSize(),
-          executor.getMaximumPoolSize());
-      throw new AgentExecutionRejectedException(
-          reason,
-          "Agent executor rejected task: " + reason,
-          rejected);
+      throw rejected(reason, executionGroup, rejected);
     }
   }
 
@@ -87,7 +91,13 @@ public final class ManagedAgentExecutor implements AgentExecutor {
 
   @Override
   public boolean inExecutorThread() {
-    return EXECUTOR_DEPTH.get() != null;
+    return EXECUTOR_CONTEXT.get() != null;
+  }
+
+  @Override
+  public java.util.Optional<AgentExecutionGroup> currentExecutionGroup() {
+    ExecutionContext context = EXECUTOR_CONTEXT.get();
+    return context == null ? java.util.Optional.empty() : java.util.Optional.of(context.group());
   }
 
   /** 停止接收新任务，等待运行中任务结束，超时后中断剩余任务。 */
@@ -130,18 +140,54 @@ public final class ManagedAgentExecutor implements AgentExecutor {
         .register(meterRegistry);
   }
 
-  private static void runInExecutorThread(Runnable task) {
-    Integer depth = EXECUTOR_DEPTH.get();
-    EXECUTOR_DEPTH.set(depth == null ? 1 : depth + 1);
+  private AgentExecutionRejectedException rejected(
+      AgentExecutionRejectionReason reason,
+      AgentExecutionGroup group,
+      RejectedExecutionException cause
+  ) {
+    if (rejectedCounter != null && reason != AgentExecutionRejectionReason.GROUP_SATURATED) {
+      rejectedCounter.increment();
+    }
+    log.warn(
+        "Agent executor rejected task. group={} reason={} active={} poolSize={} maximumPoolSize={}",
+        group.code(),
+        reason,
+        executor.getActiveCount(),
+        executor.getPoolSize(),
+        executor.getMaximumPoolSize());
+    return new AgentExecutionRejectedException(
+        reason,
+        group,
+        "Agent executor rejected task: " + reason,
+        cause);
+  }
+
+  private void runInExecutorThread(
+      AgentExecutionGroup group,
+      Runnable task,
+      AgentExecutionPermit permit
+  ) {
+    ExecutionContext previous = EXECUTOR_CONTEXT.get();
+    EXECUTOR_CONTEXT.set(new ExecutionContext(
+        previous == null ? 1 : previous.depth() + 1,
+        group));
     try {
       task.run();
     } finally {
-      if (depth == null) {
-        EXECUTOR_DEPTH.remove();
-      } else {
-        EXECUTOR_DEPTH.set(depth);
+      try {
+        bulkheadRegistry.recordCompletion(group);
+        permit.close();
+      } finally {
+        if (previous == null) {
+          EXECUTOR_CONTEXT.remove();
+        } else {
+          EXECUTOR_CONTEXT.set(previous);
+        }
       }
     }
+  }
+
+  private record ExecutionContext(int depth, AgentExecutionGroup group) {
   }
 
   private static final class NamedThreadFactory implements ThreadFactory {

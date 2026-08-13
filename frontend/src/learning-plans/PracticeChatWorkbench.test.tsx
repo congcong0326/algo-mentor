@@ -122,6 +122,42 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(streamPracticeMessage).not.toHaveBeenCalled();
   });
 
+  it('shows a dialog when practice agent capacity is exhausted before the stream opens', async () => {
+    streamPracticeMessage.mockRejectedValue(new api.ApiRequestError(
+      429,
+      'Agent executor rejected task',
+      'AGENT_EXECUTOR_OVERLOADED',
+    ));
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '帮我分析一下这个解法。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '提示' });
+    expect(within(dialog).getByText('当前算力不够，请稍后重试。')).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('button', { name: '关闭' }));
+    expect(screen.queryByRole('dialog', { name: '提示' })).not.toBeInTheDocument();
+  });
+
+  it('shows a dialog when practice agent capacity is exhausted during the stream', async () => {
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent({
+        eventName: 'agent_error',
+        data: { code: 'AGENT_EXECUTOR_OVERLOADED', retryable: true },
+      });
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请给我一点提示。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByRole('dialog', { name: '提示' })).toHaveTextContent('当前算力不够，请稍后重试。');
+  });
+
   it('shows only decision-relevant permission details', async () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({

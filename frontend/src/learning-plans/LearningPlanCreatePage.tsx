@@ -20,6 +20,8 @@ import type {
   SseStreamEvent,
 } from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
+import AiCapacityUnavailableDialog from '../components/AiCapacityUnavailableDialog';
+import { isAgentExecutorOverloaded } from '../services/agentCapacity';
 import AgentWorkIndicator from './AgentWorkIndicator';
 import LearningPlanCreateForm from './LearningPlanCreateForm';
 import LearningPlanDraftPanel from './LearningPlanDraftPanel';
@@ -42,6 +44,12 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   const [flowState, setFlowState] = useState<LearningPlanCreateState>('editing');
   const [createMode, setCreateMode] = useState<LearningPlanCreateMode>('template');
   const [error, setError] = useState('');
+  const [capacityUnavailable, setCapacityUnavailable] = useState(false);
+
+  function showCapacityUnavailable() {
+    setCapacityUnavailable(true);
+    return resources.common.aiCapacityUnavailable;
+  }
 
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
     setFlowState('generating');
@@ -53,7 +61,9 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
         onEvent: handleDraftStreamEvent,
       });
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.generateFailed);
+      setError(isAgentExecutorOverloaded(nextError)
+        ? showCapacityUnavailable()
+        : nextError instanceof Error ? nextError.message : resources.learningPlans.generateFailed);
       setFlowState('editing');
     }
   }
@@ -83,7 +93,9 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       const nextWorkEvent = event.data as AgentWorkStatusEvent;
       setWorkEvent(nextWorkEvent);
       if (event.eventName === 'work_error') {
-        setError(nextWorkEvent.message || resources.learningPlans.generateFailed);
+        setError(isAgentExecutorOverloaded(nextWorkEvent)
+          ? showCapacityUnavailable()
+          : nextWorkEvent.message || resources.learningPlans.generateFailed);
       }
       return;
     }
@@ -103,14 +115,18 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
     if (event.eventName === 'draft_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
-      setError(draftError.message || resources.learningPlans.generateFailed);
+      setError(isAgentExecutorOverloaded(draftError)
+        ? showCapacityUnavailable()
+        : draftError.message || resources.learningPlans.generateFailed);
       setWorkEvent(undefined);
       setFlowState('editing');
       return;
     }
     if (event.eventName === 'draft_revision_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
-      setError(draftError.message || resources.learningPlans.revisionFailed);
+      setError(isAgentExecutorOverloaded(draftError)
+        ? showCapacityUnavailable()
+        : draftError.message || resources.learningPlans.revisionFailed);
       setWorkEvent(undefined);
       setFlowState('previewing');
     }
@@ -166,7 +182,9 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       }
       return revisionReady && !revisionFailed;
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.revisionFailed);
+      setError(isAgentExecutorOverloaded(nextError)
+        ? showCapacityUnavailable()
+        : nextError instanceof Error ? nextError.message : resources.learningPlans.revisionFailed);
       setWorkEvent(undefined);
       setFlowState('previewing');
       return false;
@@ -198,7 +216,8 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   }
 
   return (
-    <section className="learning-shell learning-create-shell" aria-label={resources.learningPlans.createAriaLabel}>
+    <>
+      <section className="learning-shell learning-create-shell" aria-label={resources.learningPlans.createAriaLabel}>
       <div className={`learning-create-content${draft ? ' learning-create-content--preview' : ''}`}>
         <div className="learning-create-heading">
           <button
@@ -283,6 +302,11 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
           </article>
         )}
       </div>
-    </section>
+      </section>
+      <AiCapacityUnavailableDialog
+        onClose={() => setCapacityUnavailable(false)}
+        open={capacityUnavailable}
+      />
+    </>
   );
 }

@@ -23,9 +23,12 @@ import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.SingleSubscriberAgentStreamPublisher;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionConstants;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
@@ -82,6 +85,8 @@ public final class DefaultAgentRuntime implements AgentRuntime {
   @Override
   public AgentRunResult execute(AgentInvocation<?> invocation) {
     AgentCancellationToken cancellationToken = new AgentCancellationToken();
+    AgentDefinition<?> definition = definitionRegistry.resolve(invocation.agentKey());
+    validateSubmissionMode(invocation.context(), definition.executionGroup());
     RuntimeRun run = prepare(invocation, cancellationToken);
     if (executor.inExecutorThread()) {
       return requireSuccess(runLoop(run, event -> true, cancellationToken));
@@ -90,7 +95,7 @@ public final class DefaultAgentRuntime implements AgentRuntime {
     CountDownLatch completed = new CountDownLatch(1);
     AtomicReference<RunOutcome> outcome = new AtomicReference<>();
     try {
-      executor.execute(() -> {
+      executor.execute(definition.executionGroup(), () -> {
         try {
           outcome.set(runLoop(run, event -> true, cancellationToken));
         } finally {
@@ -116,12 +121,16 @@ public final class DefaultAgentRuntime implements AgentRuntime {
   @Override
   public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
     AgentCancellationToken cancellationToken = new AgentCancellationToken();
+    AgentInvocation<?> candidate = Objects.requireNonNull(invocation, "Agent invocation must not be null");
+    AgentDefinition<?> definition = definitionRegistry.resolve(candidate.agentKey());
+    validateSubmissionMode(candidate.context(), definition.executionGroup());
     AtomicReference<RuntimeRun> preparedRun = new AtomicReference<>();
     return new SingleSubscriberAgentStreamPublisher(
         cancellationToken,
         executor,
+        definition.executionGroup(),
         executor.inExecutorThread(),
-        () -> preparedRun.set(prepare(invocation, cancellationToken)),
+        () -> preparedRun.set(prepare(candidate, cancellationToken)),
         eventSink -> {
           RuntimeRun run = preparedRun.get();
           if (run == null) {
@@ -172,6 +181,29 @@ public final class DefaultAgentRuntime implements AgentRuntime {
         preparedRequest.runResource().release();
       }
       throw failure;
+    }
+  }
+
+  /**
+   * CHILD 只能继承一个正在运行的父 Agent 线程及其执行组，顶层模式不得借此绕过舱壁。
+   */
+  private void validateSubmissionMode(AgentInvocationContext context, AgentExecutionGroup definitionGroup) {
+    boolean onAgentWorker = executor.inExecutorThread();
+    if (context.mode() == AgentInvocationMode.CHILD) {
+      if (!onAgentWorker) {
+        throw new IllegalStateException("Agent CHILD invocation must execute inside an Agent executor thread");
+      }
+      AgentExecutionGroup parentGroup = executor.currentExecutionGroup().orElseThrow(() ->
+          new IllegalStateException("Agent executor thread has no execution group context"));
+      if (parentGroup != definitionGroup) {
+        throw new IllegalStateException(
+            "Agent CHILD invocation execution group must match the parent execution group");
+      }
+      return;
+    }
+    if (onAgentWorker) {
+      throw new IllegalStateException(
+          "Agent " + context.mode() + " invocation must not start inside an Agent executor thread");
     }
   }
 
@@ -391,7 +423,12 @@ public final class DefaultAgentRuntime implements AgentRuntime {
       AgentErrorCode code = rejected.reason() == AgentExecutionRejectionReason.SHUTDOWN
           ? AgentErrorCode.AGENT_EXECUTOR_SHUTDOWN
           : AgentErrorCode.AGENT_EXECUTOR_OVERLOADED;
-      return new AgentException(code, rejected.getMessage(), true, Map.of(), rejected);
+      Map<String, Object> metadata = new LinkedHashMap<>();
+      metadata.put(AgentExecutionConstants.REJECTION_REASON_METADATA_KEY, rejected.reason().name());
+      if (rejected.group() != null) {
+        metadata.put(AgentExecutionConstants.EXECUTION_GROUP_METADATA_KEY, rejected.group().code());
+      }
+      return new AgentException(code, rejected.getMessage(), true, Map.copyOf(metadata), rejected);
     }
     if (failure instanceof RejectedExecutionException rejected) {
       return new AgentException(

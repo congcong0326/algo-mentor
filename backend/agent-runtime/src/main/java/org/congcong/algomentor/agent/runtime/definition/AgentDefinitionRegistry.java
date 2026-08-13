@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
@@ -16,6 +18,7 @@ public final class AgentDefinitionRegistry {
 
   private final Map<String, AgentDefinition<?>> definitionsByKey;
   private final List<AgentDefinition<?>> definitions;
+  private final Set<AgentExecutionGroup> executionGroups;
 
   public AgentDefinitionRegistry(Collection<? extends AgentDefinition<?>> definitions) {
     Collection<? extends AgentDefinition<?>> source = definitions == null ? List.of() : definitions;
@@ -23,6 +26,8 @@ public final class AgentDefinitionRegistry {
     for (AgentDefinition<?> definition : source) {
       AgentDefinition<?> candidate = Objects.requireNonNull(definition, "Agent definition must not be null");
       AgentKey<?> key = Objects.requireNonNull(candidate.key(), "Agent definition key must not be null");
+      Objects.requireNonNull(candidate.executionGroup(),
+          "Agent definition execution group must not be null: " + key.value());
       AgentDefinition<?> duplicate = registered.putIfAbsent(key.value(), candidate);
       if (duplicate != null) {
         throw new IllegalArgumentException("Duplicate agent definition key: " + key.value());
@@ -30,6 +35,9 @@ public final class AgentDefinitionRegistry {
     }
     this.definitionsByKey = Map.copyOf(registered);
     this.definitions = List.copyOf(new ArrayList<>(registered.values()));
+    this.executionGroups = Set.copyOf(this.definitions.stream()
+        .map(AgentDefinition::executionGroup)
+        .collect(java.util.stream.Collectors.toSet()));
   }
 
   public List<AgentDefinition<?>> definitions() {
@@ -38,6 +46,11 @@ public final class AgentDefinitionRegistry {
 
   public boolean isEmpty() {
     return definitions.isEmpty();
+  }
+
+  /** 当前生效 Definition 使用的稳定执行组。 */
+  public Set<AgentExecutionGroup> executionGroups() {
+    return executionGroups;
   }
 
   /** 通过类型化 key 解析 Definition，并防御装配阶段的输入类型漂移。 */

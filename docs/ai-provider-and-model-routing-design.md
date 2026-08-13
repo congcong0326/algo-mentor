@@ -36,7 +36,7 @@
 25. 数据库中的提供商和模型记录在每次业务执行开始时读取，不建设业务配置缓存。
 26. 每个提供商实例版本复用一个 SDK Client。Client 以 `providerInstanceId + updatedAt` 识别版本，配置更新后新执行使用新 Client，运行中的执行继续使用旧 Client。
 27. OpenAI 同步和流式请求共享同一个 `OpenAIClient` 和同一套 OkHttp 连接池，实例配置只保留一个 `timeoutSeconds`。
-28. OkHttp 连接池和现有 Agent `20/100 + SynchronousQueue` 线程池保持当前配置，不新增 HTTP 连接参数、provider semaphore、等待队列或 provider 并发限制。
+28. OkHttp 连接池和现有 Agent 执行组线程池保持当前 `SynchronousQueue` 约束，不新增 HTTP 连接参数、provider semaphore、等待队列或 provider 并发限制。
 29. 第一版不自动测试提供商连接，不调用远程模型列表 API，不自动发现或同步模型。
 30. 第一版不自动导入现有文件配置，也不在数据库未配置时回退 `OPENAI_*` 或 `AI_GATEWAY_*` 环境变量。
 31. 调用台账增加 `provider_instance_id` 和 `ai_model_id`，同时保留 provider 类型和上游模型名文本快照。

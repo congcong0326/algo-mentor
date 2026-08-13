@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.congcong.algomentor.agent.core.AgentExecutionOptions;
 import org.congcong.algomentor.agent.core.AgentStructuredOutputOptions;
 import org.congcong.algomentor.agent.core.StructuredOutputStrategy;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
@@ -38,6 +39,11 @@ public final class PracticeCodeReviewAgentDefinition implements AgentDefinition<
   @Override
   public AgentKey<PracticeCodeReviewAgentInput> key() {
     return KEY;
+  }
+
+  @Override
+  public AgentExecutionGroup executionGroup() {
+    return AgentExecutionGroup.PRACTICE;
   }
 
   @Override

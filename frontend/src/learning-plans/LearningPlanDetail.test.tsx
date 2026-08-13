@@ -95,6 +95,23 @@ describe('LearningPlanDetail extension orchestration', () => {
     expect(screen.queryByText('生成扩展建议失败，请稍后重试。')).not.toBeInTheDocument();
   });
 
+  it('shows a dialog when extension generation reports exhausted agent capacity', async () => {
+    streamLearningPlanExtensionProposal.mockImplementation(async (_planId, _request, options) => {
+      options.onEvent({
+        eventName: 'plan_extension_error',
+        data: { code: 'AGENT_EXECUTOR_OVERLOADED' },
+      });
+    });
+    renderDetail();
+
+    fireEvent.change(screen.getByRole('textbox', { name: '想继续学习？描述接下来的目标' }), {
+      target: { value: '继续练图论' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '生成扩展建议' }));
+
+    expect(await screen.findByRole('dialog', { name: '提示' })).toHaveTextContent('当前算力不够，请稍后重试。');
+  });
+
   it('keeps the pending extension when apply returns success false', async () => {
     applyLearningPlanExtensionProposal.mockResolvedValue(apiFailure('APPLY_FAILED', '应用扩展失败。'));
     const onPlanUpdated = vi.fn(() => Promise.resolve());

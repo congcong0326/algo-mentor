@@ -1,5 +1,7 @@
 package org.congcong.algomentor.agent.core.execution;
 
+import java.util.Optional;
+
 /**
  * Agent loop 后台任务执行边界。
  *
@@ -7,7 +9,8 @@ package org.congcong.algomentor.agent.core.execution;
  */
 public interface AgentExecutor {
 
-  void execute(Runnable task);
+  /** 使用 Definition 声明的受信执行组提交顶层 Agent 任务。 */
+  void execute(AgentExecutionGroup group, Runnable task);
 
   boolean isShutdown();
 
@@ -18,5 +21,10 @@ public interface AgentExecutor {
    */
   default boolean inExecutorThread() {
     return false;
+  }
+
+  /** 当前 Agent 工作线程继承的执行组；非 Agent 工作线程返回空。 */
+  default Optional<AgentExecutionGroup> currentExecutionGroup() {
+    return Optional.empty();
   }
 }

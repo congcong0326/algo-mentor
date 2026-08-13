@@ -2,6 +2,7 @@ import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLin
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
+import AiCapacityUnavailableDialog from '../components/AiCapacityUnavailableDialog';
 import { utf8ByteLength, useUserInputLimits } from '../config/userInputLimits';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
@@ -19,6 +20,7 @@ import {
   streamPracticeMessage,
   updatePracticeProgressStatus,
 } from '../services/api';
+import { isAgentExecutorOverloaded } from '../services/agentCapacity';
 import type {
   AgentToolEndEvent,
   AgentToolStartEvent,
@@ -495,6 +497,7 @@ export default function PracticeChatWorkbench({
   const [composerValue, setComposerValue] = useState('');
   const [status, setStatus] = useState<'loading' | 'idle' | 'streaming' | 'blocked' | 'error'>('loading');
   const [error, setError] = useState('');
+  const [capacityUnavailable, setCapacityUnavailable] = useState(false);
   const [completionUpdating, setCompletionUpdating] = useState(false);
   const [moreActionsOpen, setMoreActionsOpen] = useState(false);
   const [skipConfirmationOpen, setSkipConfirmationOpen] = useState(false);
@@ -982,6 +985,7 @@ export default function PracticeChatWorkbench({
 
     let agentRunEnded = false;
     let reviewRefreshRequested = false;
+    let agentCapacityUnavailable = false;
 
     try {
       await streamPracticeMessage(sessionId, { message: text }, {
@@ -1110,6 +1114,14 @@ export default function PracticeChatWorkbench({
           }
 
           if (event.eventName === 'error' || event.eventName === 'agent_error') {
+            if (isAgentExecutorOverloaded(event.data)) {
+              agentCapacityUnavailable = true;
+              setCapacityUnavailable(true);
+              setError(resources.common.aiCapacityUnavailable);
+              markAssistantMessageFailed(assistantMessageId, resources.common.aiCapacityUnavailable);
+              setStatus('error');
+              return;
+            }
             setError(resources.learningPlans.practiceMessageFailed);
             markAssistantMessageFailed(assistantMessageId);
             setStatus('error');
@@ -1137,8 +1149,10 @@ export default function PracticeChatWorkbench({
         if (reviewRefreshRequested) {
           setPostRunRefreshing(false);
         }
-        setError(resources.learningPlans.practiceMessageFailed);
-        markAssistantMessageFailed(assistantMessageId);
+        if (!agentCapacityUnavailable) {
+          setError(resources.learningPlans.practiceMessageFailed);
+          markAssistantMessageFailed(assistantMessageId);
+        }
         setStatus('error');
       }
     } catch (error) {
@@ -1165,8 +1179,14 @@ export default function PracticeChatWorkbench({
           return;
         }
 
-        setError(error instanceof Error ? error.message : resources.learningPlans.practiceMessageFailed);
-        markAssistantMessageFailed(assistantMessageId);
+        if (isAgentExecutorOverloaded(error)) {
+          setCapacityUnavailable(true);
+          setError(resources.common.aiCapacityUnavailable);
+          markAssistantMessageFailed(assistantMessageId, resources.common.aiCapacityUnavailable);
+        } else {
+          setError(error instanceof Error ? error.message : resources.learningPlans.practiceMessageFailed);
+          markAssistantMessageFailed(assistantMessageId);
+        }
         setStatus('error');
       }
     } finally {
@@ -1767,6 +1787,10 @@ export default function PracticeChatWorkbench({
           </section>
         </div>
       )}
+      <AiCapacityUnavailableDialog
+        onClose={() => setCapacityUnavailable(false)}
+        open={capacityUnavailable}
+      />
     </article>
   );
 }

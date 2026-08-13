@@ -1,10 +1,11 @@
 package org.congcong.algomentor.api.config;
 
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionConstants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
@@ -14,11 +15,8 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = MentorConfigurationKeys.AGENT_EXECUTOR_PREFIX)
 public class AgentExecutorProperties {
 
-  @Min(1)
-  private int corePoolSize = 20;
-
-  @Min(1)
-  private int maxPoolSize = 100;
+  /** 稳定执行组 code 到并发容量的静态映射；修改后需重启。 */
+  private Map<String, Integer> groups = defaultGroups();
 
   @NotNull
   private Duration keepAlive = Duration.ofSeconds(60);
@@ -28,11 +26,6 @@ public class AgentExecutorProperties {
 
   @NotBlank
   private String threadNamePrefix = AgentExecutionConstants.DEFAULT_THREAD_NAME_PREFIX;
-
-  @AssertTrue(message = "Agent executor core pool size must not exceed max pool size")
-  public boolean isPoolSizeRangeValid() {
-    return corePoolSize <= maxPoolSize;
-  }
 
   @AssertTrue(message = "Agent executor keep alive must be positive")
   public boolean isKeepAliveValid() {
@@ -44,20 +37,12 @@ public class AgentExecutorProperties {
     return shutdownTimeout != null && !shutdownTimeout.isNegative() && !shutdownTimeout.isZero();
   }
 
-  public int getCorePoolSize() {
-    return corePoolSize;
+  public Map<String, Integer> getGroups() {
+    return Map.copyOf(groups);
   }
 
-  public void setCorePoolSize(int corePoolSize) {
-    this.corePoolSize = corePoolSize;
-  }
-
-  public int getMaxPoolSize() {
-    return maxPoolSize;
-  }
-
-  public void setMaxPoolSize(int maxPoolSize) {
-    this.maxPoolSize = maxPoolSize;
+  public void setGroups(Map<String, Integer> groups) {
+    this.groups = groups == null ? Map.of() : new LinkedHashMap<>(groups);
   }
 
   public Duration getKeepAlive() {
@@ -82,5 +67,13 @@ public class AgentExecutorProperties {
 
   public void setThreadNamePrefix(String threadNamePrefix) {
     this.threadNamePrefix = threadNamePrefix;
+  }
+
+  private static Map<String, Integer> defaultGroups() {
+    Map<String, Integer> groups = new LinkedHashMap<>();
+    groups.put("practice", 27);
+    groups.put("learning-plan", 2);
+    groups.put("learner-profile-background", 1);
+    return groups;
   }
 }

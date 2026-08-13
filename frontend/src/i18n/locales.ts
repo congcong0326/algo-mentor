@@ -926,6 +926,8 @@ export interface LocaleResources {
     itemInputLimit: (count: number, maxCount: number, maxChars: number) => string;
     created: string;
     close: string;
+    notice: string;
+    aiCapacityUnavailable: string;
   };
   language: {
     label: string;
@@ -2541,6 +2543,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       itemInputLimit: (count, maxCount, maxChars) => `${count} / ${maxCount} 项，每项最多 ${maxChars} 字`,
       created: '创建',
       close: '关闭',
+      notice: '提示',
+      aiCapacityUnavailable: '当前算力不够，请稍后重试。',
     },
     language: {
       label: '语言',
@@ -4278,6 +4282,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       itemInputLimit: (count, maxCount, maxChars) => `${count} / ${maxCount} items, ${maxChars} characters each`,
       created: 'created',
       close: 'Close',
+      notice: 'Notice',
+      aiCapacityUnavailable: 'AI capacity is currently unavailable. Please try again later.',
     },
     language: {
       label: 'Language',

@@ -326,6 +326,22 @@ describe('LearningPlanCreatePage', () => {
     expect(viewButton).toHaveFocus();
   });
 
+  it('shows a dialog when learning plan generation reports exhausted agent capacity', async () => {
+    streamLearningPlanDraftMock.mockImplementation(async (_request, options) => {
+      options.onEvent({
+        eventName: 'draft_error',
+        data: { code: 'AGENT_EXECUTOR_OVERLOADED' },
+      });
+    });
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'AI 个性化生成' }));
+    fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
+
+    expect(await screen.findByRole('dialog', { name: '提示' })).toHaveTextContent('当前算力不够，请稍后重试。');
+  });
+
   it('reloads localized templates and preserves the selected template across UI locale changes', async () => {
     getLearningPlanTemplatesMock
       .mockResolvedValueOnce(apiResponse(templateSummaries()))

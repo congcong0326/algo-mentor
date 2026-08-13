@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class SingleSubscriberAgentStreamPublisherTest {
   private static final AtomicInteger WORKER_SEQUENCE = new AtomicInteger(1);
   private static final AgentExecutor TEST_EXECUTOR = new AgentExecutor() {
     @Override
-    public void execute(Runnable task) {
+    public void execute(AgentExecutionGroup group, Runnable task) {
       Thread worker = new Thread(task, "agent-publisher-test-" + WORKER_SEQUENCE.getAndIncrement());
       worker.setDaemon(true);
       worker.start();
@@ -164,7 +165,7 @@ class SingleSubscriberAgentStreamPublisherTest {
     });
     AgentExecutor pooledExecutor = new AgentExecutor() {
       @Override
-      public void execute(Runnable task) {
+      public void execute(AgentExecutionGroup group, Runnable task) {
         workerPool.execute(task);
       }
 

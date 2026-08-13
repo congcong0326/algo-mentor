@@ -40,7 +40,7 @@
 截至本文编写时，仓库具备以下基础：
 
 - `AgentLoopRunner` 已实现流式模型调用、工具执行、生命周期、权限、压缩、结构化最终输出和取消。
-- `ManagedAgentExecutor` 使用 `20/100 + SynchronousQueue + AbortPolicy`，但 `AgentExecutor` 尚不能判断当前线程是否为 Agent 工作线程。
+- `ManagedAgentExecutor` 使用执行组容量总和推导的物理上限、`SynchronousQueue + AbortPolicy`，并通过受信执行组与线程上下文识别 Agent 工作线程。
 - `AgentToolRegistry` 只有全量 `specs()` 和按名称 `find()`，尚无 run-local 只读视图。
 - `AgentRequest` 已承载 messages、metadata 和 `AgentExecutionOptions`，但最大 step 和工具集合仍由 runner 构造期固定。
 - `AgentConversationRepository` 和 PostgreSQL 实现已能创建或复用 task、turn、user message 和 run。

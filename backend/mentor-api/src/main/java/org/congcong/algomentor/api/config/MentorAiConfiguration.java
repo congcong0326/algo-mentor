@@ -56,6 +56,7 @@ import org.congcong.algomentor.ai.governance.accounting.AiLlmCallAccountingServi
 import org.congcong.algomentor.ai.governance.execution.AiRunGovernanceService;
 import org.congcong.algomentor.ai.governance.metrics.AiProviderCallMetricsLlmGateway;
 import org.congcong.algomentor.api.agent.execution.ManagedAgentExecutor;
+import org.congcong.algomentor.api.agent.execution.AgentExecutionBulkheadRegistry;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
@@ -108,12 +109,18 @@ public class MentorAiConfiguration {
   }
 
   @Bean(destroyMethod = "shutdown")
+  @ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.AGENT_RUNTIME_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = false)
   @ConditionalOnMissingBean(AgentExecutor.class)
   public ManagedAgentExecutor agentExecutor(
       AgentExecutorProperties properties,
+      AgentExecutionBulkheadRegistry bulkheadRegistry,
       ObjectProvider<MeterRegistry> meterRegistry
   ) {
-    return new ManagedAgentExecutor(properties, meterRegistry.getIfAvailable());
+    return new ManagedAgentExecutor(properties, bulkheadRegistry, meterRegistry.getIfAvailable());
   }
 
   @Bean
@@ -364,6 +371,21 @@ public class MentorAiConfiguration {
       }
     }));
     return new AgentDefinitionRegistry(definitions);
+  }
+
+  @Bean
+  @ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.AGENT_RUNTIME_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = false)
+  @ConditionalOnMissingBean
+  public AgentExecutionBulkheadRegistry agentExecutionBulkheadRegistry(
+      AgentDefinitionRegistry definitionRegistry,
+      AgentExecutorProperties properties,
+      ObjectProvider<MeterRegistry> meterRegistry
+  ) {
+    return new AgentExecutionBulkheadRegistry(definitionRegistry, properties, meterRegistry.getIfAvailable());
   }
 
   @Bean

@@ -5,6 +5,7 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionConstants;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
@@ -22,6 +23,7 @@ public final class SingleSubscriberAgentStreamPublisher
   private final Object signalMonitor = new Object();
   private final AgentCancellationToken cancellationToken;
   private final AgentExecutor executor;
+  private final AgentExecutionGroup executionGroup;
   private final boolean inlineExecution;
   private final Runnable beforeSubmission;
   private final Consumer<AgentStreamEventSink> workerTask;
@@ -40,7 +42,7 @@ public final class SingleSubscriberAgentStreamPublisher
       Consumer<AgentStreamEventSink> workerTask,
       Consumer<Throwable> submissionFailureHandler
   ) {
-    this(cancellationToken, executor, false, () -> {}, workerTask, submissionFailureHandler);
+    this(cancellationToken, executor, AgentExecutionGroup.PRACTICE, false, () -> {}, workerTask, submissionFailureHandler);
   }
 
   /**
@@ -57,8 +59,29 @@ public final class SingleSubscriberAgentStreamPublisher
       Consumer<AgentStreamEventSink> workerTask,
       Consumer<Throwable> submissionFailureHandler
   ) {
+    this(
+        cancellationToken,
+        executor,
+        AgentExecutionGroup.PRACTICE,
+        inlineExecution,
+        beforeSubmission,
+        workerTask,
+        submissionFailureHandler);
+  }
+
+  /** 创建携带受信 Definition 执行组的单订阅事件出口。 */
+  public SingleSubscriberAgentStreamPublisher(
+      AgentCancellationToken cancellationToken,
+      AgentExecutor executor,
+      AgentExecutionGroup executionGroup,
+      boolean inlineExecution,
+      Runnable beforeSubmission,
+      Consumer<AgentStreamEventSink> workerTask,
+      Consumer<Throwable> submissionFailureHandler
+  ) {
     this.cancellationToken = Objects.requireNonNull(cancellationToken, "cancellationToken must not be null");
     this.executor = Objects.requireNonNull(executor, "executor must not be null");
+    this.executionGroup = Objects.requireNonNull(executionGroup, "Agent execution group must not be null");
     this.inlineExecution = inlineExecution;
     this.beforeSubmission = Objects.requireNonNull(beforeSubmission, "before submission task must not be null");
     this.workerTask = Objects.requireNonNull(workerTask, "workerTask must not be null");
@@ -140,7 +163,7 @@ public final class SingleSubscriberAgentStreamPublisher
       if (inlineExecution) {
         runWorker();
       } else {
-        executor.execute(this::runWorker);
+        executor.execute(executionGroup, this::runWorker);
       }
     } catch (RejectedExecutionException rejected) {
       handleSubmissionFailure(toAgentException(rejected));
@@ -185,11 +208,17 @@ public final class SingleSubscriberAgentStreamPublisher
     String message = reason == AgentExecutionRejectionReason.SHUTDOWN
         ? "Agent service is shutting down"
         : "Agent service is temporarily busy";
+    java.util.Map<String, Object> metadata = new java.util.LinkedHashMap<>();
+    metadata.put(AgentExecutionConstants.REJECTION_REASON_METADATA_KEY, reason.name());
+    if (rejected instanceof AgentExecutionRejectedException executionRejected
+        && executionRejected.group() != null) {
+      metadata.put(AgentExecutionConstants.EXECUTION_GROUP_METADATA_KEY, executionRejected.group().code());
+    }
     return new AgentException(
         code,
         message,
         true,
-        java.util.Map.of(AgentExecutionConstants.REJECTION_REASON_METADATA_KEY, reason.name()),
+        java.util.Map.copyOf(metadata),
         rejected);
   }
 

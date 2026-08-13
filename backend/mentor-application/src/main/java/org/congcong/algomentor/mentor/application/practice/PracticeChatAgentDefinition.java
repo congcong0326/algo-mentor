@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentLoopPolicy;
@@ -37,6 +38,11 @@ public final class PracticeChatAgentDefinition implements AgentDefinition<Practi
   @Override
   public AgentKey<PracticeChatAgentInput> key() {
     return KEY;
+  }
+
+  @Override
+  public AgentExecutionGroup executionGroup() {
+    return AgentExecutionGroup.PRACTICE;
   }
 
   @Override

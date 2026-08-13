@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.compaction.RunMessageCompactionResult;
 import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompaction;
@@ -35,7 +36,7 @@ public class AgentLoopRunner {
   private static final String DEFAULT_PURPOSE = "practice-chat";
   private static final AgentExecutor UNCONFIGURED_EXECUTOR = new AgentExecutor() {
     @Override
-    public void execute(Runnable task) {
+    public void execute(AgentExecutionGroup group, Runnable task) {
       throw new IllegalStateException("Agent executor must be configured before starting a stream");
     }
 
@@ -452,6 +453,9 @@ public class AgentLoopRunner {
     return new SingleSubscriberAgentStreamPublisher(
         cancellationToken,
         executor,
+        AgentExecutionGroup.PRACTICE,
+        false,
+        () -> {},
         eventSink -> loopEngine.run(request, legacyExecution, eventSink, cancellationToken),
         failure -> failRunSubmission(request, cancellationToken, failure));
   }

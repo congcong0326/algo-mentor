@@ -1787,6 +1787,8 @@ export type SseEventName =
   | 'plan_extension_error';
 
 export const AGENT_RUN_IN_PROGRESS_CODE = 'AGENT_RUN_IN_PROGRESS';
+/** Agent 执行线程池或分组容量已满，当前请求可在稍后重试。 */
+export const AGENT_EXECUTOR_OVERLOADED_CODE = 'AGENT_EXECUTOR_OVERLOADED';
 
 export interface SseStreamEvent {
   eventName: SseEventName;

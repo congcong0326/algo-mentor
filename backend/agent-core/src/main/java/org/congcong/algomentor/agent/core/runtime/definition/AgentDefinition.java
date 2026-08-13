@@ -1,12 +1,16 @@
 package org.congcong.algomentor.agent.core.runtime.definition;
 
 import java.util.List;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 
 /** 不保存单次调用状态的 Agent 场景执行定义。 */
 public interface AgentDefinition<I> {
 
   AgentKey<I> key();
+
+  /** 当前场景顶层执行时必须使用的稳定业务执行组。 */
+  AgentExecutionGroup executionGroup();
 
   AgentLoopPolicy loopPolicy();
 
