@@ -17,14 +17,15 @@ class LearnerMemoryCodeReviewBatchConsumerTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void consumesOnlyOneStrictFiveMessageUserBatchAndNeverThrowsCallbackFailures() {
+  void consumesOnlyOneStrictFiveMessageUserBatchAndPropagatesFailuresForQueueRetry() {
     RecordingFactRepository facts = new RecordingFactRepository();
     RecordingUpdateService updates = new RecordingUpdateService();
     RecordingMetrics metrics = new RecordingMetrics();
     LearnerMemoryCodeReviewBatchConsumer consumer = new LearnerMemoryCodeReviewBatchConsumer(objectMapper, facts, updates, metrics);
 
     consumer.consume(messages(7L, List.of(1L, 2L, 3L, 4L, 5L)));
-    consumer.consume(messages(7L, List.of(1L, 2L, 3L, 4L, 4L)));
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> consumer.consume(messages(7L, List.of(1L, 2L, 3L, 4L, 4L))))
+        .isInstanceOf(IllegalArgumentException.class);
 
     assertThat(consumer.topics()).containsExactly(LearnerMemoryCodeReviewQueueContracts.TOPIC);
     assertThat(consumer.policy().batchSize()).isEqualTo(LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE);
@@ -32,9 +33,7 @@ class LearnerMemoryCodeReviewBatchConsumerTest {
     assertThat(updates.calls).hasSize(1);
     assertThat(updates.calls.get(0)).extracting(LearnerMemoryCodeReviewFact::reviewId)
         .containsExactly(1L, 2L, 3L, 4L, 5L);
-    assertThat(metrics.statuses).containsExactly(
-        LearnerMemoryRunContract.Status.NO_CHANGE,
-        LearnerMemoryRunContract.Status.FAILED);
+    assertThat(metrics.statuses).containsExactly(LearnerMemoryRunContract.Status.NO_CHANGE);
   }
 
   @Test
@@ -46,21 +45,19 @@ class LearnerMemoryCodeReviewBatchConsumerTest {
 
     List<QueueMessage> crossUser = new ArrayList<>(messages(7L, List.of(1L, 2L, 3L, 4L, 5L)));
     crossUser.set(4, message(5L, 8L, "{\"reviewId\":5}"));
-    consumer.consume(crossUser);
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> consumer.consume(crossUser)).isInstanceOf(IllegalArgumentException.class);
 
     List<QueueMessage> unknownPayload = new ArrayList<>(messages(7L, List.of(1L, 2L, 3L, 4L, 5L)));
     unknownPayload.set(4, message(5L, 7L, "{\"reviewId\":5,\"unexpected\":true}"));
-    consumer.consume(unknownPayload);
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> consumer.consume(unknownPayload)).isInstanceOf(IllegalArgumentException.class);
 
     facts.omitLastFact = true;
-    consumer.consume(messages(7L, List.of(1L, 2L, 3L, 4L, 5L)));
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> consumer.consume(messages(7L, List.of(1L, 2L, 3L, 4L, 5L))))
+        .isInstanceOf(IllegalArgumentException.class);
 
     assertThat(facts.calls).hasSize(1);
     assertThat(updates.calls).isEmpty();
-    assertThat(metrics.statuses).containsExactly(
-        LearnerMemoryRunContract.Status.FAILED,
-        LearnerMemoryRunContract.Status.FAILED,
-        LearnerMemoryRunContract.Status.FAILED);
+    assertThat(metrics.statuses).isEmpty();
   }
 
   private List<QueueMessage> messages(long userId, List<Long> reviewIds) {
@@ -125,6 +122,12 @@ class LearnerMemoryCodeReviewBatchConsumerTest {
     public LearnerMemoryCodeReviewUpdateResult update(long userId, List<LearnerMemoryCodeReviewFact> batchFacts) {
       calls.add(List.copyOf(batchFacts));
       return new LearnerMemoryCodeReviewUpdateResult(LearnerMemoryCodeReviewUpdateResult.Status.NO_CHANGE, 1, 0);
+    }
+
+    @Override
+    public LearnerMemoryCodeReviewUpdateResult update(
+        long userId, List<LearnerMemoryCodeReviewFact> batchFacts, int deliveryAttempt) {
+      return update(userId, batchFacts);
     }
   }
 

@@ -264,6 +264,12 @@
   <update id="bindAgentRun">
     UPDATE learner_memory_update_run SET agent_run_id = #{agentRunId} WHERE id = #{updateRunId}
   </update>
+  <update id="restartFailedUpdateRun">
+    UPDATE learner_memory_update_run
+    SET status = 'RUNNING', agent_run_id = NULL, operation_count = 0, tool_call_count = 0, failure_code = NULL,
+        started_at = #{restartedAt}, completed_at = NULL
+    WHERE id = #{updateRunId} AND status = 'FAILED'
+  </update>
   <update id="completeUpdateRun">
     UPDATE learner_memory_update_run
     SET status = #{status}, operation_count = #{operationCount}, tool_call_count = #{toolCallCount}, failure_code = #{failureCode}, completed_at = #{completedAt}

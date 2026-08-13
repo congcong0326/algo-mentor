@@ -390,17 +390,19 @@ algo-mentor:
 
 消费节点停机期间，新消息仍能正常入库并等待后续消费。
 
-### 6.5 最多一次派发与状态流转
+### 6.5 成功确认、至少一次派发与状态流转
 
-第一版采用最多一次派发语义，状态链路为：
+队列采用至少一次派发语义，状态链路为：
 
 ```text
-PENDING -> SUCCEEDED
+PENDING -> PROCESSING -> SUCCEEDED
+             |
+             +------> PENDING（退避重试）或 FAILED（告警并停止 topic）
 ```
 
-worker 在一个短事务中查询已提交且满足派发条件的 `PENDING` 消息，并按本次选定的 `messageId` 将单条消息或整批消息更新为 `SUCCEEDED`。事务提交成功后，才在事务外调用业务消费者；数据库事务失败时不派发消息。
+worker 在一个短事务中查询已提交且满足派发条件的 `PENDING` 消息，并按本次选定的 `messageId` 将单条消息或整批消息更新为 `PROCESSING`，同时写入租约。事务提交成功后，在事务外调用业务消费者；业务成功后再用租约确认 `SUCCEEDED`。
 
-`SUCCEEDED` 只表示消息已经成功出队，不表示业务消费者执行成功。如果节点在事务提交后、调用业务消费者前退出，或者业务消费者执行失败，消息不会重新派发。第一版明确接受该丢失窗口，不提供至少一次或 exactly-once 保证。
+`SUCCEEDED` 只表示业务消费者已成功处理并完成确认。若节点在业务成功、确认前退出，或 callback 失败，消息可能再次投递，因此业务 callback 必须具备幂等性。连续失败达到最大次数后转为 `FAILED`，记录失败原因、告警并停止对应 topic worker；`FAILED` 不自动重放。
 
 生产者和消费者并发时遵循以下规则：
 
@@ -410,7 +412,7 @@ worker 在一个短事务中查询已提交且满足派发条件的 `PENDING` �
 - 出队事务只按本次选定的 `messageId` 更新状态；
 - 唯一消费节点和每个 `topic` 的单线程 worker 共同保证同一消息不会被两个消费者同时选中。
 
-第一版不增加 `PROCESSING`、租约或消费所有权字段，也不要求业务消费者为队列重复派发实现幂等保护。
+消息通过 `PROCESSING`、`lease_token` 和 `lease_expires_at` 记录消费所有权；租约到期后可回收并重新投递。业务消费者必须使用稳定业务幂等键抵御重复投递。
 
 出队成功的消息不立即物理删除，而是保留为 `SUCCEEDED`，便于短期排查和确认队列处理结果。队列框架通过定时清理任务删除超过保留期的 `SUCCEEDED` 数据，业务消费者不参与清理。
 
@@ -427,7 +429,7 @@ algo-mentor:
 
 清理任务只在 `algo-mentor.queue.consumer.enabled=true` 的节点运行，使用固定延迟调度。每次执行一个短事务，按 `succeeded_at, id` 顺序最多删除 1,000 条超过 7 天的 `SUCCEEDED` 数据，不在单次调度中循环清空积压。
 
-业务消费者失败后的处理属于业务自身职责，第一版队列不提供自动重试、退避、死信或人工回放，也不允许将 `SUCCEEDED` 重置为 `PENDING`。确需补偿时，由业务重新发布一条具有新 `messageId` 的消息。
+业务消费者失败由队列统一执行指数退避重试；达到 `max-attempts` 后进入 `FAILED` 并告警、停止 topic。队列不提供死信或自动人工回放；确需恢复时，必须通过显式运维动作重新置为 `PENDING`，不得修改历史 `SUCCEEDED` 记录。
 
 ### 6.6 第一版只支持单播
 
@@ -453,7 +455,7 @@ CREATE TABLE queue_message (
   CONSTRAINT ck_queue_message_topic CHECK (BTRIM(topic) <> ''),
   CONSTRAINT ck_queue_message_key CHECK (BTRIM(message_key) <> ''),
   CONSTRAINT ck_queue_message_status CHECK (
-    status IN ('PENDING', 'SUCCEEDED')
+    status IN ('PENDING', 'PROCESSING', 'SUCCEEDED', 'FAILED')
   ),
   CONSTRAINT ck_queue_message_succeeded_at CHECK (
     (status = 'PENDING' AND succeeded_at IS NULL)
@@ -572,6 +574,6 @@ Code Review 触发：同一用户每 5 条正式 Review 消息触发一次消费
 标签归因：Code Review 模型从受信候选中确定 affectedTagIds，画像模型负责聚合更新
 Code Review 通用观察：只更新 PROBLEM_SOLVING_APPROACH 和 IMPLEMENTATION_AND_ERROR_PATTERN
 扩展方式：Policy/Resolver + Observer/Composite
-异步基础：PostgreSQL 单播持久化队列，topic 唯一路由，每个 topic 单线程消费，JSON/TEXT value 默认上限 64 KiB，最多一次派发，SUCCEEDED 默认保留 7 天
+异步基础：PostgreSQL 单播持久化队列，topic 唯一路由，每个 topic 单线程消费，JSON/TEXT value 默认上限 64 KiB，成功确认的至少一次派发，SUCCEEDED 默认保留 7 天
 明确不做：通用 MemoryFactory、向量召回、运行时插件平台
 ```

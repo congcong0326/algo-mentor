@@ -3,6 +3,8 @@ package org.congcong.algomentor.queue.runtime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
+import org.congcong.algomentor.queue.alert.QueueAlertNotifier;
+import org.congcong.algomentor.queue.alert.LoggingQueueAlertNotifier;
 import org.congcong.algomentor.queue.config.PersistentQueueProperties;
 import org.congcong.algomentor.queue.dispatch.QueueDispatchOutcome;
 import org.congcong.algomentor.queue.dispatch.QueueDispatcher;
@@ -18,6 +20,7 @@ public class QueueTopicWorker implements Runnable {
   private final QueueDispatcher dispatcher;
   private final PersistentQueueProperties.Consumer consumerProperties;
   private final QueueMetrics metrics;
+  private final QueueAlertNotifier alertNotifier;
   private final AtomicBoolean running = new AtomicBoolean(true);
   private volatile Thread thread;
 
@@ -26,14 +29,25 @@ public class QueueTopicWorker implements Runnable {
       QueueDispatcher dispatcher,
       PersistentQueueProperties.Consumer consumerProperties,
       QueueMetrics metrics) {
+    this(topic, dispatcher, consumerProperties, metrics, new LoggingQueueAlertNotifier());
+  }
+
+  public QueueTopicWorker(
+      String topic,
+      QueueDispatcher dispatcher,
+      PersistentQueueProperties.Consumer consumerProperties,
+      QueueMetrics metrics,
+      QueueAlertNotifier alertNotifier) {
     this.topic = topic;
     this.dispatcher = dispatcher;
     this.consumerProperties = consumerProperties;
     this.metrics = metrics;
+    this.alertNotifier = alertNotifier;
   }
 
   @Override
   public void run() {
+    boolean terminalFailure = false;
     thread = Thread.currentThread();
     transition(QueueWorkerState.STARTING);
     transition(QueueWorkerState.RUNNING);
@@ -42,6 +56,14 @@ public class QueueTopicWorker implements Runnable {
         try {
           List<QueueDispatchOutcome> outcomes = dispatcher.dispatchRound(topic, running::get);
           outcomes.forEach(outcome -> metrics.recordDispatch(topic, outcome));
+          if (outcomes.contains(QueueDispatchOutcome.CALLBACK_TERMINAL_FAILURE)) {
+            metrics.recordTerminalFailure(topic);
+            dispatcher.takeTerminalFailure(topic).ifPresent(alertNotifier::notifyTerminalFailure);
+            transition(QueueWorkerState.FAILED_STOPPED);
+            terminalFailure = true;
+            running.set(false);
+            break;
+          }
           if (outcomes.stream().noneMatch(outcome -> outcome != QueueDispatchOutcome.NO_ELIGIBLE_KEY)) {
             waitForPollInterval();
           }
@@ -54,7 +76,7 @@ public class QueueTopicWorker implements Runnable {
         }
       }
     } finally {
-      transition(QueueWorkerState.STOPPED);
+      transition(terminalFailure ? QueueWorkerState.FAILED_STOPPED : QueueWorkerState.STOPPED);
       thread = null;
     }
   }

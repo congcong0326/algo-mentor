@@ -3,6 +3,7 @@ package org.congcong.algomentor.queue.repository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.congcong.algomentor.queue.model.QueueMessage;
 import org.congcong.algomentor.queue.dispatch.QueueEligibleKey;
 
@@ -17,7 +18,21 @@ public interface QueueMessageRepository {
 
   List<QueueEligibleKey> findEligibleKeys(String topic, int batchSize);
 
-  int markSucceeded(List<Long> messageIds);
+  int reclaimExpiredProcessing(Instant now);
+
+  int claimPending(List<Long> messageIds, UUID leaseToken, Instant leaseExpiresAt, Instant now);
+
+  int markSucceeded(List<Long> messageIds, UUID leaseToken);
+
+  int retryOrFail(
+      List<Long> messageIds,
+      UUID leaseToken,
+      Instant retryAt,
+      Instant now,
+      int maxAttempts,
+      String errorType);
+
+  long countFailedByTopic(String topic);
 
   long countPendingByTopic(String topic);
 

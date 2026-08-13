@@ -2,9 +2,9 @@
 
 ## 适用范围
 
-本手册覆盖 LP-01 至 LP-13 的第一版画像闭环：正式 Code Review、受信标签、持久化队列、异步系统观察、用户声明更新和 PRACTICE_CHAT 召回。第一版不包含重试、死信、人工回放、自动选主、第二观察源、画像管理 UI 或向量召回。
+本手册覆盖 LP-01 至 LP-13 的第一版画像闭环：正式 Code Review、受信标签、持久化队列、异步系统观察、用户声明更新和 PRACTICE_CHAT 召回。第一版支持队列至少一次投递、租约和有限退避重试；不包含死信、人工回放、自动选主、第二观察源、画像管理 UI 或向量召回。
 
-队列 topic 固定为 `learner-profile.code-review.v1`，key 为用户 ID，payload v1 只含 `reviewId`。消息状态 `SUCCEEDED` 仅表示已经从队列出队，不表示业务 callback 成功。
+队列 topic 固定为 `learner-profile.code-review.v1`，key 为用户 ID，payload v1 只含 `reviewId`。消息进入 `PROCESSING` 后执行 callback，只有 callback 成功或返回 `NO_CHANGE` 才确认 `SUCCEEDED`；达到最大次数的批次进入 `FAILED`，触发告警并停止对应 topic worker。
 
 ## 发布前门禁
 
@@ -24,6 +24,10 @@
 | `algo-mentor.queue.consumer.enabled` | `false` | `QUEUE_CONSUMER_ENABLED` |
 | `algo-mentor.queue.consumer.poll-interval` | `10s` | `QUEUE_CONSUMER_POLL_INTERVAL` |
 | `algo-mentor.queue.consumer.shutdown-timeout` | `30s` | `QUEUE_CONSUMER_SHUTDOWN_TIMEOUT` |
+| `algo-mentor.queue.consumer.lease-duration` | `10m` | `QUEUE_CONSUMER_LEASE_DURATION` |
+| `algo-mentor.queue.consumer.max-attempts` | `5` | `QUEUE_CONSUMER_MAX_ATTEMPTS` |
+| `algo-mentor.queue.consumer.retry-initial-backoff` | `30s` | `QUEUE_CONSUMER_RETRY_INITIAL_BACKOFF` |
+| `algo-mentor.queue.consumer.retry-max-backoff` | `15m` | `QUEUE_CONSUMER_RETRY_MAX_BACKOFF` |
 | `algo-mentor.queue.cleanup.succeeded-retention` | `7d` | `QUEUE_CLEANUP_SUCCEEDED_RETENTION` |
 | `algo-mentor.queue.cleanup.fixed-delay` | `1h` | `QUEUE_CLEANUP_FIXED_DELAY` |
 | `algo-mentor.queue.cleanup.batch-size` | `1000` | `QUEUE_CLEANUP_BATCH_SIZE` |
@@ -65,7 +69,7 @@
 回滚顺序固定为：关闭 recall，关闭 declared update，关闭 Review 画像 consumer，关闭全局 queue worker，最后回滚应用版本。不得删除 `learner_profile_entry`、`practice_code_review_tag` 或 `queue_message`，也不得把 `SUCCEEDED` 重置为 `PENDING`。
 
 - PENDING 在 worker 重启或重新开启后可继续达到满批并处理。
-- callback 失败后的 `SUCCEEDED` 永久不自动回放，这是最多一次语义的一部分；排查只查看低敏计数和治理台账，后续补偿只能由未来新消息形成新批次。
+- callback 失败的消息回到 `PENDING` 并按指数退避重试；达到 `max-attempts` 后为 `FAILED`，告警并停止 topic。`FAILED` 不自动重放，恢复需显式运维动作。
 - 节点切换先停止旧节点，等待最多 `QUEUE_CONSUMER_SHUTDOWN_TIMEOUT`；超时后仍不改变既有消息状态，再启动新节点。
 - 画像异常或回答质量下降时，优先关闭 recall；这不影响正式 Review 的独立评分路径。
 

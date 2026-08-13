@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.congcong.algomentor.queue.config.PersistentQueueProperties;
 import org.congcong.algomentor.queue.model.QueueMessage;
 import org.congcong.algomentor.queue.repository.QueueMessageRepository;
@@ -64,13 +65,34 @@ class PostgresQueuePublisherTest {
     }
 
     @Override
-    public int markSucceeded(List<Long> messageIds) {
+    public int reclaimExpiredProcessing(Instant now) {
+      return 0;
+    }
+
+    @Override
+    public int claimPending(List<Long> messageIds, UUID leaseToken, Instant leaseExpiresAt, Instant now) {
+      return messageIds.size();
+    }
+
+    @Override
+    public int markSucceeded(List<Long> messageIds, UUID leaseToken) {
+      return messageIds.size();
+    }
+
+    @Override
+    public int retryOrFail(
+        List<Long> messageIds, UUID leaseToken, Instant retryAt, Instant now, int maxAttempts, String errorType) {
       return messageIds.size();
     }
 
     @Override
     public long countPendingByTopic(String topic) {
       return messages.stream().filter(message -> message.topic().equals(topic)).count();
+    }
+
+    @Override
+    public long countFailedByTopic(String topic) {
+      return 0;
     }
 
     @Override

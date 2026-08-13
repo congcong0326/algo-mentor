@@ -59,7 +59,7 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void marksTheQueueBatchSucceededWhenClaimCallbackFailsAndNeverReplaysIt() throws Exception {
+  void retainsTheQueueBatchForRetryWhenClaimCallbackFails() throws Exception {
     migrateLatest();
     Fixture fixture = fixture();
     publishReviews(fixture, LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE);
@@ -67,15 +67,17 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
     QueueDispatcher dispatcher = dispatcher(runtime);
 
     assertThat(dispatcher.dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
-        .containsExactly(QueueDispatchOutcome.DISPATCHED);
+        .containsExactly(QueueDispatchOutcome.CALLBACK_RETRY_SCHEDULED);
     assertThat(runtime.calls).isEqualTo(1);
-    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isEqualTo(5L);
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isZero();
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'PENDING'")).isEqualTo(5L);
     assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_update_run WHERE status = 'FAILED'")).isEqualTo(1L);
     assertThat(queryString("SELECT to_regclass('learner_profile_entry')::text")).isNull();
 
+    execute("UPDATE queue_message SET available_at = NOW() WHERE topic = ?", LearnerMemoryCodeReviewQueueContracts.TOPIC);
     assertThat(dispatcher.dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
-        .containsExactly(QueueDispatchOutcome.NO_ELIGIBLE_KEY);
-    assertThat(runtime.calls).isEqualTo(1);
+        .containsExactly(QueueDispatchOutcome.CALLBACK_RETRY_SCHEDULED);
+    assertThat(runtime.calls).isEqualTo(2);
   }
 
   @Test
@@ -131,7 +133,7 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
     return new QueueDispatcher(
         new QueueConsumerRegistry(List.of(), List.of(consumer)),
         queueRepository,
-        new QueueDequeueService(queueRepository, transactionTemplate()));
+        new QueueDequeueService(queueRepository, transactionTemplate(), new PersistentQueueProperties().getConsumer()));
   }
 
   private LearnerMemoryCodeReviewUpdateService updateService(

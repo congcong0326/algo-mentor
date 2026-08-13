@@ -112,6 +112,15 @@ public class LearnerMemoryCodeReviewUpdateService {
   }
 
   public LearnerMemoryCodeReviewUpdateResult update(long userId, List<LearnerMemoryCodeReviewFact> batchFacts) {
+    return update(userId, batchFacts, 1);
+  }
+
+  /** 队列重投时为 Agent invocation 生成新的幂等键，但保留同一批业务更新 run。 */
+  public LearnerMemoryCodeReviewUpdateResult update(
+      long userId, List<LearnerMemoryCodeReviewFact> batchFacts, int deliveryAttempt) {
+    if (deliveryAttempt < 1) {
+      throw new IllegalArgumentException("Code review memory delivery attempt is invalid");
+    }
     LearnerMemoryUpdateRun updateRun = null;
     int toolCallCount = 0;
     int windowProblemCount = 0;
@@ -120,6 +129,11 @@ public class LearnerMemoryCodeReviewUpdateService {
       List<CodeReviewVerification> batchReviews = verifiedReviews(userId, batchReviewIds);
       String idempotencyKey = backgroundIdempotencyKey(userId, batchFacts);
       updateRun = findOrCreateRun(userId, batchReviewIds, idempotencyKey);
+      if (updateRun.status() == LearnerMemoryRunContract.Status.FAILED) {
+        updateRunRepository.restartFailed(updateRun.id(), Instant.now());
+        updateRun = updateRunRepository.findById(updateRun.id())
+            .orElseThrow(() -> new IllegalStateException("Restarted code review memory run is missing"));
+      }
       if (updateRun.status().isTerminal()) {
         return terminalResult(updateRun, 0);
       }
@@ -135,7 +149,7 @@ public class LearnerMemoryCodeReviewUpdateService {
             window,
             scopeReviews,
             snapshot,
-            attemptIdempotencyKey(idempotencyKey, attempt),
+            attemptIdempotencyKey(deliveryAttemptIdempotencyKey(idempotencyKey, deliveryAttempt), attempt),
             retryOfRunId);
         DecisionRound round = decide(userId, input);
         toolCallCount = round.toolCallCount();
@@ -189,6 +203,13 @@ public class LearnerMemoryCodeReviewUpdateService {
     List<Long> reviewIds = validatedBatchReviewIds(userId, batchFacts);
     return LearnerMemoryCodeReviewConsumerConstants.BACKGROUND_IDEMPOTENCY_KEY_PREFIX
         + sha256(userId + "\u001d" + reviewIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
+  }
+
+  private static String deliveryAttemptIdempotencyKey(String idempotencyKey, int deliveryAttempt) {
+    return deliveryAttempt == 1
+        ? idempotencyKey
+        : idempotencyKey + LearnerMemoryCodeReviewConsumerConstants.BACKGROUND_RETRY_IDEMPOTENCY_KEY_SEPARATOR
+            + "delivery-" + deliveryAttempt;
   }
 
   private LearnerMemoryUpdateRun findOrCreateRun(long userId, List<Long> reviewIds, String idempotencyKey) {

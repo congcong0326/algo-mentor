@@ -65,4 +65,4 @@ WHERE status = 'ACTIVE';
 
 止损只允许前向操作：关闭 declared update、v2 consumer、recall 和必要时 queue worker，停止新增记忆读写；已经发布的画像 API 和页面保持只读，必要时由兼容新 schema 的前向补丁隐藏入口。
 
-不得重新创建旧表、回填旧正文、恢复 v1 topic 或部署依赖 `learner_profile_entry` 的旧二进制。五张新表、update run、claim revision 和 evidence 必须保留。v2 queue 未消费消息继续遵循现有最多一次语义，不增加临时重试或 DLQ。
+不得重新创建旧表、回填旧正文、恢复 v1 topic 或部署依赖 `learner_profile_entry` 的旧二进制。五张新表、update run、claim revision 和 evidence 必须保留。v2 queue 未消费消息继续遵循成功确认的至少一次语义：失败按队列配置有限重试，达到上限进入 FAILED 并告警停止 topic；不增加临时 DLQ 或自动人工回放。

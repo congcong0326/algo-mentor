@@ -753,7 +753,7 @@ mentor-application -> agent-runtime implementation classes
 - 学习计划草案、修订和扩展的流式事件及最终结构化结果不回归。
 - Topic Explanation 的 SSE 协议不回归。
 - Code Review 和画像更新的 JSON Schema、落库和失败降级不回归。
-- 后台画像队列的批量、最多一次消费和记账语义不回归。
+- 后台画像队列的批量、成功确认的至少一次消费、幂等和记账语义不回归。
 
 ### 10.4 架构验收
 

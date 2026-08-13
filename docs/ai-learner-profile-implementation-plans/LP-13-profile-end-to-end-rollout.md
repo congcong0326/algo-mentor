@@ -12,7 +12,7 @@
 
 把存储、Review 标签与原子发布、持久化队列、异步消费者、同步工具、Prompt 召回和前端状态验证为可发布闭环，并固化配置、灰度、观测和回滚门禁。
 
-完成标准：V33 基线可升级到最新；Review/标签/消息原子；5 条同用户消息触发一次画像更新；同步工具三状态可用且失败不阻断；下一 run 召回、本 run 不热重载；正式 Review不受画像影响；consumer 关闭可积压、重开按最多一次语义运行；全量构建通过。
+完成标准：V33 基线可升级到最新；Review/标签/消息原子；5 条同用户消息触发一批画像更新；同步工具三状态可用且失败不阻断；下一 run 召回、本 run 不热重载；正式 Review不受画像影响；consumer 关闭可积压、重开按成功确认的至少一次语义运行；全量构建通过。
 
 ## 2. 当前实现基线
 
@@ -26,7 +26,7 @@
 ## 3. 已确认的代码冲突或缺口
 
 1. 开发波次与生产发布顺序不同，若直接按 LP 编号上线会出现 consumer 先于稳定生产者或 Prompt 先于数据。
-2. queue `SUCCEEDED` 是已出队，不是业务成功；端到端断言不能把 callback 失败理解为可重试。
+2. queue `PROCESSING` 是已领取并持有租约；只有业务成功确认后才是 `SUCCEEDED`，callback 失败应进入队列重试。
 3. batchSize=5 导致每个 key 的 1-4 条 PENDING 可长期存在，不能只用全局 oldest pending age 判断故障。
 4. OpenAI 请求级 timeout 当前未实际生效，画像模型使用全局 provider timeout。
 5. `PersistentAgentTraceObserver` 可能保存含画像正文的最终 request snapshot，需安全确认或阻断 recall 开启。
@@ -47,7 +47,7 @@
 - 端到端测试使用真实 PostgreSQL、真实 Spring 事务/Mapper/queue dispatcher，AI 使用可编程 fake gateway，不依赖外部网络。
 - 发布先验证数据写入，再启消费，再启用户可见同步工具/Prompt。
 - 回滚优先关开关和回滚应用，保留 `learner_profile_entry`、`practice_code_review_tag`、`queue_message`。
-- PENDING 重启后继续；已经 SUCCEEDED但 callback 失败永久不回放，这是验收的一部分。
+- PENDING/过期 PROCESSING 重启后继续；callback 失败按有限重试处理，终态 FAILED 告警并停止 topic。
 
 ## 6. 领域模型、接口、常量和配置契约
 
@@ -77,7 +77,7 @@
 - 新增 `LearnerProfileFullUpgradeIT`：先 target V33，再 migrate latest、`validate()`，验证三类新表/约束/索引。
 - 原子 E2E：正式 Review、tag associations、PENDING queue row 全有或全无。
 - 画像 E2E：版本链、ACTIVE 唯一、batch apply 原子和并发 STALE。
-- 队列 E2E：满批、key 隔离、最多一次、清理和重启积压。
+- 队列 E2E：满批、key 隔离、PROCESSING/成功确认、失败重试、终态告警停止、清理和重启积压。
 - 任何迁移失败立即停止；已成功迁移不做 down migration。
 
 ## 8. 目标模块和主要文件清单
@@ -88,7 +88,7 @@
 | Modify | `backend/mentor-api/src/test/java/org/congcong/algomentor/api/support/PostgresIntegrationTestSupport.java` | 通用 target/validate helpers |
 | Create | `backend/mentor-api/src/test/java/org/congcong/algomentor/api/profile/LearnerProfileFullUpgradeIT.java` | V33 -> latest |
 | Create | `backend/mentor-api/src/test/java/org/congcong/algomentor/api/profile/LearnerProfileEndToEndIT.java` | Review -> queue -> profile -> recall |
-| Create | `backend/mentor-api/src/test/java/org/congcong/algomentor/api/profile/LearnerProfileFailureDegradationIT.java` | 失败/最多一次/降级 |
+| Create | `backend/mentor-api/src/test/java/org/congcong/algomentor/api/profile/LearnerProfileFailureDegradationIT.java` | 失败/重试/终态告警/降级 |
 | Modify | `backend/mentor-api/src/main/resources/application.yml` | 最终默认配置 |
 | Modify | `backend/mentor-api/src/main/resources/application-local.yml` | 本地显式开关示例 |
 | Modify | `.env.example` | 环境变量映射 |
@@ -124,7 +124,7 @@
 - `LearnerProfileEndToEndIT`：创建用户/题目/tag/session，提交 5 条正式 Review，断言每条消息原子入库、第五条派发后一次 AI、画像更新。
 - 同步工具：fake AI 返回 APPLIED、全部 NO_CHANGE、异常/非法输出；断言三状态和数据库原子性。
 - Prompt：同 run 工具更新后 snapshot 不变，下一 run读取新 ACTIVE；查询异常不影响聊天；Review独立 prompt 不含 profile section。
-- 停机积压：PENDING 在重启/重新启用后继续；出队提交后 callback 失败的 SUCCEEDED 不再派发。
+- 停机积压：PENDING 在重启/重新启用后继续；PROCESSING 租约到期后可重新派发，成功确认后才保留 SUCCEEDED。
 - cleanup：过期成功删除、PENDING 保留、每次不超过 1,000。
 - 前端：四状态、重复 SSE、FAILED 后 content_delta、Review/权限回归。
 
@@ -164,10 +164,10 @@ E: LP-13
 
 - 发布阻塞：trace snapshot 画像正文保留策略未获确认。
 - 发布阻塞：无法证明只有一个节点 `QUEUE_CONSUMER_ENABLED=true`。
-- 风险：最多一次丢失窗口导致观察缺口；第一版接受，必须通过 callback failure 指标暴露。
+- 风险：至少一次在确认前故障时可能重复执行，必须通过业务幂等键和重复投递指标控制；连续失败进入 FAILED 并告警停止 topic。
 - 风险：模型成本/非法输出率升高。灰度 15 分钟窗口内 callback/非法输出持续超过 5% 时关闭 consumer；Prompt 裁剪率持续超过 20% 时暂停扩大灰度并调研内容长度。
 - AI 成本阈值不在代码中写死，由内测治理预算给出；超预算立即关闭相应 feature switch。
-- 明确不以本任务引入 retry、回放或自动选主。
+- 明确不以本任务引入死信、自动回放或自动选主；队列有限重试由 LP-06/07 提供。
 
 ## 15. 可复制执行的验证命令
 
@@ -193,7 +193,7 @@ git diff --check
 - [ ] 同步工具 UPDATED/NO_CHANGE/FAILED 均可用且失败不阻断。
 - [ ] 下一 run 召回最新画像，本 run 不热重载。
 - [ ] 正式 Review评分不受画像注入。
-- [ ] PENDING 可重启续跑，SUCCEEDED callback 失败不回放。
+- [ ] PENDING/过期 PROCESSING 可重启续跑，callback 成功确认后才为 SUCCEEDED；终态 FAILED 告警并停止 topic。
 - [ ] consumer 单节点和开关切换已演练。
 - [ ] 日志、指标、trace、Token/成本通过治理审计。
 - [ ] 前后端测试、PostgreSQL IT 和全量 build 全部通过。

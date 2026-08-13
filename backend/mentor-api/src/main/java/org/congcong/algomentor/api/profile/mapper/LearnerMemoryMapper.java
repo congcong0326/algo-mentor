@@ -102,6 +102,8 @@ public interface LearnerMemoryMapper {
 
   int bindAgentRun(@Param("updateRunId") long updateRunId, @Param("agentRunId") long agentRunId);
 
+  int restartFailedUpdateRun(@Param("updateRunId") long updateRunId, @Param("restartedAt") Instant restartedAt);
+
   int completeUpdateRun(
       @Param("updateRunId") long updateRunId,
       @Param("status") LearnerMemoryRunContract.Status status,

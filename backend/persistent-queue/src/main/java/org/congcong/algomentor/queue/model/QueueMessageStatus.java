@@ -1,7 +1,9 @@
 package org.congcong.algomentor.queue.model;
 
-/** 第一版消息状态，仅表示待派发或已经出队。 */
+/** 消息处理状态；只有业务处理成功并确认后才能进入 SUCCEEDED。 */
 public enum QueueMessageStatus {
   PENDING,
-  SUCCEEDED
+  PROCESSING,
+  SUCCEEDED,
+  FAILED
 }

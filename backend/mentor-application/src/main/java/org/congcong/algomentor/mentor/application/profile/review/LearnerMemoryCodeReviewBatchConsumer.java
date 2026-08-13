@@ -13,7 +13,7 @@ import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemor
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 固定 topic 的严格满批消费者；callback 失败不可改变此前的 SUCCEEDED 出队状态。 */
+/** 固定 topic 的严格满批消费者；仅成功更新或 NO_CHANGE 时才允许队列确认消息。 */
 public final class LearnerMemoryCodeReviewBatchConsumer implements BatchQueueConsumer {
 
   private static final Logger log = LoggerFactory.getLogger(LearnerMemoryCodeReviewBatchConsumer.class);
@@ -56,24 +56,23 @@ public final class LearnerMemoryCodeReviewBatchConsumer implements BatchQueueCon
 
   @Override
   public void consume(List<QueueMessage> messages) {
-    try {
-      Batch batch = validate(messages);
-      List<LearnerMemoryCodeReviewFact> facts = factRepository.findByReviewIds(batch.userId(), batch.reviewIds());
-      if (facts.size() != batch.reviewIds().size()
-          || facts.stream().map(LearnerMemoryCodeReviewFact::reviewId).collect(java.util.stream.Collectors.toSet()).size()
-          != batch.reviewIds().size()) {
-        throw new IllegalArgumentException("Code review profile batch review ownership is invalid");
-      }
-      LearnerMemoryCodeReviewUpdateResult result = updateService.update(batch.userId(), facts);
-      metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.CODE_REVIEW_BATCH, updateStatus(result.status()));
-      log.info("Code review memory batch consumed. messageCount={} distinctReviewCount={} updateRunId={} outcome={} windowProblems={} appliedCount={}",
-          messages.size(), batch.reviewIds().size(), result.updateRunId(), result.status(),
-          result.windowProblemCount(), result.appliedCount());
-    } catch (RuntimeException exception) {
-      metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.CODE_REVIEW_BATCH, LearnerMemoryRunContract.Status.FAILED);
-      log.warn("Code review profile batch callback failed after dequeue. messageCount={} exceptionType={}",
-          messages == null ? 0 : messages.size(), exception.getClass().getSimpleName());
+    Batch batch = validate(messages);
+    List<LearnerMemoryCodeReviewFact> facts = factRepository.findByReviewIds(batch.userId(), batch.reviewIds());
+    if (facts.size() != batch.reviewIds().size()
+        || facts.stream().map(LearnerMemoryCodeReviewFact::reviewId).collect(java.util.stream.Collectors.toSet()).size()
+        != batch.reviewIds().size()) {
+      throw new IllegalArgumentException("Code review profile batch review ownership is invalid");
     }
+    int deliveryAttempt = Math.max(1, messages.stream().mapToInt(QueueMessage::deliveryAttempt).max().orElse(1));
+    LearnerMemoryCodeReviewUpdateResult result = updateService.update(batch.userId(), facts, deliveryAttempt);
+    LearnerMemoryRunContract.Status status = updateStatus(result.status());
+    metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.CODE_REVIEW_BATCH, status);
+    if (result.status() == LearnerMemoryCodeReviewUpdateResult.Status.FAILED) {
+      throw new IllegalStateException("Code review memory update did not complete successfully");
+    }
+    log.info("Code review memory batch consumed. messageCount={} distinctReviewCount={} updateRunId={} outcome={} windowProblems={} appliedCount={}",
+        messages.size(), batch.reviewIds().size(), result.updateRunId(), result.status(),
+        result.windowProblemCount(), result.appliedCount());
   }
 
   private LearnerMemoryRunContract.Status updateStatus(LearnerMemoryCodeReviewUpdateResult.Status status) {

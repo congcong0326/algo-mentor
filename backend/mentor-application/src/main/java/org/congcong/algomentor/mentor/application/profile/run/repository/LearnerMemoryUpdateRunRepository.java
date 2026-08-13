@@ -24,6 +24,9 @@ public interface LearnerMemoryUpdateRunRepository {
 
   void bindAgentRun(long updateRunId, long agentRunId);
 
+  /** 将可重试的失败 run 重开为 RUNNING，保留相同业务幂等键和触发 Review。 */
+  void restartFailed(long updateRunId, Instant restartedAt);
+
   void complete(
       long updateRunId,
       LearnerMemoryRunContract.Status status,

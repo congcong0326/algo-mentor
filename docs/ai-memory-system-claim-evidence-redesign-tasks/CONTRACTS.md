@@ -5,7 +5,7 @@
 ## 1. 产品与成本边界
 
 - Code Review 仍按用户严格积累 5 条正式 Review 后消费；1 至 4 条可以长期等待。
-- 每个满批正常最多执行一次付费更新 Agent；只保留既有最多一次 stale 重算，不增加队列重试、DLQ 或最大等待时间。
+- 每个满批使用稳定业务幂等键；队列成功确认采用至少一次语义，允许有限技术失败重试，不增加 DLQ 或最大等待时间。
 - 横向窗口最多 10 道不同题目，每题只放最新正式 Review；同题多版本只能通过历史工具按需读取。
 - 不引入向量数据库、图数据库、通用 Memory 平台或读取时 LLM 整篇改写。
 - 旧 `learner_profile_entry` 数据和 v1 topic 数据不回填、不转换、不双写。
@@ -224,4 +224,3 @@ block 只允许 `HEADING / PARAGRAPH`；span 只允许 `TEXT / SUPPORTED_TEXT`�
 - 指标 label 不使用 user ID、claim key、review ID、tag 或自由文本。
 - 最终 LLM 请求诊断快照仍按现有 30 天策略治理；重构必须确保这里只进入 bootstrap/按需读取内容，而不是全量画像或完整证据。
 - 工具大结果继续复用 `ToolResultCompactor + ToolResultStore + read_tool_result`，并保持同 run 读取校验。
-

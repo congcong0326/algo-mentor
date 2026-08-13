@@ -1199,3 +1199,7 @@ AI governance：
 在当前规模下，Shared TTL 采用 PostgreSQL 失效事件协调各节点 Caffeine：业务数据与事件同事务提交，当前节点提交后立即失效，其他节点通过增量 poller 精确失效，generation fencing 阻止在途旧 loader 回填，TTL 只负责共享链路异常时的最终兜底。
 
 该设计能够在不提前引入 Redis、不增加多个 Maven 模块的情况下支持中小规模分布式部署。未来达到明确容量或吞吐门槛后，再通过 provider 替换引入 Redis，而不重写业务缓存门面。
+
+## 二十三、部署边界
+
+Redis provider 真正落地后，本地开发直接安装运行 Redis；测试环境直接使用安装在测试机上的 Redis；生产环境 Redis 由外部基础设施提供，不纳入应用容器或生产 Compose。应用只通过环境变量或外部配置连接 Redis；缓存实例和 Redis Streams 队列实例按用途独立部署，不能共用淘汰域。完整部署约束见 `docs/deployment-topology-and-infrastructure-boundary.md`。

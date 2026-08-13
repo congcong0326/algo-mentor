@@ -2,21 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.congcong.algomentor.queue.postgres.QueueMessageMapper">
   <resultMap id="QueueMessageRowMap" type="org.congcong.algomentor.queue.postgres.QueueMessageRow">
-    <constructor><arg column="id" javaType="_long"/><arg column="topic" javaType="string"/><arg column="message_key" javaType="string"/><arg column="message_value" javaType="string"/><arg column="created_at" javaType="java.time.Instant"/></constructor>
+    <constructor><arg column="id" javaType="_long"/><arg column="topic" javaType="string"/><arg column="message_key" javaType="string"/><arg column="message_value" javaType="string"/><arg column="created_at" javaType="java.time.Instant"/><arg column="delivery_attempt" javaType="_int"/></constructor>
   </resultMap>
-  <sql id="QueueMessageColumns">id, topic, message_key, message_value, created_at</sql>
+  <sql id="QueueMessageColumns">id, topic, message_key, message_value, created_at, delivery_attempt</sql>
   <select id="insertPending" resultMap="QueueMessageRowMap" affectData="true">
     INSERT INTO queue_message (topic, message_key, message_value, status, succeeded_at) VALUES (#{topic}, #{key}, #{value}, 'PENDING', NULL) RETURNING <include refid="QueueMessageColumns"/>
   </select>
   <select id="findById" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE id = #{messageId}</select>
-  <select id="findPendingByTopicAndKey" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE topic = #{topic} AND message_key = #{key} AND status = 'PENDING' ORDER BY id</select>
-  <select id="findPendingByTopicAndKeyLimited" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE topic = #{topic} AND message_key = #{key} AND status = 'PENDING' ORDER BY id LIMIT #{limit}</select>
+  <select id="findPendingByTopicAndKey" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE topic = #{topic} AND message_key = #{key} AND status = 'PENDING' AND available_at &lt;= NOW() ORDER BY id</select>
+  <select id="findPendingByTopicAndKeyLimited" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE topic = #{topic} AND message_key = #{key} AND status = 'PENDING' AND available_at &lt;= NOW() ORDER BY id LIMIT #{limit}</select>
   <select id="findEligibleKeys" resultType="org.congcong.algomentor.queue.dispatch.QueueEligibleKey">
-    SELECT message_key AS key, MIN(id) AS oldest_message_id FROM queue_message WHERE topic = #{topic} AND status = 'PENDING'
+    SELECT message_key AS key, MIN(id) AS oldest_message_id FROM queue_message WHERE topic = #{topic} AND status = 'PENDING' AND available_at &lt;= NOW()
+    AND NOT EXISTS (
+      SELECT 1 FROM queue_message blocked
+      WHERE blocked.topic = queue_message.topic AND blocked.message_key = queue_message.message_key
+        AND blocked.status = 'PENDING' AND blocked.id &lt; queue_message.id AND blocked.available_at &gt; NOW()
+    )
     GROUP BY message_key HAVING COUNT(*) >= #{batchSize} ORDER BY MIN(id)
   </select>
-  <update id="markSucceeded">UPDATE queue_message SET status = 'SUCCEEDED', succeeded_at = NOW() WHERE status = 'PENDING' AND id IN <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">#{messageId}</foreach></update>
+  <update id="reclaimExpiredProcessing">
+    UPDATE queue_message
+    SET status = 'PENDING', lease_token = NULL, lease_expires_at = NULL, available_at = #{now}, last_error_type = 'LEASE_EXPIRED'
+    WHERE status = 'PROCESSING' AND lease_expires_at &lt;= #{now}
+  </update>
+  <update id="claimPending">
+    UPDATE queue_message
+    SET status = 'PROCESSING', delivery_attempt = delivery_attempt + 1, lease_token = #{leaseToken},
+        lease_expires_at = #{leaseExpiresAt}, last_error_type = NULL
+    WHERE status = 'PENDING' AND available_at &lt;= #{now} AND id IN
+    <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">#{messageId}</foreach>
+  </update>
+  <update id="markSucceeded">
+    UPDATE queue_message
+    SET status = 'SUCCEEDED', succeeded_at = NOW(), lease_token = NULL, lease_expires_at = NULL, available_at = NOW(), last_error_type = NULL
+    WHERE status = 'PROCESSING' AND lease_token = #{leaseToken} AND id IN
+    <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">#{messageId}</foreach>
+  </update>
+  <update id="retryOrFail">
+    UPDATE queue_message
+    SET status = CASE WHEN delivery_attempt >= #{maxAttempts} THEN 'FAILED' ELSE 'PENDING' END,
+        available_at = CASE WHEN delivery_attempt >= #{maxAttempts} THEN available_at ELSE #{retryAt} END,
+        failed_at = CASE WHEN delivery_attempt >= #{maxAttempts} THEN #{now} ELSE CAST(NULL AS TIMESTAMPTZ) END,
+        lease_token = NULL, lease_expires_at = NULL, last_error_type = #{errorType}
+    WHERE status = 'PROCESSING' AND lease_token = #{leaseToken} AND id IN
+    <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">#{messageId}</foreach>
+  </update>
   <select id="countPendingByTopic" resultType="long">SELECT COUNT(*) FROM queue_message WHERE topic = #{topic} AND status = 'PENDING'</select>
+  <select id="countFailedByTopic" resultType="long">SELECT COUNT(*) FROM queue_message WHERE topic = #{topic} AND status = 'FAILED'</select>
   <select id="findOldestPendingCreatedAt" resultType="java.time.Instant">SELECT MIN(created_at) FROM queue_message WHERE topic = #{topic} AND status = 'PENDING'</select>
   <delete id="deleteSucceededBefore">
     WITH expired AS (

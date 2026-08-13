@@ -158,7 +158,7 @@ Agent 可以自主选择证据，但服务端和 Prompt 仍需提供确定性业
 
 ## 八、可靠性上线门槛
 
-当前持久化队列采用最多一次 callback 语义：消息在调用画像业务 callback 前已经标记为 `SUCCEEDED`，callback、模型或工具失败后不会自动重试。
+当前持久化队列已优化为成功确认的至少一次 callback 语义：消息先进入 `PROCESSING`，业务 callback 成功后才标记为 `SUCCEEDED`；callback、模型或工具失败时按租约和指数退避重试，达到上限转为 `FAILED` 并告警停止 topic。
 
 多步工具 Agent 会增加以下失败点：
 

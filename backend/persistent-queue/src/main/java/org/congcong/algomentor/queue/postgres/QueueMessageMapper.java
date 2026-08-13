@@ -2,6 +2,7 @@ package org.congcong.algomentor.queue.postgres;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import org.apache.ibatis.annotations.Param;
 
 public interface QueueMessageMapper {
@@ -18,7 +19,25 @@ public interface QueueMessageMapper {
   List<org.congcong.algomentor.queue.dispatch.QueueEligibleKey> findEligibleKeys(
       @Param("topic") String topic, @Param("batchSize") int batchSize);
 
-  int markSucceeded(@Param("messageIds") List<Long> messageIds);
+  int reclaimExpiredProcessing(@Param("now") Instant now);
+
+  int claimPending(
+      @Param("messageIds") List<Long> messageIds,
+      @Param("leaseToken") UUID leaseToken,
+      @Param("leaseExpiresAt") Instant leaseExpiresAt,
+      @Param("now") Instant now);
+
+  int markSucceeded(@Param("messageIds") List<Long> messageIds, @Param("leaseToken") UUID leaseToken);
+
+  int retryOrFail(
+      @Param("messageIds") List<Long> messageIds,
+      @Param("leaseToken") UUID leaseToken,
+      @Param("retryAt") Instant retryAt,
+      @Param("now") Instant now,
+      @Param("maxAttempts") int maxAttempts,
+      @Param("errorType") String errorType);
+
+  int countFailedByTopic(@Param("topic") String topic);
 
   long countPendingByTopic(@Param("topic") String topic);
 

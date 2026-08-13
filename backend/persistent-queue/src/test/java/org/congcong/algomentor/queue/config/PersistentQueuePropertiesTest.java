@@ -15,6 +15,10 @@ class PersistentQueuePropertiesTest {
     assertThat(properties.getConsumer().isEnabled()).isFalse();
     assertThat(properties.getConsumer().getPollInterval()).isEqualTo(Duration.ofSeconds(10));
     assertThat(properties.getConsumer().getShutdownTimeout()).isEqualTo(Duration.ofSeconds(30));
+    assertThat(properties.getConsumer().getLeaseDuration()).isEqualTo(Duration.ofMinutes(10));
+    assertThat(properties.getConsumer().getMaxAttempts()).isEqualTo(5);
+    assertThat(properties.getConsumer().getRetryInitialBackoff()).isEqualTo(Duration.ofSeconds(30));
+    assertThat(properties.getConsumer().getRetryMaxBackoff()).isEqualTo(Duration.ofMinutes(15));
     assertThat(properties.getCleanup().getSucceededRetention()).isEqualTo(Duration.ofDays(7));
     assertThat(properties.getCleanup().getFixedDelay()).isEqualTo(Duration.ofHours(1));
     assertThat(properties.getCleanup().getBatchSize()).isEqualTo(1_000);
@@ -26,6 +30,10 @@ class PersistentQueuePropertiesTest {
 
     assertThatThrownBy(() -> properties.getConsumer().setPollInterval(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> properties.getConsumer().setShutdownTimeout(Duration.ofSeconds(-1))).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> properties.getConsumer().setLeaseDuration(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> properties.getConsumer().setMaxAttempts(0)).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> properties.getConsumer().setRetryInitialBackoff(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> properties.getConsumer().setRetryMaxBackoff(Duration.ofSeconds(1))).isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> properties.getCleanup().setSucceededRetention(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> properties.getCleanup().setFixedDelay(null)).isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> properties.getCleanup().setBatchSize(0)).isInstanceOf(IllegalArgumentException.class);

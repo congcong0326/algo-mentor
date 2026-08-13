@@ -1,6 +1,8 @@
 package org.congcong.algomentor.queue.config;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import org.congcong.algomentor.queue.alert.LoggingQueueAlertNotifier;
+import org.congcong.algomentor.queue.alert.QueueAlertNotifier;
 import org.congcong.algomentor.queue.PersistentQueueConstants;
 import org.congcong.algomentor.queue.consumer.BatchQueueConsumer;
 import org.congcong.algomentor.queue.consumer.QueueConsumer;
@@ -40,8 +42,16 @@ public class PersistentQueueWorkerAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public QueueDequeueService queueDequeueService(
-      QueueMessageRepository repository, PlatformTransactionManager transactionManager) {
-    return new QueueDequeueService(repository, new TransactionTemplate(transactionManager));
+      QueueMessageRepository repository,
+      PlatformTransactionManager transactionManager,
+      PersistentQueueProperties properties) {
+    return new QueueDequeueService(repository, new TransactionTemplate(transactionManager), properties.getConsumer());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public QueueAlertNotifier queueAlertNotifier() {
+    return new LoggingQueueAlertNotifier();
   }
 
   @Bean
@@ -87,8 +97,9 @@ public class PersistentQueueWorkerAutoConfiguration {
       PersistentQueueProperties properties,
       QueueMetrics metrics,
       QueueMessageRepository repository,
-      QueueCleanupScheduler cleanupScheduler) {
+      QueueCleanupScheduler cleanupScheduler,
+      QueueAlertNotifier alertNotifier) {
     return new PersistentQueueWorkerManager(
-        registry, dispatcher, properties.getConsumer(), metrics, repository, cleanupScheduler);
+        registry, dispatcher, properties.getConsumer(), metrics, repository, cleanupScheduler, alertNotifier);
   }
 }

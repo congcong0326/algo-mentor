@@ -47,6 +47,10 @@ public class PersistentQueueProperties {
     private boolean enabled;
     private Duration pollInterval = Duration.ofSeconds(10);
     private Duration shutdownTimeout = Duration.ofSeconds(30);
+    private Duration leaseDuration = Duration.ofMinutes(10);
+    private int maxAttempts = PersistentQueueConstants.DEFAULT_CONSUMER_MAX_ATTEMPTS;
+    private Duration retryInitialBackoff = Duration.ofSeconds(30);
+    private Duration retryMaxBackoff = Duration.ofMinutes(15);
 
     public boolean isEnabled() { return enabled; }
 
@@ -62,6 +66,43 @@ public class PersistentQueueProperties {
 
     public void setShutdownTimeout(Duration shutdownTimeout) {
       this.shutdownTimeout = positiveDuration(shutdownTimeout, PersistentQueueConstants.CONFIG_CONSUMER_SHUTDOWN_TIMEOUT);
+    }
+
+    public Duration getLeaseDuration() { return leaseDuration; }
+
+    public void setLeaseDuration(Duration leaseDuration) {
+      this.leaseDuration = positiveDuration(leaseDuration, PersistentQueueConstants.CONFIG_CONSUMER_LEASE_DURATION);
+    }
+
+    public int getMaxAttempts() { return maxAttempts; }
+
+    public void setMaxAttempts(int maxAttempts) {
+      if (maxAttempts < 1) {
+        throw new IllegalArgumentException(PersistentQueueConstants.CONFIG_CONSUMER_MAX_ATTEMPTS + " must be positive");
+      }
+      this.maxAttempts = maxAttempts;
+    }
+
+    public Duration getRetryInitialBackoff() { return retryInitialBackoff; }
+
+    public void setRetryInitialBackoff(Duration retryInitialBackoff) {
+      this.retryInitialBackoff = positiveDuration(
+          retryInitialBackoff, PersistentQueueConstants.CONFIG_CONSUMER_RETRY_INITIAL_BACKOFF);
+      validateBackoffRange();
+    }
+
+    public Duration getRetryMaxBackoff() { return retryMaxBackoff; }
+
+    public void setRetryMaxBackoff(Duration retryMaxBackoff) {
+      this.retryMaxBackoff = positiveDuration(retryMaxBackoff, PersistentQueueConstants.CONFIG_CONSUMER_RETRY_MAX_BACKOFF);
+      validateBackoffRange();
+    }
+
+    private void validateBackoffRange() {
+      if (retryInitialBackoff != null && retryMaxBackoff != null && retryMaxBackoff.compareTo(retryInitialBackoff) < 0) {
+        throw new IllegalArgumentException(PersistentQueueConstants.CONFIG_CONSUMER_RETRY_MAX_BACKOFF
+            + " must not be smaller than " + PersistentQueueConstants.CONFIG_CONSUMER_RETRY_INITIAL_BACKOFF);
+      }
     }
   }
 

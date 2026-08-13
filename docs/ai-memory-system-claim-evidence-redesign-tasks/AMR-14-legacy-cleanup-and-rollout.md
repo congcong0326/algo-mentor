@@ -94,7 +94,7 @@ rg -n 'learner_profile_entry|learner-profile\.code-review\.v1|LearnerProfileEntr
 - 回滚动作是关闭 declared、v2 consumer 和 recall，停止新增记忆读写；已经发布的画像 API/页面保持只读，必要时通过仍兼容新 schema 的前向补丁隐藏入口。
 - 保留五张新表、update run、claim 和 evidence；不删除新数据，不恢复旧表，不回填旧正文。
 - 不部署依赖 `learner_profile_entry` 的旧二进制；需要代码回退时必须从仍支持新 schema 的发布提交生成修复版本。
-- queue v2 中未消费消息按当前最多一次语义处理，不改造成临时重试/DLQ。
+- queue v2 中未消费消息按成功确认的至少一次语义处理；失败按配置有限重试，终态 FAILED 告警并停止 topic，不改造成临时 DLQ/自动回放。
 - runbook 给出开关、健康查询、观察指标、触发阈值和恢复开启顺序，不包含密钥或真实用户数据。
 
 ## 9. 最终测试与验收

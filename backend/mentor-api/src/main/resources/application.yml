@@ -184,6 +184,10 @@ algo-mentor:
       enabled: ${QUEUE_CONSUMER_ENABLED:false}
       poll-interval: ${QUEUE_CONSUMER_POLL_INTERVAL:10s}
       shutdown-timeout: ${QUEUE_CONSUMER_SHUTDOWN_TIMEOUT:30s}
+      lease-duration: ${QUEUE_CONSUMER_LEASE_DURATION:10m}
+      max-attempts: ${QUEUE_CONSUMER_MAX_ATTEMPTS:5}
+      retry-initial-backoff: ${QUEUE_CONSUMER_RETRY_INITIAL_BACKOFF:30s}
+      retry-max-backoff: ${QUEUE_CONSUMER_RETRY_MAX_BACKOFF:15m}
     cleanup:
       succeeded-retention: ${QUEUE_CLEANUP_SUCCEEDED_RETENTION:7d}
       fixed-delay: ${QUEUE_CLEANUP_FIXED_DELAY:1h}

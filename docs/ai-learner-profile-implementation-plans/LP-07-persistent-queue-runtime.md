@@ -138,12 +138,12 @@ algo-mentor:
 - 发布画像生产者后仍保持 disabled，确认消息稳定入库，再在唯一节点显式开启。
 - 切换节点必须先停旧节点、确认 worker 停止和当前 callback 结束，再启新节点。
 - 出现积压、异常循环或资源问题时先关闭 enabled；PENDING 保留，Publisher 继续工作。
-- 已 SUCCEEDED 消息不因关闭/重启回放。
+- 已确认 SUCCEEDED 消息不因关闭/重启回放；PROCESSING 租约到期消息可重新领取，FAILED 不自动重放。
 
 ## 14. 风险与开放项
 
 - 人工单节点配置错误会造成重复选取风险；LP-13 必须把部署检查列为硬门禁。
-- callback 超过 shutdown timeout 时应用退出可能落入最多一次丢失窗口，这是既定语义。
+- callback 超过 shutdown timeout 时应用退出可能留下 PROCESSING 租约；租约到期后由后续 worker 重新领取，业务必须具备幂等性。
 - topic 数量直接决定线程数；第一版 topic 数量小，新增 topic 需评估资源。
 - 不在本任务加入自动选主或分布式锁来掩盖运维约束。
 

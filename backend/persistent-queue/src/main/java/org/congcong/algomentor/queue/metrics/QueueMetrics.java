@@ -19,5 +19,7 @@ public interface QueueMetrics {
 
   default void recordWorkerFailure(String topic) { }
 
+  default void recordTerminalFailure(String topic) { }
+
   default void recordCleanup(int deletedCount, Duration duration) { }
 }

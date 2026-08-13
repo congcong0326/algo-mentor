@@ -12,7 +12,7 @@
 
 把正式 Review 提交、持久化队列和后台消费者切换到 `learner-memory.code-review.v2`，接通 AMR-06 更新服务，并删除所有旧 topic 队列数据。
 
-完成后，每条新正式 Review 与受信标签、v2 message 同事务提交；同一用户严格满 5 条后最多一次出队并更新 claim/evidence。
+完成后，每条新正式 Review 与受信标签、v2 message 同事务提交；同一用户严格满 5 条后形成一批，队列成功确认后更新 claim/evidence。
 
 ## 2. 必须读取
 
@@ -20,7 +20,7 @@
 - `CONTRACTS.md` 第 1、5、6、7、12 节。
 - `PracticeCodeReviewCommitService.java` 及测试。
 - `CodeReviewProfileQueueContracts.java`、Event、BatchConsumer、ConsumerConstants、Metrics 及测试。
-- `QueuePublisher.java`、`BatchQueueConsumer.java`、`QueueDispatcher.java` 的现有最多一次语义。
+- `QueuePublisher.java`、`BatchQueueConsumer.java`、`QueueDispatcher.java` 的成功确认和至少一次语义。
 - `V35__persistent_queue_message.sql` 和 queue Mapper 的 topic 查询。
 - `AgentConversationApiAutoConfiguration.java` 的 consumer/properties Bean。
 - `LearnerProfileEndToEndIT.java`、`LearnerProfileFailureDegradationIT.java` 的相关路径。
@@ -31,7 +31,7 @@
 - key 继续为 canonical 十进制 user ID。
 - payload v2 仍只有 `reviewId`，严格未知字段拒绝。
 - batch size 固定 5，不通过环境变量扩大或缩小。
-- consumer callback 失败继续被吞掉并记录；已标记 `SUCCEEDED` 的消息不恢复、不重放。
+- consumer callback 成功后才确认 `SUCCEEDED`；失败由队列有限重试，终态 `FAILED` 告警并停止 topic，FAILED 不自动重放。
 
 使用实施时下一个全局唯一迁移版本执行：
 
@@ -63,7 +63,7 @@ WHERE topic = 'learner-profile.code-review.v1';
 - 幂等 Review 不重复发布。
 - 4 条不消费，第 5 条严格触发；一题五版仍是五条消息但横向窗口只计一题。
 - 跨 user、重复 review、缺失事实、非法 payload 在 Agent 前失败。
-- callback/AI/apply 失败后 queue 仍为 SUCCEEDED，update run 为 FAILED，无部分 claim。
+- callback/AI/apply 失败后 queue 回到 PENDING 或转为 FAILED，update run 为 FAILED，无部分 claim。
 - 旧 topic 迁移后 PENDING/SUCCEEDED 均为 0，新 topic 不受影响。
 
 ## 7. 验证命令
@@ -82,12 +82,12 @@ git diff --check
 
 ## 8. 非目标与停止条件
 
-- 不改变 persistent-queue 通用最多一次模型，不增加重试、租约、DLQ 或补偿接口。
+- 不改变 persistent-queue 通用至少一次成功确认模型；不增加 DLQ 或自动补偿接口。
 - Review、标签、queue 任一无法证明同事务，或 v1 消息仍可被生产消费时不得开始最终联调。
 
 ## 9. 上下文交接
 
-记录实际清理迁移版本、v2 topic、配置前缀、原子提交测试和最多一次失败语义。不要记录 queue payload 样本之外的业务内容。
+记录实际清理迁移版本、v2 topic、配置前缀、原子提交测试、重试和终态失败语义。不要记录 queue payload 样本之外的业务内容。
 
 ## 10. 完成备注
 
@@ -99,7 +99,7 @@ git diff --check
 
 - 正式 Review 队列 topic 切换为 `learner-memory.code-review.v2`，保留 canonical 十进制 user ID key 与只含 `reviewId` 的严格 payload。
 - 新增 `V47__delete_legacy_code_review_queue_messages.sql`，删除旧 `learner-profile.code-review.v1` 的 PENDING 与 SUCCEEDED 消息，不转换为 v2。
-- 后台消费者在调用更新服务前校验五条同 topic、同用户、唯一 review ID、完整归属和 review facts；失败仍遵循 persistent queue 的最多一次语义，消息保持 `SUCCEEDED`。
+- 后台消费者在调用更新服务前校验五条同 topic、同用户、唯一 review ID、完整归属和 review facts；失败进入 persistent queue 的重试或终态 FAILED 语义。
 - 更新服务结果携带低敏 `updateRunId`，消费者只记录 run ID、窗口题目数和 operation 数；配置前缀调整为 `algo-mentor.learner-memory.code-review-consumer`，并仅在 runtime、Definition、持久化端口及 queue worker 完整可用时创建消费者。
 - 自动配置测试使用最小真实 final 服务 fixture 验证装配，避免以 Mockito mock final 编排服务。
 

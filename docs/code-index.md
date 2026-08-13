@@ -6,7 +6,7 @@
 - `pom.xml`：仓库级 Maven 聚合入口，引入 `backend` 多模块工程。
 - `pyproject.toml` / `uv.lock` / `.python-version`：测试工程 Python 3.12 + uv 环境配置，供后续 smoke/eval runner 使用。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
-- `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
+- `deploy/docker/docker-compose.yml`：可选的本地 Docker Compose 应用/PostgreSQL 便利配置；默认开发流程直接运行本机进程和本机 PostgreSQL。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
 - `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，固定移除 common pool、Agent 工作线程同步投递 SSE 和无队列执行池；执行组舱壁另见执行组设计。
 - `docs/agent-execution-group-bulkhead-design.md`：Agent 执行组舱壁隔离研发设计，定义 Definition 代码声明执行组、`27/2/1` 严格容量、按组信号量、容量总和推导物理线程池上限、CHILD 内联继承和组级指标。
@@ -22,6 +22,8 @@
 - `docs/unified-agent-foundation-refactoring-tasks/`：统一 Agent 底座的 14 个渐进披露任务文件、状态板和 `CURRENT.md`；连续执行时只读取当前任务及其明确列出的代码。
 - `docs/cache-module-v1-design.md`：第一版缓存模块研发设计，规划独立 `backend/cache` Maven 模块、三类 Caffeine 缓存区域、旁路缓存与事务提交后失效、AI/认证首批接入及未来 Redis 迁移边界。
 - `docs/cache-business-data-decisions.md`：业务缓存数据与参数决策记录，固化 AI、认证、题库和学习计划模板的缓存类型、容量、TTL、失效入口及 PostgreSQL coherence 公共参数。
+- `docs/deployment-topology-and-infrastructure-boundary.md`：部署拓扑基线，规定本地默认直接运行进程和基础设施、测试/生产环境外置 Redis，以及应用容器只交付软件进程和缓存/Streams Redis 的基础设施边界。
+- `docs/redis-test-environment-deployment.md`：当前测试环境 Redis 7.4.10 双实例部署记录、参数和验证结果。
 - `docs/agent-runtime-refactoring-implementation-plan.md`：Agent 运行态模块拆分分阶段实施计划，说明模块边界、迁移步骤、验收标准和风险点。
 - `docs/practice-chat-workbench-design.md`：题目聊天工作台研发设计，说明方案详情、题目聊天页、固定工具栏、题目状态、训练会话和 AI 聊天接口草案。
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。
@@ -49,7 +51,7 @@
 - `docs/ai-learner-profile-implementation-plans/LP-03-profile-domain-and-storage.md`：规划画像领域枚举、统一版本表、约束、索引和 MyBatis 存储边界。
 - `docs/ai-learner-profile-implementation-plans/LP-04-profile-query-and-update-services.md`：规划画像 ACTIVE 查询、`NO_CHANGE / REPLACE`、用户行锁和并发陈旧检测。
 - `docs/ai-learner-profile-implementation-plans/LP-05-persistent-queue-storage-and-publisher.md`：规划独立持久化队列模块、消息表、Publisher 和事务内发布能力。
-- `docs/ai-learner-profile-implementation-plans/LP-06-persistent-queue-dispatch.md`：规划消费者注册、严格满批、key 公平轮转和最多一次出队。
+- `docs/ai-learner-profile-implementation-plans/LP-06-persistent-queue-dispatch.md`：规划消费者注册、严格满批、key 公平轮转、成功确认和至少一次出队。
 - `docs/ai-learner-profile-implementation-plans/LP-07-persistent-queue-runtime.md`：规划 topic worker、节点开关、优雅停止、清理和队列可观测性。
 - `docs/ai-learner-profile-implementation-plans/LP-08-code-review-profile-event-publishing.md`：规划正式 Review、标签关联和画像队列消息的原子提交。
 - `docs/ai-learner-profile-implementation-plans/LP-09-code-review-profile-consumer.md`：规划五条 Review 满批触发、十题窗口和异步画像批量更新。
@@ -58,6 +60,7 @@
 - `docs/ai-learner-profile-implementation-plans/LP-12-profile-tool-frontend-status.md`：规划前端学习记忆工具状态、SSE 幂等和中英文反馈。
 - `docs/ai-learner-profile-implementation-plans/LP-13-profile-end-to-end-rollout.md`：规划画像闭环联调、配置、灰度发布、治理审计和回滚门禁。
 - `docs/ai-learner-profile-rollout-runbook.md`：画像第一版的单节点发布顺序、配置映射、观测阈值、隐私门禁和不回放回滚规则。
+- `docs/persistent-queue-success-confirmation-design.md`：持久化队列的成功确认、租约重投、失败退避、终态告警和画像批次幂等语义。
 - `docs/learner-profile-frontend-display-design.md`：学习画像页的学习记忆只读展示设计，说明页面位置、三类分组、当前用户 API、安全字段和前端状态。
 - `docs/problem-tag-modeling-spec.md`：题目标签建模完整闭环规格，说明规范化标签表、历史数组回填、seed 导入双写、题库与能力雷达读取切换、一致性校验、测试和旧数组手动删除门禁。
 - `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
@@ -121,7 +124,7 @@
 - `backend/agent-persistence-postgres`：Agent 运行态 PostgreSQL/MyBatis 持久化模块，包含 MyBatis mapper interface/XML、JSONB type handler、repository、持久化 observer、trace snapshot observer 和 agent runtime Flyway migration。
 - `backend/mentor-application`：算法学习业务应用层，用 use case 组织 Agent 调用和领域对象；conversation 包只保留 mentor 场景命令、运行结果和业务编排服务。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile`：学习者记忆 claim/evidence 领域、原子应用、声明更新、Review 批量更新、文档投影和可观测性；模型调用均在短事务外，应用阶段复核 snapshot。
-- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/review`：正式 Review 观察源，固定五条满批、十题窗口、`learner-memory.code-review.v2` 契约、严格 operations JSON 和最多一次消费语义。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/review`：正式 Review 观察源，固定五条满批、十题窗口、`learner-memory.code-review.v2` 契约、严格 operations JSON、稳定业务幂等键和至少一次消费语义。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/recall`：默认关闭的 Practice Chat claim 快照、1000 token bootstrap（上限 1500）及范围受限的记忆搜索/章节/证据工具。
 - `backend/persistent-queue`：独立持久化队列模块；存储/Publisher 与 consumer worker 分为两个有序自动配置，worker 仅在 `algo-mentor.queue.consumer.enabled=true` 时启动。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。

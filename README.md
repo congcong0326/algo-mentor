@@ -12,6 +12,8 @@
 - 构建入口：根目录 `Makefile` 统一封装构建、测试、本地运行和打包命令。
 - 文档：重要设计与模块索引放在 `docs/`，默认中文书写。
 
+部署边界：本地开发默认不容器化，应用软件、PostgreSQL、Redis 等直接部署运行，`make up` 直接启动应用进程；当前测试环境 Redis 直接安装并外部提供；生产环境 PostgreSQL、Redis 等有状态基础设施全部外置，容器化交付只包含应用软件进程。详见[部署拓扑与基础设施边界](docs/deployment-topology-and-infrastructure-boundary.md)。
+
 ## 项目结构
 
 ```text
@@ -33,10 +35,12 @@ make build
 make package
 ```
 
-本地数据库可通过以下命令启动：
+本地开发默认直接构建并启动应用进程：
 
 ```bash
-docker compose -f deploy/docker/docker-compose.yml up -d
+make up
 ```
+
+Docker Compose 仅作为可选的本地便利和可重复测试方式，不是默认开发启动方式。
 
 详细协作约定见 [AGENTS.md](AGENTS.md)。

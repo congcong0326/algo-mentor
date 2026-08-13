@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 class PersistentQueueDispatchIT extends PostgresIntegrationTestSupport {
 
   @Test
-  void dispatchesOnlyAFullTopicAndKeyBatchAfterSucceededIsCommitted() throws Exception {
+  void dispatchesOnlyAFullTopicAndKeyBatchAndConfirmsSucceededAfterCallback() throws Exception {
     migrateLatest();
     MyBatisQueueMessageRepository repository = repository();
     PostgresQueuePublisher publisher = new PostgresQueuePublisher(new ObjectMapper(), repository, new PersistentQueueProperties());
@@ -42,7 +42,7 @@ class PersistentQueueDispatchIT extends PostgresIntegrationTestSupport {
       @Override
       public void consume(List<QueueMessage> messages) {
         try {
-          assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE id IN (?, ?, ?, ?, ?) AND status = 'SUCCEEDED'",
+          assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE id IN (?, ?, ?, ?, ?) AND status = 'PROCESSING'",
               messages.get(0).messageId(), messages.get(1).messageId(), messages.get(2).messageId(),
               messages.get(3).messageId(), messages.get(4).messageId())).isEqualTo(5L);
         } catch (Exception exception) {
@@ -73,6 +73,60 @@ class PersistentQueueDispatchIT extends PostgresIntegrationTestSupport {
     assertThat(dispatcher.dispatchRound("learner-profile.test"))
         .containsExactly(QueueDispatchOutcome.NO_ELIGIBLE_KEY);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'PENDING'")).isEqualTo(1L);
+  }
+
+  @Test
+  void retainsFailedBatchForRetryInsteadOfPrematureSuccess() throws Exception {
+    migrateLatest();
+    MyBatisQueueMessageRepository repository = repository();
+    PersistentQueueProperties properties = new PersistentQueueProperties();
+    properties.getConsumer().setMaxAttempts(2);
+    PostgresQueuePublisher publisher = new PostgresQueuePublisher(new ObjectMapper(), repository, properties);
+    BatchQueueConsumer failingConsumer = new BatchQueueConsumer() {
+      @Override public Set<String> topics() { return Set.of("learner-profile.retry"); }
+      @Override public BatchConsumerPolicy policy() { return new BatchConsumerPolicy(5); }
+      @Override public void consume(List<QueueMessage> messages) { throw new IllegalStateException("expected"); }
+    };
+    QueueDispatcher dispatcher = new QueueDispatcher(
+        new QueueConsumerRegistry(List.of(), List.of(failingConsumer)), repository,
+        new QueueDequeueService(repository, transactionTemplate(), properties.getConsumer()));
+
+    for (int index = 0; index < 5; index++) publisher.publish("learner-profile.retry", "42", new Payload(index));
+
+    assertThat(dispatcher.dispatchRound("learner-profile.retry"))
+        .containsExactly(QueueDispatchOutcome.CALLBACK_RETRY_SCHEDULED);
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'PENDING' AND delivery_attempt = 1")).isEqualTo(5L);
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isZero();
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'FAILED'")).isZero();
+  }
+
+  @Test
+  void marksBatchFailedAfterMaximumAttemptsInsteadOfSkippingIt() throws Exception {
+    migrateLatest();
+    MyBatisQueueMessageRepository repository = repository();
+    PersistentQueueProperties properties = new PersistentQueueProperties();
+    properties.getConsumer().setMaxAttempts(2);
+    PostgresQueuePublisher publisher = new PostgresQueuePublisher(new ObjectMapper(), repository, properties);
+    BatchQueueConsumer failingConsumer = new BatchQueueConsumer() {
+      @Override public Set<String> topics() { return Set.of("learner-profile.terminal"); }
+      @Override public BatchConsumerPolicy policy() { return new BatchConsumerPolicy(5); }
+      @Override public void consume(List<QueueMessage> messages) { throw new IllegalStateException("expected"); }
+    };
+    QueueDispatcher dispatcher = new QueueDispatcher(
+        new QueueConsumerRegistry(List.of(), List.of(failingConsumer)), repository,
+        new QueueDequeueService(repository, transactionTemplate(), properties.getConsumer()));
+
+    for (int index = 0; index < 5; index++) publisher.publish("learner-profile.terminal", "42", new Payload(index));
+    assertThat(dispatcher.dispatchRound("learner-profile.terminal"))
+        .containsExactly(QueueDispatchOutcome.CALLBACK_RETRY_SCHEDULED);
+    execute("UPDATE queue_message SET available_at = NOW() WHERE topic = 'learner-profile.terminal'");
+
+    assertThat(dispatcher.dispatchRound("learner-profile.terminal"))
+        .containsExactly(QueueDispatchOutcome.CALLBACK_TERMINAL_FAILURE);
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'FAILED' AND delivery_attempt = 2")).isEqualTo(5L);
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'PENDING'")).isZero();
+    assertThat(dispatcher.takeTerminalFailure("learner-profile.terminal"))
+        .hasValueSatisfying(failure -> assertThat(failure.messageCount()).isEqualTo(5));
   }
 
   private MyBatisQueueMessageRepository repository() throws Exception {

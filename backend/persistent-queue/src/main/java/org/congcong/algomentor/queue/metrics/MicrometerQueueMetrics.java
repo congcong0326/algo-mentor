@@ -54,6 +54,11 @@ public class MicrometerQueueMetrics implements QueueMetrics {
   }
 
   @Override
+  public void recordTerminalFailure(String topic) {
+    Counter.builder("learner.profile.queue.terminal_failure").tag("topic", topic).register(registry).increment();
+  }
+
+  @Override
   public void recordCleanup(int deletedCount, Duration duration) {
     Counter.builder("learner.profile.queue.cleanup").tag("outcome", "completed").register(registry).increment(deletedCount);
     registry.timer("learner.profile.queue.cleanup.duration").record(duration);

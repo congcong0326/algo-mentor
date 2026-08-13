@@ -10,7 +10,7 @@
 
 ## 1. 目标与完成标准
 
-将正式 Code Review 批量画像更新从后台 direct completion 迁移为 `AgentRuntime.execute` 的 `BACKGROUND` 调用，保留严格五条满批、十题窗口、最多一次 stale retry、最多一次出队和失败降级语义。
+将正式 Code Review 批量画像更新从后台 direct completion 迁移为 `AgentRuntime.execute` 的 `BACKGROUND` 调用，保留严格五条满批、十题窗口、有限 stale retry、成功确认的至少一次出队和失败降级语义。
 
 完成后，队列 consumer 仍只负责批次校验和回调，模型判定通过统一 Agent loop 获得独立用户审计记录。
 
@@ -53,7 +53,7 @@ Definition 固定：
 - 每个逻辑批次创建归属该用户的独立审计 task/turn/run。
 - 幂等键由 userId 与排序后的受信 reviewIds 生成稳定摘要；不包含 Review 正文、代码或画像正文。
 
-Runtime deny、route 缺失或模型失败映射为现有 `FAILED` 结果。当前队列是最多一次出队，callback 失败不得把已出队消息恢复为 PENDING，也不得抛出队列重试信号。
+Runtime deny、route 缺失或模型失败映射为现有 `FAILED` 结果。队列在 callback 前保持 PROCESSING；callback 失败必须抛出队列重试信号，达到上限后转 FAILED 并告警停止 topic。
 
 ## 5. Stale retry
 
@@ -79,14 +79,14 @@ Runtime deny、route 缺失或模型失败映射为现有 `FAILED` 结果。当�
 - 合法批次只创建一个 background task/turn；stale 时增加一个 run attempt。
 - BACKGROUND 不扣额度、不加用户锁、无 parent 字段。
 - 使用后台画像独立模型 route 和 Token 台账。
-- disabled/route missing/LLM failure 后 queue message 仍保持既有最多一次语义。
+- disabled/route missing/LLM failure 后 queue message 进入有限重试；达到上限后为 FAILED 并停止 topic。
 - invalid/out-of-scope output 导致整批零写入并记录现有指标。
 - stale retry 重新加载 snapshot，第二次 stale 后停止。
 - E2E 中五条正式 Review、queue dispatch、画像更新和后续 recall 仍闭环。
 
 ## 8. 非目标
 
-- 不改变 persistent-queue 的最多一次语义。
+- 不改变 persistent-queue 的至少一次成功确认语义。
 - 不增加死信、自动回放或定时补偿。
 - 不改变满批大小、事实窗口或画像内容策略。
 
@@ -105,7 +105,7 @@ git diff --check
 
 ## 10. 停止条件
 
-BACKGROUND 误扣交互额度、写入 parent 字段、callback 失败触发队列重放、或 stale retry 产生部分写入时，不得开始 UAF-13。
+BACKGROUND 误扣交互额度、写入 parent 字段、callback 成功前确认、终态失败未告警停止、或 stale retry 产生部分写入时，不得开始 UAF-13。
 
 ## 11. 上下文交接
 
@@ -123,7 +123,7 @@ BACKGROUND 误扣交互额度、写入 parent 字段、callback 失败触发队�
   Schema、空工具和单 step。
 - 批量画像 service 改由 AgentRuntime 执行；幂等键仅由 user 与排序 review ID 摘要组成，stale retry
   复用 task/turn 并写入 retry 来源。
-- 自动配置仅在 Runtime、Definition 与领域依赖完整时创建后台 consumer；队列最多一次和失败吞没语义不变。
+- 自动配置仅在 Runtime、Definition 与领域依赖完整时创建后台 consumer；队列至少一次确认、有限重试和终态失败停止语义不变。
 
 验证：
 

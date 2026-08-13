@@ -3,6 +3,7 @@ package org.congcong.algomentor.queue.postgres;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.congcong.algomentor.queue.model.QueueMessage;
 import org.congcong.algomentor.queue.dispatch.QueueEligibleKey;
 import org.congcong.algomentor.queue.repository.QueueMessageRepository;
@@ -41,8 +42,35 @@ public class MyBatisQueueMessageRepository implements QueueMessageRepository {
   }
 
   @Override
-  public int markSucceeded(List<Long> messageIds) {
-    return messageIds == null || messageIds.isEmpty() ? 0 : mapper.markSucceeded(messageIds);
+  public int reclaimExpiredProcessing(Instant now) {
+    return mapper.reclaimExpiredProcessing(now);
+  }
+
+  @Override
+  public int claimPending(List<Long> messageIds, UUID leaseToken, Instant leaseExpiresAt, Instant now) {
+    return messageIds == null || messageIds.isEmpty() ? 0 : mapper.claimPending(messageIds, leaseToken, leaseExpiresAt, now);
+  }
+
+  @Override
+  public int markSucceeded(List<Long> messageIds, UUID leaseToken) {
+    return messageIds == null || messageIds.isEmpty() ? 0 : mapper.markSucceeded(messageIds, leaseToken);
+  }
+
+  @Override
+  public int retryOrFail(
+      List<Long> messageIds,
+      UUID leaseToken,
+      Instant retryAt,
+      Instant now,
+      int maxAttempts,
+      String errorType) {
+    return messageIds == null || messageIds.isEmpty() ? 0
+        : mapper.retryOrFail(messageIds, leaseToken, retryAt, now, maxAttempts, errorType);
+  }
+
+  @Override
+  public long countFailedByTopic(String topic) {
+    return mapper.countFailedByTopic(topic);
   }
 
   @Override
@@ -61,6 +89,6 @@ public class MyBatisQueueMessageRepository implements QueueMessageRepository {
   }
 
   private QueueMessage toMessage(QueueMessageRow row) {
-    return new QueueMessage(row.id(), row.topic(), row.key(), row.value(), row.createdAt());
+    return new QueueMessage(row.id(), row.topic(), row.key(), row.value(), row.createdAt(), row.deliveryAttempt());
   }
 }

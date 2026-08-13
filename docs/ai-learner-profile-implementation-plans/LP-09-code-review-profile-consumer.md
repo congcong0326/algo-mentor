@@ -12,12 +12,12 @@
 
 实现第一版系统观察源：同一用户每累计 5 条有效正式 Review 消息，异步聚合最近最多 10 道不同题目的最新 Review，批量更新两个通用观察和已归因标签的 TAG_MASTERY。
 
-完成后：4 条不触发、5 条同 key 恰好一次模型调用；不同用户不混批；当前批次题目必在最多 10 道窗口内；非法输出整批拒绝；NO_CHANGE 零写、REPLACE 合法版本链；消费失败不回滚 SUCCEEDED、不自动重试。
+完成后：4 条不触发、5 条同 key 形成一批；不同用户不混批；当前批次题目必在最多 10 道窗口内；非法输出整批拒绝；NO_CHANGE 零写、REPLACE 合法版本链；消费成功后队列才确认，失败可被队列至少一次重试，终态失败告警并停止 topic。
 
 ## 2. 当前实现基线
 
 - LP-08 固定 topic `learner-profile.code-review.v1`、key=userId、payload 仅 reviewId。
-- LP-06/07 提供 batchSize 满批、最多一次出队和 topic worker。
+- LP-06/07 提供 batchSize 满批、PROCESSING 租约、成功确认、失败重试和 topic worker。
 - 当前 `PracticeCodeReviewRepository` 只支持按 session/id/userMessage 查询，无法按用户构造跨题窗口。
 - Review 主表保存完整代码、Markdown、分数和建议；LP-02 关联表保存 `affectedTagIds`。
 - LP-04 提供 snapshot、全原子 batch apply 和 STALE。
@@ -27,7 +27,7 @@
 
 1. 简单 `ORDER BY created_at DESC LIMIT 10` 会把同题多版本当多题，且可能排除当前批次题目。
 2. 消费者不得加载 raw_code 或完整 review_markdown，否则扩大隐私和 token 成本。
-3. 队列在 callback 前已经 SUCCEEDED，模型/数据库失败不能通过抛异常获得重试。
+3. 队列在 callback 前处于 PROCESSING；模型/数据库失败通过抛异常进入队列重试，达到上限后进入 FAILED。
 4. 模型只能更新两个 GENERAL dimension 和本窗口已归因 tagId，必须双重白名单。
 5. 多个画像 decision 若逐条落库会形成部分成功；应与 LP-10 一致采用批次全有或全无。
 6. 场景级 provider timeout 当前不生效，需如实复用全局 timeout。
@@ -36,7 +36,7 @@
 
 范围：BatchQueueConsumer、消息解析/归属校验、轻量事实投影、10 题窗口、批量 Prompt/Schema/mapper、AI governance、全原子 apply、STALE 一次重算和指标。
 
-非目标：不接入错题复述、计划进度或聊天求助，不引入 Strategy Registry，不做 retry/dead-letter/人工回放，不更新另外两个 GENERAL dimension。
+非目标：不接入错题复述、计划进度或聊天求助，不引入 Strategy Registry，不做 dead-letter/人工回放，不更新另外两个 GENERAL dimension；FAILED 消息不自动重放。
 
 依赖：LP-02/04/06/07/08；LP-13 负责端到端与生产开启。
 
@@ -48,7 +48,7 @@
 - 同题只传最新事实；同题版本变化不用于第一版 `REVIEW_AND_GROWTH_PERFORMANCE`。
 - 输入投影仅含 problemSlug、各评分、passed、扣分原因、改进建议、affectedTagIds；不含代码、evidence 原文、完整 Markdown。
 - 模型一次返回全部 general/tag decisions；先整体验证，后一次 `applyBatch`。
-- STALE 时重建最新 snapshot 和模型输入再调用一次；再次 STALE 或任何失败只记录，不重试队列。
+- STALE 时重建最新 snapshot 和模型输入再调用一次；再次 STALE 或任何失败抛出回调异常，由队列统一重试或转为 FAILED。
 - 使用 `AiPurpose.LEARNING_CHAT`、`AiRunSource.LEARNER_PROFILE_CODE_REVIEW_BATCH`、`AiCompletionContext.background()`。
 
 ## 6. 领域模型、接口、常量和配置契约
@@ -77,7 +77,7 @@ batchSize 和 10 题窗口是固定业务契约，不通过环境修改。
 - 新增轻量 SQL 投影，不使用现有完整 `PracticeCodeReviewRow`，避免读取大字段。
 - 当前批次题目查询和历史补足查询均为只读短事务/自动提交，不持锁调用模型。
 - `applyBatch` 使用 LP-04 用户行锁和全原子事务；任一 expected token stale 时零写入。
-- queue 状态在 callback 前已是 SUCCEEDED；消费者任何失败均不修改 queue 表。
+- queue 状态在 callback 前是 PROCESSING；消费者成功后确认 SUCCEEDED，失败由队列统一回写 PENDING/FAILED。
 - 若执行计划显示跨用户/题目查询缺索引，只能新增独立 Flyway 索引迁移并补回归，不能修改既有迁移。
 
 ## 8. 目标模块和主要文件清单
@@ -107,7 +107,7 @@ batchSize 和 10 题窗口是固定业务契约，不通过环境修改。
 3. 编写 Prompt/Schema/mapper，固定两个 GENERAL 和 allowed tag 白名单。
 4. 接入 background AI governance 和全原子 apply，处理 NO_CHANGE/REPLACE/STALE。
 5. 注册 BatchQueueConsumer，捕获所有业务失败并返回正常 callback 完成。
-6. 增加消息、窗口、AI、事务、最多一次失败和端到端前置测试。
+6. 增加消息、窗口、AI、事务、失败重试/终态停止和端到端前置测试。
 
 ## 10. 每个步骤对应的测试和可观察结果
 
@@ -117,7 +117,7 @@ batchSize 和 10 题窗口是固定业务契约，不通过环境修改。
 | 2 | `CodeReviewProfileFactsIT` | 当前批次题目包含且总数 <=10，同题最新 |
 | 3 | Prompt/schema/mapper tests | 仅两 GENERAL 和已归因 tag 可通过 |
 | 4 | AI/update tests | 一次模型调用、批次原子、STALE 一次重算 |
-| 5 | callback failure tests | 失败不抛出重试语义，queue 保持 SUCCEEDED |
+| 5 | callback failure tests | 失败抛出重试语义，queue 回到 PENDING；达到上限为 FAILED |
 | 6 | queue + consumer scenario | 4 条不触发、5 条恰好一次 |
 
 ## 11. 单元测试与 PostgreSQL 集成测试设计
@@ -128,7 +128,7 @@ batchSize 和 10 题窗口是固定业务契约，不通过环境修改。
 - 模型白名单：禁止 `LEARNING_INTERACTION_AND_INDEPENDENCE`、`REVIEW_AND_GROWTH_PERFORMANCE` 和未归因 tagId。
 - 空 affectedTagIds 时仍可更新两个 GENERAL；tagAssessments 必须为空或 NO_CHANGE 范围内。
 - 4 条 PENDING 不 callback；第 5 条触发一次；第 6-9 条等待下一批。
-- LLM 超时、非法输出、apply 失败、二次 STALE 后 queue 仍 SUCCEEDED且不再自动调用。
+- LLM 超时、非法输出、apply 失败、二次 STALE 后本次 callback 失败并触发队列重试；达到上限后 FAILED 且停止 topic。
 
 ## 12. 日志、指标、隐私和 AI governance 要求
 
@@ -143,12 +143,12 @@ batchSize 和 10 题窗口是固定业务契约，不通过环境修改。
 - 先部署消费者 Bean 但 `code-review-consumer.enabled=false` 且全局 queue consumer disabled。
 - 确认 LP-08 消息稳定积压后，在唯一节点同时开启业务 consumer 与全局 worker。
 - 失败率、成本或画像异常时先关闭业务 consumer/全局 worker；PENDING 保留。
-- 已 SUCCEEDED 但 callback 失败的消息按最多一次语义永久不回放；补偿需未来发布新消息。
+- callback 成功确认后才进入 SUCCEEDED；失败消息按至少一次语义重试，达到上限进入 FAILED。FAILED 不自动重放，补偿需显式运维动作或未来发布新消息。
 - 回滚应用保留 queue/profile 数据，不修改 Review 主流程。
 
 ## 14. 风险与开放项
 
-- 最多一次语义会丢失模型失败批次，这是上游明确接受的第一版权衡，必须在运维说明中突出。
+- 至少一次语义可能因“业务成功、确认前”故障而重复执行，必须依赖稳定业务幂等键；终态失败保留失败原因并触发告警、停止 topic。
 - 10 题窗口 SQL 复杂，需用 PostgreSQL `EXPLAIN` 检查，但不在计划中预设额外索引。
 - 模型对 Review 的判断是 AI 主观事实，不得表述为真实 AC。
 - 不引入第二观察源或 Strategy Registry。
@@ -176,5 +176,5 @@ git diff --check
 - [ ] 输入不含完整代码或 Review Markdown。
 - [ ] 仅更新两个 GENERAL 和已归因 TAG_MASTERY。
 - [ ] 模型结果整批校验、画像写入全有或全无。
-- [ ] 失败后 queue 保持 SUCCEEDED且不自动重试。
+- [ ] 失败后 queue 回到 PENDING 并重试；达到上限为 FAILED、告警并停止 topic。
 - [ ] AI governance、Token/成本和低敏观测已接入。

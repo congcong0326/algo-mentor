@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.congcong.algomentor.queue.alert.QueueAlertNotifier;
 import org.congcong.algomentor.queue.config.PersistentQueueProperties;
 import org.congcong.algomentor.queue.consumer.QueueConsumerRegistry;
 import org.congcong.algomentor.queue.dispatch.QueueDispatcher;
@@ -20,6 +21,7 @@ public class PersistentQueueWorkerManager implements SmartLifecycle {
   private final QueueMetrics metrics;
   private final QueueMessageRepository repository;
   private final QueueCleanupScheduler cleanupScheduler;
+  private final QueueAlertNotifier alertNotifier;
   private final Map<String, QueueTopicWorker> workers = new LinkedHashMap<>();
   private final Map<String, ExecutorService> executors = new LinkedHashMap<>();
   private volatile boolean running;
@@ -30,13 +32,15 @@ public class PersistentQueueWorkerManager implements SmartLifecycle {
       PersistentQueueProperties.Consumer consumerProperties,
       QueueMetrics metrics,
       QueueMessageRepository repository,
-      QueueCleanupScheduler cleanupScheduler) {
+      QueueCleanupScheduler cleanupScheduler,
+      QueueAlertNotifier alertNotifier) {
     this.registry = registry;
     this.dispatcher = dispatcher;
     this.consumerProperties = consumerProperties;
     this.metrics = metrics;
     this.repository = repository;
     this.cleanupScheduler = cleanupScheduler;
+    this.alertNotifier = alertNotifier;
   }
 
   @Override
@@ -44,7 +48,7 @@ public class PersistentQueueWorkerManager implements SmartLifecycle {
     if (running) return;
     metrics.bindTopics(registry.topics(), repository);
     for (String topic : registry.topics()) {
-      QueueTopicWorker worker = new QueueTopicWorker(topic, dispatcher, consumerProperties, metrics);
+      QueueTopicWorker worker = new QueueTopicWorker(topic, dispatcher, consumerProperties, metrics, alertNotifier);
       ExecutorService executor = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "persistent-queue-" + topic);
         thread.setDaemon(true);

@@ -1183,4 +1183,4 @@ mentor-api/.../profile/
 12. 是否接受画像 API 每个 citation 只返回最多 2 条 evidence 预览，完整列表通过 statement evidence endpoint 懒加载。
 13. 是否接受 Review evidence 使用 `ON DELETE RESTRICT`，未来删除提交或 Session 前必须先处理相关 memory claim。
 14. 是否接受第一版只展示来源，不同步实现用户拒绝和抑制操作。
-15. 是否保留当前最多一次批处理失败语义，还是只为同一 5 条批次增加一次技术失败重试；这不会改变满 5 条和非实时策略。
+15. 至少一次批处理的业务幂等键、最大失败次数、告警接收方和 FAILED 运维恢复权限；这不会改变满 5 条和非实时策略。

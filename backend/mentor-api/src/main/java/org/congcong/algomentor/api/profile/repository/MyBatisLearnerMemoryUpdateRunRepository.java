@@ -75,6 +75,14 @@ public class MyBatisLearnerMemoryUpdateRunRepository implements LearnerMemoryUpd
   }
 
   @Override
+  public void restartFailed(long updateRunId, Instant restartedAt) {
+    requirePositive(updateRunId, "update run id");
+    if (restartedAt == null || mapper.restartFailedUpdateRun(updateRunId, restartedAt) != 1) {
+      throw new IllegalStateException("Learner memory failed update run was not restarted");
+    }
+  }
+
+  @Override
   public void complete(
       long updateRunId,
       LearnerMemoryRunContract.Status status,

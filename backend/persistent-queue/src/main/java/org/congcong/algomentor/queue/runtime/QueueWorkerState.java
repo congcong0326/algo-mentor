@@ -6,5 +6,6 @@ public enum QueueWorkerState {
   RUNNING,
   STOPPING,
   STOPPED,
-  FAILED_RETRYING
+  FAILED_RETRYING,
+  FAILED_STOPPED
 }

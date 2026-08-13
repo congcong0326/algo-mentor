@@ -53,7 +53,7 @@
 固定契约：
 
 - `QueueMessage`：`messageId`、`topic`、`key`、`value`、`createdAt`。
-- `QueueMessageStatus`：仅 `PENDING`、`SUCCEEDED`。
+- `QueueMessageStatus`：Publisher 只创建 `PENDING`；派发阶段扩展为 `PROCESSING`、`SUCCEEDED`、`FAILED`。
 - `QueuePublisher.publish(String topic, String key, Object payload)` 返回持久化后的 `QueueMessage`。
 - `QueueMessageRepository` 提供 insert、按 ID 查询、按 topic/key 查询 PENDING 的基础能力；派发 SQL 在 `LP-06` 扩展。
 - `PersistentQueueConstants` 统一字段名、状态值和配置前缀；业务 topic 不放在通用模块。
@@ -73,7 +73,7 @@ algo-mentor:
 
 - Create `backend/persistent-queue/src/main/resources/db/migration/queue/V<实施时唯一版本>__persistent_queue_message.sql`；实际实施前扫描共享版本空间。
 - 表字段固定为 `id BIGSERIAL`、`topic VARCHAR(128)`、`message_key VARCHAR(256)`、`message_value TEXT`、`status VARCHAR(16)`、`created_at`、`succeeded_at`。
-- Check：topic/key 非空；status 仅 PENDING/SUCCEEDED；PENDING 时 `succeeded_at IS NULL`，SUCCEEDED 时非空。
+- Check：topic/key 非空；status 约束和租约/失败字段由 LP-06 的成功确认迁移补充；Publisher 只写 PENDING。
 - 三个局部索引固定为 pending topic、pending topic+key、succeeded cleanup。
 - Publisher 插入只能写 PENDING 和空 `succeeded_at`，不接受调用方指定状态或 messageId。
 - `@Transactional(propagation=REQUIRED)` 仅包围序列化后 insert；序列化/大小校验在写库前完成。
