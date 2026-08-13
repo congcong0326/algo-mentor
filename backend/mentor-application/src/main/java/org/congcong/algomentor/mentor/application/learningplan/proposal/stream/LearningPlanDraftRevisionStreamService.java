@@ -30,6 +30,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanSafeFailureReasonResolver;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
@@ -314,7 +315,8 @@ public class LearningPlanDraftRevisionStreamService {
     return new LearningPlanProposalEvent.ProposalError(
         failedRevision.errorCode(),
         failedRevision.errorMessage(),
-        retryable);
+        retryable,
+        null);
   }
 
   private AgentInvocation<LearningPlanDraftRevisionAgentInput> invocation(
@@ -503,7 +505,8 @@ public class LearningPlanDraftRevisionStreamService {
       return new LearningPlanProposalEvent.ProposalError(
           staleRevision.errorCode(),
           staleRevision.errorMessage(),
-          false);
+          false,
+          null);
     }
 
     private LearningPlanDraft draftWithRevisionPlan(
@@ -569,6 +572,13 @@ public class LearningPlanDraftRevisionStreamService {
         boolean retryable,
         Throwable cause
     ) {
+      if (event instanceof LearningPlanProposalEvent.ProposalError error) {
+        event = new LearningPlanProposalEvent.ProposalError(
+            error.code(),
+            error.message(),
+            error.retryable(),
+            LearningPlanSafeFailureReasonResolver.resolve(cause));
+      }
       if (cause != null) {
         log.warn(
             "Learning plan draft revision stream emitted error: code={}, retryable={}, message={}, causeMessage={}",

@@ -106,7 +106,7 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
 
     subscriber.onSubscribe(subscription);
     subscriber.onNext(new LearningPlanDraftStreamEvent.Draft(
-        new LearningPlanDraftEvent.DraftError("AI_UNKNOWN", "failed", true)));
+        new LearningPlanDraftEvent.DraftError("AI_UNKNOWN", "failed", true, null)));
     subscriber.onError(new RuntimeException("late failure"));
 
     assertThat(sseRecorder.events).containsExactly(

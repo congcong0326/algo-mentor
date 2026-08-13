@@ -342,6 +342,29 @@ describe('LearningPlanCreatePage', () => {
     expect(await screen.findByRole('dialog', { name: '提示' })).toHaveTextContent('当前算力不够，请稍后重试。');
   });
 
+  it('shows the generation failure and safe reason in a dialog', async () => {
+    streamLearningPlanDraftMock.mockImplementation(async (_request, options) => {
+      options.onEvent({
+        eventName: 'draft_error',
+        data: {
+          code: 'LEARNING_PLAN_STREAM_FAILED',
+          message: '学习计划生成失败，请稍后重试。',
+          reason: '已有一个 AI 任务正在运行，请等待完成后再试。',
+        },
+      });
+    });
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'AI 个性化生成' }));
+    fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
+
+    const dialog = await screen.findByRole('alertdialog', { name: '学习计划生成失败，请稍后重试。' });
+    expect(dialog).toHaveTextContent('已有一个 AI 任务正在运行，请等待完成后再试。');
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  });
+
   it('reloads localized templates and preserves the selected template across UI locale changes', async () => {
     getLearningPlanTemplatesMock
       .mockResolvedValueOnce(apiResponse(templateSummaries()))

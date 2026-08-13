@@ -29,6 +29,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanSafeFailureReasonResolver;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationContextService;
 import org.congcong.algomentor.mentor.application.learningplan.personalization.LearningPlanPersonalizationSnapshot;
@@ -381,7 +382,8 @@ public class LearningPlanDraftStreamService {
       publisher.emit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftError(
           code,
           message,
-          retryable)));
+          retryable,
+          LearningPlanSafeFailureReasonResolver.resolve(cause))));
       publisher.complete();
     }
   }

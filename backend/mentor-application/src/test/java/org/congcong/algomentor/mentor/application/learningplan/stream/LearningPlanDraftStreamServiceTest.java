@@ -16,6 +16,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
+import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
+import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
@@ -46,6 +49,7 @@ import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPl
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyConstants;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanCreationPolicyService;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 class LearningPlanDraftStreamServiceTest {
 
@@ -190,6 +194,28 @@ class LearningPlanDraftStreamServiceTest {
     assertThat(input.personalizationSnapshot().promptText()).doesNotContain("exception-text-must-not-leak");
   }
 
+  @Test
+  void exposesOnlyKnownSafeReasonWhenAiGenerationIsRejectedByConcurrentRunPolicy() {
+    LearningPlanDraftStreamService service = serviceWithRuntime(new FailingAgentRuntime(
+        new AiRunAdmissionException(
+            AiGovernanceErrorCode.AI_CONCURRENT_RUN_CONFLICT,
+            AiRunStatus.REJECTED_DISABLED,
+            "已有一个 AI 任务正在运行，请等待完成后再试。",
+            HttpStatus.CONFLICT,
+            Map.of())));
+
+    List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, command(), "run-conflict", Map.of()));
+
+    LearningPlanDraftEvent.DraftError error = (LearningPlanDraftEvent.DraftError) events.stream()
+        .filter(event -> event.eventName().equals("draft_error"))
+        .map(LearningPlanDraftStreamEvent.Draft.class::cast)
+        .map(LearningPlanDraftStreamEvent.Draft::event)
+        .findFirst()
+        .orElseThrow();
+    assertThat(error.message()).isEqualTo("学习计划生成失败，请稍后重试。");
+    assertThat(error.reason()).isEqualTo("已有一个 AI 任务正在运行，请等待完成后再试。");
+  }
+
   private LearningPlanDraftStreamService serviceWithAgent(String content) {
     return serviceWithRuntime(new FakeAgentRuntime(content));
   }
@@ -321,6 +347,35 @@ class LearningPlanDraftStreamServiceTest {
         publisher.submit(new AgentStreamEvent.AgentStepEnd(runId, 1, LlmFinishReason.STOP, 0));
         publisher.submit(new AgentStreamEvent.AgentRunEnd(runId, 1, LlmFinishReason.STOP, Map.of()));
         publisher.close();
+      };
+    }
+  }
+
+  private static final class FailingAgentRuntime implements AgentRuntime {
+    private final RuntimeException failure;
+
+    private FailingAgentRuntime(RuntimeException failure) {
+      this.failure = failure;
+    }
+
+    @Override
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      return subscriber -> {
+        subscriber.onSubscribe(new Flow.Subscription() {
+          @Override
+          public void request(long count) {
+          }
+
+          @Override
+          public void cancel() {
+          }
+        });
+        subscriber.onError(failure);
       };
     }
   }

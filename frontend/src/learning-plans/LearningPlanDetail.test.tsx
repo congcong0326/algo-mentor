@@ -76,7 +76,7 @@ describe('LearningPlanDetail extension orchestration', () => {
     expect(screen.queryByRole('button', { name: '采用为今日题包' })).not.toBeInTheDocument();
   });
 
-  it('preserves a work_error message when the stream closes without a terminal event', async () => {
+  it('shows a work_error message in a dialog when the stream closes without a terminal event', async () => {
     streamLearningPlanExtensionProposal.mockImplementation(async (_planId, _request, options) => {
       options.onEvent({
         eventName: 'work_error',
@@ -91,8 +91,8 @@ describe('LearningPlanDetail extension orchestration', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '生成扩展建议' }));
 
-    expect(await screen.findByText('模型额度不足，请稍后再试。')).toBeInTheDocument();
-    expect(screen.queryByText('生成扩展建议失败，请稍后重试。')).not.toBeInTheDocument();
+    expect(await screen.findByRole('alertdialog', { name: '模型额度不足，请稍后再试。' })).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
   it('shows a dialog when extension generation reports exhausted agent capacity', async () => {
@@ -110,6 +110,28 @@ describe('LearningPlanDetail extension orchestration', () => {
     fireEvent.click(screen.getByRole('button', { name: '生成扩展建议' }));
 
     expect(await screen.findByRole('dialog', { name: '提示' })).toHaveTextContent('当前算力不够，请稍后重试。');
+  });
+
+  it('shows the extension failure and safe reason in a dialog', async () => {
+    streamLearningPlanExtensionProposal.mockImplementation(async (_planId, _request, options) => {
+      options.onEvent({
+        eventName: 'plan_extension_error',
+        data: {
+          code: 'LEARNING_PLAN_EXTENSION_STREAM_FAILED',
+          message: '学习计划扩展生成失败，请稍后重试。',
+          reason: '已有一个 AI 任务正在运行，请等待完成后再试。',
+        },
+      });
+    });
+    renderDetail();
+
+    fireEvent.change(screen.getByRole('textbox', { name: '想继续学习？描述接下来的目标' }), {
+      target: { value: '继续练图论' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '生成扩展建议' }));
+
+    const dialog = await screen.findByRole('alertdialog', { name: '学习计划扩展生成失败，请稍后重试。' });
+    expect(dialog).toHaveTextContent('已有一个 AI 任务正在运行，请等待完成后再试。');
   });
 
   it('keeps the pending extension when apply returns success false', async () => {

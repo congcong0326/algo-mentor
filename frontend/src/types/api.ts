@@ -1878,6 +1878,8 @@ export interface LearningPlanDraftErrorEvent {
   code?: string;
   message?: string;
   retryable?: boolean;
+  /** 已由后端审核、可直接展示给用户的失败原因。 */
+  reason?: string;
 }
 
 export interface AgentStreamStartData {

@@ -28,6 +28,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanSafeFailureReasonResolver;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
@@ -451,7 +452,8 @@ public class LearningPlanExtensionProposalStreamService {
     return new LearningPlanProposalEvent.ProposalError(
         failedRevision.errorCode(),
         failedRevision.errorMessage(),
-        retryable);
+        retryable,
+        null);
   }
 
   private AgentInvocation<LearningPlanExtensionAgentInput> invocation(
@@ -636,7 +638,8 @@ public class LearningPlanExtensionProposalStreamService {
       return new LearningPlanProposalEvent.ProposalError(
           staleRevision.errorCode(),
           staleRevision.errorMessage(),
-          false);
+          false,
+          null);
     }
 
     private void captureContent(AgentStreamEvent event) {
@@ -691,6 +694,13 @@ public class LearningPlanExtensionProposalStreamService {
         boolean retryable,
         Throwable cause
     ) {
+      if (event instanceof LearningPlanProposalEvent.ProposalError error) {
+        event = new LearningPlanProposalEvent.ProposalError(
+            error.code(),
+            error.message(),
+            error.retryable(),
+            LearningPlanSafeFailureReasonResolver.resolve(cause));
+      }
       if (cause != null) {
         log.warn(
             "Learning plan extension stream emitted error: code={}, retryable={}, message={}, causeMessage={}",

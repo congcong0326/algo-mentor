@@ -4734,7 +4734,8 @@ textarea[aria-invalid='true'] {
   box-shadow: 0 24px 80px rgb(15 23 42 / 26%);
 }
 
-.ai-capacity-unavailable-dialog {
+.ai-capacity-unavailable-dialog,
+.ai-operation-error-dialog {
   display: grid;
   gap: 16px;
   width: min(420px, 100%);
@@ -4746,16 +4747,21 @@ textarea[aria-invalid='true'] {
 }
 
 .ai-capacity-unavailable-dialog h2,
-.ai-capacity-unavailable-dialog p {
+.ai-capacity-unavailable-dialog p,
+.ai-operation-error-dialog h2,
+.ai-operation-error-dialog p {
   margin: 0;
 }
 
-.ai-capacity-unavailable-dialog p {
+.ai-capacity-unavailable-dialog p,
+.ai-operation-error-dialog p {
   color: var(--text-secondary);
   line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
-.ai-capacity-unavailable-actions {
+.ai-capacity-unavailable-actions,
+.ai-operation-error-actions {
   justify-content: flex-end;
 }
 

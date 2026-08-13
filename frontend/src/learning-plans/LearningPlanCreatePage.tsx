@@ -21,6 +21,7 @@ import type {
 } from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
 import AiCapacityUnavailableDialog from '../components/AiCapacityUnavailableDialog';
+import AiOperationErrorDialog from '../components/AiOperationErrorDialog';
 import { isAgentExecutorOverloaded } from '../services/agentCapacity';
 import AgentWorkIndicator from './AgentWorkIndicator';
 import LearningPlanCreateForm from './LearningPlanCreateForm';
@@ -29,6 +30,11 @@ import LearningPlanTemplateCreatePanel from './LearningPlanTemplateCreatePanel';
 
 type LearningPlanCreateState = 'editing' | 'generating' | 'collecting' | 'previewing' | 'confirming';
 type LearningPlanCreateMode = 'ai' | 'template';
+
+interface AiOperationError {
+  message: string;
+  reason?: string;
+}
 
 interface LearningPlanCreatePageProps {
   onBackToPlans: () => void;
@@ -45,15 +51,30 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   const [createMode, setCreateMode] = useState<LearningPlanCreateMode>('template');
   const [error, setError] = useState('');
   const [capacityUnavailable, setCapacityUnavailable] = useState(false);
+  const [operationError, setOperationError] = useState<AiOperationError>();
 
   function showCapacityUnavailable() {
+    setError('');
     setCapacityUnavailable(true);
-    return resources.common.aiCapacityUnavailable;
+  }
+
+  function showAiOperationError(nextError: unknown, fallbackMessage: string) {
+    if (isAgentExecutorOverloaded(nextError)) {
+      showCapacityUnavailable();
+      return;
+    }
+    const errorEvent = nextError as LearningPlanDraftErrorEvent | undefined;
+    setError('');
+    setOperationError({
+      message: errorEvent?.message || (nextError instanceof Error ? nextError.message : fallbackMessage),
+      reason: errorEvent?.reason,
+    });
   }
 
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
     setFlowState('generating');
     setError('');
+    setOperationError(undefined);
     setDraft(undefined);
     setWorkEvent({ message: resources.learningPlans.generateStart });
     try {
@@ -61,9 +82,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
         onEvent: handleDraftStreamEvent,
       });
     } catch (nextError) {
-      setError(isAgentExecutorOverloaded(nextError)
-        ? showCapacityUnavailable()
-        : nextError instanceof Error ? nextError.message : resources.learningPlans.generateFailed);
+      showAiOperationError(nextError, resources.learningPlans.generateFailed);
       setFlowState('editing');
     }
   }
@@ -71,6 +90,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   async function submitTemplateDraft(request: LearningPlanTemplateDraftRequest) {
     setFlowState('generating');
     setError('');
+    setOperationError(undefined);
     setDraft(undefined);
     setWorkEvent({ message: resources.learningPlans.templateGenerateStart });
     try {
@@ -93,9 +113,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       const nextWorkEvent = event.data as AgentWorkStatusEvent;
       setWorkEvent(nextWorkEvent);
       if (event.eventName === 'work_error') {
-        setError(isAgentExecutorOverloaded(nextWorkEvent)
-          ? showCapacityUnavailable()
-          : nextWorkEvent.message || resources.learningPlans.generateFailed);
+        showAiOperationError(nextWorkEvent, resources.learningPlans.generateFailed);
       }
       return;
     }
@@ -115,18 +133,14 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
     if (event.eventName === 'draft_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
-      setError(isAgentExecutorOverloaded(draftError)
-        ? showCapacityUnavailable()
-        : draftError.message || resources.learningPlans.generateFailed);
+      showAiOperationError(draftError, resources.learningPlans.generateFailed);
       setWorkEvent(undefined);
       setFlowState('editing');
       return;
     }
     if (event.eventName === 'draft_revision_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
-      setError(isAgentExecutorOverloaded(draftError)
-        ? showCapacityUnavailable()
-        : draftError.message || resources.learningPlans.revisionFailed);
+      showAiOperationError(draftError, resources.learningPlans.revisionFailed);
       setWorkEvent(undefined);
       setFlowState('previewing');
     }
@@ -138,6 +152,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
     setFlowState('generating');
     setError('');
+    setOperationError(undefined);
     try {
       const nextDraft = requireApiData(
         await sendLearningPlanDraftMessage(draft.draftId, { message: message.trim() }),
@@ -159,6 +174,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
     setFlowState('generating');
     setError('');
+    setOperationError(undefined);
     setWorkEvent({ message: resources.learningPlans.reviseDraft });
     try {
       let revisionReady = false;
@@ -182,9 +198,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       }
       return revisionReady && !revisionFailed;
     } catch (nextError) {
-      setError(isAgentExecutorOverloaded(nextError)
-        ? showCapacityUnavailable()
-        : nextError instanceof Error ? nextError.message : resources.learningPlans.revisionFailed);
+      showAiOperationError(nextError, resources.learningPlans.revisionFailed);
       setWorkEvent(undefined);
       setFlowState('previewing');
       return false;
@@ -197,6 +211,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
     setFlowState('confirming');
     setError('');
+    setOperationError(undefined);
     try {
       const confirmed = requireApiData(await confirmLearningPlanDraft(draft.draftId), resources.learningPlans.saveFailed);
       setDraft(undefined);
@@ -211,6 +226,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     setDraft(undefined);
     setWorkEvent(undefined);
     setError('');
+    setOperationError(undefined);
     setFlowState('editing');
     setFormKey((current) => current + 1);
   }
@@ -306,6 +322,12 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       <AiCapacityUnavailableDialog
         onClose={() => setCapacityUnavailable(false)}
         open={capacityUnavailable}
+      />
+      <AiOperationErrorDialog
+        message={operationError?.message ?? ''}
+        onClose={() => setOperationError(undefined)}
+        open={Boolean(operationError)}
+        reason={operationError?.reason}
       />
     </>
   );
