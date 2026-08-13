@@ -11,6 +11,7 @@ public class CacheProperties {
   private boolean metricsEnabled = true;
   private SharedCacheProvider sharedProvider = SharedCacheProvider.CAFFEINE;
   private Coherence coherence = new Coherence();
+  private Redis redis = new Redis();
 
   public boolean isEnabled() {
     return enabled;
@@ -42,6 +43,118 @@ public class CacheProperties {
 
   public void setCoherence(Coherence coherence) {
     this.coherence = Objects.requireNonNull(coherence, "coherence must not be null");
+  }
+
+  public Redis getRedis() {
+    return redis;
+  }
+
+  public void setRedis(Redis redis) {
+    this.redis = Objects.requireNonNull(redis, "redis must not be null");
+  }
+
+  /** Redis cache 实例连接和单 value 限制；所有敏感字段禁止写入日志。 */
+  public static class Redis {
+
+    private static final Duration MAX_COMMAND_TIMEOUT = Duration.ofSeconds(5);
+    private static final Duration MAX_CONNECT_OR_SHUTDOWN_TIMEOUT = Duration.ofSeconds(10);
+    private static final int MAX_VALUE_BYTES = 65_536;
+
+    private boolean enabled = true;
+    private String host = "localhost";
+    private int port = 6379;
+    private int database;
+    private String username = "";
+    private String password = "";
+    private boolean sslEnabled;
+    private Duration commandTimeout = Duration.ofMillis(100);
+    private Duration connectTimeout = Duration.ofSeconds(1);
+    private Duration shutdownTimeout = Duration.ofSeconds(2);
+    private int maxValueBytes = MAX_VALUE_BYTES;
+
+    public boolean isEnabled() { return enabled; }
+
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public String getHost() { return host; }
+
+    public void setHost(String host) {
+      if (host == null || host.isBlank()) {
+        throw new IllegalArgumentException("redis host must not be blank");
+      }
+      this.host = host;
+    }
+
+    public int getPort() { return port; }
+
+    public void setPort(int port) {
+      if (port < 1 || port > 65_535) {
+        throw new IllegalArgumentException("redis port must be between 1 and 65535");
+      }
+      if (port == 6380) {
+        throw new IllegalArgumentException("redis port 6380 is reserved for Redis Streams");
+      }
+      this.port = port;
+    }
+
+    public int getDatabase() { return database; }
+
+    public void setDatabase(int database) {
+      if (database < 0 || database > 15) {
+        throw new IllegalArgumentException("redis database must be between 0 and 15");
+      }
+      this.database = database;
+    }
+
+    public String getUsername() { return username; }
+
+    public void setUsername(String username) { this.username = username == null ? "" : username; }
+
+    public String getPassword() { return password; }
+
+    public void setPassword(String password) { this.password = password == null ? "" : password; }
+
+    public boolean isSslEnabled() { return sslEnabled; }
+
+    public void setSslEnabled(boolean sslEnabled) { this.sslEnabled = sslEnabled; }
+
+    public Duration getCommandTimeout() { return commandTimeout; }
+
+    public void setCommandTimeout(Duration commandTimeout) {
+      this.commandTimeout = requireDurationAtMost(
+          commandTimeout, "redis commandTimeout", MAX_COMMAND_TIMEOUT);
+    }
+
+    public Duration getConnectTimeout() { return connectTimeout; }
+
+    public void setConnectTimeout(Duration connectTimeout) {
+      this.connectTimeout = requireDurationAtMost(
+          connectTimeout, "redis connectTimeout", MAX_CONNECT_OR_SHUTDOWN_TIMEOUT);
+    }
+
+    public Duration getShutdownTimeout() { return shutdownTimeout; }
+
+    public void setShutdownTimeout(Duration shutdownTimeout) {
+      this.shutdownTimeout = requireDurationAtMost(
+          shutdownTimeout, "redis shutdownTimeout", MAX_CONNECT_OR_SHUTDOWN_TIMEOUT);
+    }
+
+    public int getMaxValueBytes() { return maxValueBytes; }
+
+    public void setMaxValueBytes(int maxValueBytes) {
+      if (maxValueBytes < 1 || maxValueBytes > MAX_VALUE_BYTES) {
+        throw new IllegalArgumentException("redis maxValueBytes must be between 1 and 65536");
+      }
+      this.maxValueBytes = maxValueBytes;
+    }
+
+    private static Duration requireDurationAtMost(Duration value, String name, Duration maximum) {
+      value = Objects.requireNonNull(value, name + " must not be null");
+      if (value.isZero() || value.isNegative() || value.compareTo(maximum) > 0) {
+        throw new IllegalArgumentException(name + " must be positive and no more than " + maximum);
+      }
+      return value;
+    }
   }
 
   public static class Coherence {

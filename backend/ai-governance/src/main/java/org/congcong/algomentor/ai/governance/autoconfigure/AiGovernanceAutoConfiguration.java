@@ -47,9 +47,10 @@ import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 import org.congcong.algomentor.ai.governance.usage.PostgresAiDailyUsageStore;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.common.admin.audit.NoopAdminOperationAuditRecorder;
-import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
 import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
-import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.congcong.algomentor.llm.core.provider.LlmProviderAdapter;
@@ -76,13 +77,15 @@ public class AiGovernanceAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnBean({RedisCacheRegionFactory.class, RedisValueCodecFactory.class,
+      CacheInvalidationExecutor.class})
   @ConditionalOnMissingBean
   public AiRuntimeCache aiRuntimeCache(
-      SharedCacheRegionFactory cacheFactory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory cacheFactory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       AiRuntimeCacheProperties properties) {
-    return new AiRuntimeCache(cacheFactory, invalidationCoordinator, properties);
+    return new AiRuntimeCache(cacheFactory, valueCodecs, invalidationExecutor, properties);
   }
 
   @Bean

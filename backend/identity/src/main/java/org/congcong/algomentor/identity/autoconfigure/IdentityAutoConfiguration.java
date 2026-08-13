@@ -5,8 +5,9 @@ import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.common.admin.audit.NoopAdminOperationAuditRecorder;
 import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
-import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
-import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.identity.controller.AdminUserController;
 import org.congcong.algomentor.identity.controller.AdminUserExceptionHandler;
 import org.congcong.algomentor.identity.controller.group.AdminUserGroupController;
@@ -75,14 +76,16 @@ public class IdentityAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnBean({RedisCacheRegionFactory.class, RedisValueCodecFactory.class,
+      CacheInvalidationExecutor.class})
   @ConditionalOnMissingBean
   public UserRelationCache userRelationCache(
-      SharedCacheRegionFactory cacheFactory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory cacheFactory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       UserRelationCacheProperties properties
   ) {
-    return new UserRelationCache(cacheFactory, invalidationCoordinator, properties);
+    return new UserRelationCache(cacheFactory, valueCodecs, invalidationExecutor, properties);
   }
 
   @Bean

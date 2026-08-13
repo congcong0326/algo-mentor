@@ -7,13 +7,14 @@ import java.util.HexFormat;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import org.congcong.algomentor.cache.api.SharedTtlCacheRegion;
-import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
-import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.api.RedisTtlCacheRegion;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
-import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
+import org.congcong.algomentor.cache.spec.RedisTtlCacheSpec;
 
-/** 内测准入开关与规范化邮箱成员关系的 Shared TTL 缓存门面。 */
+/** 内测准入开关与规范化邮箱成员关系的 Redis-only TTL 缓存门面。 */
 public final class BetaAccessCache {
 
   private static final String SINGLETON_KEY = "singleton";
@@ -21,41 +22,43 @@ public final class BetaAccessCache {
   private static final CacheRegionName SETTINGS_CACHE_NAME = new CacheRegionName("auth-beta-access-settings");
   private static final CacheRegionName EMAIL_MEMBERSHIP_CACHE_NAME = new CacheRegionName("auth-beta-email-membership");
 
-  private final SharedTtlCacheRegion<String, Optional<Boolean>> settings;
-  private final SharedTtlCacheRegion<String, Boolean> emailMembership;
-  private final SharedCacheInvalidationCoordinator invalidationCoordinator;
+  private final RedisTtlCacheRegion<String, BetaAccessSettingsCacheEntry> settings;
+  private final RedisTtlCacheRegion<String, Boolean> emailMembership;
+  private final CacheInvalidationExecutor invalidationExecutor;
 
   public BetaAccessCache(
-      SharedCacheRegionFactory factory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory factory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       AuthCacheProperties properties
   ) {
     Objects.requireNonNull(factory, "factory must not be null");
-    this.invalidationCoordinator = Objects.requireNonNull(
-        invalidationCoordinator, "invalidationCoordinator must not be null");
+    Objects.requireNonNull(valueCodecs, "valueCodecs must not be null");
+    this.invalidationExecutor = Objects.requireNonNull(
+        invalidationExecutor, "invalidationExecutor must not be null");
     Objects.requireNonNull(properties, "properties must not be null");
     this.settings = factory.createTtl(
-        new SharedTtlCacheSpec(
+        new RedisTtlCacheSpec(
             SETTINGS_CACHE_NAME,
             SETTINGS_CACHE_NAME.value(),
             SCHEMA_VERSION,
-            1,
             properties.getBetaAccessSettingsTtl()),
-        BetaAccessCache::encodeSingleton);
+        BetaAccessCache::encodeSingleton,
+        valueCodecs.json(BetaAccessSettingsCacheEntry.class));
     this.emailMembership = factory.createTtl(
-        new SharedTtlCacheSpec(
+        new RedisTtlCacheSpec(
             EMAIL_MEMBERSHIP_CACHE_NAME,
             EMAIL_MEMBERSHIP_CACHE_NAME.value(),
             SCHEMA_VERSION,
-            properties.getBetaEmailMembershipMaximumSize(),
             properties.getBetaEmailMembershipTtl()),
-        BetaAccessCache::sha256);
+        BetaAccessCache::sha256,
+        valueCodecs.booleanAsZeroOrOne());
   }
 
   public Optional<Boolean> getAllowlistEnabled(Supplier<Optional<Boolean>> loader) {
     Objects.requireNonNull(loader, "loader must not be null");
-    return settings.get(SINGLETON_KEY, ignored -> Objects.requireNonNull(
-        loader.get(), "loader result must not be null"));
+    return settings.get(SINGLETON_KEY, ignored -> BetaAccessSettingsCacheEntry.from(
+        Objects.requireNonNull(loader.get(), "loader result must not be null"))).toOptional();
   }
 
   public boolean isAllowedEmail(String normalizedEmail, Supplier<Boolean> loader) {
@@ -66,11 +69,12 @@ public final class BetaAccessCache {
   }
 
   public void invalidateSettings() {
-    invalidationCoordinator.invalidate(settings, SINGLETON_KEY);
+    invalidationExecutor.afterCommit(() -> settings.invalidate(SINGLETON_KEY));
   }
 
   public void invalidateEmail(String normalizedEmail) {
-    invalidationCoordinator.invalidate(emailMembership, requireNormalizedEmail(normalizedEmail));
+    String email = requireNormalizedEmail(normalizedEmail);
+    invalidationExecutor.afterCommit(() -> emailMembership.invalidate(email));
   }
 
   private static String encodeSingleton(String value) {

@@ -2,36 +2,39 @@ package org.congcong.algomentor.identity.group.relation;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import org.congcong.algomentor.cache.api.SharedTtlCacheRegion;
-import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
-import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.api.RedisTtlCacheRegion;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
-import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
+import org.congcong.algomentor.cache.spec.RedisTtlCacheSpec;
 
-/** identity-user-relations 的共享 TTL 缓存门面。 */
+/** identity-user-relations 的 Redis-only TTL 缓存门面。 */
 public final class UserRelationCache implements UserRelationCacheInvalidator {
 
   private static final int SCHEMA_VERSION = 1;
   private static final CacheRegionName CACHE_NAME = new CacheRegionName("identity-user-relations");
 
-  private final SharedTtlCacheRegion<Long, CachedUserRelations> region;
-  private final SharedCacheInvalidationCoordinator invalidationCoordinator;
+  private final RedisTtlCacheRegion<Long, CachedUserRelations> region;
+  private final CacheInvalidationExecutor invalidationExecutor;
 
   public UserRelationCache(
-      SharedCacheRegionFactory cacheFactory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory cacheFactory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       UserRelationCacheProperties properties
   ) {
-    this.invalidationCoordinator = Objects.requireNonNull(
-        invalidationCoordinator, "invalidationCoordinator must not be null");
+    Objects.requireNonNull(valueCodecs, "valueCodecs must not be null");
+    this.invalidationExecutor = Objects.requireNonNull(
+        invalidationExecutor, "invalidationExecutor must not be null");
     this.region = Objects.requireNonNull(cacheFactory, "cacheFactory must not be null").createTtl(
-        new SharedTtlCacheSpec(
+        new RedisTtlCacheSpec(
             CACHE_NAME,
             CACHE_NAME.value(),
             SCHEMA_VERSION,
-            properties.getMaximumSize(),
             properties.getTtl()),
-        userId -> Long.toString(requireUserId(userId)));
+        userId -> Long.toString(requireUserId(userId)),
+        valueCodecs.json(CachedUserRelations.class));
   }
 
   public CachedUserRelations get(long userId, Supplier<CachedUserRelations> loader) {
@@ -42,7 +45,8 @@ public final class UserRelationCache implements UserRelationCacheInvalidator {
 
   @Override
   public void invalidate(long userId, String reason) {
-    invalidationCoordinator.invalidate(region, requireUserId(userId));
+    long resolvedUserId = requireUserId(userId);
+    invalidationExecutor.afterCommit(() -> region.invalidate(resolvedUserId));
   }
 
   private static long requireUserId(long userId) {

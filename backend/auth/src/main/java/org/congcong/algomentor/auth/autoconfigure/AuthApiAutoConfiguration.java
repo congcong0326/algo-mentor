@@ -78,8 +78,9 @@ import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.common.admin.audit.NoopAdminOperationAuditRecorder;
-import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
-import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
@@ -216,23 +217,27 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnBean({RedisCacheRegionFactory.class, RedisValueCodecFactory.class,
+      CacheInvalidationExecutor.class})
   @ConditionalOnMissingBean
   public AuthAccessSnapshotCache authAccessSnapshotCache(
-      SharedCacheRegionFactory cacheFactory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory cacheFactory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       AuthCacheProperties properties) {
-    return new AuthAccessSnapshotCache(cacheFactory, invalidationCoordinator, properties);
+    return new AuthAccessSnapshotCache(cacheFactory, valueCodecs, invalidationExecutor, properties);
   }
 
   @Bean
-  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnBean({RedisCacheRegionFactory.class, RedisValueCodecFactory.class,
+      CacheInvalidationExecutor.class})
   @ConditionalOnMissingBean
   public BetaAccessCache betaAccessCache(
-      SharedCacheRegionFactory cacheFactory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory cacheFactory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       AuthCacheProperties properties) {
-    return new BetaAccessCache(cacheFactory, invalidationCoordinator, properties);
+    return new BetaAccessCache(cacheFactory, valueCodecs, invalidationExecutor, properties);
   }
 
   @Bean

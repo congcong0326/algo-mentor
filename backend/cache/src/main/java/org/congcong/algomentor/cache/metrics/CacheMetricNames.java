@@ -22,6 +22,10 @@ public final class CacheMetricNames {
   public static final String COHERENCE_GENERATION_RETRIES =
       "algo_mentor_cache_coherence_generation_retries_total";
   public static final String COHERENCE_CLEANUP = "algo_mentor_cache_coherence_cleanup_total";
+  public static final String REDIS_COMMANDS = "algo_mentor_cache_redis_commands_total";
+  public static final String REDIS_COMMAND_DURATION = "algo_mentor_cache_redis_command_duration_seconds";
+  public static final String REDIS_FAILURES = "algo_mentor_cache_redis_failures_total";
+  public static final String REDIS_OVERSIZE_VALUES = "algo_mentor_cache_redis_oversize_values_total";
 
   private CacheMetricNames() {
   }

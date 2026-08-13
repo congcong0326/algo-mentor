@@ -7,6 +7,8 @@ public final class CacheMetricTags {
   public static final String RESULT = "result";
   public static final String TYPE = "type";
   public static final String CAUSE = "cause";
+  public static final String OPERATION = "operation";
+  public static final String REASON = "reason";
 
   private CacheMetricTags() {
   }

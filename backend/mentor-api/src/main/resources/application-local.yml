@@ -14,6 +14,18 @@ algo-mentor:
     enabled: ${CACHE_ENABLED:true}
     metrics-enabled: ${CACHE_METRICS_ENABLED:true}
     shared-provider: ${CACHE_SHARED_PROVIDER:postgres-coherent-caffeine}
+    redis:
+      enabled: ${CACHE_REDIS_ENABLED:true}
+      host: ${CACHE_REDIS_HOST:localhost}
+      port: ${CACHE_REDIS_PORT:6379}
+      database: ${CACHE_REDIS_DATABASE:0}
+      username: ${CACHE_REDIS_USERNAME:}
+      password: ${CACHE_REDIS_PASSWORD:}
+      ssl-enabled: ${CACHE_REDIS_SSL_ENABLED:false}
+      command-timeout: ${CACHE_REDIS_COMMAND_TIMEOUT:100ms}
+      connect-timeout: ${CACHE_REDIS_CONNECT_TIMEOUT:1s}
+      shutdown-timeout: ${CACHE_REDIS_SHUTDOWN_TIMEOUT:2s}
+      max-value-bytes: ${CACHE_REDIS_MAX_VALUE_BYTES:65536}
     coherence:
       enabled: ${CACHE_COHERENCE_ENABLED:true}
       poll-interval: ${CACHE_COHERENCE_POLL_INTERVAL:1s}
@@ -25,13 +37,10 @@ algo-mentor:
     runtime-cache:
       settings-ttl: ${AI_RUNTIME_SETTINGS_CACHE_TTL:2m}
       user-policy-ttl: ${AI_USER_POLICY_CACHE_TTL:2m}
-      user-policy-maximum-size: ${AI_USER_POLICY_CACHE_MAXIMUM_SIZE:500}
   auth:
     cache:
-      access-snapshot-maximum-size: ${AUTH_ACCESS_SNAPSHOT_CACHE_MAXIMUM_SIZE:500}
       access-snapshot-ttl: ${AUTH_ACCESS_SNAPSHOT_CACHE_TTL:1m}
       beta-access-settings-ttl: ${AUTH_BETA_ACCESS_SETTINGS_CACHE_TTL:30s}
-      beta-email-membership-maximum-size: ${AUTH_BETA_EMAIL_MEMBERSHIP_CACHE_MAXIMUM_SIZE:500}
       beta-email-membership-ttl: ${AUTH_BETA_EMAIL_MEMBERSHIP_CACHE_TTL:1m}
   problem:
     cache:

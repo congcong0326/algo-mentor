@@ -8,6 +8,9 @@ import org.congcong.algomentor.cache.caffeine.BypassLocalCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.BypassSharedCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.CaffeineLocalCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.CaffeineSharedCacheRegionFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.redis.BypassRedisCacheRegionFactory;
+import org.congcong.algomentor.cache.redis.LettuceRedisCacheRegionFactory;
 import org.congcong.algomentor.cache.coherence.LocalSharedCacheInvalidationCoordinator;
 import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
 import org.congcong.algomentor.cache.coherence.postgres.PostgresCoherentCaffeineSharedCacheRegionFactory;
@@ -34,8 +37,10 @@ class CacheAutoConfigurationTest {
     contextRunner.run(context -> {
       assertThat(context).hasSingleBean(LocalCacheRegionFactory.class);
       assertThat(context).hasSingleBean(SharedCacheRegionFactory.class);
+      assertThat(context).hasSingleBean(RedisCacheRegionFactory.class);
       assertThat(context.getBean(LocalCacheRegionFactory.class)).isInstanceOf(CaffeineLocalCacheRegionFactory.class);
       assertThat(context.getBean(SharedCacheRegionFactory.class)).isInstanceOf(CaffeineSharedCacheRegionFactory.class);
+      assertThat(context.getBean(RedisCacheRegionFactory.class)).isInstanceOf(LettuceRedisCacheRegionFactory.class);
       assertThat(context.getBean(org.congcong.algomentor.cache.metrics.CacheMetrics.class))
           .isInstanceOf(NoopCacheMetrics.class);
     });
@@ -46,7 +51,26 @@ class CacheAutoConfigurationTest {
     contextRunner.withPropertyValues(CacheConfigurationKeys.ENABLED + "=false").run(context -> {
       assertThat(context.getBean(LocalCacheRegionFactory.class)).isInstanceOf(BypassLocalCacheRegionFactory.class);
       assertThat(context.getBean(SharedCacheRegionFactory.class)).isInstanceOf(BypassSharedCacheRegionFactory.class);
+      assertThat(context.getBean(RedisCacheRegionFactory.class)).isInstanceOf(BypassRedisCacheRegionFactory.class);
     });
+  }
+
+  @Test
+  void createsBypassRedisFactoryWhenRedisIsDisabled() {
+    contextRunner.withPropertyValues(CacheConfigurationKeys.REDIS_ENABLED + "=false").run(context ->
+        assertThat(context.getBean(RedisCacheRegionFactory.class)).isInstanceOf(BypassRedisCacheRegionFactory.class));
+  }
+
+  @Test
+  void rejectsInvalidRedisConfiguration() {
+    contextRunner.withPropertyValues(CacheConfigurationKeys.REDIS_COMMAND_TIMEOUT + "=6s")
+        .run(context -> assertThat(context).hasFailed());
+  }
+
+  @Test
+  void rejectsRedisStreamsPort() {
+    contextRunner.withPropertyValues(CacheConfigurationKeys.REDIS_PORT + "=6380")
+        .run(context -> assertThat(context).hasFailed());
   }
 
   @Test

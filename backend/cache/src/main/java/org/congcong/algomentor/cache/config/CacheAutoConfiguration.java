@@ -2,6 +2,7 @@ package org.congcong.algomentor.cache.config;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import javax.sql.DataSource;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.congcong.algomentor.cache.caffeine.BypassLocalCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.BypassSharedCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.CaffeineLocalCacheRegionFactory;
@@ -14,6 +15,7 @@ import org.congcong.algomentor.cache.coherence.postgres.JdbcSharedCacheInvalidat
 import org.congcong.algomentor.cache.coherence.postgres.PostgresCoherentCaffeineSharedCacheRegionFactory;
 import org.congcong.algomentor.cache.coherence.postgres.PostgresSharedInvalidationPoller;
 import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
 import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.cache.invalidation.SpringCacheInvalidationExecutor;
@@ -22,6 +24,13 @@ import org.congcong.algomentor.cache.metrics.CacheMetrics;
 import org.congcong.algomentor.cache.metrics.MicrometerCacheCoherenceMetrics;
 import org.congcong.algomentor.cache.metrics.MicrometerCacheMetrics;
 import org.congcong.algomentor.cache.metrics.NoopCacheMetrics;
+import org.congcong.algomentor.cache.metrics.MicrometerRedisCacheMetrics;
+import org.congcong.algomentor.cache.metrics.RedisCacheMetrics;
+import org.congcong.algomentor.cache.redis.BypassRedisCacheRegionFactory;
+import org.congcong.algomentor.cache.redis.LettuceRedisCacheRegionFactory;
+import org.congcong.algomentor.cache.redis.RedisConnectionManager;
+import org.congcong.algomentor.cache.redis.codec.JacksonRedisValueCodecFactory;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
 import org.congcong.algomentor.cache.registry.CacheRegionRegistry;
 import org.congcong.algomentor.cache.registry.SharedCacheInvalidationTargetRegistry;
 import org.springframework.beans.factory.ObjectProvider;
@@ -63,6 +72,18 @@ public class CacheAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public RedisCacheMetrics redisCacheMetrics(
+      CacheProperties properties,
+      ObjectProvider<MeterRegistry> meterRegistry) {
+    MeterRegistry registry = meterRegistry.getIfAvailable();
+    if (!properties.isMetricsEnabled() || registry == null) {
+      return RedisCacheMetrics.noop();
+    }
+    return new MicrometerRedisCacheMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public CacheRegionRegistry cacheRegionRegistry() {
     return new CacheRegionRegistry();
   }
@@ -77,6 +98,42 @@ public class CacheAutoConfiguration {
       return new BypassLocalCacheRegionFactory(registry);
     }
     return new CaffeineLocalCacheRegionFactory(registry, metrics);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public RedisValueCodecFactory redisValueCodecFactory(ObjectProvider<ObjectMapper> objectMapper) {
+    ObjectMapper mapper = objectMapper.getIfAvailable(ObjectMapper::new);
+    return new JacksonRedisValueCodecFactory(mapper);
+  }
+
+  @Bean(destroyMethod = "close")
+  @ConditionalOnMissingBean
+  @ConditionalOnProperty(
+      name = CacheConfigurationKeys.REDIS_ENABLED,
+      havingValue = "true",
+      matchIfMissing = true)
+  public RedisConnectionManager redisConnectionManager(CacheProperties properties) {
+    return new RedisConnectionManager(properties.getRedis());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public RedisCacheRegionFactory redisCacheRegionFactory(
+      CacheProperties properties,
+      CacheRegionRegistry registry,
+      CacheMetrics cacheMetrics,
+      RedisCacheMetrics redisMetrics,
+      ObjectProvider<RedisConnectionManager> connectionManager) {
+    if (!properties.isEnabled() || !properties.getRedis().isEnabled()) {
+      return new BypassRedisCacheRegionFactory(registry);
+    }
+    return new LettuceRedisCacheRegionFactory(
+        registry,
+        connectionManager.getObject(),
+        properties.getRedis().getMaxValueBytes(),
+        cacheMetrics,
+        redisMetrics);
   }
 
   @Bean

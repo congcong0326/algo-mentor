@@ -3,13 +3,14 @@ package org.congcong.algomentor.ai.governance.policy.runtime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import org.congcong.algomentor.cache.api.SharedTtlCacheRegion;
-import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
-import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.api.RedisTtlCacheRegion;
+import org.congcong.algomentor.cache.codec.RedisValueCodecFactory;
+import org.congcong.algomentor.cache.factory.RedisCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
-import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
+import org.congcong.algomentor.cache.spec.RedisTtlCacheSpec;
 
-/** AI 全局设置和用户覆盖的强类型缓存门面。 */
+/** AI 全局设置和用户覆盖的 Redis-only TTL 缓存门面。 */
 public final class AiRuntimeCache {
 
   private static final String SINGLETON_KEY = "singleton";
@@ -17,40 +18,43 @@ public final class AiRuntimeCache {
   private static final CacheRegionName SETTINGS_CACHE_NAME = new CacheRegionName("ai-runtime-settings");
   private static final CacheRegionName USER_POLICY_CACHE_NAME = new CacheRegionName("ai-user-policy");
 
-  private final SharedTtlCacheRegion<String, Optional<AiRuntimeSettings>> settings;
-  private final SharedTtlCacheRegion<Long, AiUserPolicy> userPolicies;
-  private final SharedCacheInvalidationCoordinator invalidationCoordinator;
+  private final RedisTtlCacheRegion<String, AiRuntimeSettingsCacheEntry> settings;
+  private final RedisTtlCacheRegion<Long, AiUserPolicy> userPolicies;
+  private final CacheInvalidationExecutor invalidationExecutor;
 
   public AiRuntimeCache(
-      SharedCacheRegionFactory cacheFactory,
-      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      RedisCacheRegionFactory cacheFactory,
+      RedisValueCodecFactory valueCodecs,
+      CacheInvalidationExecutor invalidationExecutor,
       AiRuntimeCacheProperties properties
   ) {
     Objects.requireNonNull(cacheFactory, "cacheFactory must not be null");
-    this.invalidationCoordinator = Objects.requireNonNull(
-        invalidationCoordinator, "invalidationCoordinator must not be null");
+    Objects.requireNonNull(valueCodecs, "valueCodecs must not be null");
+    this.invalidationExecutor = Objects.requireNonNull(
+        invalidationExecutor, "invalidationExecutor must not be null");
     Objects.requireNonNull(properties, "properties must not be null");
     this.settings = cacheFactory.createTtl(
-        new SharedTtlCacheSpec(
+        new RedisTtlCacheSpec(
             SETTINGS_CACHE_NAME,
             SETTINGS_CACHE_NAME.value(),
             SCHEMA_VERSION,
-            1,
             properties.getSettingsTtl()),
-        key -> requireSingleton(key));
+        AiRuntimeCache::requireSingleton,
+        valueCodecs.json(AiRuntimeSettingsCacheEntry.class));
     this.userPolicies = cacheFactory.createTtl(
-        new SharedTtlCacheSpec(
+        new RedisTtlCacheSpec(
             USER_POLICY_CACHE_NAME,
             USER_POLICY_CACHE_NAME.value(),
             SCHEMA_VERSION,
-            properties.getUserPolicyMaximumSize(),
             properties.getUserPolicyTtl()),
-        userId -> Long.toString(requireUserId(userId)));
+        userId -> Long.toString(requireUserId(userId)),
+        valueCodecs.json(AiUserPolicy.class));
   }
 
   public Optional<AiRuntimeSettings> getSettings(Supplier<Optional<AiRuntimeSettings>> loader) {
     Objects.requireNonNull(loader, "loader must not be null");
-    return settings.get(SINGLETON_KEY, ignored -> requireLoaderResult(loader.get()));
+    return settings.get(SINGLETON_KEY, ignored -> AiRuntimeSettingsCacheEntry.from(
+        requireLoaderResult(loader.get()))).toOptional();
   }
 
   public AiUserPolicy getUserPolicy(long userId, Supplier<AiUserPolicy> loader) {
@@ -60,11 +64,12 @@ public final class AiRuntimeCache {
   }
 
   public void invalidateSettings() {
-    invalidationCoordinator.invalidate(settings, SINGLETON_KEY);
+    invalidationExecutor.afterCommit(() -> settings.invalidate(SINGLETON_KEY));
   }
 
   public void invalidateUserPolicy(long userId) {
-    invalidationCoordinator.invalidate(userPolicies, requireUserId(userId));
+    long resolvedUserId = requireUserId(userId);
+    invalidationExecutor.afterCommit(() -> userPolicies.invalidate(resolvedUserId));
   }
 
   private static Optional<AiRuntimeSettings> requireLoaderResult(Optional<AiRuntimeSettings> result) {

@@ -4,6 +4,7 @@ import org.congcong.algomentor.cache.api.CacheRegionType;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
 import org.congcong.algomentor.cache.spec.LocalBoundedCacheSpec;
 import org.congcong.algomentor.cache.spec.LocalTtlCacheSpec;
+import org.congcong.algomentor.cache.spec.RedisTtlCacheSpec;
 import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
 
 public record CacheRegionDefinition(
@@ -39,6 +40,16 @@ public record CacheRegionDefinition(
         "namespace=" + spec.namespace()
             + ",schemaVersion=" + spec.schemaVersion()
             + ",maximumSize=" + spec.maximumSize()
+            + ",ttl=" + spec.ttl(),
+        new SharedCacheIdentity(spec.namespace(), spec.schemaVersion()));
+  }
+
+  public static CacheRegionDefinition redisTtl(RedisTtlCacheSpec spec) {
+    return new CacheRegionDefinition(
+        spec.name(),
+        CacheRegionType.REDIS_TTL,
+        "namespace=" + spec.namespace()
+            + ",schemaVersion=" + spec.schemaVersion()
             + ",ttl=" + spec.ttl(),
         new SharedCacheIdentity(spec.namespace(), spec.schemaVersion()));
   }
