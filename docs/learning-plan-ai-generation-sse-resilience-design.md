@@ -38,13 +38,13 @@ POST /api/learning-plans/drafts/from-template
 
 ```text
 POST /api/learning-plans/drafts/stream
-  -> 创建初始草案
-  -> 启动 Agent
+  -> 完成 AI 准入并启动 Agent
+  -> 在 AgentRunStart 后创建初始草案
   -> SSE 推送 work_* 事件
   -> 最终通过 draft_ready 返回完整草案
 ```
 
-后端实际上已经在 Agent 调用前创建草案记录，并在发送 `draft_ready` 前将生成结果写入数据库。但是前端只有收到最终 SSE 事件后才能获得草案。如果连接在终态前中断，可能出现：
+后端在 AI 准入成功、Agent 发出启动事件后创建草案记录，并在发送 `draft_ready` 前将生成结果写入数据库。这样并发锁拒绝的请求不会创建草案或消耗每日草案额度。但是前端只有收到最终 SSE 事件后才能获得草案。如果连接在终态前中断，可能出现：
 
 - 后端继续完成 Agent 调用并成功落库。
 - 前端没有收到最终草案，也没有稳定的恢复入口。
@@ -68,7 +68,7 @@ TCP 断开可能来自移动网络切换、代理超时、浏览器暂时失联�
 
 ### 3.3 草案生成状态不完整
 
-当前 `LearningPlanDraftStatus` 没有 `GENERATING` 和生成取消状态。有效请求在调用 Agent 前创建的初始草案暂时使用 `COLLECTING`，无法准确表达“输入完整，正在生成”。
+当前 `LearningPlanDraftStatus` 没有 `GENERATING` 和生成取消状态。有效请求在 Agent 准入成功后创建的初始草案暂时使用 `COLLECTING`，无法准确表达“输入完整，正在生成”。
 
 ### 3.4 取消链路没有成为正式契约
 

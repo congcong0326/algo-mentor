@@ -136,8 +136,6 @@ public class LearningPlanDraftStreamService {
     }
     LearningPlanPersonalizationSnapshot personalizationSnapshot = personalizationContextService.snapshot(
         userId, brief.personalizationEnabled(), LearningPlanPersonalizationScenario.DRAFT);
-    // 第一次写库：先落一条空草案，拿到稳定 draft id；通用 Agent 只负责生成，不直接持有学习计划仓储。
-    LearningPlanDraft draft = createInitialDraft(userId, brief);
     return subscriber -> {
       SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher =
           new SingleSubscriberSynchronousPublisher<>();
@@ -147,7 +145,7 @@ public class LearningPlanDraftStreamService {
       agentRuntime.stream(invocation(userId, brief, runId, personalizationSnapshot)).subscribe(new StreamSubscriber(
           publisher,
           projector,
-          draft,
+          userId,
           brief));
     };
   }
@@ -257,21 +255,22 @@ public class LearningPlanDraftStreamService {
 
     private final SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher;
     private final AgentWorkStatusProjector projector;
-    private final LearningPlanDraft draft;
+    private final long userId;
     private final LearningPlanBrief brief;
     private final AtomicReference<Flow.Subscription> subscription = new AtomicReference<>();
     private final StringBuilder stepContent = new StringBuilder();
+    private LearningPlanDraft draft;
     private String finalContent;
 
     private StreamSubscriber(
         SingleSubscriberSynchronousPublisher<LearningPlanDraftStreamEvent> publisher,
         AgentWorkStatusProjector projector,
-        LearningPlanDraft draft,
+        long userId,
         LearningPlanBrief brief
     ) {
       this.publisher = publisher;
       this.projector = projector;
-      this.draft = draft;
+      this.userId = userId;
       this.brief = brief;
     }
 
@@ -283,6 +282,9 @@ public class LearningPlanDraftStreamService {
 
     @Override
     public void onNext(AgentStreamEvent event) {
+      if (event instanceof AgentStreamEvent.AgentRunStart && !createInitialDraft()) {
+        return;
+      }
       captureContent(event);
       projector.project(event)
           .map(LearningPlanDraftStreamEvent.Work::new)
@@ -357,6 +359,27 @@ public class LearningPlanDraftStreamService {
       }
     }
 
+    /**
+     * AgentRunStart 只会在 Runtime 完成 AI 准入后发出。将首次草案写入延后到此处，
+     * 被并发锁拒绝的请求因此既不会留下失败草案，也不会消耗每日草案额度。
+     */
+    private boolean createInitialDraft() {
+      if (draft != null) {
+        return true;
+      }
+      try {
+        draft = LearningPlanDraftStreamService.this.createInitialDraft(userId, brief);
+        return true;
+      } catch (LearningPlanException exception) {
+        failDraft(exception.code(), exception.getMessage(), false, exception);
+        Flow.Subscription current = subscription.get();
+        if (current != null) {
+          current.cancel();
+        }
+        return false;
+      }
+    }
+
     private void failDraft(String code, String message, boolean retryable) {
       failDraft(code, message, retryable, null);
     }
@@ -373,12 +396,14 @@ public class LearningPlanDraftStreamService {
             cause.getMessage(),
             cause);
       }
-      draftRepository.save(draft.withState(
-          LearningPlanDraftStatus.GENERATION_FAILED,
-          List.of(),
-          message,
-          null,
-          clock.instant()));
+      if (draft != null) {
+        draftRepository.save(draft.withState(
+            LearningPlanDraftStatus.GENERATION_FAILED,
+            List.of(),
+            message,
+            null,
+            clock.instant()));
+      }
       publisher.emit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftError(
           code,
           message,

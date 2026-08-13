@@ -69,7 +69,7 @@ class AiRunAdmissionServiceTest {
   }
 
   @Test
-  void rejectsQuotaBeforeLock() {
+  void rejectsQuotaAfterLockAndReleasesIt() {
     Fixture fixture = new Fixture();
     fixture.usage.consumeResult = false;
 
@@ -78,11 +78,12 @@ class AiRunAdmissionServiceTest {
         AiRunAdmissionException.class);
 
     assertThat(ex.code()).isEqualTo(AiGovernanceErrorCode.AI_QUOTA_EXCEEDED);
-    assertThat(fixture.locks.acquireCalls).isZero();
+    assertThat(fixture.locks.acquireCalls).isEqualTo(1);
+    assertThat(fixture.locks.releaseCalls).isEqualTo(1);
   }
 
   @Test
-  void rejectsConcurrentRunAfterQuotaConsumed() {
+  void rejectsConcurrentRunBeforeQuotaConsumption() {
     Fixture fixture = new Fixture();
     fixture.locks.result = Optional.empty();
 
@@ -91,7 +92,7 @@ class AiRunAdmissionServiceTest {
         AiRunAdmissionException.class);
 
     assertThat(ex.code()).isEqualTo(AiGovernanceErrorCode.AI_CONCURRENT_RUN_CONFLICT);
-    assertThat(fixture.usage.consumeCalls).isEqualTo(1);
+    assertThat(fixture.usage.consumeCalls).isZero();
   }
 
   @Test
@@ -188,6 +189,7 @@ class AiRunAdmissionServiceTest {
   private static final class RecordingLocks extends AiRunLockService {
 
     private int acquireCalls;
+    private int releaseCalls;
     private Optional<AgentRunLockToken> result = Optional.of(new AgentRunLockToken(
         "user:7:ai:all", "node-1", "token-1", null));
 
@@ -203,6 +205,7 @@ class AiRunAdmissionServiceTest {
 
     @Override
     public void release(AgentRunLockToken token) {
+      releaseCalls++;
     }
   }
 

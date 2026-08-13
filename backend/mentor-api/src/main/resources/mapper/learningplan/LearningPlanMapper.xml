@@ -180,7 +180,7 @@
       #{assistantMessage},
       #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       CASE
-        WHEN #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler} IS NULL
+        WHEN CAST(#{draftPlanJson, jdbcType=OTHER, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler} AS JSONB) IS NULL
           THEN NULL
         ELSE #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}
       END,
@@ -230,7 +230,7 @@
         origin_brief_json = COALESCE(
             origin_brief_json,
             CASE
-              WHEN #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler} IS NULL
+              WHEN CAST(#{draftPlanJson, jdbcType=OTHER, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler} AS JSONB) IS NULL
                 THEN NULL
               ELSE #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}
             END),

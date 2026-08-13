@@ -41,6 +41,47 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
+  void persistsInitialAiDraftAndCollectingUpdateWithoutAPlanSnapshot() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    Repositories repositories = repositories();
+    LearningPlanBrief brief = brief("准备 Java 算法面试", 4, 25, 55, 20);
+    LearningPlanDraft initialDraft = repositories.plans.save(new LearningPlanDraft(
+        null,
+        userId,
+        LearningPlanDraftStatus.COLLECTING,
+        brief,
+        List.of(),
+        List.of("objective"),
+        "请补充学习目标。",
+        null,
+        null,
+        CREATED_AT.plusSeconds(86_400),
+        CREATED_AT,
+        CREATED_AT));
+
+    assertThat(initialDraft.id()).isNotNull();
+    assertThat(initialDraft.draftPlan()).isNull();
+
+    LearningPlanDraft updatedDraft = repositories.plans.save(new LearningPlanDraft(
+        initialDraft.id(),
+        userId,
+        LearningPlanDraftStatus.COLLECTING,
+        brief,
+        List.of("我想准备 Java 算法面试"),
+        List.of("weeklyHours"),
+        "请补充每周可投入的学习时间。",
+        null,
+        null,
+        CREATED_AT.plusSeconds(86_400),
+        CREATED_AT,
+        UPDATED_AT));
+
+    assertThat(updatedDraft.id()).isEqualTo(initialDraft.id());
+    assertThat(updatedDraft.draftPlan()).isNull();
+  }
+
+  @Test
   void freezesAiCreatedFirstCompleteDraftAsTheSourceIndependentOrigin() throws Exception {
     migrateLatest();
     long userId = insertUser();

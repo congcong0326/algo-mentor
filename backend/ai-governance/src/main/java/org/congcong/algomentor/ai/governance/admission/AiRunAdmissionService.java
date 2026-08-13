@@ -80,7 +80,7 @@ public class AiRunAdmissionService {
    * 对一次 AI run 做统一准入检查，并返回后续 Agent/trace 需要携带的治理上下文。
    *
    * <p>当前流程包含：按 purpose 解析治理策略、检查功能开关和账号权限、限制请求大小、
-   * 消耗用户每日共享额度、获取用户级并发锁、写入准入审计记录，最后把 admissionId、
+   * 获取用户级并发锁、消耗用户每日共享额度、写入准入审计记录，最后把 admissionId、
    * lockToken、策略版本等信息合并到 metadata。调用方应把返回的 metadata 继续传给
    * Agent run，便于后续释放锁、排查问题和关联治理审计。</p>
    */
@@ -124,37 +124,35 @@ public class AiRunAdmissionService {
       metadata.putAll(modelSnapshot.trustedMetadata());
     }
 
-    // 当前额度按用户维度共享，不区分 learning chat、plan draft 等具体 purpose。
-    long userId = context.actor().userId();
-    LocalDate quotaDate = LocalDate.now(properties.getQuotaZone());
-    metadata.put(AiGovernanceMetadataKeys.DAILY_LIMIT, runtimePolicy.effectiveDailyRequestLimit());
-    if (!usageStore.tryConsumeRequest(
-        userId,
-        quotaDate,
-        SHARED_QUOTA_SCOPE,
-        runtimePolicy.effectiveDailyRequestLimit())) {
-      reject(context, AiGovernanceErrorCode.AI_QUOTA_EXCEEDED, AiRunStatus.REJECTED_QUOTA, metadata);
-    }
-
     /*
-     * 获取用户级 AI run 锁，避免同一用户并发启动多个 AI 任务。
-     * 锁 token 会随 admission metadata 下传到 Agent run，最终由运行结束回调释放。
+     * 先获取用户级运行锁，再消耗每日额度。并发冲突的请求没有进入实际执行，
+     * 因而不应消耗任何 AI 请求次数。
      */
-    if (modelSnapshot != null && invocationTargetStore != null) {
-      invocationTargetStore.bind(context.runId(), modelSnapshot.invocationTarget());
-    }
+    long userId = context.actor().userId();
     AgentRunLockToken lockToken = runLockService.tryAcquire(userId, context.runId(), metadata).orElse(null);
     if (lockToken == null) {
-      removeInvocationTarget(context.runId());
       throw exception(AiGovernanceErrorCode.AI_CONCURRENT_RUN_CONFLICT,
           AiRunStatus.REJECTED_CONCURRENT, metadata);
     }
     Long admissionId;
     try {
+      // 当前额度按用户维度共享，不区分 learning chat、plan draft 等具体 purpose。
+      LocalDate quotaDate = LocalDate.now(properties.getQuotaZone());
+      metadata.put(AiGovernanceMetadataKeys.DAILY_LIMIT, runtimePolicy.effectiveDailyRequestLimit());
+      if (!usageStore.tryConsumeRequest(
+          userId,
+          quotaDate,
+          SHARED_QUOTA_SCOPE,
+          runtimePolicy.effectiveDailyRequestLimit())) {
+        reject(context, AiGovernanceErrorCode.AI_QUOTA_EXCEEDED, AiRunStatus.REJECTED_QUOTA, metadata);
+      }
+      if (modelSnapshot != null && invocationTargetStore != null) {
+        invocationTargetStore.bind(context.runId(), modelSnapshot.invocationTarget());
+      }
       // 只有真正准入的请求会走到这里；被拒绝的请求已在 reject(...) 中写入 rejected 审计记录。
       admissionId = admissionRepository.insert(context, AiRunStatus.ADMITTED, null);
     } catch (RuntimeException ex) {
-      // 审计落库失败时释放刚获取的并发锁，避免用户后续请求被遗留锁阻塞。
+      // 额度、路由绑定或审计落库失败时释放刚获取的并发锁，避免遗留锁阻塞后续请求。
       runLockService.release(lockToken);
       removeInvocationTarget(context.runId());
       throw ex;

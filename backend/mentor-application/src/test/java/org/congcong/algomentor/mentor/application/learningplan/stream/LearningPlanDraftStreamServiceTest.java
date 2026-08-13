@@ -1,11 +1,11 @@
 package org.congcong.algomentor.mentor.application.learningplan.stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,11 +127,17 @@ class LearningPlanDraftStreamServiceTest {
             ignored -> new LearningPlanCreationPolicy(30, 0, 14),
             ZoneOffset.UTC));
 
-    assertThatThrownBy(() -> service.stream(7L, command(), "run-limited", Map.of()))
-        .isInstanceOfSatisfying(org.congcong.algomentor.mentor.application.learningplan.LearningPlanException.class,
-            exception -> assertThat(exception.code()).isEqualTo(
-                LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE));
-    assertThat(runtime.streamCalls).isZero();
+    List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, command(), "run-limited", Map.of()));
+
+    LearningPlanDraftEvent.DraftError error = (LearningPlanDraftEvent.DraftError) events.stream()
+        .filter(event -> event.eventName().equals("draft_error"))
+        .map(LearningPlanDraftStreamEvent.Draft.class::cast)
+        .map(LearningPlanDraftStreamEvent.Draft::event)
+        .findFirst()
+        .orElseThrow();
+    assertThat(error.code()).isEqualTo(LearningPlanCreationPolicyConstants.DRAFT_DAILY_LIMIT_EXCEEDED_CODE);
+    assertThat(runtime.streamCalls).isEqualTo(1);
+    assertThat(draftRepository.drafts).isEmpty();
   }
 
   @Test
@@ -196,7 +202,8 @@ class LearningPlanDraftStreamServiceTest {
 
   @Test
   void exposesOnlyKnownSafeReasonWhenAiGenerationIsRejectedByConcurrentRunPolicy() {
-    LearningPlanDraftStreamService service = serviceWithRuntime(new FailingAgentRuntime(
+    InMemoryDraftRepository repository = new InMemoryDraftRepository();
+    LearningPlanDraftStreamService service = serviceWithRuntime(repository, new FailingAgentRuntime(
         new AiRunAdmissionException(
             AiGovernanceErrorCode.AI_CONCURRENT_RUN_CONFLICT,
             AiRunStatus.REJECTED_DISABLED,
@@ -214,6 +221,8 @@ class LearningPlanDraftStreamServiceTest {
         .orElseThrow();
     assertThat(error.message()).isEqualTo("学习计划生成失败，请稍后重试。");
     assertThat(error.reason()).isEqualTo("已有一个 AI 任务正在运行，请等待完成后再试。");
+    assertThat(repository.drafts).isEmpty();
+    assertThat(repository.dailyCreationAttempts).isZero();
   }
 
   private LearningPlanDraftStreamService serviceWithAgent(String content) {
@@ -221,8 +230,15 @@ class LearningPlanDraftStreamServiceTest {
   }
 
   private LearningPlanDraftStreamService serviceWithRuntime(AgentRuntime runtime) {
+    return serviceWithRuntime(draftRepository, runtime);
+  }
+
+  private LearningPlanDraftStreamService serviceWithRuntime(
+      InMemoryDraftRepository repository,
+      AgentRuntime runtime
+  ) {
     return new LearningPlanDraftStreamService(
-        draftRepository,
+        repository,
         new LearningPlanDraftValidator(),
         runtime,
         new ObjectMapper(),
@@ -484,7 +500,19 @@ class LearningPlanDraftStreamServiceTest {
 
   private static class InMemoryDraftRepository implements LearningPlanDraftRepository {
     private final Map<Long, LearningPlanDraft> drafts = new HashMap<>();
+    private int dailyCreationAttempts;
     private long sequence = 100;
+
+    @Override
+    public Optional<LearningPlanDraft> createWithinDailyLimit(
+        LearningPlanDraft draft,
+        LocalDate quotaDate,
+        int dailyLimit,
+        Instant consumedAt
+    ) {
+      dailyCreationAttempts++;
+      return LearningPlanDraftRepository.super.createWithinDailyLimit(draft, quotaDate, dailyLimit, consumedAt);
+    }
 
     @Override
     public LearningPlanDraft save(LearningPlanDraft draft) {
