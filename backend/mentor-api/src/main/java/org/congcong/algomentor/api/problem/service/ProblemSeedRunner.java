@@ -3,6 +3,8 @@ package org.congcong.algomentor.api.problem.service;
 import java.nio.file.Path;
 import org.congcong.algomentor.api.learningplan.service.LearningPlanTemplateSeedImportResult;
 import org.congcong.algomentor.api.learningplan.service.LearningPlanTemplateSeedImportService;
+import org.congcong.algomentor.api.problem.model.ProblemLearningMetadataContract;
+import org.congcong.algomentor.api.problem.model.ProblemLearningMetadataImportResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,7 @@ public class ProblemSeedRunner implements ApplicationRunner {
   private final ProblemSeedImporter importer;
   private final ProblemCompanySeedImportService companySeedImportService;
   private final LearningPlanTemplateSeedImportService templateSeedImportService;
+  private final ProblemLearningMetadataSeedImportService metadataSeedImportService;
   private final ConfigurableApplicationContext applicationContext;
   private final boolean problemSeedEnabled;
   private final Path seedPath;
@@ -28,11 +31,14 @@ public class ProblemSeedRunner implements ApplicationRunner {
   private final boolean companySeedEnabled;
   private final Path templateSeedPath;
   private final boolean templateSeedEnabled;
+  private final Path metadataSeedPath;
+  private final boolean metadataSeedEnabled;
 
   public ProblemSeedRunner(
       ProblemSeedImporter importer,
       ProblemCompanySeedImportService companySeedImportService,
       LearningPlanTemplateSeedImportService templateSeedImportService,
+      ProblemLearningMetadataSeedImportService metadataSeedImportService,
       ConfigurableApplicationContext applicationContext,
       @Value("${algo-mentor.problem.seed.enabled:false}") boolean problemSeedEnabled,
       @Value("${algo-mentor.problem.seed.path:data/seed}") String seedPath,
@@ -40,11 +46,15 @@ public class ProblemSeedRunner implements ApplicationRunner {
       @Value("${algo-mentor.problem.company-seed.path:data/company-seed}") String companySeedPath,
       @Value("${algo-mentor.problem.company-seed.enabled:false}") boolean companySeedEnabled,
       @Value("${algo-mentor.learning-plan-template.seed.path:data/learning-plan-template-seed}") String templateSeedPath,
-      @Value("${algo-mentor.learning-plan-template.seed.enabled:false}") boolean templateSeedEnabled
+      @Value("${algo-mentor.learning-plan-template.seed.enabled:false}") boolean templateSeedEnabled,
+      @Value("${" + ProblemLearningMetadataContract.METADATA_SEED_PATH_PROPERTY + ":"
+          + ProblemLearningMetadataContract.DEFAULT_SEED_PATH + "}") String metadataSeedPath,
+      @Value("${" + ProblemLearningMetadataContract.METADATA_SEED_ENABLED_PROPERTY + ":false}") boolean metadataSeedEnabled
   ) {
     this.importer = importer;
     this.companySeedImportService = companySeedImportService;
     this.templateSeedImportService = templateSeedImportService;
+    this.metadataSeedImportService = metadataSeedImportService;
     this.applicationContext = applicationContext;
     this.problemSeedEnabled = problemSeedEnabled;
     this.seedPath = Path.of(seedPath);
@@ -53,11 +63,13 @@ public class ProblemSeedRunner implements ApplicationRunner {
     this.companySeedEnabled = companySeedEnabled;
     this.templateSeedPath = Path.of(templateSeedPath);
     this.templateSeedEnabled = templateSeedEnabled;
+    this.metadataSeedPath = Path.of(metadataSeedPath);
+    this.metadataSeedEnabled = metadataSeedEnabled;
   }
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
-    if (!problemSeedEnabled && !templateSeedEnabled) {
+    if (!problemSeedEnabled && !templateSeedEnabled && !metadataSeedEnabled) {
       return;
     }
     if (problemSeedEnabled) {
@@ -71,6 +83,15 @@ public class ProblemSeedRunner implements ApplicationRunner {
           companyResult.readSignalCount(),
           companyResult.matchedSignalCount(),
           companyResult.skippedSignalCount());
+    }
+    if (metadataSeedEnabled) {
+      ProblemLearningMetadataImportResult metadataResult = metadataSeedImportService.importSeed(metadataSeedPath);
+      log.info(
+          "Imported problem learning metadata rows: read={}, matched={}, skipped={}, snapshot={}",
+          metadataResult.readCount(),
+          metadataResult.matchedSourceProblemCount(),
+          metadataResult.skippedSourceProblemCount(),
+          metadataResult.sourceSnapshot());
     }
     if (templateSeedEnabled) {
       LearningPlanTemplateSeedImportResult templateResult = templateSeedImportService.importSeed(templateSeedPath);

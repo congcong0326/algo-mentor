@@ -66,6 +66,7 @@
 - `docs/learner-profile-frontend-display-design.md`：学习画像页的学习记忆只读展示设计，说明页面位置、三类分组、当前用户 API、安全字段和前端状态。
 - `docs/problem-tag-modeling-spec.md`：题目标签建模完整闭环规格，说明规范化标签表、历史数组回填、seed 导入双写、题库与能力雷达读取切换、一致性校验、测试和旧数组手动删除门禁。
 - `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
+- `docs/problem-learning-metadata-data-pipeline-implementation-plan.md`：LeetCode 相似题、官方提示、高层分类和多语言 starter code 的数据管线实施计划，定义独立抓取缓存、审核 seed、DDL、幂等导入、Goal 级验收与本阶段不做业务消费的边界。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 完整闭环设计，说明 35 个多来源模板的源数据、聚合产物、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。
 - `docs/learning-plan-template-catalog-design.md`：学习计划模板一级分类与推荐展示研发设计，固定 4 个分类、6 个首批推荐顺序、公共 API 字段收口、前端索引交互和迁移测试方案。
 - `docs/learning-plan-personalized-generation-redesign.md`：AI 学习计划个性化生成输入与上下文重构设计，保留表单创建和聊天修订交互，重构 `goal` 语义、模型输出职责与聚合学习数据注入边界。
@@ -150,6 +151,11 @@
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedTagNormalizer.java`：题目 seed 标签 fallback、题内去重和跨题名称稳定决胜的唯一实现入口。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedImporter.java`：按 `slug` 合并题目 JSONL 与推荐理由 JSON，在一个事务中规范化并双写题目兼容数组、标签目录和关联表，提交前执行一致性校验。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/repository/ProblemTagRepository.java`：规范化标签目录 upsert 与题目标签关联完整替换的持久化边界。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemLearningMetadataSeedImportService.java`：校验审核后的元数据 manifest、按来源精确刷新相似题/提示/template/分类并记录导入运行；可在题目 seed 关闭时独立执行。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/repository/MyBatisProblemLearningMetadataRepository.java` 与 `mapper/problem/ProblemLearningMetadataMapper.xml`：学习元数据四类表和 import run 的 PostgreSQL/MyBatis 持久化边界。
+- `backend/mentor-api/src/main/resources/db/migration/V64__problem_learning_metadata.sql`：相似题、官方提示、starter code、双语分类扩展和元数据导入运行表迁移。
+- `tools/problem_seed/fetch_problem_metadata.py`、`prepare_problem_metadata_seed.py`、`validate_problem_metadata_seed.py`：独立抓取缓存、确定性 JSONL seed 构建和自动/人工抽样审核；固定契约集中在 `problem_metadata_contract.py`。
+- `data/problem-metadata-seed/`：通过审核的 LeetCode 学习元数据五类 JSONL、manifest 和 audit report；原始站点响应仍位于被忽略的 `data/sources/`。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/profile`：claim/evidence MyBatis repository、文档投影和 PostgreSQL 集成测试；`LearnerMemoryFullUpgradeIT`、`LearnerMemoryCleanInstallIT` 与 `LearnerMemory*EndToEndIT` 覆盖最终迁移、空库、声明写入、五条 Review、recall 工具和文档引用闭环。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionController.java`：Agent Tool 权限决策 API，提供 `POST /api/agent/tool-permissions/{permissionRequestId}/decision`，通过当前认证用户提交允许或拒绝。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionExceptionHandler.java`：权限决策异常到 HTTP 状态的映射，覆盖未登录、越权、不存在、已决策、过期和非法请求。

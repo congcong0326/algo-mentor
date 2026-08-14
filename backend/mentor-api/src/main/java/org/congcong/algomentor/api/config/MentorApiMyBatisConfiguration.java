@@ -26,11 +26,14 @@ import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryUpdate
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileDocumentProjectionRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper;
+import org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemCompanyRepository;
+import org.congcong.algomentor.api.problem.repository.MyBatisProblemLearningMetadataRepository;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemTagRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemCompanyRepository;
+import org.congcong.algomentor.api.problem.repository.ProblemLearningMetadataRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemTagRepository;
 import org.congcong.algomentor.api.problem.service.ProblemCacheProperties;
@@ -141,6 +144,14 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public ProblemLearningMetadataMapper problemLearningMetadataMapper(
+      SqlSessionTemplate sqlSessionTemplate
+  ) {
+    return sqlSessionTemplate.getMapper(ProblemLearningMetadataMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public ProblemTagMapper problemTagMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(ProblemTagMapper.class);
   }
@@ -227,6 +238,15 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(ProblemCompanyRepository.class)
   public ProblemCompanyRepository problemCompanyRepository(ProblemCompanyMapper problemCompanyMapper) {
     return new MyBatisProblemCompanyRepository(problemCompanyMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ProblemLearningMetadataRepository.class)
+  public ProblemLearningMetadataRepository problemLearningMetadataRepository(
+      ProblemLearningMetadataMapper problemLearningMetadataMapper,
+      ObjectMapper objectMapper
+  ) {
+    return new MyBatisProblemLearningMetadataRepository(problemLearningMetadataMapper, objectMapper);
   }
 
   @Bean

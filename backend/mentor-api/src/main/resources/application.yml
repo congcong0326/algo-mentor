@@ -143,6 +143,10 @@ algo-mentor:
     seed:
       enabled: ${LEARNING_PLAN_TEMPLATE_SEED_ENABLED:false}
       path: ${LEARNING_PLAN_TEMPLATE_SEED_PATH:data/learning-plan-template-seed}
+  problem:
+    metadata-seed:
+      enabled: ${PROBLEM_METADATA_SEED_ENABLED:false}
+      path: ${PROBLEM_METADATA_SEED_PATH:data/problem-metadata-seed}
   learning-plan:
     governance:
       quota-zone: ${LEARNING_PLAN_QUOTA_ZONE:UTC}

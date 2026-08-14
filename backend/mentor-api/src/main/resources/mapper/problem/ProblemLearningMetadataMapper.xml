@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper">
+
+  <select id="findExistingProblemSlugs" resultType="java.lang.String">
+    SELECT slug
+    FROM problem
+    WHERE slug IN
+    <foreach collection="slugs" item="slug" open="(" separator="," close=")">
+      #{slug}
+    </foreach>
+    ORDER BY slug ASC
+  </select>
+
+  <delete id="deleteRelationsForSourceProblem">
+    DELETE FROM problem_relation relation
+    USING problem source_problem
+    WHERE relation.source_problem_id = source_problem.id
+      AND source_problem.slug = #{problemSlug}
+      AND relation.source = #{source}
+  </delete>
+
+  <delete id="deleteHintsForProblemSourceSite">
+    DELETE FROM problem_hint hint
+    USING problem source_problem
+    WHERE hint.problem_id = source_problem.id
+      AND source_problem.slug = #{problemSlug}
+      AND hint.source_site = #{sourceSite}
+  </delete>
+
+  <delete id="deleteCodeTemplatesForProblem">
+    DELETE FROM problem_code_template template
+    USING problem source_problem
+    WHERE template.problem_id = source_problem.id
+      AND source_problem.slug = #{problemSlug}
+  </delete>
+
+  <delete id="deleteCategoryItemsForProblemSource">
+    DELETE FROM problem_category_item item
+    USING problem source_problem
+    WHERE item.problem_id = source_problem.id
+      AND source_problem.slug = #{problemSlug}
+      AND item.source = #{source}
+  </delete>
+
+  <insert id="upsertRelation" parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemRelationUpsertRow">
+    INSERT INTO problem_relation (
+      source_problem_id, target_problem_slug, target_problem_id, relation_type, source,
+      source_snapshot, metadata_json, created_at, updated_at
+    )
+    SELECT source_problem.id, #{targetSlug}, target_problem.id, #{relationType}, #{source},
+      #{sourceSnapshot}, CAST(#{metadataJson} AS JSONB), NOW(), NOW()
+    FROM problem source_problem
+    LEFT JOIN problem target_problem ON target_problem.slug = #{targetSlug}
+    WHERE source_problem.slug = #{sourceSlug}
+    ON CONFLICT (source_problem_id, target_problem_slug, relation_type, source) DO UPDATE
+    SET target_problem_id = EXCLUDED.target_problem_id,
+        source_snapshot = EXCLUDED.source_snapshot,
+        metadata_json = EXCLUDED.metadata_json,
+        updated_at = NOW()
+    WHERE (problem_relation.target_problem_id, problem_relation.source_snapshot, problem_relation.metadata_json)
+      IS DISTINCT FROM (EXCLUDED.target_problem_id, EXCLUDED.source_snapshot, EXCLUDED.metadata_json)
+  </insert>
+
+  <insert id="upsertHint" parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemHintUpsertRow">
+    INSERT INTO problem_hint (
+      problem_id, source_site, ordinal, content_markdown, source_snapshot, created_at, updated_at
+    )
+    SELECT problem.id, #{sourceSite}, #{ordinal}, #{contentMarkdown}, #{sourceSnapshot}, NOW(), NOW()
+    FROM problem
+    WHERE problem.slug = #{problemSlug}
+    ON CONFLICT (problem_id, source_site, ordinal) DO UPDATE
+    SET content_markdown = EXCLUDED.content_markdown,
+        source_snapshot = EXCLUDED.source_snapshot,
+        updated_at = NOW()
+    WHERE (problem_hint.content_markdown, problem_hint.source_snapshot)
+      IS DISTINCT FROM (EXCLUDED.content_markdown, EXCLUDED.source_snapshot)
+  </insert>
+
+  <insert id="upsertCodeTemplate" parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemCodeTemplateUpsertRow">
+    INSERT INTO problem_code_template (
+      problem_id, language_slug, language_label, code, source_site, source_snapshot, created_at, updated_at
+    )
+    SELECT problem.id, #{languageSlug}, #{languageLabel}, #{code}, #{sourceSite}, #{sourceSnapshot}, NOW(), NOW()
+    FROM problem
+    WHERE problem.slug = #{problemSlug}
+    ON CONFLICT (problem_id, language_slug) DO UPDATE
+    SET language_label = EXCLUDED.language_label,
+        code = EXCLUDED.code,
+        source_site = EXCLUDED.source_site,
+        source_snapshot = EXCLUDED.source_snapshot,
+        updated_at = NOW()
+    WHERE (problem_code_template.language_label, problem_code_template.code,
+           problem_code_template.source_site, problem_code_template.source_snapshot)
+      IS DISTINCT FROM (EXCLUDED.language_label, EXCLUDED.code,
+                        EXCLUDED.source_site, EXCLUDED.source_snapshot)
+  </insert>
+
+  <select id="upsertCategory" resultType="java.lang.Long"
+      parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryUpsertRow">
+    INSERT INTO problem_category (
+      slug, name, name_en, name_zh, source, source_snapshot, created_at, updated_at
+    )
+    VALUES (
+      #{slug}, #{nameZh}, #{nameEn}, #{nameZh}, #{source}, #{sourceSnapshot}, NOW(), NOW()
+    )
+    ON CONFLICT (slug) DO UPDATE
+    SET name = EXCLUDED.name,
+        name_en = EXCLUDED.name_en,
+        name_zh = EXCLUDED.name_zh,
+        source = EXCLUDED.source,
+        source_snapshot = EXCLUDED.source_snapshot,
+        updated_at = NOW()
+    WHERE (problem_category.name, problem_category.name_en, problem_category.name_zh,
+           problem_category.source, problem_category.source_snapshot)
+      IS DISTINCT FROM (EXCLUDED.name, EXCLUDED.name_en, EXCLUDED.name_zh,
+                        EXCLUDED.source, EXCLUDED.source_snapshot)
+    RETURNING id
+  </select>
+
+  <insert id="upsertCategoryItem" parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryItemUpsertRow">
+    INSERT INTO problem_category_item (
+      category_id, problem_id, source, source_snapshot, created_at
+    )
+    SELECT category.id, problem.id, #{source}, #{sourceSnapshot}, NOW()
+    FROM problem_category category
+    JOIN problem ON problem.slug = #{problemSlug}
+    WHERE category.slug = #{categorySlug}
+    ON CONFLICT (category_id, problem_id, source) DO UPDATE
+    SET source_snapshot = EXCLUDED.source_snapshot
+    WHERE problem_category_item.source_snapshot IS DISTINCT FROM EXCLUDED.source_snapshot
+  </insert>
+
+  <insert id="insertImportRun" parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemMetadataImportRunRow">
+    INSERT INTO problem_metadata_import_run (
+      manifest_path, manifest_sha256, source_snapshot, read_count, matched_count,
+      skipped_count, failed_count, audit_report_json, imported_at
+    )
+    VALUES (
+      #{manifestPath}, #{manifestSha256}, #{sourceSnapshot}, #{readCount}, #{matchedCount},
+      #{skippedCount}, #{failedCount}, CAST(#{auditReportJson} AS JSONB), NOW()
+    )
+  </insert>
+</mapper>

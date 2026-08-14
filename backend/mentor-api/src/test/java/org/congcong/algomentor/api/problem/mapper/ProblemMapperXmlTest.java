@@ -94,6 +94,25 @@ class ProblemMapperXmlTest {
         "org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper.upsertSignal")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper.insertImportRun")).isTrue();
+
+    try (Reader reader = Resources.getResourceAsReader("mapper/problem/ProblemLearningMetadataMapper.xml")) {
+      new XMLMapperBuilder(
+          reader,
+          configuration,
+          "mapper/problem/ProblemLearningMetadataMapper.xml",
+          configuration.getSqlFragments()).parse();
+    }
+
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.upsertRelation")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.upsertHint")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.upsertCodeTemplate")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.upsertCategoryItem")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.insertImportRun")).isTrue();
   }
 
   @Test

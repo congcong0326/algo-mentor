@@ -23,12 +23,16 @@ PROBLEM_SOURCE_REPO := https://github.com/fishjar/leetcode-problemset
 PROBLEM_SOURCE_DIR := data/sources/leetcode-problemset
 PROBLEM_INDEX_PATH := data/index/problem_index.jsonl
 PROBLEM_API_CACHE_DIR := data/sources/leetcode-api
+PROBLEM_METADATA_API_CACHE_DIR := data/sources/leetcode-api-metadata
+PROBLEM_METADATA_FETCH_INTERVAL ?= 0.75
 PROBLEM_SEED_DIR := data/seed
 PROBLEM_SEED_ABS_DIR := $(abspath $(PROBLEM_SEED_DIR))
 PROBLEM_INSIGHT_SEED_DIR := data/problem-insight-seed
 PROBLEM_INSIGHT_SEED_ABS_DIR := $(abspath $(PROBLEM_INSIGHT_SEED_DIR))
 PROBLEM_COMPANY_SEED_DIR := data/company-seed
 PROBLEM_COMPANY_SEED_ABS_DIR := $(abspath $(PROBLEM_COMPANY_SEED_DIR))
+PROBLEM_METADATA_SEED_DIR := data/problem-metadata-seed
+PROBLEM_METADATA_SEED_ABS_DIR := $(abspath $(PROBLEM_METADATA_SEED_DIR))
 LEARNING_PLAN_TEMPLATE_SEED_DIR := data/learning-plan-template-seed
 LEARNING_PLAN_TEMPLATE_SEED_ABS_DIR := $(abspath $(LEARNING_PLAN_TEMPLATE_SEED_DIR))
 DB_SEED_URL := jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
@@ -36,7 +40,7 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
+.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
 
 build: backend-build frontend-build
 
@@ -167,6 +171,16 @@ problem-source:
 problem-seed:
 	python3 -m tools.problem_seed.prepare_seed --index "$(PROBLEM_INDEX_PATH)" --cache-dir "$(PROBLEM_API_CACHE_DIR)" --output-dir "$(PROBLEM_SEED_DIR)"
 
+# 全量网络抓取不会被任何默认 target 间接触发；仅显式调用本 target 执行。
+problem-metadata-fetch:
+	python3 -m tools.problem_seed.fetch_problem_metadata --seed "$(PROBLEM_SEED_DIR)/problems.jsonl" --index "$(PROBLEM_INDEX_PATH)" --cache-dir "$(PROBLEM_METADATA_API_CACHE_DIR)" --interval "$(PROBLEM_METADATA_FETCH_INTERVAL)"
+
+problem-metadata-seed:
+	python3 -m tools.problem_seed.prepare_problem_metadata_seed --problem-seed "$(PROBLEM_SEED_DIR)/problems.jsonl" --cache-dir "$(PROBLEM_METADATA_API_CACHE_DIR)" --output-dir "$(PROBLEM_METADATA_SEED_DIR)"
+
+problem-metadata-validate:
+	python3 -m tools.problem_seed.validate_problem_metadata_seed --seed-dir "$(PROBLEM_METADATA_SEED_DIR)" --problem-seed "$(PROBLEM_SEED_DIR)/problems.jsonl"
+
 db-install:
 	@if [ "$$(id -u)" -ne 0 ]; then \
 		echo "db-install requires root in the development container." >&2; \
@@ -243,6 +257,11 @@ db-install:
 db-seed:
 	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
 		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --algo-mentor.problem.insight-seed.path=$(PROBLEM_INSIGHT_SEED_ABS_DIR) --algo-mentor.problem.company-seed.enabled=true --algo-mentor.problem.company-seed.path=$(PROBLEM_COMPANY_SEED_ABS_DIR) --algo-mentor.learning-plan-template.seed.enabled=true --algo-mentor.learning-plan-template.seed.path=$(LEARNING_PLAN_TEMPLATE_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
+		-Dspring-boot.run.profiles=local
+
+db-seed-metadata:
+	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
+		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=false --algo-mentor.problem.metadata-seed.enabled=true --algo-mentor.problem.metadata-seed.path=$(PROBLEM_METADATA_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
 		-Dspring-boot.run.profiles=local
 
 sync-frontend:

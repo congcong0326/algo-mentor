@@ -1,0 +1,178 @@
+{
+  "errors": [],
+  "manifestPath": "data/problem-metadata-seed/problem_metadata_seed_manifest.json",
+  "manifestSha256": "3fe51ab2d9c81eb282fbecbd31026ff47ed17d1a8da6c03851aeca7531239709",
+  "manualSampling": {
+    "candidateProblemSlugs": [
+      "01-matrix",
+      "05ZEDJ",
+      "0H97ZC",
+      "0Zeoeg",
+      "0i0mDW",
+      "0jQkd0",
+      "0on3uN",
+      "0ynMMM",
+      "1-bit-and-2-bit-characters",
+      "132-pattern",
+      "1GxJYY",
+      "1fGaJU",
+      "1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof",
+      "1ybDKD",
+      "actors-and-directors-who-cooperated-at-least-three-times",
+      "add-two-promises",
+      "add-without-plus-lcci",
+      "building-h2o",
+      "change-data-type",
+      "tenth-line"
+    ],
+    "conclusion": "已逐条核对 20 个真实样本（01-matrix、05ZEDJ、0H97ZC、0Zeoeg、0i0mDW、0jQkd0、0on3uN、0ynMMM、1-bit-and-2-bit-characters、132-pattern、1GxJYY、1fGaJU、1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof、1ybDKD、actors-and-directors-who-cooperated-at-least-three-times、add-two-promises、add-without-plus-lcci、building-h2o、change-data-type、tenth-line）的 .com/.cn 原始响应与五份 JSONL；覆盖 Algorithms、Database、JavaScript、LCCI、Concurrency、pandas、Shell，包含双站点、有/无 hints、未匹配相似题目标和多语言模板，确认 hint 已清洗且序号连续、模板非空、分类映射明确，未发现错误。",
+    "requiredCoverage": [
+      "hints",
+      "dualSite",
+      "unmatchedTarget",
+      "multiLanguage",
+      "allCategories"
+    ],
+    "sampleSize": 20,
+    "status": "PASSED"
+  },
+  "outcome": "PASSED",
+  "sourceSnapshot": "leetcode-question-learning-metadata.v1@7e97afe4f9d96cfb",
+  "summary": {
+    "categoryDistribution": {
+      "algorithms": 3315,
+      "concurrency": 6,
+      "database": 105,
+      "javascript": 37,
+      "lcci": 109,
+      "pandas": 15,
+      "shell": 4
+    },
+    "codeTemplateCount": 68153,
+    "failedFetchCount": 0,
+    "fetchedCount": 3591,
+    "highOutDegree": [
+      {
+        "outDegree": 21,
+        "problemSlug": "two-sum"
+      },
+      {
+        "outDegree": 18,
+        "problemSlug": "merge-intervals"
+      },
+      {
+        "outDegree": 16,
+        "problemSlug": "longest-increasing-subsequence"
+      },
+      {
+        "outDegree": 14,
+        "problemSlug": "house-robber"
+      },
+      {
+        "outDegree": 14,
+        "problemSlug": "maximum-subarray"
+      },
+      {
+        "outDegree": 12,
+        "problemSlug": "number-of-islands"
+      },
+      {
+        "outDegree": 11,
+        "problemSlug": "longest-substring-without-repeating-characters"
+      },
+      {
+        "outDegree": 10,
+        "problemSlug": "climbing-stairs"
+      },
+      {
+        "outDegree": 10,
+        "problemSlug": "longest-nice-subarray"
+      },
+      {
+        "outDegree": 10,
+        "problemSlug": "max-consecutive-ones-iii"
+      },
+      {
+        "outDegree": 10,
+        "problemSlug": "top-k-frequent-elements"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "best-time-to-buy-and-sell-stock"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "binary-tree-inorder-traversal"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "binary-tree-level-order-traversal"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "coin-change"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "course-schedule-ii"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "fair-distribution-of-cookies"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "first-missing-positive"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "jump-game-vii"
+      },
+      {
+        "outDegree": 9,
+        "problemSlug": "minimum-moves-to-equal-array-elements-ii"
+      }
+    ],
+    "hintCount": 11841,
+    "hintCountBySourceSite": {
+      "LEETCODE_CN": 6180,
+      "LEETCODE_COM": 5661
+    },
+    "languageDistribution": {
+      "bash": 4,
+      "c": 3421,
+      "cangjie": 3169,
+      "cpp": 3430,
+      "csharp": 3422,
+      "dart": 3196,
+      "elixir": 3304,
+      "erlang": 3304,
+      "golang": 3426,
+      "java": 3430,
+      "javascript": 3461,
+      "kotlin": 3405,
+      "mssql": 105,
+      "mysql": 105,
+      "oraclesql": 105,
+      "php": 3405,
+      "postgresql": 105,
+      "python": 3430,
+      "python3": 3430,
+      "pythondata": 120,
+      "racket": 3326,
+      "ruby": 3411,
+      "rust": 3387,
+      "scala": 3405,
+      "swift": 3406,
+      "typescript": 3441
+    },
+    "matchedTargetCount": 3920,
+    "metadataSourceProblemCount": 2477,
+    "notAvailableCount": 0,
+    "relationCount": 4424,
+    "sourceStatusCounts": {
+      "fetched": 3591
+    },
+    "unmatchedTargetCount": 504
+  }
+}
