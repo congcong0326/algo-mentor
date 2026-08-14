@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
@@ -20,6 +22,7 @@ import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRep
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunInsert;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
+import org.congcong.algomentor.agent.persistence.postgres.AgentPersistenceStatuses;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PostgresAgentConversationRepository implements AgentConversationRepository, AgentTaskMessageRepository {
@@ -127,10 +130,19 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
     return Optional.ofNullable(conversationMapper.findActiveRun(taskId));
   }
 
+  @Override
+  public boolean isActiveRun(long taskId, String runUuid) {
+    return runUuid != null && !runUuid.isBlank() && conversationMapper.countActiveRun(taskId, runUuid) > 0;
+  }
+
   private PreparedAgentRun existingDraft(long runId) {
     AgentRunRecord record = conversationMapper.findRunRecord(runId);
     if (record == null) {
       throw new IllegalStateException("Agent run was not found: " + runId);
+    }
+    AgentException submissionRejection = submissionRejection(record);
+    if (submissionRejection != null) {
+      throw submissionRejection;
     }
     return new PreparedAgentRun(
         record.taskId(),
@@ -147,6 +159,34 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         record.parentStepIndex(),
         record.retryOfRunId(),
         record.maxSteps());
+  }
+
+  /**
+   * 无队列执行器拒绝的 run 从未被成功提交，不能被 Idempotency-Key 当作可回放运行复用。
+   * 客户端需要以新的 key 再次提交，才有机会重新竞争当前容量。
+   */
+  private AgentException submissionRejection(AgentRunRecord record) {
+    if (!AgentPersistenceStatuses.FAILED.equals(record.status())) {
+      return null;
+    }
+    AgentErrorCode code;
+    try {
+      code = AgentErrorCode.valueOf(record.errorCode());
+    } catch (IllegalArgumentException | NullPointerException ignored) {
+      return null;
+    }
+    if (code != AgentErrorCode.AGENT_EXECUTOR_OVERLOADED
+        && code != AgentErrorCode.AGENT_EXECUTOR_SHUTDOWN) {
+      return null;
+    }
+    return new AgentException(
+        code,
+        code == AgentErrorCode.AGENT_EXECUTOR_SHUTDOWN
+            ? "Agent executor is shutting down"
+            : "Agent executor is temporarily overloaded",
+        true,
+        Map.of(),
+        null);
   }
 
   private long createTask(AgentRunPreparationRequest request) {

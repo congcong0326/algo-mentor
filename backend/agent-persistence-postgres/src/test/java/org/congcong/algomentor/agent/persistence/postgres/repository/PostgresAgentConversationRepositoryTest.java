@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
@@ -102,6 +104,47 @@ class PostgresAgentConversationRepositoryTest {
     assertThat(run.metadata()).containsEntry("idempotentReplay", true);
     assertThat(mapper.calls).containsExactly(
         "findRunIdByIdempotencyKey:idem-1",
+        "findRunRecord:401");
+  }
+
+  @Test
+  void doesNotReplayARunWhoseExecutorSubmissionWasRejected() {
+    mapper.existingRunId = 401L;
+    mapper.existingRunRecord = new AgentRunRecord(
+        401L,
+        101L,
+        201L,
+        "run-uuid-401",
+        "idem-rejected",
+        "system prompt",
+        "practice-chat",
+        "USER_ENTRY",
+        null,
+        null,
+        null,
+        4,
+        "failed",
+        "AGENT_EXECUTOR_OVERLOADED");
+
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> repository.createOrReuseRun(new AgentRunPreparationRequest(
+        101L,
+        7L,
+        "retry with the old key",
+        "idem-rejected",
+        "system prompt",
+        Map.of())))
+        .isInstanceOf(AgentException.class)
+        .extracting(error -> ((AgentException) error).code())
+        .isEqualTo(AgentErrorCode.AGENT_EXECUTOR_OVERLOADED);
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> repository.findRunByIdempotencyKey("idem-rejected"))
+        .isInstanceOf(AgentException.class)
+        .extracting(error -> ((AgentException) error).code())
+        .isEqualTo(AgentErrorCode.AGENT_EXECUTOR_OVERLOADED);
+    assertThat(mapper.calls).containsExactly(
+        "lockIdempotencyKey:idem-rejected",
+        "findRunIdByIdempotencyKey:idem-rejected",
+        "findRunRecord:401",
+        "findRunIdByIdempotencyKey:idem-rejected",
         "findRunRecord:401");
   }
 
@@ -483,6 +526,12 @@ class PostgresAgentConversationRepositoryTest {
     public AgentActiveRun findActiveRun(long taskId) {
       calls.add("findActiveRun:" + taskId);
       return activeRun;
+    }
+
+    @Override
+    public int countActiveRun(long taskId, String runUuid) {
+      calls.add("countActiveRun:" + taskId + ":" + runUuid);
+      return activeRun != null && activeRun.taskId() == taskId && activeRun.runUuid().equals(runUuid) ? 1 : 0;
     }
   }
 }

@@ -11,6 +11,7 @@ import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentPreparedStream;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
@@ -87,6 +88,32 @@ class PracticeMessageStreamServiceTest {
         .isInstanceOfSatisfying(LearningPlanException.class, exception ->
             assertThat(exception.code()).isEqualTo("PRACTICE_SESSION_AGENT_TASK_MISSING"));
     assertThat(orchestrator.calls).isZero();
+  }
+
+  @Test
+  void startsPreparedRunBeforeReturningAcceptedSubscriptionAndDoesNotStartAnIdempotentReplayAgain() {
+    InMemoryPracticeSessionRepository sessions = new InMemoryPracticeSessionRepository();
+    PreparedCapturingOrchestrator orchestrator = new PreparedCapturingOrchestrator(false);
+    PracticeMessageStreamService service = new PracticeMessageStreamService(sessions, orchestrator);
+    List<String> appendedRunUuids = new ArrayList<>();
+
+    PracticeChatRunSubscription subscription = service.start(
+        7L, 50L, "hint", "idem-1", "en-US", 4, (runUuid, event) -> appendedRunUuids.add(runUuid));
+
+    assertThat(subscription).isEqualTo(new PracticeChatRunSubscription(100L, "run-1", "ACCEPTED"));
+    assertThat(orchestrator.prepareCalls).isEqualTo(1);
+    assertThat(orchestrator.subscribeCalls).isEqualTo(1);
+    assertThat(appendedRunUuids).containsExactly("run-1");
+    assertThat(sessions.touchedSessionIds).containsExactly(50L);
+
+    PreparedCapturingOrchestrator replayOrchestrator = new PreparedCapturingOrchestrator(true);
+    PracticeMessageStreamService replayService = new PracticeMessageStreamService(sessions, replayOrchestrator);
+    PracticeChatRunSubscription replay = replayService.start(
+        7L, 50L, "hint", "idem-1", "en-US", 4, (runUuid, event) -> appendedRunUuids.add(runUuid));
+
+    assertThat(replay).isEqualTo(new PracticeChatRunSubscription(100L, "run-1", "ACCEPTED"));
+    assertThat(replayOrchestrator.prepareCalls).isEqualTo(1);
+    assertThat(replayOrchestrator.subscribeCalls).isZero();
   }
 
   private AgentStreamEvent.AgentRunEnd runEnd() {
@@ -183,6 +210,65 @@ class PracticeMessageStreamServiceTest {
           done = true;
         }
       });
+    }
+  }
+
+  private static final class PreparedCapturingOrchestrator extends PracticeTurnOrchestrator {
+    private final boolean replay;
+    private int prepareCalls;
+    private int subscribeCalls;
+
+    private PreparedCapturingOrchestrator(boolean replay) {
+      super(new UnusedRuntime());
+      this.replay = replay;
+    }
+
+    @Override
+    public AgentPreparedStream prepareStream(PracticeChatAgentInput input) {
+      prepareCalls++;
+      return new AgentPreparedStream() {
+        @Override
+        public long taskId() {
+          return 100L;
+        }
+
+        @Override
+        public String runUuid() {
+          return "run-1";
+        }
+
+        @Override
+        public boolean idempotentReplay() {
+          return replay;
+        }
+
+        @Override
+        public void subscribe(Flow.Subscriber<? super AgentStreamEvent> subscriber) {
+          subscribeCalls++;
+          subscriber.onSubscribe(new Flow.Subscription() {
+            private boolean done;
+
+            @Override
+            public void request(long count) {
+              if (done || count < 1) {
+                return;
+              }
+              done = true;
+              subscriber.onNext(runEnd());
+              subscriber.onComplete();
+            }
+
+            @Override
+            public void cancel() {
+              done = true;
+            }
+          });
+        }
+      };
+    }
+
+    private AgentStreamEvent.AgentRunEnd runEnd() {
+      return new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, java.util.Map.of());
     }
   }
 

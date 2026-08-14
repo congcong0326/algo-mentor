@@ -42,7 +42,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
       """
           Record the current practice user message as a formal code submission. This tool delegates to the review \
           workflow to extract code, analyze, score, and save a review record that may affect completion eligibility. \
-          Use when the current user message looks like a complete solution submission for the active practice problem, \
+          Use when the current user message plausibly contains a full solution submission for the active practice problem, \
           even if the user did not explicitly ask for a formal review. Do not use for snippets, pseudocode, error logs, \
           local bug questions, syntax questions, conceptual discussion, or code from a current or previous assistant \
           response. When the user asks to submit code from an assistant response or an earlier turn, explain that only \

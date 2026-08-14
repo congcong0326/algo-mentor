@@ -28,6 +28,7 @@ public final class SingleSubscriberAgentStreamPublisher
   private final Runnable beforeSubmission;
   private final Consumer<AgentStreamEventSink> workerTask;
   private final Consumer<Throwable> submissionFailureHandler;
+  private final boolean propagateSubmissionFailure;
 
   private Flow.Subscriber<? super AgentStreamEvent> subscriber;
   private boolean subscribed;
@@ -42,7 +43,8 @@ public final class SingleSubscriberAgentStreamPublisher
       Consumer<AgentStreamEventSink> workerTask,
       Consumer<Throwable> submissionFailureHandler
   ) {
-    this(cancellationToken, executor, AgentExecutionGroup.PRACTICE, false, () -> {}, workerTask, submissionFailureHandler);
+    this(cancellationToken, executor, AgentExecutionGroup.PRACTICE, false, () -> {}, workerTask,
+        submissionFailureHandler, false);
   }
 
   /**
@@ -66,7 +68,8 @@ public final class SingleSubscriberAgentStreamPublisher
         inlineExecution,
         beforeSubmission,
         workerTask,
-        submissionFailureHandler);
+        submissionFailureHandler,
+        false);
   }
 
   /** 创建携带受信 Definition 执行组的单订阅事件出口。 */
@@ -79,6 +82,33 @@ public final class SingleSubscriberAgentStreamPublisher
       Consumer<AgentStreamEventSink> workerTask,
       Consumer<Throwable> submissionFailureHandler
   ) {
+    this(
+        cancellationToken,
+        executor,
+        executionGroup,
+        inlineExecution,
+        beforeSubmission,
+        workerTask,
+        submissionFailureHandler,
+        false);
+  }
+
+  /**
+   * 创建一个可将 worker 提交失败同步回传给调用方的单订阅事件出口。
+   *
+   * <p>提交失败仍会先执行 {@code submissionFailureHandler} 并通知已订阅的下游，随后才抛出，
+   * 供 HTTP 控制面在返回成功前区分执行器已接收与已拒绝。</p>
+   */
+  public SingleSubscriberAgentStreamPublisher(
+      AgentCancellationToken cancellationToken,
+      AgentExecutor executor,
+      AgentExecutionGroup executionGroup,
+      boolean inlineExecution,
+      Runnable beforeSubmission,
+      Consumer<AgentStreamEventSink> workerTask,
+      Consumer<Throwable> submissionFailureHandler,
+      boolean propagateSubmissionFailure
+  ) {
     this.cancellationToken = Objects.requireNonNull(cancellationToken, "cancellationToken must not be null");
     this.executor = Objects.requireNonNull(executor, "executor must not be null");
     this.executionGroup = Objects.requireNonNull(executionGroup, "Agent execution group must not be null");
@@ -88,6 +118,7 @@ public final class SingleSubscriberAgentStreamPublisher
     this.submissionFailureHandler = Objects.requireNonNull(
         submissionFailureHandler,
         "submissionFailureHandler must not be null");
+    this.propagateSubmissionFailure = propagateSubmissionFailure;
   }
 
   @Override
@@ -166,10 +197,23 @@ public final class SingleSubscriberAgentStreamPublisher
         executor.execute(executionGroup, this::runWorker);
       }
     } catch (RejectedExecutionException rejected) {
-      handleSubmissionFailure(toAgentException(rejected));
+      Throwable failure = toAgentException(rejected);
+      handleSubmissionFailure(failure);
+      rethrowSubmissionFailure(failure);
     } catch (RuntimeException submissionFailure) {
       handleSubmissionFailure(submissionFailure);
+      rethrowSubmissionFailure(submissionFailure);
     }
+  }
+
+  private void rethrowSubmissionFailure(Throwable failure) {
+    if (!propagateSubmissionFailure) {
+      return;
+    }
+    if (failure instanceof RuntimeException runtimeException) {
+      throw runtimeException;
+    }
+    throw new IllegalStateException("Agent worker submission failed", failure);
   }
 
   private void handleSubmissionFailure(Throwable failure) {

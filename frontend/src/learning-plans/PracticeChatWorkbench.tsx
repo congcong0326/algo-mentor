@@ -1,6 +1,6 @@
-import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLink, Info, MoreHorizontal, Save, SkipForward } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info, MoreHorizontal, Save, SkipForward } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { CSSProperties, FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import AiCapacityUnavailableDialog from '../components/AiCapacityUnavailableDialog';
 import { utf8ByteLength, useUserInputLimits } from '../config/userInputLimits';
@@ -11,13 +11,13 @@ import {
   ApiRequestError,
   applyPracticeCoachSummaryProposal,
   createOrReusePracticeSession,
-  decideAgentToolPermission,
   getPracticeSession,
   getPracticeSessionActiveRun,
   getPracticeSessionMessages,
   getPracticeSessionReviews,
   requireApiData,
-  streamPracticeMessage,
+  startPracticeMessage,
+  readPracticeRunEvents,
   updatePracticeProgressStatus,
 } from '../services/api';
 import { isAgentExecutorOverloaded } from '../services/agentCapacity';
@@ -26,8 +26,6 @@ import type {
   AgentToolStartEvent,
   LearningPlanDetailResponse,
   LearningPlanProblemDraft,
-  AgentToolPermissionRequestEvent,
-  AgentToolPermissionDecisionType,
   CoachSummaryProposalAction,
   PracticeCodeReviewHistoryResponse,
   PracticeMessage,
@@ -50,32 +48,13 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
 const AUTO_SCROLL_THRESHOLD_PX = 96;
 const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
+const RUN_STREAM_RECONNECT_ATTEMPTS = 2;
 const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
 const COACH_SUMMARY_PROPOSAL_TOOL_NAME = 'propose_current_problem_coach_summary';
-const REVIEW_PERMISSION_COPY_CODE = 'PRACTICE_CODE_REVIEW_REQUESTED';
 const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
 const COACH_SUMMARY_PROPOSAL_RESULT_TYPE = 'current_problem_coach_summary_proposed';
-const TOOL_PERMISSION_DENIED_RESULT_TYPE = 'tool_permission_denied';
-const TOOL_PERMISSION_TIMEOUT_RESULT_TYPE = 'tool_permission_timeout';
-const TOOL_PERMISSION_COUNTDOWN_REFRESH_MS = 250;
-const TOOL_PERMISSION_URGENT_SECONDS = 10;
-
-interface PermissionPreview {
-  problemSlug?: string;
-  problemTitle?: string;
-  codePreview?: string;
-  contextAvailable?: boolean;
-}
-
-interface PendingPermissionState {
-  request: AgentToolPermissionRequestEvent;
-  preview: PermissionPreview;
-  initialRemainingSeconds?: number;
-  submitting: boolean;
-  error: string;
-}
 
 type CoachWorkStatus = 'ORGANIZING' | 'REVIEW_RUNNING' | LearnerDeclaredProfileToolDisplayStatus;
 type CoachSummaryApplyStatus = 'applying' | 'error';
@@ -85,6 +64,14 @@ interface AssistantWorkState {
   startedAt?: number;
   terminalStatus?: Exclude<LearnerDeclaredProfileToolDisplayStatus, 'RUNNING'>;
   toolCallKey?: string;
+}
+
+interface PracticeRunStreamState {
+  sessionId: number;
+  runUuid: string;
+  eventsUrl: string;
+  lastEventId: string;
+  assistantMessageId: number;
 }
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
@@ -138,22 +125,6 @@ function progressStatusLabel(status: PracticeProgressStatus | undefined, resourc
   return labels[status ?? 'NOT_STARTED'];
 }
 
-function permissionRequestCopy(
-  request: AgentToolPermissionRequestEvent,
-  resources: LocaleResources,
-): { title: string; reason: string } {
-  if (isReviewPermissionRequest(request)) {
-    return {
-      title: resources.learningPlans.toolPermissionReviewTitle,
-      reason: resources.learningPlans.toolPermissionReviewReason,
-    };
-  }
-  return { title: request.displayName, reason: request.reason };
-}
-
-function isReviewPermissionRequest(request: AgentToolPermissionRequestEvent): boolean {
-  return request.copyCode === REVIEW_PERMISSION_COPY_CODE || request.toolName === REVIEW_TOOL_NAME;
-}
 
 function readContentDelta(data: unknown): string {
   if (typeof data !== 'object' || data === null || !('content' in data)) {
@@ -179,19 +150,6 @@ function readBooleanField(source: Record<string, unknown>, key: string): boolean
   return typeof value === 'boolean' ? value : undefined;
 }
 
-function readPermissionPreview(data: unknown): PermissionPreview {
-  if (typeof data !== 'object' || data === null) {
-    return {};
-  }
-
-  const preview = data as Record<string, unknown>;
-  return {
-    problemSlug: readStringField(preview, 'problemSlug'),
-    problemTitle: readStringField(preview, 'problemTitle'),
-    codePreview: readStringField(preview, 'codePreview'),
-    contextAvailable: readBooleanField(preview, 'contextAvailable'),
-  };
-}
 
 function readCoachSummaryProposalAction(result: unknown, createdAt: string): CoachSummaryProposalAction | undefined {
   if (typeof result !== 'object' || result === null) {
@@ -222,104 +180,6 @@ function readCoachSummaryMarkdown(result: unknown): string | undefined {
     : undefined;
 }
 
-function readPermissionRequestEvent(data: unknown): AgentToolPermissionRequestEvent | undefined {
-  if (typeof data !== 'object' || data === null) {
-    return undefined;
-  }
-
-  const event = data as Record<string, unknown>;
-  const runId = readStringField(event, 'runId');
-  const stepIndex = readNumberField(event, 'stepIndex');
-  const toolCallId = readStringField(event, 'toolCallId');
-  const toolName = readStringField(event, 'toolName');
-  const permissionRequestId = readStringField(event, 'permissionRequestId');
-  const displayName = readStringField(event, 'displayName');
-  const reason = readStringField(event, 'reason');
-  const copyCode = readStringField(event, 'copyCode');
-  const expiresAt = readStringField(event, 'expiresAt');
-  const preview = event.preview;
-
-  if (!runId
-    || stepIndex === undefined
-    || !toolCallId
-    || !toolName
-    || !permissionRequestId
-    || !displayName
-    || !reason
-    || typeof preview !== 'object'
-    || preview === null
-    || !expiresAt) {
-    return undefined;
-  }
-
-  return {
-    runId,
-    stepIndex,
-    toolCallId,
-    toolName,
-    permissionRequestId,
-    displayName,
-    reason,
-    copyCode,
-    preview: preview as Record<string, unknown>,
-    expiresAt,
-  };
-}
-
-function readPermissionRequestId(data: unknown): string | undefined {
-  if (typeof data !== 'object' || data === null || !('permissionRequestId' in data)) {
-    return undefined;
-  }
-
-  const permissionRequestId = (data as { permissionRequestId?: unknown }).permissionRequestId;
-  return typeof permissionRequestId === 'string' && permissionRequestId.trim() ? permissionRequestId : undefined;
-}
-
-function permissionRemainingSeconds(expiresAt: string, now = Date.now()): number | undefined {
-  const expiresAtMillis = Date.parse(expiresAt);
-  if (!Number.isFinite(expiresAtMillis)) {
-    return undefined;
-  }
-  return Math.max(0, Math.ceil((expiresAtMillis - now) / 1000));
-}
-
-function formatPermissionCountdown(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-}
-
-function permissionProblemLabel(
-  preview: PermissionPreview,
-  sessionResponse: PracticeSessionResponse | undefined,
-  problem: LearningPlanProblemDraft | undefined,
-  locale: SupportedLocale,
-): string | undefined {
-  if (!preview.problemSlug && !preview.problemTitle) {
-    return undefined;
-  }
-  const localizedTitle = localizedProblemTitleForSlug(preview.problemSlug, sessionResponse, problem, locale);
-  const title = localizedTitle ?? preview.problemTitle;
-  if (title && preview.problemSlug && title !== preview.problemSlug) {
-    return `${title} (${preview.problemSlug})`;
-  }
-  return title ?? preview.problemSlug;
-}
-
-function localizedProblemTitleForSlug(
-  problemSlug: string | undefined,
-  sessionResponse: PracticeSessionResponse | undefined,
-  problem: LearningPlanProblemDraft | undefined,
-  locale: SupportedLocale,
-): string | undefined {
-  if (sessionResponse?.problem && sessionResponse.problem.slug === problemSlug) {
-    return formatProblemTitle(sessionResponse.problem, locale);
-  }
-  if (problem && problem.slug === problemSlug) {
-    return formatProblemTitle(problem, locale);
-  }
-  return undefined;
-}
 
 function readAgentToolEndEvent(data: unknown): AgentToolEndEvent | undefined {
   if (typeof data !== 'object' || data === null) {
@@ -505,21 +365,18 @@ export default function PracticeChatWorkbench({
   const [reviewHistory, setReviewHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
   const [reviewHistoryError, setReviewHistoryError] = useState('');
-  const [pendingPermission, setPendingPermission] = useState<PendingPermissionState>();
-  const [permissionNotice, setPermissionNotice] = useState('');
-  const [, setPermissionCountdownTick] = useState(0);
   const [assistantWorkStates, setAssistantWorkStates] = useState<Record<number, AssistantWorkState>>({});
   const [coachSummaryApplyStates, setCoachSummaryApplyStates] = useState<Record<string, CoachSummaryApplyStatus>>({});
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
-  const pendingPermissionIdRef = useRef<string | undefined>(undefined);
   const moreActionsRef = useRef<HTMLSpanElement | null>(null);
   const messageListRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
   const submittingRef = useRef(false);
   const practiceLoadTokenRef = useRef(0);
   const coachSummaryProposalMessageIdsRef = useRef(new Set<number>());
+  const practiceRunStreamRef = useRef<PracticeRunStreamState | undefined>(undefined);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -527,6 +384,7 @@ export default function PracticeChatWorkbench({
     const activeLoadToken = practiceLoadTokenRef.current;
     streamControllerRef.current?.abort();
     streamControllerRef.current = null;
+    practiceRunStreamRef.current = undefined;
     submittingRef.current = false;
     setSessionResponse(undefined);
     setMessages([]);
@@ -537,9 +395,6 @@ export default function PracticeChatWorkbench({
     setReviewHistory(undefined);
     setReviewHistoryError('');
     setReviewHistoryLoading(false);
-    setPendingPermission(undefined);
-    pendingPermissionIdRef.current = undefined;
-    setPermissionNotice('');
     setAssistantWorkStates({});
     setCoachSummaryApplyStates({});
     coachSummaryProposalMessageIdsRef.current.clear();
@@ -578,6 +433,7 @@ export default function PracticeChatWorkbench({
       controller.abort();
       streamControllerRef.current?.abort();
       streamControllerRef.current = null;
+      practiceRunStreamRef.current = undefined;
       submittingRef.current = false;
     };
   }, [locale, phaseIndex, plan.id, problemSlug, resources.learningPlans.practiceSessionLoadFailed]);
@@ -663,37 +519,6 @@ export default function PracticeChatWorkbench({
     locale,
     resources.learningPlans.problemTraining,
   );
-  const pendingPermissionProblem = pendingPermission
-    ? permissionProblemLabel(pendingPermission.preview, sessionResponse, problem, locale)
-    : undefined;
-  const permissionCopy = pendingPermission
-    ? permissionRequestCopy(pendingPermission.request, resources)
-    : undefined;
-  const permissionSeconds = pendingPermission
-    ? permissionRemainingSeconds(pendingPermission.request.expiresAt)
-    : undefined;
-  const permissionExpired = permissionSeconds === 0;
-  const permissionUrgent = permissionSeconds !== undefined && permissionSeconds <= TOOL_PERMISSION_URGENT_SECONDS;
-  const permissionCountdownAngle = permissionSeconds !== undefined
-    && pendingPermission?.initialRemainingSeconds
-    && pendingPermission.initialRemainingSeconds > 0
-    ? Math.min(360, Math.max(0, (permissionSeconds / pendingPermission.initialRemainingSeconds) * 360))
-    : 0;
-  const permissionCountdownStyle = {
-    '--permission-countdown-angle': `${permissionCountdownAngle}deg`,
-  } as CSSProperties;
-
-  useEffect(() => {
-    if (!pendingPermission || permissionRemainingSeconds(pendingPermission.request.expiresAt) === undefined) {
-      return undefined;
-    }
-
-    const intervalId = window.setInterval(() => {
-      setPermissionCountdownTick((current) => current + 1);
-    }, TOOL_PERMISSION_COUNTDOWN_REFRESH_MS);
-    return () => window.clearInterval(intervalId);
-  }, [pendingPermission?.request.expiresAt, pendingPermission?.request.permissionRequestId]);
-
   useEffect(() => {
     if (!sessionId || !hasActiveRun) {
       return undefined;
@@ -703,6 +528,10 @@ export default function PracticeChatWorkbench({
     const controller = new AbortController();
 
     async function poll() {
+      if (practiceRunStreamRef.current?.sessionId === sessionId
+        && streamControllerRef.current && !streamControllerRef.current.signal.aborted) {
+        return;
+      }
       try {
         const response = await getPracticeSessionActiveRun(sessionId!, controller.signal);
         if (stopped || controller.signal.aborted) {
@@ -736,6 +565,43 @@ export default function PracticeChatWorkbench({
       window.clearInterval(intervalId);
     };
   }, [hasActiveRun, resources.learningPlans.practiceSessionLoadFailed, sessionId]);
+
+  useEffect(() => {
+    const activeRun = sessionResponse?.activeRun;
+    if (!sessionId || !activeRun) {
+      return undefined;
+    }
+    if (practiceRunStreamRef.current?.sessionId === sessionId
+      && practiceRunStreamRef.current.runUuid === activeRun.runUuid) {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    const assistantMessageId = localMessageIdRef.current;
+    localMessageIdRef.current -= 1;
+    const createdAt = new Date().toISOString();
+    setStatus('streaming');
+    setAssistantWorkState(assistantMessageId, { status: 'ORGANIZING' });
+    setMessages((current) => [
+      ...current,
+      {
+        id: assistantMessageId,
+        role: 'ASSISTANT',
+        messageType: 'CHAT',
+        contentMarkdown: '',
+        createdAt,
+      },
+    ]);
+    void consumePracticeRun({
+      sessionId,
+      runUuid: activeRun.runUuid,
+      eventsUrl: `/api/practice-sessions/${sessionId}/runs/${activeRun.runUuid}/events`,
+      lastEventId: '0-0',
+      assistantMessageId,
+    }, controller, createdAt);
+
+    return () => controller.abort();
+  }, [sessionId, sessionResponse?.activeRun?.runUuid]);
 
   useLayoutEffect(() => {
     const messageList = messageListRef.current;
@@ -783,28 +649,6 @@ export default function PracticeChatWorkbench({
 
     shouldAutoScrollRef.current = messageList.scrollHeight - messageList.scrollTop - messageList.clientHeight
       < AUTO_SCROLL_THRESHOLD_PX;
-  }
-
-  function markAssistantMessageFailed(
-    assistantMessageId: number,
-    contentMarkdown = resources.learningPlans.replyFailed,
-  ) {
-    setAssistantWorkStates((current) => {
-      if (!(assistantMessageId in current)) {
-        return current;
-      }
-      const { [assistantMessageId]: _removed, ...remaining } = current;
-      return remaining;
-    });
-    setMessages((current) => current.map((message) => (
-      message.id === assistantMessageId
-        ? {
-            ...message,
-            contentMarkdown,
-            messageType: 'CHAT',
-          }
-        : message
-    )));
   }
 
   function setAssistantWorkState(assistantMessageId: number, workState: AssistantWorkState) {
@@ -938,6 +782,164 @@ export default function PracticeChatWorkbench({
     });
   }
 
+  async function consumePracticeRun(
+    runState: PracticeRunStreamState,
+    controller: AbortController,
+    createdAt: string,
+  ) {
+    practiceRunStreamRef.current = runState;
+    let terminalEventReceived = false;
+    let reviewRefreshRequested = false;
+
+    const processEvent = (event: import('../types/api').SseStreamEvent) => {
+      if (event.eventName === 'content_delta') {
+        const delta = readContentDelta(event.data);
+        if (delta) {
+          appendAssistantContent(runState.assistantMessageId, delta);
+        }
+      }
+
+      if (event.eventName === 'agent_run_end' || event.eventName === 'agent_error') {
+        terminalEventReceived = true;
+      }
+
+      if (event.eventName === 'agent_error' && isAgentExecutorOverloaded(event.data)) {
+        setCapacityUnavailable(true);
+        setError(resources.common.aiCapacityUnavailable);
+      }
+
+      if (event.eventName === 'agent_tool_end') {
+        const toolEnd = readAgentToolEndEvent(event.data);
+        if (!toolEnd) {
+          return;
+        }
+
+        if (toolEnd.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
+          const key = learnerDeclaredProfileToolEventKey(toolEnd);
+          const result = parseLearnerDeclaredProfileToolResult(toolEnd.result);
+          if (key && result) {
+            updateLearnerProfileToolStatus(runState.assistantMessageId, key, result.status);
+          }
+          return;
+        }
+
+        if (toolEnd.toolName === COACH_SUMMARY_PROPOSAL_TOOL_NAME) {
+          const action = readCoachSummaryProposalAction(toolEnd.result, createdAt);
+          const summaryMarkdown = readCoachSummaryMarkdown(toolEnd.result);
+          if (action && summaryMarkdown) {
+            showCoachSummaryProposal(runState.assistantMessageId, action, summaryMarkdown);
+          }
+          return;
+        }
+
+        if (toolEnd.toolName === REVIEW_TOOL_NAME
+          && readResultType(toolEnd.result) === REVIEW_SUBMITTED_RESULT_TYPE
+          && isSavedReviewResult(toolEnd.result)) {
+          reviewRefreshRequested = true;
+          const scoreSummary = reviewToolScoreSummary(toolEnd.result);
+          if (scoreSummary) {
+            appendAssistantContent(runState.assistantMessageId, `${scoreSummary}\n\n`);
+          }
+        }
+      }
+
+      if (event.eventName === 'agent_tool_start') {
+        const toolStart = readAgentToolStartEvent(event.data);
+        if (!toolStart) {
+          return;
+        }
+        if (toolStart.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
+          const key = learnerDeclaredProfileToolEventKey(toolStart);
+          if (key) {
+            updateLearnerProfileToolStatus(runState.assistantMessageId, key, 'RUNNING');
+          }
+        } else if (toolStart.toolName === REVIEW_TOOL_NAME) {
+          setAssistantWorkState(runState.assistantMessageId, { status: 'REVIEW_RUNNING' });
+        }
+      }
+    };
+
+    for (let attempt = 0; attempt <= RUN_STREAM_RECONNECT_ATTEMPTS && !controller.signal.aborted; attempt += 1) {
+      try {
+        await readPracticeRunEvents(runState.eventsUrl, {
+          after: runState.lastEventId,
+          signal: controller.signal,
+          onEvent: (event) => {
+            processEvent(event);
+            // 只有成功处理事件后才推进内存 cursor，短暂断线会从该位置严格补发。
+            if (event.id) {
+              runState.lastEventId = event.id;
+            }
+          },
+        });
+        if (terminalEventReceived || attempt === RUN_STREAM_RECONNECT_ATTEMPTS) {
+          break;
+        }
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+        if (attempt === RUN_STREAM_RECONNECT_ATTEMPTS) {
+          break;
+        }
+      }
+    }
+
+    if (controller.signal.aborted || !isCurrentSession(runState.sessionId, practiceLoadTokenRef.current)) {
+      return;
+    }
+
+    await reconcilePracticeRunAfterStream(runState, controller.signal, terminalEventReceived, reviewRefreshRequested);
+  }
+
+  async function reconcilePracticeRunAfterStream(
+    runState: PracticeRunStreamState,
+    signal: AbortSignal,
+    terminalEventReceived: boolean,
+    reviewRefreshRequested: boolean,
+  ) {
+    try {
+      const activeRunResponse = await getPracticeSessionActiveRun(runState.sessionId, signal);
+      if (signal.aborted || !isCurrentSession(runState.sessionId, practiceLoadTokenRef.current)) {
+        return;
+      }
+      const activeRun = activeRunResponse.success ? activeRunResponse.data : undefined;
+      if (activeRun?.runUuid === runState.runUuid) {
+        // Redis 回放不可用或短连接结束时，run 仍由 PostgreSQL 表示为执行中。
+        setStatus('streaming');
+        return;
+      }
+
+      setPostRunRefreshing(true);
+      const activeLoadToken = practiceLoadTokenRef.current;
+      try {
+        await refreshMessages(runState.sessionId, activeLoadToken, signal, runState.assistantMessageId);
+        await refreshSession(runState.sessionId, activeLoadToken, signal);
+        if (terminalEventReceived || reviewRefreshRequested) {
+          await refreshReviews(runState.sessionId, activeLoadToken, signal);
+        }
+        setSessionResponse((current) => current && current.session.id === runState.sessionId
+          ? { ...current, activeRun: null }
+          : current);
+        setStatus('idle');
+        setError('');
+        if (practiceRunStreamRef.current?.runUuid === runState.runUuid) {
+          practiceRunStreamRef.current = undefined;
+        }
+        clearTransientAssistantWorkState(runState.assistantMessageId);
+      } finally {
+        if (!signal.aborted && isCurrentSession(runState.sessionId, activeLoadToken)) {
+          setPostRunRefreshing(false);
+        }
+      }
+    } catch (error) {
+      if (!signal.aborted) {
+        // Redis/SSE 或 active-run 查询暂时不可用不表示 Agent 失败；保留生成中状态。
+        setStatus('streaming');
+      }
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = composerValue.trim();
@@ -961,7 +963,6 @@ export default function PracticeChatWorkbench({
     const now = new Date().toISOString();
 
     setError('');
-    setPermissionNotice('');
     setAssistantWorkState(assistantMessageId, { status: 'ORGANIZING' });
     setStatus('streaming');
     setComposerValue('');
@@ -983,184 +984,40 @@ export default function PracticeChatWorkbench({
       },
     ]);
 
-    let agentRunEnded = false;
-    let reviewRefreshRequested = false;
-    let agentCapacityUnavailable = false;
-
     try {
-      await streamPracticeMessage(sessionId, { message: text }, {
+      const subscription = await startPracticeMessage(sessionId, { message: text }, {
         idempotencyKey: nextIdempotencyKey(),
         signal: controller.signal,
-        onEvent: (event) => {
-          if (event.eventName === 'content_delta') {
-            const delta = readContentDelta(event.data);
-            if (!delta) {
-              return;
-            }
-
-            appendAssistantContent(assistantMessageId, delta);
-          }
-
-          if (event.eventName === 'agent_run_end') {
-            agentRunEnded = true;
-            setPostRunRefreshing(true);
-            setSessionResponse((current) => current ? { ...current, activeRun: null } : current);
-          }
-
-          if (event.eventName === 'agent_tool_end') {
-            const toolEnd = readAgentToolEndEvent(event.data);
-            if (!toolEnd) {
-              return;
-            }
-
-            if (toolEnd.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
-              const key = learnerDeclaredProfileToolEventKey(toolEnd);
-              const result = parseLearnerDeclaredProfileToolResult(toolEnd.result);
-              if (key && result) {
-                updateLearnerProfileToolStatus(assistantMessageId, key, result.status);
-              }
-              return;
-            }
-
-            if (toolEnd.toolName === COACH_SUMMARY_PROPOSAL_TOOL_NAME) {
-              const action = readCoachSummaryProposalAction(toolEnd.result, now);
-              const summaryMarkdown = readCoachSummaryMarkdown(toolEnd.result);
-              if (action && summaryMarkdown) {
-                showCoachSummaryProposal(assistantMessageId, action, summaryMarkdown);
-              }
-              return;
-            }
-
-            if (toolEnd.toolName !== REVIEW_TOOL_NAME) {
-              return;
-            }
-
-            const resultType = readResultType(toolEnd.result);
-            if (resultType === REVIEW_SUBMITTED_RESULT_TYPE && isSavedReviewResult(toolEnd.result)) {
-              reviewRefreshRequested = true;
-              setPostRunRefreshing(true);
-              const scoreSummary = reviewToolScoreSummary(toolEnd.result);
-              if (scoreSummary) {
-                appendAssistantContent(assistantMessageId, `${scoreSummary}\n\n`);
-              }
-            }
-            if (resultType === TOOL_PERMISSION_DENIED_RESULT_TYPE
-              || resultType === TOOL_PERMISSION_TIMEOUT_RESULT_TYPE) {
-              return;
-            }
-          }
-
-          if (event.eventName === 'agent_tool_start') {
-            const toolStart = readAgentToolStartEvent(event.data);
-            if (!toolStart) {
-              return;
-            }
-
-            if (toolStart.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
-              const key = learnerDeclaredProfileToolEventKey(toolStart);
-              if (key) {
-                updateLearnerProfileToolStatus(assistantMessageId, key, 'RUNNING');
-              }
-              return;
-            }
-
-            if (toolStart.toolName !== REVIEW_TOOL_NAME) {
-              return;
-            }
-
-            setAssistantWorkState(assistantMessageId, { status: 'REVIEW_RUNNING' });
-          }
-
-          if (event.eventName === 'tool_permission_request') {
-            const permissionRequest = readPermissionRequestEvent(event.data);
-            if (!permissionRequest) {
-              return;
-            }
-
-            setPermissionNotice('');
-            pendingPermissionIdRef.current = permissionRequest.permissionRequestId;
-            setPendingPermission({
-              request: permissionRequest,
-              preview: readPermissionPreview(permissionRequest.preview),
-              initialRemainingSeconds: permissionRemainingSeconds(permissionRequest.expiresAt),
-              submitting: false,
-              error: '',
-            });
-          }
-
-          if (event.eventName === 'tool_permission_decision') {
-            const permissionRequestId = readPermissionRequestId(event.data);
-            if (!permissionRequestId) {
-              return;
-            }
-
-            if (pendingPermissionIdRef.current === permissionRequestId) {
-              pendingPermissionIdRef.current = undefined;
-              setPendingPermission(undefined);
-            }
-          }
-
-          if (event.eventName === 'tool_permission_timeout') {
-            const permissionRequestId = readPermissionRequestId(event.data);
-            if (!permissionRequestId) {
-              return;
-            }
-
-            if (pendingPermissionIdRef.current === permissionRequestId) {
-              pendingPermissionIdRef.current = undefined;
-              setPermissionNotice(resources.learningPlans.toolPermissionTimeoutNotice);
-              setPendingPermission(undefined);
-            }
-          }
-
-          if (event.eventName === 'error' || event.eventName === 'agent_error') {
-            if (isAgentExecutorOverloaded(event.data)) {
-              agentCapacityUnavailable = true;
-              setCapacityUnavailable(true);
-              setError(resources.common.aiCapacityUnavailable);
-              markAssistantMessageFailed(assistantMessageId, resources.common.aiCapacityUnavailable);
-              setStatus('error');
-              return;
-            }
-            setError(resources.learningPlans.practiceMessageFailed);
-            markAssistantMessageFailed(assistantMessageId);
-            setStatus('error');
-          }
-        },
       });
-
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      if (agentRunEnded) {
-        const activeLoadToken = practiceLoadTokenRef.current;
-        try {
-          await refreshMessages(sessionId, activeLoadToken, controller.signal, assistantMessageId);
-          await refreshSession(sessionId, activeLoadToken, controller.signal);
-          await refreshReviews(sessionId, activeLoadToken, controller.signal);
-          setStatus('idle');
-        } finally {
-          if (!controller.signal.aborted && isCurrentSession(sessionId, activeLoadToken)) {
-            setPostRunRefreshing(false);
+      const runState: PracticeRunStreamState = {
+        sessionId,
+        runUuid: subscription.runUuid,
+        eventsUrl: subscription.eventsUrl,
+        lastEventId: subscription.initialAfter,
+        assistantMessageId,
+      };
+      // 先登记订阅，再发布 activeRun 状态，避免 effect 与提交链路并发创建两个订阅。
+      practiceRunStreamRef.current = runState;
+      setSessionResponse((current) => current && current.session.id === sessionId
+        ? {
+            ...current,
+            activeRun: {
+              runId: 0,
+              taskId: subscription.taskId,
+              runUuid: subscription.runUuid,
+              startedAt: now,
+            },
           }
-        }
-      } else {
-        if (reviewRefreshRequested) {
-          setPostRunRefreshing(false);
-        }
-        if (!agentCapacityUnavailable) {
-          setError(resources.learningPlans.practiceMessageFailed);
-          markAssistantMessageFailed(assistantMessageId);
-        }
-        setStatus('error');
-      }
+        : current);
+      await consumePracticeRun(runState, controller, now);
     } catch (error) {
       if (!controller.signal.aborted) {
         setPostRunRefreshing(false);
         if (error instanceof ApiRequestError && error.code === AGENT_RUN_IN_PROGRESS_CODE) {
           setError('');
-          setMessages((current) => current.filter((message) => message.id !== assistantMessageId));
+          setMessages((current) => current.filter((message) => (
+            message.id !== assistantMessageId && message.id !== userMessageId
+          )));
           try {
             const activeRunResponse = await getPracticeSessionActiveRun(sessionId, controller.signal);
             if (activeRunResponse.success && activeRunResponse.data) {
@@ -1182,15 +1039,18 @@ export default function PracticeChatWorkbench({
         if (isAgentExecutorOverloaded(error)) {
           setCapacityUnavailable(true);
           setError(resources.common.aiCapacityUnavailable);
-          markAssistantMessageFailed(assistantMessageId, resources.common.aiCapacityUnavailable);
         } else {
           setError(error instanceof Error ? error.message : resources.learningPlans.practiceMessageFailed);
-          markAssistantMessageFailed(assistantMessageId);
         }
+        setMessages((current) => current.filter((message) => (
+          message.id !== assistantMessageId && message.id !== userMessageId
+        )));
         setStatus('error');
       }
     } finally {
-      clearTransientAssistantWorkState(assistantMessageId);
+      if (practiceRunStreamRef.current?.assistantMessageId !== assistantMessageId) {
+        clearTransientAssistantWorkState(assistantMessageId);
+      }
       if (streamControllerRef.current === controller) {
         streamControllerRef.current = null;
         submittingRef.current = false;
@@ -1271,35 +1131,6 @@ export default function PracticeChatWorkbench({
       if (activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken) {
         setCompletionUpdating(false);
       }
-    }
-  }
-
-  async function handlePermissionDecision(decision: AgentToolPermissionDecisionType) {
-    if (!pendingPermission || pendingPermission.submitting || permissionExpired) {
-      return;
-    }
-
-    const permissionRequestId = pendingPermission.request.permissionRequestId;
-    setPendingPermission((current) => current?.request.permissionRequestId === permissionRequestId
-      ? { ...current, submitting: true, error: '' }
-      : current);
-
-    try {
-      const response = await decideAgentToolPermission(permissionRequestId, {
-        decision,
-        reason: decision === 'ALLOW' ? 'user_confirmed' : 'user_rejected',
-      });
-      if (!response.success) {
-        throw new Error(response.error?.message ?? resources.learningPlans.toolPermissionDecisionFailed);
-      }
-    } catch (error) {
-      setPendingPermission((current) => current?.request.permissionRequestId === permissionRequestId
-        ? {
-            ...current,
-            submitting: false,
-            error: error instanceof Error ? error.message : resources.learningPlans.toolPermissionDecisionFailed,
-          }
-        : current);
     }
   }
 
@@ -1535,7 +1366,6 @@ export default function PracticeChatWorkbench({
         ref={messageListRef}
       >
         {error && <p className="error-text practice-error" role="alert">{error}</p>}
-        {permissionNotice && <p className="status-note practice-status-note" role="status">{permissionNotice}</p>}
         {status === 'loading' && (
           <article className="practice-message assistant-message">
             <span>{resources.learningPlans.coach}</span>
@@ -1617,20 +1447,6 @@ export default function PracticeChatWorkbench({
             )}
           </article>
         ))}
-        {hasActiveRun && (
-          <article className="practice-message assistant-message">
-            <span>{resources.learningPlans.coach}</span>
-            <p
-              aria-label={coachWorkStatusLabel('ORGANIZING', resources)}
-              className={coachWorkStatusClassName('ORGANIZING')}
-              role="status"
-            >
-              <span className="practice-coach-work-status-text">
-                {coachWorkStatusLabel('ORGANIZING', resources)}
-              </span>
-            </p>
-          </article>
-        )}
       </section>
 
       {(reviewHistoryLoading || reviewHistoryError || reviewHistory) && (
@@ -1697,96 +1513,6 @@ export default function PracticeChatWorkbench({
         </div>
       )}
 
-      {pendingPermission && (
-        <div className="modal-backdrop practice-permission-backdrop">
-          <section
-            aria-labelledby="practice-permission-title"
-            aria-modal="true"
-            className="practice-permission-modal"
-            role="dialog"
-          >
-            <div className="practice-permission-heading">
-              <p className="eyebrow">{resources.learningPlans.toolPermissionEyebrow}</p>
-              <h3 id="practice-permission-title">{permissionCopy?.title}</h3>
-              <p>{permissionCopy?.reason}</p>
-            </div>
-
-            {permissionSeconds !== undefined && (
-              <div
-                aria-label={permissionExpired
-                  ? `${resources.learningPlans.toolPermissionExpired}. ${resources.learningPlans.toolPermissionExpiredHint}`
-                  : `${resources.learningPlans.toolPermissionCountdownLabel} ${formatPermissionCountdown(permissionSeconds)}. ${resources.learningPlans.toolPermissionCountdownHint}`}
-                className={`practice-permission-countdown ${permissionUrgent ? 'is-urgent' : ''} ${permissionExpired ? 'is-expired' : ''}`}
-                role="timer"
-              >
-                <div className="practice-permission-clock" style={permissionCountdownStyle}>
-                  <div className="practice-permission-clock-face">
-                    <Clock aria-hidden="true" />
-                    <time dateTime={`PT${permissionSeconds}S`}>{formatPermissionCountdown(permissionSeconds)}</time>
-                  </div>
-                </div>
-                <div className="practice-permission-countdown-copy">
-                  <strong>{permissionExpired
-                    ? resources.learningPlans.toolPermissionExpired
-                    : resources.learningPlans.toolPermissionCountdownLabel}</strong>
-                  <span>{permissionExpired
-                    ? resources.learningPlans.toolPermissionExpiredHint
-                    : resources.learningPlans.toolPermissionCountdownHint}</span>
-                </div>
-              </div>
-            )}
-
-            {pendingPermissionProblem && (
-              <div className="practice-permission-problem">
-                <span>{resources.learningPlans.toolPermissionProblem}</span>
-                <strong>{pendingPermissionProblem}</strong>
-              </div>
-            )}
-
-            {pendingPermission.preview.contextAvailable === false && (
-              <div className="practice-permission-context-warning" role="note">
-                <AlertCircle aria-hidden="true" />
-                <span>{resources.learningPlans.toolPermissionContextWarning}</span>
-              </div>
-            )}
-
-            {pendingPermission.preview.codePreview && (
-              <div className="practice-permission-code">
-                <strong>{resources.learningPlans.toolPermissionCodePreview}</strong>
-                <pre><code>{pendingPermission.preview.codePreview}</code></pre>
-              </div>
-            )}
-
-            <p className="practice-permission-effect">
-              <CheckCircle2 aria-hidden="true" />
-              <span>{resources.learningPlans.toolPermissionEffectSummary}</span>
-            </p>
-
-            {pendingPermission.error && (
-              <p className="error-text practice-permission-error" role="alert">{pendingPermission.error}</p>
-            )}
-
-            <div className="modal-actions practice-permission-actions">
-              <button
-                className="secondary-button compact"
-                disabled={pendingPermission.submitting || permissionExpired}
-                onClick={() => void handlePermissionDecision('DENY')}
-                type="button"
-              >
-                {resources.learningPlans.toolPermissionDeny}
-              </button>
-              <button
-                className="primary-button compact"
-                disabled={pendingPermission.submitting || permissionExpired}
-                onClick={() => void handlePermissionDecision('ALLOW')}
-                type="button"
-              >
-                {resources.learningPlans.toolPermissionAllow}
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
       <AiCapacityUnavailableDialog
         onClose={() => setCapacityUnavailable(false)}
         open={capacityUnavailable}

@@ -2,6 +2,8 @@
 
 ## 文档定位
 
+> 2026-08 更新：Practice Chat 中的 `submit_practice_code_review` 已不再使用本阶段的 `ASK` 确认流。主模型识别当前用户消息可能是完整题解提交时直接调用工具；`PracticeChatAutoAllowPermissionHook` 仅在受信 `agentKey=practice-chat` 且精确匹配该工具名时返回 `ALLOW`，优先于保留的 `PracticeCodeReviewPermissionHook`。本文其余 Review `ASK` 示例保留为阶段一历史设计与通用权限链参考，不描述当前 Practice Chat 的生产行为。
+
 本文是 `docs/agent-forced-tool-calling-design.md` 中“阶段一：自主 Tool Call + 人在回路权限”的详细研发设计修订版，重点调整为：
 
 - 借鉴 Claude Code 一类 agent runtime 的工具前置权限控制思路，把权限判断建模为 tool execution 前的 hook/policy 链。

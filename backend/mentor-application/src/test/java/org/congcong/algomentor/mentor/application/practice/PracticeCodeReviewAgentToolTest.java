@@ -59,7 +59,7 @@ class PracticeCodeReviewAgentToolTest {
     assertThat(spec.description())
         .contains("Record the current practice user message as a formal code submission")
         .contains("extract code, analyze, score, and save a review record")
-        .contains("Use when the current user message looks like a complete solution submission")
+        .contains("Use when the current user message plausibly contains a full solution submission")
         .contains("even if the user did not explicitly ask for a formal review")
         .contains("or code from a current or previous assistant response")
         .contains("only code included in the current user message can be submitted")

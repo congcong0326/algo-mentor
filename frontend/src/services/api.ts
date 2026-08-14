@@ -81,6 +81,7 @@ import type {
   PracticeMessage,
   CoachSummaryProposalAction,
   PracticeActiveRun,
+  PracticeChatRunSubscription,
   PracticeCodeReviewDetail,
   PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
@@ -1564,22 +1565,20 @@ export async function updatePracticeProgressStatus(
   return response.json();
 }
 
-export interface StreamPracticeMessageOptions {
+export interface StartPracticeMessageOptions {
   idempotencyKey: string;
   signal?: AbortSignal;
-  onOpen?: () => void;
-  onEvent: (event: SseStreamEvent) => void;
 }
 
-export async function streamPracticeMessage(
+export async function startPracticeMessage(
   sessionId: number,
   request: PracticeMessageRequest,
-  options: StreamPracticeMessageOptions,
-): Promise<void> {
-  const response = await apiFetch(`/api/practice-sessions/${sessionId}/messages/stream`, {
+  options: StartPracticeMessageOptions,
+): Promise<PracticeChatRunSubscription> {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/messages`, {
     method: 'POST',
     headers: {
-      Accept: 'text/event-stream, application/json',
+      ...jsonHeaders,
       'Content-Type': 'application/json',
       'Idempotency-Key': options.idempotencyKey,
     },
@@ -1588,13 +1587,32 @@ export async function streamPracticeMessage(
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Practice message stream failed');
+    throw await toApiRequestError(response, 'Practice message start failed');
+  }
+  return requireApiData(await response.json() as ApiResponse<PracticeChatRunSubscription>, 'Practice message start failed');
+}
+
+export interface ReadPracticeRunEventsOptions {
+  after?: string;
+  signal?: AbortSignal;
+  onEvent: (event: SseStreamEvent) => void;
+}
+
+export async function readPracticeRunEvents(
+  eventsUrl: string,
+  options: ReadPracticeRunEventsOptions,
+): Promise<void> {
+  const after = options.after ? `?after=${encodeURIComponent(options.after)}` : '';
+  const response = await apiFetch(`${eventsUrl}${after}`, {
+    headers: { Accept: 'text/event-stream, application/json' },
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice run event subscription failed');
   }
   if (!response.body) {
-    throw new Error('Practice message stream response does not include a readable body');
+    throw new Error('Practice run event response does not include a readable body');
   }
-
-  options.onOpen?.();
   await readEventStream(response.body, options.onEvent);
 }
 
@@ -2242,11 +2260,15 @@ function drainEventBuffer(
 
 function parseEventBlock(block: string, onEvent: (event: SseStreamEvent) => void) {
   let eventName: SseEventName | undefined;
+  let id: string | undefined;
   const dataLines: string[] = [];
 
   block.split('\n').forEach((line) => {
     if (line.startsWith('event:')) {
       eventName = line.slice('event:'.length).trim() as SseEventName;
+    }
+    if (line.startsWith('id:')) {
+      id = line.slice('id:'.length).trim();
     }
     if (line.startsWith('data:')) {
       dataLines.push(line.slice('data:'.length).trimStart());
@@ -2258,6 +2280,7 @@ function parseEventBlock(block: string, onEvent: (event: SseStreamEvent) => void
   }
 
   onEvent({
+    id,
     eventName,
     data: parseEventData(dataLines.join('\n')),
   });

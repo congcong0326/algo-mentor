@@ -3,12 +3,14 @@ package org.congcong.algomentor.api.controller;
 import jakarta.validation.ConstraintViolationException;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.ai.governance.routing.AiModelRouteException;
+import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.api.controller.ability.AbilityProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.learningplan.LearningPlanUnauthenticatedException;
 import org.congcong.algomentor.api.controller.preference.UserAiPreferenceUnauthenticatedException;
 import org.congcong.algomentor.api.controller.practice.PracticeProgressStatusInvalidException;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionUnauthenticatedException;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeCursorInvalidException;
 import org.congcong.algomentor.api.controller.profile.LearnerProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.review.ReviewUnauthenticatedException;
 import org.congcong.algomentor.api.input.UserInputValidationException;
@@ -52,6 +54,7 @@ public class LocalizedApiExceptionHandler {
   public static final String LEARNER_PROFILE_STATEMENT_NOT_FOUND_CODE = "LEARNER_PROFILE_STATEMENT_NOT_FOUND";
   public static final String PRACTICE_MESSAGE_INVALID_CODE = "PRACTICE_MESSAGE_INVALID";
   public static final String PRACTICE_PROGRESS_STATUS_INVALID_CODE = "PRACTICE_PROGRESS_STATUS_INVALID";
+  public static final String PRACTICE_REALTIME_CURSOR_INVALID_CODE = "PRACTICE_REALTIME_CURSOR_INVALID";
   public static final String VALIDATION_FAILED_CODE = "VALIDATION_FAILED";
   public static final String REQUEST_BODY_INVALID_CODE = "REQUEST_BODY_INVALID";
   public static final String REQUEST_METHOD_NOT_SUPPORTED_CODE = "REQUEST_METHOD_NOT_SUPPORTED";
@@ -120,6 +123,7 @@ public class LocalizedApiExceptionHandler {
       case LearningPlanCreationPolicyConstants.POLICY_UNAVAILABLE_CODE -> HttpStatus.SERVICE_UNAVAILABLE;
       case LearningPlanAiRevisionPolicyConstants.NOT_ENABLED_CODE -> HttpStatus.FORBIDDEN;
       case LearningPlanAiRevisionPolicyConstants.POLICY_UNAVAILABLE_CODE -> HttpStatus.SERVICE_UNAVAILABLE;
+      case "PRACTICE_RUN_NOT_FOUND" -> HttpStatus.NOT_FOUND;
       default -> HttpStatus.BAD_REQUEST;
     };
     return failure(status, exception.code(), exception.messageKey(), exception.getMessage());
@@ -142,6 +146,15 @@ public class LocalizedApiExceptionHandler {
     return failure(HttpStatus.CONFLICT, exception.code(), exception.getMessage(), exception.metadata());
   }
 
+  @ExceptionHandler(AgentException.class)
+  public ResponseEntity<ApiResponse<Void>> agentException(AgentException exception) {
+    HttpStatus status = switch (exception.code()) {
+      case AGENT_EXECUTOR_OVERLOADED, AGENT_EXECUTOR_SHUTDOWN -> HttpStatus.SERVICE_UNAVAILABLE;
+      default -> HttpStatus.BAD_REQUEST;
+    };
+    return failure(status, exception.code().name(), exception.getMessage(), exception.metadata());
+  }
+
   @ExceptionHandler(AiRunAdmissionException.class)
   public ResponseEntity<ApiResponse<Void>> aiRunAdmission(AiRunAdmissionException exception) {
     return failure(exception.suggestedStatus(), exception.code().name(), exception.getMessage(), exception.metadata());
@@ -155,6 +168,11 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler(PracticeProgressStatusInvalidException.class)
   public ResponseEntity<ApiResponse<Void>> invalidProgressStatus(RuntimeException exception) {
     return failure(HttpStatus.BAD_REQUEST, PRACTICE_PROGRESS_STATUS_INVALID_CODE, exception.getMessage());
+  }
+
+  @ExceptionHandler(PracticeRealtimeCursorInvalidException.class)
+  public ResponseEntity<ApiResponse<Void>> invalidPracticeRealtimeCursor(RuntimeException exception) {
+    return failure(HttpStatus.BAD_REQUEST, PRACTICE_REALTIME_CURSOR_INVALID_CODE, exception.getMessage());
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)

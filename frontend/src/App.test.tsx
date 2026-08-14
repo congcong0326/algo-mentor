@@ -1285,12 +1285,12 @@ describe('App', () => {
   });
 
   it('opens the practice chat workbench when selecting a problem from a plan detail page', async () => {
-    const practiceStream = controlledSseStream([
+    const practiceRunEventStream = controlledSseStream([
       sseEvent('content_delta', { content: '可以' }),
       sseEvent('content_delta', { content: '先用哈希表记录已经见过的数字。' }),
       sseEvent('message_end', { finishReason: 'stop' }),
     ]);
-    const fetchMock = mockLearningPlanFetch({ practiceMessageStream: practiceStream.stream });
+    const fetchMock = mockLearningPlanFetch({ practiceRunEventStream: practiceRunEventStream.stream });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -1342,23 +1342,27 @@ describe('App', () => {
 
     expect(await screen.findByText('我想用哈希表。')).toBeInTheDocument();
     expect(await screen.findByText(/先用哈希表记录已经见过的数字/)).toBeInTheDocument();
-    const streamCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/messages/stream');
-    expect(streamCall).toBeDefined();
-    const [, streamInit] = streamCall as [string, RequestInit];
-    expect(streamInit).toEqual(expect.objectContaining({
+    const startCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/messages');
+    expect(startCall).toBeDefined();
+    const [, startInit] = startCall as [string, RequestInit];
+    expect(startInit).toEqual(expect.objectContaining({
       method: 'POST',
       credentials: 'same-origin',
       body: JSON.stringify({ message: '我想用哈希表。' }),
     }));
-    expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
-    expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages/stream', 'POST');
+    expect(new Headers(startInit.headers).get('Idempotency-Key')).toBe('generated-key');
+    expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages', 'POST');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/50/runs/run_1/events?after=0-0',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
-    expect(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' })).not.toBeDisabled();
+    expect(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
 
     await act(async () => {
-      practiceStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
-      practiceStream.close();
+      practiceRunEventStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
+      practiceRunEventStream.close();
     });
 
     await waitFor(() => expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled());
@@ -1488,12 +1492,12 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '返回聊天' })).toBeInTheDocument();
   });
 
-  it('keeps the practice composer failed when the stream closes before agent_run_end', async () => {
-    const practiceStream = controlledSseStream([
+  it('reconciles persisted practice messages when an event response closes before agent_run_end', async () => {
+    const practiceRunEventStream = controlledSseStream([
       sseEvent('content_delta', { content: '先检查边界。' }),
       sseEvent('message_end', { finishReason: 'stop' }),
     ]);
-    const fetchMock = mockLearningPlanFetch({ practiceMessageStream: practiceStream.stream });
+    const fetchMock = mockLearningPlanFetch({ practiceRunEventStream: practiceRunEventStream.stream });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -1514,11 +1518,11 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
 
     await act(async () => {
-      practiceStream.close();
+      practiceRunEventStream.close();
     });
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('消息发送失败，请稍后重试。');
-    expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
+    expect(await screen.findByText('后台回复已经持久化。')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
     expect(composer).not.toBeDisabled();
     fireEvent.change(composer, {
@@ -1529,9 +1533,9 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/practice-sessions/50/progress-status')).toBe(false);
   });
 
-  it('marks the pending practice assistant message failed on stream errors', async () => {
+  it('reconciles the persisted response after a non-capacity agent error event', async () => {
     const fetchMock = mockLearningPlanFetch({
-      practiceMessageStream: sseStream([
+      practiceRunEventStream: sseStream([
         sseEvent('agent_error', { message: 'provider failed' }),
       ]),
     });
@@ -1548,11 +1552,11 @@ describe('App', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('消息发送失败，请稍后重试。');
-    expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
+    expect(await screen.findByText('后台回复已经持久化。')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('marks the pending practice assistant message failed when the stream request fails', async () => {
+  it('reports a rejected practice-run start without adding failed local messages', async () => {
     const fetchMock = mockLearningPlanFetch({ failPracticeMessage: true });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -1568,18 +1572,20 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('stream failed');
-    expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
+    expect(screen.queryByText('回复失败，请重试。')).not.toBeInTheDocument();
+    expect(screen.queryByText('这次请求会失败。')).not.toBeInTheDocument();
   });
 
   it('polls the active practice run and refreshes messages when a duplicate run is already in progress', async () => {
+    const practiceRunEventStream = controlledSseStream();
     const fetchMock = mockLearningPlanFetch({
       activeRunSequence: [
         null,
         activePracticeRun(),
-        activePracticeRun(),
         null,
       ],
       blockPracticeMessage: true,
+      practiceRunEventStream: practiceRunEventStream.stream,
     });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -1601,12 +1607,9 @@ describe('App', () => {
     await waitFor(() => expect(composer).toBeDisabled());
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(composer).toBeDisabled();
-    const thinkingMessage = screen.getByText('正在整理思路...').closest('.practice-message');
-    expect(thinkingMessage).not.toBeNull();
-    expect(thinkingMessage!.compareDocumentPosition(
-      screen.getByText(/给定一个整数数组/).closest('.practice-message') as Node,
-    ) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
-
+    await act(async () => {
+      practiceRunEventStream.close();
+    });
     expect(await screen.findByText('后台回复已经持久化。', undefined, { timeout: 5000 })).toBeInTheDocument();
     expect(composer).not.toBeDisabled();
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
@@ -1621,12 +1624,13 @@ describe('App', () => {
   });
 
   it('shows an assistant thinking bubble when a practice run is active after refresh', async () => {
+    const practiceRunEventStream = controlledSseStream();
     const fetchMock = mockLearningPlanFetch({
       activeRunSequence: [
         activePracticeRun(),
-        activePracticeRun(),
         null,
       ],
+      practiceRunEventStream: practiceRunEventStream.stream,
     });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -1638,19 +1642,16 @@ describe('App', () => {
 
     const composer = await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
     await waitFor(() => expect(composer).toBeDisabled());
-    const thinkingMessage = screen.getByText('正在整理思路...').closest('.practice-message');
-    expect(thinkingMessage).not.toBeNull();
-    expect(thinkingMessage!.compareDocumentPosition(
-      screen.getByText(/给定一个整数数组/).closest('.practice-message') as Node,
-    ) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
-
+    await act(async () => {
+      practiceRunEventStream.close();
+    });
     expect(await screen.findByText('后台回复已经持久化。', undefined, { timeout: 5000 })).toBeInTheDocument();
     expect(composer).not.toBeDisabled();
   });
 
   it('ignores duplicate practice submits before streaming state rerenders', async () => {
-    const practiceStream = controlledSseStream();
-    const fetchMock = mockLearningPlanFetch({ practiceMessageStream: practiceStream.stream });
+    const practiceRunEventStream = controlledSseStream();
+    const fetchMock = mockLearningPlanFetch({ practiceRunEventStream: practiceRunEventStream.stream });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -1667,13 +1668,13 @@ describe('App', () => {
     fireEvent.click(sendButton);
 
     await waitFor(() => {
-      expect(fetchMock.mock.calls.filter(([url]) => url === '/api/practice-sessions/50/messages/stream')).toHaveLength(1);
+      expect(fetchMock.mock.calls.filter(([url]) => url === '/api/practice-sessions/50/messages')).toHaveLength(1);
     });
     expect(screen.getAllByText('只应该提交一次。')).toHaveLength(1);
 
     await act(async () => {
-      practiceStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
-      practiceStream.close();
+      practiceRunEventStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
+      practiceRunEventStream.close();
     });
   });
 
@@ -2076,7 +2077,7 @@ describe('App', () => {
 
     expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/learning-plans/new');
-    expect(screen.getByRole('alert')).toHaveTextContent('草案已过期，请调整问卷后重试。');
+    expect(screen.getByRole('alertdialog')).toHaveTextContent('草案已过期，请调整问卷后重试。');
   });
 
   it('deletes a learning plan and keeps the list flat', async () => {
@@ -2588,7 +2589,7 @@ function mockLearningPlanFetch(options: {
   failPracticeMessage?: boolean;
   includePracticeReviews?: boolean;
   omitLeetCodeUrl?: boolean;
-  practiceMessageStream?: ReadableStream<Uint8Array>;
+  practiceRunEventStream?: ReadableStream<Uint8Array>;
 } = {}) {
   let messagePosted = false;
   return vi.fn((url: string, init?: RequestInit) => {
@@ -2634,7 +2635,7 @@ function mockLearningPlanFetch(options: {
       }));
     }
 
-    if (url === '/api/practice-sessions/50/messages/stream') {
+    if (url === '/api/practice-sessions/50/messages' && init?.method === 'POST') {
       if (options.failPracticeMessage) {
         return Promise.resolve(jsonResponse({
           success: false,
@@ -2651,13 +2652,28 @@ function mockLearningPlanFetch(options: {
         }, 409));
       }
 
-      const stream = options.practiceMessageStream ?? sseStream([
+      messagePosted = true;
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          type: 'accepted',
+          taskId: 300,
+          runUuid: 'run_1',
+          status: 'ACCEPTED',
+          eventsUrl: '/api/practice-sessions/50/runs/run_1/events',
+          initialAfter: '0-0',
+        },
+        timestamp: '2026-06-22T00:00:00Z',
+      }, 202));
+    }
+
+    if (url.startsWith('/api/practice-sessions/50/runs/') && url.includes('/events?after=')) {
+      const stream = options.practiceRunEventStream ?? sseStream([
         sseEvent('content_delta', { content: '可以' }),
         sseEvent('content_delta', { content: '先用哈希表记录已经见过的数字。' }),
         sseEvent('message_end', { finishReason: 'stop' }),
         sseEvent('agent_run_end', { runId: 'run_1' }),
       ]);
-      messagePosted = true;
       return Promise.resolve(new Response(stream, { status: 200 }));
     }
 

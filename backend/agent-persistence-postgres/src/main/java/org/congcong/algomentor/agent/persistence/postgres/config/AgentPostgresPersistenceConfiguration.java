@@ -21,6 +21,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMa
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentRunObserver;
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentRunTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentTraceObserver;
+import org.congcong.algomentor.agent.persistence.postgres.recovery.AgentRunStartupRecovery;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentConversationRepository;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentAuditQuery;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentTurnMessageLookupRepository;
@@ -29,9 +30,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @EnableTransactionManagement
@@ -166,6 +170,16 @@ public class AgentPostgresPersistenceConfiguration {
       ObjectMapper objectMapper
   ) {
     return new PersistentAgentRunObserver(runMapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean({AgentRunMapper.class, PlatformTransactionManager.class})
+  @ConditionalOnMissingBean(AgentRunStartupRecovery.class)
+  public ApplicationRunner agentRunStartupRecovery(
+      AgentRunMapper runMapper,
+      PlatformTransactionManager transactionManager
+  ) {
+    return new AgentRunStartupRecovery(runMapper, new TransactionTemplate(transactionManager));
   }
 
   @Bean

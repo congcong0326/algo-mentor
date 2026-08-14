@@ -29,6 +29,7 @@ import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentPreparedStream;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
@@ -144,6 +145,25 @@ public final class DefaultAgentRuntime implements AgentRuntime {
             failSubmission(run, cancellationToken, failure);
           }
         });
+  }
+
+  @Override
+  public AgentPreparedStream prepareStream(AgentInvocation<?> invocation) {
+    AgentCancellationToken cancellationToken = new AgentCancellationToken();
+    AgentInvocation<?> candidate = Objects.requireNonNull(invocation, "Agent invocation must not be null");
+    AgentDefinition<?> definition = definitionRegistry.resolve(candidate.agentKey());
+    validateSubmissionMode(candidate.context(), definition.executionGroup());
+    RuntimeRun preparedRun = prepare(candidate, cancellationToken);
+    SingleSubscriberAgentStreamPublisher publisher = new SingleSubscriberAgentStreamPublisher(
+        cancellationToken,
+        executor,
+        definition.executionGroup(),
+        executor.inExecutorThread(),
+        () -> {},
+        eventSink -> runLoop(preparedRun, eventSink, cancellationToken),
+        failure -> failSubmission(preparedRun, cancellationToken, failure),
+        true);
+    return new PreparedStream(preparedRun, publisher);
   }
 
   private RuntimeRun prepare(AgentInvocation<?> invocation, AgentCancellationToken cancellationToken) {
@@ -506,6 +526,44 @@ public final class DefaultAgentRuntime implements AgentRuntime {
       if (resourceReleased.compareAndSet(false, true)) {
         runResource.release();
       }
+    }
+  }
+
+  private static final class PreparedStream implements AgentPreparedStream {
+
+    private final RuntimeRun run;
+    private final SingleSubscriberAgentStreamPublisher publisher;
+
+    private PreparedStream(RuntimeRun run, SingleSubscriberAgentStreamPublisher publisher) {
+      this.run = run;
+      this.publisher = publisher;
+    }
+
+    @Override
+    public long taskId() {
+      Object value = run.request().metadata().get(AgentRuntimeMetadataKeys.TASK_ID);
+      if (value instanceof Number number) {
+        return number.longValue();
+      }
+      if (value instanceof String text && !text.isBlank()) {
+        return Long.parseLong(text);
+      }
+      throw new IllegalStateException("Prepared Agent stream is missing task id metadata");
+    }
+
+    @Override
+    public String runUuid() {
+      return run.request().runId();
+    }
+
+    @Override
+    public boolean idempotentReplay() {
+      return run.idempotentReplay();
+    }
+
+    @Override
+    public void subscribe(Flow.Subscriber<? super AgentStreamEvent> subscriber) {
+      publisher.subscribe(subscriber);
     }
   }
 

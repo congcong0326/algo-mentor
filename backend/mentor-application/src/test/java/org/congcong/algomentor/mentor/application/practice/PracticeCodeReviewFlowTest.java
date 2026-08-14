@@ -17,7 +17,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
@@ -25,7 +24,6 @@ import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.execution.AgentExecutionGroup;
-import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
@@ -36,8 +34,6 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
-import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
@@ -114,7 +110,7 @@ class PracticeCodeReviewFlowTest {
   }
 
   @Test
-  void reviewToolAskAllowPersistsOnlyAfterUserAllows() {
+  void reviewToolAutomaticallyPersistsForPracticeChatCodeSubmission() {
     InMemoryReviewRepository reviewRepository = new InMemoryReviewRepository();
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     InMemoryTurnMessageLookupRepository turnMessageLookupRepository =
@@ -128,101 +124,23 @@ class PracticeCodeReviewFlowTest {
         turnMessageLookupRepository,
         reviewService,
         coordinator);
-    PermissionDecisionSubscriber subscriber = new PermissionDecisionSubscriber();
 
-    runner.stream(reviewAgentRequest("run-review-allow")).subscribe(subscriber);
-
-    AgentStreamEvent.ToolPermissionRequest request = subscriber.awaitPermissionRequest();
-    assertThat(request.toolName()).isEqualTo(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
-    assertThat(reviewRepository.savedDrafts).isEmpty();
-    assertThat(reviewRepository.findLatest(USER_ID, SESSION_ID)).isEmpty();
-
-    coordinator.decide(
-        request.permissionRequestId(),
-        AgentToolPermissionDecisionType.ALLOW,
-        "user_confirmed",
-        USER_ID);
-    List<AgentStreamEvent> events = subscriber.awaitCompletion();
+    List<AgentStreamEvent> events = collect(runner.stream(reviewAgentRequest("run-review-auto-allow")));
 
     assertThat(coordinator.pendingRequestCount()).isZero();
     assertThat(reviewRepository.savedDrafts).hasSize(1);
     assertThat(reviewRepository.findLatest(USER_ID, SESSION_ID)).isPresent();
     assertThat(events).extracting(AgentStreamEvent::name).containsSubsequence(
-        "tool_permission_request",
-        "tool_permission_decision",
         "agent_tool_start",
         "agent_tool_end",
-        "agent_run_end");
+        "agent_run_end")
+        .doesNotContain("tool_permission_request", "tool_permission_decision", "tool_permission_timeout");
     LlmContentPart.ToolResult toolResult = toolResultFromSecondLlmRequest(gateway);
     assertThat(toolResult.result().path(PracticeCodeReviewAgentToolNames.RESULT_TYPE).asText())
         .isEqualTo(PracticeCodeReviewAgentToolNames.RESULT_TYPE_PRACTICE_CODE_REVIEW_SUBMITTED);
     assertThat(toolResult.result().path(PracticeCodeReviewAgentToolNames.RESULT_STATUS).asText())
         .isEqualTo(PracticeReviewStatus.SAVED.name());
     assertThat(toolResult.result().path(PracticeCodeReviewAgentToolNames.RESULT_REVIEW_ID).asLong()).isEqualTo(900L);
-  }
-
-  @Test
-  void reviewToolAskDenyDoesNotPersistAndRunContinuesWithSyntheticResult() {
-    InMemoryReviewRepository reviewRepository = new InMemoryReviewRepository();
-    FakeGateway gateway = reviewToolGateway("Review denied.");
-    InMemoryAgentToolPermissionCoordinator coordinator = permissionCoordinator(Duration.ofSeconds(5));
-    AgentLoopRunner runner = practiceRunner(
-        gateway,
-        new InMemoryPracticeSessionRepository(),
-        new InMemoryTurnMessageLookupRepository(turnMessages()),
-        new SavingReviewService(reviewRepository),
-        coordinator);
-    PermissionDecisionSubscriber subscriber = new PermissionDecisionSubscriber();
-
-    runner.stream(reviewAgentRequest("run-review-deny")).subscribe(subscriber);
-
-    AgentStreamEvent.ToolPermissionRequest request = subscriber.awaitPermissionRequest();
-    assertThat(reviewRepository.savedDrafts).isEmpty();
-    coordinator.decide(
-        request.permissionRequestId(),
-        AgentToolPermissionDecisionType.DENY,
-        "user_rejected",
-        USER_ID);
-    List<AgentStreamEvent> events = subscriber.awaitCompletion();
-
-    assertThat(coordinator.pendingRequestCount()).isZero();
-    assertThat(reviewRepository.savedDrafts).isEmpty();
-    assertThat(reviewRepository.findLatest(USER_ID, SESSION_ID)).isEmpty();
-    assertThat(events).extracting(AgentStreamEvent::name)
-        .contains("tool_permission_request", "tool_permission_decision", "agent_tool_end", "agent_run_end")
-        .doesNotContain("agent_tool_start");
-    AgentStreamEvent.AgentToolEnd toolEnd = onlyToolEnd(events);
-    assertThat(toolEnd.result().path(AgentToolResultJsonKeys.TYPE).asText())
-        .isEqualTo(AgentToolResultTypes.TOOL_PERMISSION_DENIED);
-    assertThat(toolEnd.result().path(AgentToolResultJsonKeys.REASON).asText()).isEqualTo("user_rejected");
-    assertThat(toolResultFromSecondLlmRequest(gateway).result()).isEqualTo(toolEnd.result());
-  }
-
-  @Test
-  void reviewToolAskTimeoutDoesNotPersistAndRunContinuesWithSyntheticResult() {
-    InMemoryReviewRepository reviewRepository = new InMemoryReviewRepository();
-    FakeGateway gateway = reviewToolGateway("Review timed out.");
-    InMemoryAgentToolPermissionCoordinator coordinator = permissionCoordinator(Duration.ofMillis(1));
-    AgentLoopRunner runner = practiceRunner(
-        gateway,
-        new InMemoryPracticeSessionRepository(),
-        new InMemoryTurnMessageLookupRepository(turnMessages()),
-        new SavingReviewService(reviewRepository),
-        coordinator);
-
-    List<AgentStreamEvent> events = collect(runner.stream(reviewAgentRequest("run-review-timeout")));
-
-    assertThat(coordinator.pendingRequestCount()).isZero();
-    assertThat(reviewRepository.savedDrafts).isEmpty();
-    assertThat(reviewRepository.findLatest(USER_ID, SESSION_ID)).isEmpty();
-    assertThat(events).extracting(AgentStreamEvent::name)
-        .contains("tool_permission_request", "tool_permission_timeout", "agent_tool_end", "agent_run_end")
-        .doesNotContain("tool_permission_decision", "agent_tool_start");
-    AgentStreamEvent.AgentToolEnd toolEnd = onlyToolEnd(events);
-    assertThat(toolEnd.result().path(AgentToolResultJsonKeys.TYPE).asText())
-        .isEqualTo(AgentToolResultTypes.TOOL_PERMISSION_TIMEOUT);
-    assertThat(toolEnd.result().path(AgentToolResultJsonKeys.RETRYABLE).asBoolean()).isTrue();
-    assertThat(toolResultFromSecondLlmRequest(gateway).result()).isEqualTo(toolEnd.result());
   }
 
   private PracticeMessageStreamService streamService() {
@@ -327,7 +245,8 @@ class PracticeCodeReviewFlowTest {
             PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, SESSION_ID,
             PracticeChatPromptConstants.METADATA_PLAN_ID, PLAN_ID,
             PracticeChatPromptConstants.METADATA_PHASE_INDEX, PHASE_INDEX,
-            PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, PROBLEM_SLUG));
+            PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, PROBLEM_SLUG,
+            AgentRuntimeMetadataKeys.AGENT_KEY, PracticeChatAgentDefinition.KEY.value()));
   }
 
   private AgentLoopRunner practiceRunner(
@@ -354,9 +273,9 @@ class PracticeCodeReviewFlowTest {
         new org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore(),
         OBJECT_MAPPER,
         new AgentToolPermissionGuard(
-            new AgentToolPermissionHookChain(List.of(new PracticeCodeReviewPermissionHook(
-                sessionRepository,
-                turnMessageLookupRepository))),
+            new AgentToolPermissionHookChain(List.of(
+                new PracticeChatAutoAllowPermissionHook(),
+                new PracticeCodeReviewPermissionHook(sessionRepository, turnMessageLookupRepository))),
             coordinator),
         TEST_EXECUTOR);
   }
@@ -404,15 +323,6 @@ class PracticeCodeReviewFlowTest {
   private LlmContentPart.ToolResult toolResultFromSecondLlmRequest(FakeGateway gateway) {
     assertThat(gateway.requests).hasSize(2);
     return (LlmContentPart.ToolResult) gateway.requests.get(1).messages().get(2).content().get(0);
-  }
-
-  private AgentStreamEvent.AgentToolEnd onlyToolEnd(List<AgentStreamEvent> events) {
-    List<AgentStreamEvent.AgentToolEnd> toolEnds = events.stream()
-        .filter(AgentStreamEvent.AgentToolEnd.class::isInstance)
-        .map(AgentStreamEvent.AgentToolEnd.class::cast)
-        .toList();
-    assertThat(toolEnds).hasSize(1);
-    return toolEnds.get(0);
   }
 
   private static PracticeCodeReviewDraft reviewedDraft(PracticeTurnContext context) {
@@ -599,59 +509,6 @@ class PracticeCodeReviewFlowTest {
         events.forEach(publisher::submit);
         publisher.close();
       };
-    }
-  }
-
-  private final class PermissionDecisionSubscriber implements Flow.Subscriber<AgentStreamEvent> {
-    private final List<AgentStreamEvent> events = new java.util.concurrent.CopyOnWriteArrayList<>();
-    private final CountDownLatch permissionRequested = new CountDownLatch(1);
-    private final CountDownLatch done = new CountDownLatch(1);
-    private final AtomicReference<AgentStreamEvent.ToolPermissionRequest> request = new AtomicReference<>();
-    private final AtomicReference<Throwable> error = new AtomicReference<>();
-
-    @Override
-    public void onSubscribe(Flow.Subscription subscription) {
-      subscription.request(Long.MAX_VALUE);
-    }
-
-    @Override
-    public void onNext(AgentStreamEvent item) {
-      events.add(item);
-      if (item instanceof AgentStreamEvent.ToolPermissionRequest permissionRequest) {
-        request.set(permissionRequest);
-        permissionRequested.countDown();
-      }
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-      error.set(throwable);
-      done.countDown();
-    }
-
-    @Override
-    public void onComplete() {
-      done.countDown();
-    }
-
-    private AgentStreamEvent.ToolPermissionRequest awaitPermissionRequest() {
-      await(permissionRequested);
-      return request.get();
-    }
-
-    private List<AgentStreamEvent> awaitCompletion() {
-      await(done);
-      assertThat(error.get()).isNull();
-      return List.copyOf(events);
-    }
-
-    private void await(CountDownLatch latch) {
-      try {
-        assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
-      } catch (InterruptedException ex) {
-        Thread.currentThread().interrupt();
-        throw new AssertionError(ex);
-      }
     }
   }
 

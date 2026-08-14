@@ -30,7 +30,7 @@ class LearningPlanDraftOriginMigrationResourceTest {
     assertThat(xml)
         .contains("origin_brief_json = COALESCE(")
         .contains("origin_plan_json = COALESCE(")
-        .contains("WHEN #{draftPlanJson")
+        .contains("WHEN CAST(#{draftPlanJson")
         .contains("ELSE #{commandJson")
         .contains("findDraftOriginForUser");
   }

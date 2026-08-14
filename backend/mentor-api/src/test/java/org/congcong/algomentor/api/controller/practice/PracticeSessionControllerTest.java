@@ -1,6 +1,5 @@
 package org.congcong.algomentor.api.controller.practice;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,14 +8,10 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
@@ -25,10 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
-import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.ai.governance.model.AiActor;
@@ -42,7 +36,6 @@ import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
-import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -58,6 +51,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSco
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatRunSubscription;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionMessage;
@@ -67,8 +61,6 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionStatus
 import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryMessageAction;
 import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalOperation;
 import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalStatus;
-import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
-import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
@@ -78,18 +70,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = PracticeSessionController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({
     PracticeSessionControllerTest.TestConfig.class,
     LocalizedApiExceptionHandler.class,
-    LlmStreamSseMapper.class
 })
 class PracticeSessionControllerTest {
 
@@ -305,55 +295,98 @@ class PracticeSessionControllerTest {
   }
 
   @Test
-  void streamPracticeMessageDelegatesRequestContextToApplicationService() throws Exception {
+  void startPracticeMessageReturnsAcceptedSubscription() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(streamService.stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt()))
-        .thenReturn(streamPublisher());
+    when(streamService.start(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt(), any()))
+        .thenReturn(new PracticeChatRunSubscription(80L, "run-80", PracticeChatRunSubscription.ACCEPTED));
 
-    MvcResult result = mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM)
             .header(ApiContractConstants.IDEMPOTENCY_KEY_HEADER, "idem-50")
             .content("{\"message\":\"提示一下思路\"}"))
-        .andExpect(request().asyncStarted())
-        .andReturn();
+        .andExpect(status().isAccepted())
+        .andExpect(jsonPath("$.data.type").value("accepted"))
+        .andExpect(jsonPath("$.data.taskId").value(80))
+        .andExpect(jsonPath("$.data.runUuid").value("run-80"))
+        .andExpect(jsonPath("$.data.eventsUrl").value("/api/practice-sessions/50/runs/run-80/events"));
 
-    mockMvc.perform(asyncDispatch(result))
-        .andExpect(status().isOk())
-        .andExpect(header().string(HttpHeaders.CONTENT_TYPE, containsString(MediaType.TEXT_EVENT_STREAM_VALUE)))
-        .andExpect(content().string(containsString("event:agent_run_start")));
-
-    verify(streamService).stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"),
-        eq("提示一下思路".getBytes(java.nio.charset.StandardCharsets.UTF_8).length));
-    verify(sseProperties).practiceMessageTimeoutMillis();
+    verify(streamService).start(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"),
+        eq("提示一下思路".getBytes(java.nio.charset.StandardCharsets.UTF_8).length), any());
   }
 
   @Test
-  void streamPracticeMessageUsesAcceptLanguageAsDynamicResponseContext() throws Exception {
+  void startPracticeMessageUsesAcceptLanguageAsDynamicResponseContext() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(streamService.stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), anyInt()))
-        .thenReturn(streamPublisher());
+    when(streamService.start(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), anyInt(), any()))
+        .thenReturn(new PracticeChatRunSubscription(80L, "run-80", PracticeChatRunSubscription.ACCEPTED));
 
-    MvcResult result = mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM)
             .header(ApiContractConstants.IDEMPOTENCY_KEY_HEADER, "idem-50")
             .header(ApiContractConstants.ACCEPT_LANGUAGE_HEADER, "en-US")
             .content("{\"message\":\"give me a hint\"}"))
-        .andExpect(request().asyncStarted())
-        .andReturn();
+        .andExpect(status().isAccepted());
 
-    mockMvc.perform(asyncDispatch(result))
-        .andExpect(status().isOk());
+    verify(streamService).start(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), anyInt(), any());
+  }
 
-    verify(streamService).stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), anyInt());
+  @Test
+  void startPracticeMessageReturnsCapacityErrorWhenWorkerSubmissionIsRejected() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(streamService.start(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt(), any()))
+        .thenThrow(new AgentException(
+            AgentErrorCode.AGENT_EXECUTOR_OVERLOADED,
+            "Agent service is temporarily busy",
+            true,
+            Map.of(),
+            null));
+
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(ApiContractConstants.IDEMPOTENCY_KEY_HEADER, "idem-50")
+            .content("{\"message\":\"提示一下思路\"}"))
+        .andExpect(status().isServiceUnavailable())
+        .andExpect(jsonPath("$.error.code").value("AGENT_EXECUTOR_OVERLOADED"));
+  }
+
+  @Test
+  void eventsRejectsMalformedAfterCursorBeforeOpeningSseConnection() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+
+    mockMvc.perform(get("/api/practice-sessions/50/runs/run-80/events?after=not-a-redis-id"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_REALTIME_CURSOR_INVALID"));
+
+    verifyNoInteractions(practiceSessionService);
+  }
+
+  @Test
+  void eventsRequireAuthenticationBeforeResolvingTheSession() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/api/practice-sessions/50/runs/run-80/events"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+
+    verifyNoInteractions(practiceSessionService);
+  }
+
+  @Test
+  void eventsTreatsATerminalRunAsNotFoundSoTheClientReadsPersistedMessages() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L)).thenReturn(result(PracticeProgressStatus.IN_PROGRESS));
+
+    mockMvc.perform(get("/api/practice-sessions/50/runs/run-80/events"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_RUN_NOT_FOUND"));
+
+    verify(practiceSessionService).get(42L, 50L);
   }
 
   @Test
   void streamBlankMessageReturns400BeforeGovernance() throws Exception {
-    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM)
             .content("{\"message\":\"   \"}"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"))
@@ -365,9 +398,8 @@ class PracticeSessionControllerTest {
 
   @Test
   void streamNullMessageReturns400BeforeGovernance() throws Exception {
-    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM)
             .content("{\"message\":null}"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
@@ -377,9 +409,8 @@ class PracticeSessionControllerTest {
 
   @Test
   void streamMissingBodyReturns400BeforeGovernance() throws Exception {
-    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM))
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
+            .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value("REQUEST_BODY_INVALID"))
         .andExpect(jsonPath("$.error.messageKey").value("api.error.REQUEST_BODY_INVALID"));
@@ -389,9 +420,8 @@ class PracticeSessionControllerTest {
 
   @Test
   void streamMalformedJsonReturnsRequestBodyInvalidBeforeGovernance() throws Exception {
-    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM)
             .content("{\"message\":"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value("REQUEST_BODY_INVALID"))
@@ -423,14 +453,13 @@ class PracticeSessionControllerTest {
   }
 
   @Test
-  void streamRunInProgressReturns409() throws Exception {
+  void startRunInProgressReturns409() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(streamService.stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt()))
+    when(streamService.start(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt(), any()))
         .thenThrow(new AgentConversationRunInProgressException(50L));
 
-    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+    mockMvc.perform(post("/api/practice-sessions/50/messages")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.TEXT_EVENT_STREAM)
             .header("Idempotency-Key", "idem-50")
             .content("{\"message\":\"提示一下思路\"}"))
         .andExpect(status().isConflict())
@@ -603,15 +632,6 @@ class PracticeSessionControllerTest {
         "zh-CN");
   }
 
-  private Flow.Publisher<AgentStreamEvent> streamPublisher() {
-    return subscriber -> {
-      SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
-      publisher.subscribe(subscriber);
-      publisher.submit(new AgentStreamEvent.AgentRunStart("run-50", "practice", 8));
-      publisher.close();
-    };
-  }
-
   @TestConfiguration(proxyBeanMethods = false)
   static class TestConfig {
 
@@ -621,8 +641,15 @@ class PracticeSessionControllerTest {
     }
 
     @Bean
+    @Primary
     PracticeMessageStreamService practiceMessageStreamService() {
       return mock(PracticeMessageStreamService.class);
+    }
+
+    @Bean
+    @Primary
+    org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore practiceRealtimeEventStore() {
+      return mock(org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore.class);
     }
 
     @Bean
@@ -640,19 +667,24 @@ class PracticeSessionControllerTest {
         ObjectProvider<PracticeSessionService> practiceSessionService,
         ObjectProvider<PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
-        ObjectProvider<LlmStreamSseMapper> sseMapper,
+        ObjectProvider<org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore> realtimeEventStore,
+        ObjectProvider<org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository> agentTaskMessageRepository,
         ApiSseProperties sseProperties,
-        ObjectProvider<SseOpsRecorder> sseOpsRecorder,
-        ObjectProvider<LearningOpsRecorder> learningOpsRecorder
+        org.congcong.algomentor.ops.observability.SseOpsRecorder sseOpsRecorder
     ) {
       return new PracticeSessionController(
           practiceSessionService,
           streamService,
           currentUserIdProvider,
-          sseMapper,
+          realtimeEventStore,
+          agentTaskMessageRepository,
           sseProperties,
-          sseOpsRecorder,
-          learningOpsRecorder);
+          sseOpsRecorder);
+    }
+
+    @Bean
+    org.congcong.algomentor.ops.observability.SseOpsRecorder sseOpsRecorder() {
+      return mock(org.congcong.algomentor.ops.observability.SseOpsRecorder.class);
     }
   }
 }

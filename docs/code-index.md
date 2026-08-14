@@ -27,6 +27,8 @@
 - `docs/agent-runtime-refactoring-implementation-plan.md`：Agent 运行态模块拆分分阶段实施计划，说明模块边界、迁移步骤、验收标准和风险点。
 - `docs/practice-chat-workbench-design.md`：题目聊天工作台研发设计，说明方案详情、题目聊天页、固定工具栏、题目状态、训练会话和 AI 聊天接口草案。
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。
+- `docs/design_for_decoupling_the_agent_real-time_message_channel.md`：Practice Chat Agent 实时消息通道第一阶段解耦设计，定义 `POST /messages` 控制面、run 级 Redis Stream SSE 回放、PostgreSQL 终态回读、故障降级和验收标准。
+- `docs/redis-cache-migration-plan.md`：Redis 缓存与独立 Streams Redis 的迁移规划，明确缓存和实时事件通道的实例、配置及发布边界。
 - `docs/practice-chat-system-prompt-assembly-design.md`：题目聊天系统提示词拼装设计，说明结构化片段、分层 prompt、动态 profile、预算裁剪、metadata 追踪和测试策略。
 - `docs/system-prompt-generic-policy-management-design.md`：系统提示词通用策略管理研发设计，定义代码默认兜底、section 覆盖、启动幂等注册、通用管理界面、用户灰度、运行时快照和架构门禁。
 - `docs/ai-provider-and-model-routing-design.md`：AI 提供商配置与模型路由研发设计，定义明文 JSONB 多实例配置、显式模型资源、统一业务场景目录、用户/用户组路由、执行快照、动态 OpenAI Client 和无兜底语义。

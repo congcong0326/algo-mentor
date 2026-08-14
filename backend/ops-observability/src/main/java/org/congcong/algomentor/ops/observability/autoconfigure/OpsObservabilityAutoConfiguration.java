@@ -7,6 +7,7 @@ import org.congcong.algomentor.ops.observability.AgentOpsRecorder;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.MicrometerOpsRecorders;
 import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
+import org.congcong.algomentor.ops.observability.PracticeRealtimeOpsRecorder;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -35,6 +36,13 @@ public class OpsObservabilityAutoConfiguration {
   LearningOpsRecorder learningOpsRecorder(ObjectProvider<MeterRegistry> meterRegistry) {
     MeterRegistry registry = meterRegistry.getIfAvailable();
     return registry == null ? NoopOpsRecorders.learning() : MicrometerOpsRecorders.learning(registry);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  PracticeRealtimeOpsRecorder practiceRealtimeOpsRecorder(ObjectProvider<MeterRegistry> meterRegistry) {
+    MeterRegistry registry = meterRegistry.getIfAvailable();
+    return registry == null ? NoopOpsRecorders.practiceRealtime() : MicrometerOpsRecorders.practiceRealtime(registry);
   }
 
   @Bean

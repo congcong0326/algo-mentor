@@ -111,15 +111,24 @@ class PracticeSessionControllerWithoutStreamServiceTest {
         ObjectProvider<PracticeSessionService> practiceSessionService,
         ObjectProvider<org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
-        ObjectProvider<org.congcong.algomentor.api.service.LlmStreamSseMapper> sseMapper,
-        ApiSseProperties sseProperties
+        ObjectProvider<org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore> realtimeEventStore,
+        ObjectProvider<org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository> agentTaskMessageRepository,
+        ApiSseProperties sseProperties,
+        org.congcong.algomentor.ops.observability.SseOpsRecorder sseOpsRecorder
     ) {
       return new PracticeSessionController(
           practiceSessionService,
           streamService,
           currentUserIdProvider,
-          sseMapper,
-          sseProperties);
+          realtimeEventStore,
+          agentTaskMessageRepository,
+          sseProperties,
+          sseOpsRecorder);
+    }
+
+    @Bean
+    org.congcong.algomentor.ops.observability.SseOpsRecorder sseOpsRecorder() {
+      return mock(org.congcong.algomentor.ops.observability.SseOpsRecorder.class);
     }
   }
 }

@@ -49,6 +49,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAge
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentDefinition;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatAutoAllowPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -270,9 +271,11 @@ class MentorAiConfigurationTest {
 
           assertThat(context).hasSingleBean(PracticeCodeReviewAgentTool.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
+          assertThat(context).hasSingleBean(PracticeChatAutoAllowPermissionHook.class);
           assertThat(registry.specs()).extracting(spec -> spec.name())
               .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
           assertThat(hookChain.hooks())
+              .anySatisfy(hook -> assertThat(hook).isInstanceOf(PracticeChatAutoAllowPermissionHook.class))
               .anySatisfy(hook -> assertThat(hook).isInstanceOf(PracticeCodeReviewPermissionHook.class));
           assertThat(context.getBean(AgentDefinitionRegistry.class)
               .resolve(PracticeCodeReviewAgentDefinition.KEY))

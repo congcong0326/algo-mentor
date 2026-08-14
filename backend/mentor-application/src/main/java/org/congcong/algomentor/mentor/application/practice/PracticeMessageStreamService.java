@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.practice;
 
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentPreparedStream;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreference;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
@@ -81,6 +82,63 @@ public class PracticeMessageStreamService {
     return new TouchingPublisher(delegate, sessionRepository, session.id());
   }
 
+  /**
+   * 准备并同步启动 Practice Chat run。事件只写入 run 级 EventStore，浏览器连接不参与该订阅。
+   */
+  public PracticeChatRunSubscription start(
+      long userId,
+      long sessionId,
+      String message,
+      String idempotencyKey,
+      String locale,
+      int requestSize,
+      PracticeChatRunEventSubscriber.EventStore eventStore
+  ) {
+    PracticeChatAgentInput input = trustedInput(userId, sessionId, message, idempotencyKey, locale, requestSize);
+    AgentPreparedStream preparedStream = orchestrator.prepareStream(input);
+    if (preparedStream.idempotentReplay()) {
+      return new PracticeChatRunSubscription(
+          preparedStream.taskId(), preparedStream.runUuid(), PracticeChatRunSubscription.ACCEPTED);
+    }
+    preparedStream.subscribe(new PracticeChatRunEventSubscriber(
+        preparedStream.runUuid(), eventStore, () -> touchSession(sessionId)));
+    return new PracticeChatRunSubscription(
+        preparedStream.taskId(), preparedStream.runUuid(), PracticeChatRunSubscription.ACCEPTED);
+  }
+
+  private PracticeChatAgentInput trustedInput(
+      long userId,
+      long sessionId,
+      String message,
+      String idempotencyKey,
+      String locale,
+      int requestSize
+  ) {
+    PracticeSession session = sessionRepository.findSessionForUser(sessionId, userId)
+        .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目训练会话不存在。"));
+    if (session.status() != PracticeSessionStatus.ACTIVE) {
+      throw new LearningPlanException("PRACTICE_SESSION_ARCHIVED", "题目训练会话已归档。");
+    }
+    if (session.agentTaskId() == null) {
+      throw new LearningPlanException("PRACTICE_SESSION_AGENT_TASK_MISSING", "题目训练会话缺少运行任务。");
+    }
+    String effectiveLocale = effectiveLocale(session.locale(), locale);
+    UserAiPreference preference = preferenceService.get(userId);
+    return new PracticeChatAgentInput(
+        userId,
+        session.id(),
+        session.agentTaskId(),
+        session.planId(),
+        session.phaseIndex(),
+        session.problemSlug(),
+        message,
+        idempotencyKey,
+        effectiveLocale,
+        preference.coachStyle(),
+        PracticeResponseLanguage.fromLocale(effectiveLocale),
+        requestSize);
+  }
+
   private String effectiveLocale(String sessionLocale, String requestedLocale) {
     if (requestedLocale != null && !requestedLocale.isBlank()) {
       return requestedLocale.trim();
@@ -89,6 +147,14 @@ public class PracticeMessageStreamService {
       return sessionLocale.trim();
     }
     return DEFAULT_LOCALE;
+  }
+
+  private void touchSession(long sessionId) {
+    try {
+      sessionRepository.touchLastMessageAt(sessionId);
+    } catch (RuntimeException exception) {
+      log.warn("Failed to touch practice session last message time. sessionId={}", sessionId, exception);
+    }
   }
 
   private record TouchingPublisher(

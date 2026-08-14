@@ -77,4 +77,26 @@
         updated_at = #{updatedAt}
     WHERE id = #{turnId}
   </update>
+
+  <update id="failRunningRunsAtStartup">
+    UPDATE agent_run
+    SET status = 'failed',
+        error = jsonb_build_object(
+            'code', 'APPLICATION_RESTART',
+            'message', 'Agent run was interrupted by an application restart',
+            'retryable', true,
+            'metadata', '{}'::jsonb),
+        ended_at = NOW()
+    WHERE status = 'running'
+  </update>
+
+  <update id="failRunningTurnsAtStartup">
+    UPDATE agent_turn
+    SET status = 'failed',
+        updated_at = NOW()
+    WHERE status = 'running'
+      AND current_run_id IN (
+        SELECT id FROM agent_run WHERE status = 'running'
+      )
+  </update>
 </mapper>

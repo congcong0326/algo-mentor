@@ -3,6 +3,8 @@ package org.congcong.algomentor.ops.observability;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +33,10 @@ public final class MicrometerOpsRecorders {
 
   public static LearningOpsRecorder learning(MeterRegistry registry) {
     return new MicrometerLearningOpsRecorder(registry);
+  }
+
+  public static PracticeRealtimeOpsRecorder practiceRealtime(MeterRegistry registry) {
+    return new MicrometerPracticeRealtimeOpsRecorder(registry);
   }
 
   private static ConcurrentMap<SseStreamType, AtomicInteger> sharedActiveConnections(MeterRegistry registry) {
@@ -210,6 +216,39 @@ public final class MicrometerOpsRecorders {
           .increment();
     }
 
+  }
+
+  private static final class MicrometerPracticeRealtimeOpsRecorder implements PracticeRealtimeOpsRecorder {
+
+    private final MeterRegistry registry;
+
+    private MicrometerPracticeRealtimeOpsRecorder(MeterRegistry registry) {
+      this.registry = Objects.requireNonNull(registry, "registry must not be null");
+    }
+
+    @Override
+    public void redisOperation(
+        PracticeRealtimeOperation operation,
+        PracticeRealtimeOutcome outcome,
+        Duration duration
+    ) {
+      operation = Objects.requireNonNull(operation, "operation must not be null");
+      outcome = Objects.requireNonNull(outcome, "outcome must not be null");
+      duration = Objects.requireNonNull(duration, "duration must not be null");
+      if (duration.isNegative()) {
+        throw new IllegalArgumentException("duration must not be negative");
+      }
+      Counter.builder(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATIONS)
+          .tag(OpsMetricTags.OPERATION, operation.tagValue())
+          .tag(OpsMetricTags.OUTCOME, outcome.tagValue())
+          .register(registry)
+          .increment();
+      Timer.builder(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATION_DURATION)
+          .tag(OpsMetricTags.OPERATION, operation.tagValue())
+          .tag(OpsMetricTags.OUTCOME, outcome.tagValue())
+          .register(registry)
+          .record(duration);
+    }
   }
 
   private static OpsStatus requireStatus(OpsStatus status) {

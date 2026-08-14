@@ -182,20 +182,19 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLAN_PROBLEM_PRACTICE_SESSION_PATH =
       "/{planId}/phases/{phaseIndex}/problems/{slug}/practice-session";
 
-  /**
-   * 题目练习会话消息流式路径。
-   */
-  public static final String PRACTICE_SESSION_MESSAGES_STREAM_PATH = "/{sessionId}/messages/stream";
+  /** 题目练习会话消息启动路径。 */
+  public static final String PRACTICE_SESSION_MESSAGES_PATH = "/{sessionId}/messages";
+
+  /** 题目练习会话单 run SSE 订阅路径。 */
+  public static final String PRACTICE_SESSION_RUN_EVENTS_PATH = "/{sessionId}/runs/{runUuid}/events";
+
+  /** Practice Chat Redis Stream 的严格 after 游标查询参数。 */
+  public static final String PRACTICE_RUN_EVENTS_AFTER_PARAM = "after";
 
   /**
    * 题目练习会话 active run 查询路径。
    */
   public static final String PRACTICE_SESSION_ACTIVE_RUN_PATH = "/{sessionId}/active-run";
-
-  /**
-   * 题目练习会话历史消息查询路径。
-   */
-  public static final String PRACTICE_SESSION_MESSAGES_PATH = "/{sessionId}/messages";
 
   /** 采纳聊天消息中的教练总结候选。 */
   public static final String PRACTICE_SESSION_COACH_SUMMARY_PROPOSAL_APPLY_PATH =

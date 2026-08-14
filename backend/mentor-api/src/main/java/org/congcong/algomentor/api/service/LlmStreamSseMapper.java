@@ -18,33 +18,32 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class LlmStreamSseMapper {
 
   public SseEmitter.SseEventBuilder toSseEvent(AgentStreamEvent event) {
+    return SseEmitter.event().name(event.name()).data(toData(event));
+  }
+
+  /** 将稳定 SSE 协议的 data 字段映射为可经 Redis envelope 持久化的 JSON 值。 */
+  public Object toData(AgentStreamEvent event) {
     if (event instanceof AgentStreamEvent.AgentRunStart start) {
-      return event(SseEventNames.AGENT_RUN_START, new AgentRunStartData(
+      return new AgentRunStartData(
           start.runId(),
           start.topic(),
           start.maxSteps(),
           longValue(start.metadata(), AgentRuntimeMetadataKeys.TASK_ID),
           longValue(start.metadata(), AgentRuntimeMetadataKeys.TURN_ID),
           longValue(start.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID),
-          start.metadata()));
+          start.metadata());
     }
     if (event instanceof AgentStreamEvent.AgentStepStart start) {
-      return event(SseEventNames.AGENT_STEP_START, new AgentStepStartData(start.runId(), start.stepIndex()));
+      return new AgentStepStartData(start.runId(), start.stepIndex());
     }
     if (event instanceof AgentStreamEvent.AgentToolStart start) {
-      return event(
-          SseEventNames.AGENT_TOOL_START,
-          new AgentToolStartData(start.runId(), start.stepIndex(), start.toolCallId(), start.toolName()));
+      return new AgentToolStartData(start.runId(), start.stepIndex(), start.toolCallId(), start.toolName());
     }
     if (event instanceof AgentStreamEvent.AgentToolEnd end) {
-      return event(
-          SseEventNames.AGENT_TOOL_END,
-          new AgentToolEndData(end.runId(), end.stepIndex(), end.toolCallId(), end.toolName(), end.result()));
+      return new AgentToolEndData(end.runId(), end.stepIndex(), end.toolCallId(), end.toolName(), end.result());
     }
     if (event instanceof AgentStreamEvent.ToolPermissionRequest request) {
-      return event(
-          SseEventNames.TOOL_PERMISSION_REQUEST,
-          new ToolPermissionRequestData(
+      return new ToolPermissionRequestData(
               request.runId(),
               request.stepIndex(),
               request.toolCallId(),
@@ -54,12 +53,10 @@ public class LlmStreamSseMapper {
               request.reason(),
               request.copyCode(),
               request.preview(),
-              request.expiresAt()));
+              request.expiresAt());
     }
     if (event instanceof AgentStreamEvent.ToolPermissionDecision decision) {
-      return event(
-          SseEventNames.TOOL_PERMISSION_DECISION,
-          new ToolPermissionDecisionData(
+      return new ToolPermissionDecisionData(
               decision.runId(),
               decision.stepIndex(),
               decision.toolCallId(),
@@ -67,70 +64,62 @@ public class LlmStreamSseMapper {
               decision.permissionRequestId(),
               decision.decision(),
               decision.reason(),
-              decision.decidedAt()));
+              decision.decidedAt());
     }
     if (event instanceof AgentStreamEvent.ToolPermissionTimeout timeout) {
-      return event(
-          SseEventNames.TOOL_PERMISSION_TIMEOUT,
-          new ToolPermissionTimeoutData(
+      return new ToolPermissionTimeoutData(
               timeout.runId(),
               timeout.stepIndex(),
               timeout.toolCallId(),
               timeout.toolName(),
               timeout.permissionRequestId(),
               timeout.reason(),
-              timeout.expiredAt()));
+              timeout.expiredAt());
     }
     if (event instanceof AgentStreamEvent.AgentStepEnd end) {
-      return event(
-          SseEventNames.AGENT_STEP_END,
-          new AgentStepEndData(end.runId(), end.stepIndex(), end.finishReason(), end.toolCallCount()));
+      return new AgentStepEndData(end.runId(), end.stepIndex(), end.finishReason(), end.toolCallCount());
     }
     if (event instanceof AgentStreamEvent.AgentRunEnd end) {
-      return event(SseEventNames.AGENT_RUN_END, new AgentRunEndData(end.runId(), end.steps(), end.finishReason(), end.metadata()));
+      return new AgentRunEndData(end.runId(), end.steps(), end.finishReason(), end.metadata());
     }
     if (event instanceof AgentStreamEvent.AgentError error) {
-      return event(SseEventNames.AGENT_ERROR, AgentErrorData.from(error.error()));
+      return AgentErrorData.from(error.error());
     }
     if (event instanceof AgentStreamEvent.Llm llm) {
-      return toLlmSseEvent(llm.event());
+      return toLlmData(llm.event());
     }
     throw new IllegalArgumentException("Unsupported agent stream event: " + event.getClass().getName());
   }
 
-  private SseEmitter.SseEventBuilder toLlmSseEvent(LlmStreamEvent event) {
+  private Object toLlmData(LlmStreamEvent event) {
     if (event instanceof LlmStreamEvent.MessageStart start) {
-      return event(SseEventNames.MESSAGE_START, new MessageStartData(start.provider().value(), start.model().value()));
+      return new MessageStartData(start.provider().value(), start.model().value());
     }
     if (event instanceof LlmStreamEvent.ContentDelta delta) {
-      return event(SseEventNames.CONTENT_DELTA, new ContentDeltaData(delta.content()));
+      return new ContentDeltaData(delta.content());
     }
     if (event instanceof LlmStreamEvent.ToolCallStart start) {
-      return event(SseEventNames.TOOL_CALL_START, new ToolCallStartData(start.id(), start.name()));
+      return new ToolCallStartData(start.id(), start.name());
     }
     if (event instanceof LlmStreamEvent.ToolCallDelta delta) {
-      return event(SseEventNames.TOOL_CALL_DELTA, new ToolCallDeltaData(delta.id(), delta.argumentsDelta()));
+      return new ToolCallDeltaData(delta.id(), delta.argumentsDelta());
     }
     if (event instanceof LlmStreamEvent.ToolCallEnd end) {
-      return event(SseEventNames.TOOL_CALL_END, new ToolCallEndData(end.toolCall()));
+      return new ToolCallEndData(end.toolCall());
     }
     if (event instanceof LlmStreamEvent.Usage usage) {
-      return event(SseEventNames.USAGE, new UsageData(usage.usage()));
+      return new UsageData(usage.usage());
     }
     if (event instanceof LlmStreamEvent.MessageEnd end) {
-      return event(SseEventNames.MESSAGE_END, new MessageEndData(end.finishReason(), end.metadata()));
+      return new MessageEndData(end.finishReason(), end.metadata());
     }
     if (event instanceof LlmStreamEvent.Error error) {
-      return event(SseEventNames.ERROR, ErrorData.from(error.error()));
+      return ErrorData.from(error.error());
     }
     if (event instanceof LlmStreamEvent.Heartbeat) {
-      return event(SseEventNames.HEARTBEAT, Map.of());
+      return Map.of();
     }
     throw new IllegalArgumentException("Unsupported LLM stream event: " + event.getClass().getName());
-  }
-
-  private SseEmitter.SseEventBuilder event(String name, Object data) {
-    return SseEmitter.event().name(name).data(data);
   }
 
   private record MessageStartData(String provider, String model) {

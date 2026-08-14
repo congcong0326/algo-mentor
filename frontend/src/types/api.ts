@@ -1263,6 +1263,15 @@ export interface PracticeActiveRun {
   startedAt: string;
 }
 
+export interface PracticeChatRunSubscription {
+  type: 'accepted';
+  taskId: number;
+  runUuid: string;
+  status: 'ACCEPTED';
+  eventsUrl: string;
+  initialAfter: string;
+}
+
 export type PracticeCompletionGateReasonCode =
   | 'NO_REVIEW'
   | 'LATEST_REVIEW_FAILED'
@@ -1791,6 +1800,7 @@ export const AGENT_RUN_IN_PROGRESS_CODE = 'AGENT_RUN_IN_PROGRESS';
 export const AGENT_EXECUTOR_OVERLOADED_CODE = 'AGENT_EXECUTOR_OVERLOADED';
 
 export interface SseStreamEvent {
+  id?: string;
   eventName: SseEventName;
   data: unknown;
 }

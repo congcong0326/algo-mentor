@@ -26,6 +26,9 @@ public final class MentorConfigurationKeys {
   /** 统一 Agent Runtime 装配开关配置前缀。 */
   public static final String AGENT_RUNTIME_PREFIX = "algo-mentor.agent.runtime";
 
+  /** Practice Chat 独立 Redis Stream 通道配置前缀。 */
+  public static final String PRACTICE_REALTIME_STREAM_PREFIX = "algo-mentor.practice-chat.realtime-stream";
+
   /** 学习画像文档与 statement ref 的配置前缀。 */
   public static final String LEARNER_PROFILE_DOCUMENT_PREFIX = "algo-mentor.learner-memory.profile-document";
 

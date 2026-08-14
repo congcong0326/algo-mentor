@@ -283,6 +283,18 @@ class PersistentAgentRunObserverTest {
       turnFailed = new TurnFailed(turnId, updatedAt);
       return 1;
     }
+
+    @Override
+    public int failRunningRunsAtStartup() {
+      calls.add("failRunningRunsAtStartup");
+      return 0;
+    }
+
+    @Override
+    public int failRunningTurnsAtStartup() {
+      calls.add("failRunningTurnsAtStartup");
+      return 0;
+    }
   }
 
   private record InsertedAssistantMessage(

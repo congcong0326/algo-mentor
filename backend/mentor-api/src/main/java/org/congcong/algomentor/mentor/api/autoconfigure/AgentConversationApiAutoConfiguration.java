@@ -31,6 +31,7 @@ import org.congcong.algomentor.api.controller.practice.PracticeSessionController
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.api.practice.service.MyBatisTrustedProblemTagCatalog;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeConfiguration;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryCodeReviewFactRepository;
 import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewHistoryRepository;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
@@ -42,6 +43,7 @@ import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceSer
 import org.congcong.algomentor.mentor.application.practice.GetCurrentProblemLearningStateAgentTool;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatAutoAllowPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatRunAdapter;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
@@ -122,7 +124,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
     PersistentQueueWorkerAutoConfiguration.class,
     OpsObservabilityAutoConfiguration.class
 })
-@Import(PracticeCodeReviewConfiguration.class)
+@Import({PracticeCodeReviewConfiguration.class, PracticeRealtimeConfiguration.class})
 @EnableConfigurationProperties({
     LearnerMemoryDeclaredUpdateProperties.class,
     LearnerMemoryRecallProperties.class,
@@ -134,6 +136,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
     LearnerMemoryCodeReviewConsumerProperties.class
 })
 public class AgentConversationApiAutoConfiguration {
+
+  /** Practice Chat 的正式代码 Review 直接执行，不等待浏览器权限决策。 */
+  @Bean
+  @ConditionalOnMissingBean(PracticeChatAutoAllowPermissionHook.class)
+  public PracticeChatAutoAllowPermissionHook practiceChatAutoAllowPermissionHook() {
+    return new PracticeChatAutoAllowPermissionHook();
+  }
 
   @Bean
   @ConditionalOnBean({AgentConversationRepository.class, ContextAssembler.class})
@@ -814,14 +823,18 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<PracticeSessionService> practiceSessionService,
       ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      ObjectProvider<LlmStreamSseMapper> sseMapper,
-      ApiSseProperties sseProperties
+      ObjectProvider<org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore> realtimeEventStore,
+      ObjectProvider<AgentTaskMessageRepository> agentTaskMessageRepository,
+      ApiSseProperties sseProperties,
+      org.congcong.algomentor.ops.observability.SseOpsRecorder sseOpsRecorder
   ) {
     return new PracticeSessionController(
         practiceSessionService,
         streamService,
         currentUserIdProvider,
-        sseMapper,
-        sseProperties);
+        realtimeEventStore,
+        agentTaskMessageRepository,
+        sseProperties,
+        sseOpsRecorder);
   }
 }

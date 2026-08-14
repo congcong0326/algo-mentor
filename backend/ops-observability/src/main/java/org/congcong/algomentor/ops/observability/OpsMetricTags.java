@@ -14,6 +14,10 @@ public final class OpsMetricTags {
   public static final String DECISION = "decision";
   /** Low-cardinality agent tool name tag key. */
   public static final String TOOL_NAME = "tool_name";
+  /** Practice Chat Redis Stream 操作类型。 */
+  public static final String OPERATION = "operation";
+  /** Practice Chat Redis Stream 操作结果。 */
+  public static final String OUTCOME = "outcome";
 
   private OpsMetricTags() {
   }

@@ -5,6 +5,7 @@ public final class NoopOpsRecorders {
   private static final SseOpsRecorder SSE = new NoopSseOpsRecorder();
   private static final AgentOpsRecorder AGENT = new NoopAgentOpsRecorder();
   private static final LearningOpsRecorder LEARNING = new NoopLearningOpsRecorder();
+  private static final PracticeRealtimeOpsRecorder PRACTICE_REALTIME = new NoopPracticeRealtimeOpsRecorder();
 
   private NoopOpsRecorders() {
   }
@@ -19,6 +20,10 @@ public final class NoopOpsRecorders {
 
   public static LearningOpsRecorder learning() {
     return LEARNING;
+  }
+
+  public static PracticeRealtimeOpsRecorder practiceRealtime() {
+    return PRACTICE_REALTIME;
   }
 
   private static final class NoopSseOpsRecorder implements SseOpsRecorder {
@@ -83,6 +88,17 @@ public final class NoopOpsRecorders {
     public void practiceCodeReview(OpsStatus status) {
     }
 
+  }
+
+  private static final class NoopPracticeRealtimeOpsRecorder implements PracticeRealtimeOpsRecorder {
+
+    @Override
+    public void redisOperation(
+        PracticeRealtimeOperation operation,
+        PracticeRealtimeOutcome outcome,
+        java.time.Duration duration
+    ) {
+    }
   }
 
 }

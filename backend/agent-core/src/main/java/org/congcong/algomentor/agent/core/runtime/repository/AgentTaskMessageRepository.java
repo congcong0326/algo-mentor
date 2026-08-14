@@ -17,4 +17,11 @@ public interface AgentTaskMessageRepository {
   List<AgentMessage> messages(long taskId, int messageLimit);
 
   Optional<AgentActiveRun> activeRun(long taskId);
+
+  /** 当前 task 下指定 run 是否仍处于 running，供实时订阅鉴权与终态轮询使用。 */
+  default boolean isActiveRun(long taskId, String runUuid) {
+    return activeRun(taskId)
+        .map(run -> run.runUuid().equals(runUuid))
+        .orElse(false);
+  }
 }

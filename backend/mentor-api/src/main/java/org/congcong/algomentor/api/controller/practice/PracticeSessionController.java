@@ -2,9 +2,10 @@ package org.congcong.algomentor.api.controller.practice;
 
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.Flow;
-import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewDetailResponse;
@@ -14,27 +15,33 @@ import org.congcong.algomentor.api.practice.model.CoachSummaryProposalActionResp
 import org.congcong.algomentor.api.practice.model.PracticeMessageRequest;
 import org.congcong.algomentor.api.practice.model.PracticeMessageResponse;
 import org.congcong.algomentor.api.practice.model.PracticeActiveRunResponse;
+import org.congcong.algomentor.api.practice.model.PracticeChatRunSubscriptionResponse;
 import org.congcong.algomentor.api.practice.model.PracticeProgressStatusRequest;
 import org.congcong.algomentor.api.practice.model.PracticeSessionResponse;
 import org.congcong.algomentor.api.practice.model.PracticeSessionResponseMapper;
-import org.congcong.algomentor.api.service.LlmStreamSseMapper;
-import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeCursor;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEvent;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeProtocol;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatRunSubscription;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
-import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
-import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
+import org.congcong.algomentor.ops.observability.SseFailureType;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.congcong.algomentor.ops.observability.SseStreamType;
-import org.congcong.algomentor.ops.observability.StructuredOpsLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,51 +56,32 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class PracticeSessionController {
 
   private static final String DEFAULT_LOCALE = "zh-CN";
+  private static final Logger log = LoggerFactory.getLogger(PracticeSessionController.class);
 
   private final ObjectProvider<PracticeSessionService> practiceSessionService;
   private final ObjectProvider<PracticeMessageStreamService> streamService;
   private final CurrentUserIdProvider currentUserIdProvider;
-  private final ObjectProvider<LlmStreamSseMapper> sseMapper;
+  private final ObjectProvider<PracticeRealtimeEventStore> realtimeEventStore;
+  private final ObjectProvider<AgentTaskMessageRepository> agentTaskMessageRepository;
   private final ApiSseProperties sseProperties;
   private final SseOpsRecorder sseOpsRecorder;
-  private final LearningOpsRecorder learningOpsRecorder;
-  private final StructuredOpsLogger opsLogger;
 
   public PracticeSessionController(
       ObjectProvider<PracticeSessionService> practiceSessionService,
       ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      ObjectProvider<LlmStreamSseMapper> sseMapper,
-      ApiSseProperties sseProperties
-  ) {
-    this.practiceSessionService = practiceSessionService;
-    this.streamService = streamService;
-    this.currentUserIdProvider = currentUserIdProvider;
-    this.sseMapper = sseMapper;
-    this.sseProperties = sseProperties;
-    this.sseOpsRecorder = NoopOpsRecorders.sse();
-    this.learningOpsRecorder = NoopOpsRecorders.learning();
-    this.opsLogger = new StructuredOpsLogger();
-  }
-
-  @Autowired
-  public PracticeSessionController(
-      ObjectProvider<PracticeSessionService> practiceSessionService,
-      ObjectProvider<PracticeMessageStreamService> streamService,
-      CurrentUserIdProvider currentUserIdProvider,
-      ObjectProvider<LlmStreamSseMapper> sseMapper,
+      ObjectProvider<PracticeRealtimeEventStore> realtimeEventStore,
+      ObjectProvider<AgentTaskMessageRepository> agentTaskMessageRepository,
       ApiSseProperties sseProperties,
-      ObjectProvider<SseOpsRecorder> sseOpsRecorder,
-      ObjectProvider<LearningOpsRecorder> learningOpsRecorder
+      SseOpsRecorder sseOpsRecorder
   ) {
     this.practiceSessionService = practiceSessionService;
     this.streamService = streamService;
     this.currentUserIdProvider = currentUserIdProvider;
-    this.sseMapper = sseMapper;
+    this.realtimeEventStore = realtimeEventStore;
+    this.agentTaskMessageRepository = agentTaskMessageRepository;
     this.sseProperties = sseProperties;
-    this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
-    this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
-    this.opsLogger = new StructuredOpsLogger();
+    this.sseOpsRecorder = sseOpsRecorder;
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLANS_BASE_PATH
@@ -179,11 +167,9 @@ public class PracticeSessionController {
     return ApiResponse.success(PracticeSessionResponseMapper.toResponse(sessionService.get(userId, sessionId)));
   }
 
-  @PostMapping(
-      value = ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
-          + ApiContractConstants.PRACTICE_SESSION_MESSAGES_STREAM_PATH,
-      produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter stream(
+  @PostMapping(value = ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_MESSAGES_PATH)
+  public ResponseEntity<ApiResponse<PracticeChatRunSubscriptionResponse>> start(
       @PathVariable long sessionId,
       @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,
       @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
@@ -198,33 +184,50 @@ public class PracticeSessionController {
           "PRACTICE_MESSAGE_STREAM_UNAVAILABLE",
           "题目训练消息流服务不可用。");
     });
-    Flow.Publisher<AgentStreamEvent> publisher = practiceMessageStreamService.stream(
+    PracticeChatRunSubscription subscription = practiceMessageStreamService.start(
         userId,
         sessionId,
         request.message(),
         effectiveKey,
         currentRequestLocale(acceptLanguage),
-        requestSize(request));
+        requestSize(request),
+        requiredRealtimeEventStore());
+    return ResponseEntity.status(HttpStatus.ACCEPTED).body(ApiResponse.success(
+        new PracticeChatRunSubscriptionResponse(
+            PracticeChatRunSubscriptionResponse.TYPE_ACCEPTED,
+            subscription.taskId(),
+            subscription.runUuid(),
+            subscription.status(),
+            eventsUrl(sessionId, subscription.runUuid()),
+            PracticeRealtimeProtocol.INITIAL_AFTER)));
+  }
 
-    SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
-    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(
-        emitter,
-        requiredSseMapper(),
-        false,
-        SseStreamType.PRACTICE_MESSAGE,
-        sseOpsRecorder,
-        learningOpsRecorder,
-        opsLogger);
-
-    emitter.onCompletion(() -> subscriber.clientDisconnected(null));
-    emitter.onTimeout(subscriber::timeout);
-    emitter.onError(subscriber::clientDisconnected);
-
-    try {
-      publisher.subscribe(subscriber);
-    } catch (RuntimeException ex) {
-      subscriber.onError(ex);
+  @GetMapping(value = ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_RUN_EVENTS_PATH, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter events(
+      @PathVariable long sessionId,
+      @PathVariable String runUuid,
+      @RequestParam(name = ApiContractConstants.PRACTICE_RUN_EVENTS_AFTER_PARAM, required = false) String after
+  ) {
+    long userId = requireCurrentUserId();
+    String cursor = PracticeRealtimeCursor.normalizeAfter(after);
+    PracticeSessionResponse session = PracticeSessionResponseMapper.toResponse(
+        requiredPracticeSessionService().get(userId, sessionId));
+    if (session.activeRun() == null || !runUuid.equals(session.activeRun().runUuid())) {
+      throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
+          "PRACTICE_RUN_NOT_FOUND", "题目训练运行不存在或已结束。");
     }
+    SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
+    PracticeRealtimeSseLifecycle lifecycle = new PracticeRealtimeSseLifecycle(sseOpsRecorder);
+    lifecycle.opened();
+    emitter.onCompletion(lifecycle::onCompletion);
+    emitter.onTimeout(lifecycle::onTimeout);
+    emitter.onError(lifecycle::onError);
+    long taskId = session.activeRun().taskId();
+    Thread reader = new Thread(
+        () -> replayEvents(emitter, taskId, runUuid, cursor, lifecycle), "practice-realtime-sse");
+    reader.setDaemon(true);
+    reader.start();
     return emitter;
   }
 
@@ -242,14 +245,55 @@ public class PracticeSessionController {
     });
   }
 
-  private LlmStreamSseMapper requiredSseMapper() {
-    return sseMapper.getIfAvailable(this::streamUnavailable);
+  private PracticeRealtimeEventStore requiredRealtimeEventStore() {
+    return realtimeEventStore.getIfAvailable(this::streamUnavailable);
   }
 
   private <T> T streamUnavailable() {
     throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
         "PRACTICE_MESSAGE_STREAM_UNAVAILABLE",
         "题目训练消息流服务不可用。");
+  }
+
+  private void replayEvents(
+      SseEmitter emitter,
+      long taskId,
+      String runUuid,
+      String after,
+      PracticeRealtimeSseLifecycle lifecycle
+  ) {
+    String cursor = after;
+    try {
+      while (lifecycle.active()) {
+        List<PracticeRealtimeEvent> events = requiredRealtimeEventStore().readAfter(runUuid, cursor, true);
+        for (PracticeRealtimeEvent event : events) {
+          emitter.send(SseEmitter.event().id(event.cursor()).name(event.eventName()).data(event.data()));
+          cursor = event.cursor();
+          if ("agent_run_end".equals(event.eventName()) || "agent_error".equals(event.eventName())) {
+            lifecycle.complete(emitter);
+            return;
+          }
+        }
+        // Redis 阻塞读取超时后以 PostgreSQL 状态为准，终态直接关闭，运行中继续等待。
+        if (events.isEmpty()) {
+          if (!requiredAgentTaskMessageRepository().isActiveRun(taskId, runUuid)) {
+            lifecycle.complete(emitter);
+            return;
+          }
+        }
+      }
+    } catch (IOException | RuntimeException exception) {
+      lifecycle.fail(emitter, exception);
+    }
+  }
+
+  private AgentTaskMessageRepository requiredAgentTaskMessageRepository() {
+    return agentTaskMessageRepository.getIfAvailable(this::streamUnavailable);
+  }
+
+  private String eventsUrl(long sessionId, String runUuid) {
+    return ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH + "/" + sessionId
+        + "/runs/" + runUuid + "/events";
   }
 
   private int requestSize(PracticeMessageRequest request) {
@@ -265,6 +309,63 @@ public class PracticeSessionController {
       return PracticeProgressStatus.valueOf(request.status());
     } catch (RuntimeException exception) {
       throw new PracticeProgressStatusInvalidException("练习进度状态不合法。", exception);
+    }
+  }
+
+  /** 仅管理 SSE 连接指标；Redis/浏览器故障不改变 Agent run 的业务终态。 */
+  private static final class PracticeRealtimeSseLifecycle {
+
+    private final SseOpsRecorder recorder;
+    private final AtomicBoolean active = new AtomicBoolean(true);
+
+    private PracticeRealtimeSseLifecycle(SseOpsRecorder recorder) {
+      this.recorder = java.util.Objects.requireNonNull(recorder, "SSE ops recorder must not be null");
+    }
+
+    private void opened() {
+      recorder.opened(SseStreamType.PRACTICE_MESSAGE);
+    }
+
+    private boolean active() {
+      return active.get();
+    }
+
+    private void complete(SseEmitter emitter) {
+      if (active.compareAndSet(true, false)) {
+        recorder.completed(SseStreamType.PRACTICE_MESSAGE);
+        emitter.complete();
+      }
+    }
+
+    private void fail(SseEmitter emitter, Throwable exception) {
+      if (active.compareAndSet(true, false)) {
+        recorder.failed(SseStreamType.PRACTICE_MESSAGE, SseFailureType.UNKNOWN);
+        log.warn("Practice realtime SSE connection failed. exceptionType={}",
+            exception.getClass().getSimpleName());
+        emitter.completeWithError(exception);
+      }
+    }
+
+    private void onCompletion() {
+      if (active.compareAndSet(true, false)) {
+        recorder.clientDisconnected(SseStreamType.PRACTICE_MESSAGE);
+      }
+    }
+
+    private void onTimeout() {
+      if (active.compareAndSet(true, false)) {
+        recorder.timeout(SseStreamType.PRACTICE_MESSAGE);
+        recorder.failed(SseStreamType.PRACTICE_MESSAGE, SseFailureType.TIMEOUT);
+        log.info("Practice realtime SSE connection timed out.");
+      }
+    }
+
+    private void onError(Throwable exception) {
+      if (active.compareAndSet(true, false)) {
+        recorder.failed(SseStreamType.PRACTICE_MESSAGE, SseFailureType.SEND_FAILURE);
+        log.info("Practice realtime SSE client disconnected. exceptionType={}",
+            exception == null ? "unknown" : exception.getClass().getSimpleName());
+      }
     }
   }
 }

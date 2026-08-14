@@ -229,9 +229,9 @@ Spring AgentTool Bean
 
 **权限**
 
-- 当前配置专用人在回路权限 Hook 的写工具之一。
-- 模型请求调用后，前端会收到确认请求；只有用户允许后才执行真实 Review。
-- 用户拒绝、超时或取消时不会进入工具实现，也不会生成 Review 记录。
+- 在 `PRACTICE_CHAT` 场景，模型识别当前消息可能是完整题解提交后直接执行，不展示权限确认弹窗。
+- 自动授权同时要求受信的 Runtime `agentKey=practice-chat` 和精确工具名；不会放开该场景的其他工具，也不影响其他场景继续使用权限链。
+- 工具未保存或执行失败时不会生成正式 Review 记录。
 - 配置：`PRACTICE_CODE_REVIEW_ENABLED`，默认 `true`；权限总开关 `AGENT_TOOL_PERMISSION_ENABLED` 默认 `true`。
 
 ### 6.2 `get_current_problem_learning_state`
@@ -457,7 +457,7 @@ Spring AgentTool Bean
 | `LEARNER_MEMORY_DECLARED_UPDATE_ENABLED` | `false` | `update_learner_declared_profile` |
 | `LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED` | `false` | 三个 Practice Chat 记忆召回工具 |
 | `LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED` | `false` | 三个 Code Review 画像后台工具的 Agent Definition |
-| `AGENT_TOOL_PERMISSION_ENABLED` | `true` | 工具执行前权限链，当前正式 Review 使用 `ASK`；教练总结 proposal 不使用该弹窗 |
+| `AGENT_TOOL_PERMISSION_ENABLED` | `true` | 工具执行前权限链；Practice Chat 的正式 Review 使用受限自动 `ALLOW`，教练总结 proposal 不使用该弹窗 |
 | `AGENT_TOOL_RESULT_INLINE_MAX_CHARS` | `12000` | 大结果转 preview/ref 的内联阈值 |
 | `AGENT_TOOL_RESULT_PREVIEW_MAX_CHARS` | `2000` | 大工具结果预览长度 |
 | `AGENT_TOOL_RESULT_RANGE_READ_MAX_CHARS` | `8000` | `read_tool_result` 单次通用读取上限 |
@@ -488,7 +488,7 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 
 ### 11.5 副作用能力的确认策略不同
 
-`submit_practice_code_review` 使用统一 Tool 权限链的 `ASK` 弹窗；`propose_current_problem_coach_summary` 本身无正式写副作用，先在聊天中展示候选，再由用户点击一次性 apply 按钮写入；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。三者采用三种与业务风险匹配的产品授权语义。
+`submit_practice_code_review` 在 `PRACTICE_CHAT` 中由“模型识别疑似完整提交 + 精确工具名与受信 agentKey 自动授权 + 服务端可信上下文校验”组成闭环，不展示确认弹窗；`propose_current_problem_coach_summary` 本身无正式写副作用，先在聊天中展示候选，再由用户点击一次性 apply 按钮写入；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。三者采用与业务风险匹配的不同授权语义。
 
 ## 12. 主要代码依据
 

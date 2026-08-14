@@ -98,6 +98,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     AgentExecutorProperties.class,
     AgentToolPermissionProperties.class,
     ApiSseProperties.class,
+    PracticeRealtimeStreamProperties.class,
     PracticeCodeReviewProperties.class
 })
 public class MentorAiConfiguration {

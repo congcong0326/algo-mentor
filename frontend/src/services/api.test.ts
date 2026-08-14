@@ -15,6 +15,7 @@ import {
   getLearningPlanTemplate,
   getLearningPlanTemplates,
   getLearningPlans,
+  readPracticeRunEvents,
   getLearnerProfile,
   getLearnerProfileStatementEvidence,
   getReviewSummary,
@@ -950,6 +951,36 @@ describe('learning plan draft api', () => {
     expect(onEvent).toHaveBeenCalledWith({
       eventName: 'draft_ready',
       data: { draftId: 101, status: 'GENERATED', missingFields: [], draftPlan: null },
+    });
+  });
+});
+
+describe('practice run realtime api', () => {
+  it('uses the explicit after cursor and preserves Redis event ids', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
+      'id:1710000000000-0',
+      'event:content_delta',
+      'data:{"content":"第一段"}',
+      '',
+      '',
+    ])));
+    vi.stubGlobal('fetch', fetchMock);
+    const onEvent = vi.fn();
+
+    await readPracticeRunEvents('/api/practice-sessions/101/runs/run-80/events', {
+      after: '1710000000000-9',
+      onEvent,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/101/runs/run-80/events?after=1710000000000-9',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+    expect(requestHeaders(fetchMock).get('Accept')).toBe('text/event-stream, application/json');
+    expect(onEvent).toHaveBeenCalledWith({
+      id: '1710000000000-0',
+      eventName: 'content_delta',
+      data: { content: '第一段' },
     });
   });
 });

@@ -94,6 +94,18 @@ class AgentMapperXmlTest {
   }
 
   @Test
+  void startupRecoveryMarksOnlyRunningRunsAndTheirCurrentTurnsFailed() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentRunMapper.xml");
+
+    assertThat(sql)
+        .contains("<update id=\"failRunningRunsAtStartup\">")
+        .contains("WHERE status = 'running'")
+        .contains("'APPLICATION_RESTART'")
+        .contains("<update id=\"failRunningTurnsAtStartup\">")
+        .contains("AND current_run_id IN ( SELECT id FROM agent_run WHERE status = 'running' )");
+  }
+
+  @Test
   void runInsertSqlPersistsRuntimeAuditFields() throws Exception {
     String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
 
@@ -102,6 +114,15 @@ class AgentMapperXmlTest {
         .contains("parent_step_index")
         .contains("#{triggerType}")
         .contains("#{retryOfRunId}");
+  }
+
+  @Test
+  void runLookupIncludesTerminalStatusAndErrorCodeForIdempotencyDecisions() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
+
+    assertThat(sql)
+        .contains("r.status")
+        .contains("r.error -&gt;&gt; 'code' AS error_code");
   }
 
   @Test

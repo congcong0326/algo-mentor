@@ -55,6 +55,22 @@ algo-mentor:
   practice:
     code-review:
       enabled: true
+  practice-chat:
+    realtime-stream:
+      enabled: ${PRACTICE_REALTIME_STREAM_ENABLED:true}
+      host: ${PRACTICE_REALTIME_STREAM_HOST:localhost}
+      port: ${PRACTICE_REALTIME_STREAM_PORT:6380}
+      database: ${PRACTICE_REALTIME_STREAM_DATABASE:0}
+      username: ${PRACTICE_REALTIME_STREAM_USERNAME:}
+      password: ${PRACTICE_REALTIME_STREAM_PASSWORD:}
+      ssl-enabled: ${PRACTICE_REALTIME_STREAM_SSL_ENABLED:false}
+      command-timeout: ${PRACTICE_REALTIME_STREAM_COMMAND_TIMEOUT:3s}
+      connect-timeout: ${PRACTICE_REALTIME_STREAM_CONNECT_TIMEOUT:2s}
+      shutdown-timeout: ${PRACTICE_REALTIME_STREAM_SHUTDOWN_TIMEOUT:2s}
+      read-block: ${PRACTICE_REALTIME_STREAM_READ_BLOCK:2s}
+      max-read-connections: ${PRACTICE_REALTIME_STREAM_MAX_READ_CONNECTIONS:32}
+      active-retention: ${PRACTICE_REALTIME_STREAM_ACTIVE_RETENTION:2h}
+      completed-retention: ${PRACTICE_REALTIME_STREAM_COMPLETED_RETENTION:24h}
   learner-memory:
     code-review-consumer:
       enabled: true

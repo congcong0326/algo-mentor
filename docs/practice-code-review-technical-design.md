@@ -4,13 +4,13 @@
 
 本文早期采用“后端回合 capability 自动识别并落库”的方案。该方向已废弃，不再作为后续实现计划。
 
-当前实现方向是：Review 由 `submit_practice_code_review` Agent tool 承载。主模型在 practice chat 中自主判断当前用户消息是否像完整 LeetCode 解法提交；如果模型调用该工具，阶段一权限人在回路机制会先请求用户确认。用户允许后，工具从服务端受信 metadata、练习会话和 run message lookup 中读取上下文，调用 `PracticeCodeReviewService` 抽取代码、分析、打分并写入 `practice_code_review`。用户拒绝或确认超时，不生成正式 Review 记录。
+当前实现方向是：Review 由 `submit_practice_code_review` Agent tool 承载。主模型在 practice chat 中自主判断当前用户消息是否像完整 LeetCode 解法提交；疑似完整提交时直接调用工具，不再发起浏览器权限确认。工具从服务端受信 metadata、练习会话和 run message lookup 中读取上下文，调用 `PracticeCodeReviewService` 抽取代码、分析、打分并写入 `practice_code_review`。工具未保存或执行失败时不生成正式 Review 记录。
 
 以下保留的 `PracticeTurnCapability`、`CodeReviewTurnCapability`、`PracticeTurnClassifier` 和 `practiceCapabilities` 设计均为历史方案说明，不应继续实现或恢复。
 
 ## 背景
 
-`docs/practice-code-review-product-design.md` 定义了练习聊天中的代码 Review 闭环：用户粘贴完整 LeetCode 题解代码后，主模型自主判断是否调用正式 Review 工具；用户确认后系统生成 AI Review、保存多版本记录，并用最近一次有效 Review 决定题目能否标记完成。
+`docs/practice-code-review-product-design.md` 定义了练习聊天中的代码 Review 闭环：用户粘贴完整 LeetCode 题解代码后，主模型自主判断是否调用正式 Review 工具；工具成功后系统生成 AI Review、保存多版本记录，并用最近一次有效 Review 决定题目能否标记完成。
 
 当前代码基础已经具备：
 
@@ -24,7 +24,7 @@
 
 ## 目标
 
-- 用户在练习聊天中发送完整题解代码后，主模型应自主调用正式 Review 工具，并在用户确认后生成结构化 Review 记录。
+- 用户在练习聊天中发送疑似完整题解代码后，主模型应自主调用正式 Review 工具，并直接生成结构化 Review 记录。
 - 同一 `计划 + 阶段 + 题目 + 会话` 支持多次 Review 版本。
 - Review 记录保存代码快照、语言、识别证据、上下文摘要、评分、扣分原因和改进建议。
 - 完成题目的资格由最近一次有效 Review 决定。
@@ -49,9 +49,9 @@
 
 1. 练习聊天仍由 `PracticeMessageStreamService -> PracticeTurnOrchestrator -> AgentConversationRunCoordinator -> AgentLoopRunner` 流式生成用户可见回复。
 2. Practice chat prompt 和 `submit_practice_code_review` 工具描述要求主模型在疑似完整题解提交时主动调用工具。
-3. `PracticeCodeReviewPermissionHook` 对该工具返回 `ASK`，通过 SSE 和决策 API 触发人在回路确认。
-4. 用户允许后，`PracticeCodeReviewAgentTool` 调用 `PracticeCodeReviewService`，生成并保存正式 Review 记录，tool result 回填给主模型总结。
-5. 用户拒绝或超时后，真实 Review 工具不执行，不写库；主模型可继续普通点评，但不得给正式分数或声称完成状态更新。
+3. `PracticeChatAutoAllowPermissionHook` 仅对 `PRACTICE_CHAT` 的该工具返回 `ALLOW`；其他工具和场景仍沿用原有权限链。
+4. `PracticeCodeReviewAgentTool` 调用 `PracticeCodeReviewService`，生成并保存正式 Review 记录，tool result 回填给主模型总结。
+5. 工具返回未保存或失败结果时不写库；主模型可继续普通点评，但不得给正式分数或声称完成状态更新。
 
 下面的回合 capability 流程仅作为历史方案记录：
 

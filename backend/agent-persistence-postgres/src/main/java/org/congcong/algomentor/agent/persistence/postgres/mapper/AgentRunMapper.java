@@ -40,4 +40,14 @@ public interface AgentRunMapper {
       @Param("turnId") long turnId,
       @Param("updatedAt") Instant updatedAt
   );
+
+  /** 应用启动时将仍关联运行中 run 的 turn 标记为失败。 */
+  int failRunningTurnsAtStartup();
+
+  /**
+   * 应用启动时收束上次进程异常退出遗留的运行。
+   *
+   * @return 被标记为失败的 run 数量
+   */
+  int failRunningRunsAtStartup();
 }

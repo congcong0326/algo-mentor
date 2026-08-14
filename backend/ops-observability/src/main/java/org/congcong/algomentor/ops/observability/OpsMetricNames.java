@@ -29,6 +29,12 @@ public final class OpsMetricNames {
   public static final String PRACTICE_MESSAGE_STREAMS = "algo.mentor.practice.message.streams";
   /** Practice code review counter, tagged by status. */
   public static final String PRACTICE_CODE_REVIEWS = "algo.mentor.practice.code_reviews";
+  /** Practice Chat Redis Stream 操作次数，按 operation 与 outcome 聚合。 */
+  public static final String PRACTICE_REALTIME_REDIS_OPERATIONS =
+      "algo.mentor.practice.realtime.redis.operations";
+  /** Practice Chat Redis Stream 操作耗时，按 operation 与 outcome 聚合。 */
+  public static final String PRACTICE_REALTIME_REDIS_OPERATION_DURATION =
+      "algo.mentor.practice.realtime.redis.operation.duration";
 
   private OpsMetricNames() {
   }

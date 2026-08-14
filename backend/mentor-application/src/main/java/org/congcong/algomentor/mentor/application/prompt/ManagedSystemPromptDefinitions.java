@@ -19,7 +19,7 @@ public final class ManagedSystemPromptDefinitions {
   public static final ManagedSystemPromptDefinition PRACTICE_CHAT = definition(
       AiBusinessScenario.PRACTICE_CHAT,
       SystemPromptTypeCodes.PRACTICE_CHAT_V1,
-      "2026-08-10.1",
+      "2026-08-14.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("PRACTICE", "题目训练聊天", "Practice chat", "题目训练聊天的身份、教学、工具和记忆边界。"),
       section(SystemPromptSectionKeys.PRACTICE_TASK_BOOTSTRAP, "任务初始指令", 10, true,
@@ -89,12 +89,12 @@ public final class ManagedSystemPromptDefinitions {
       section(SystemPromptSectionKeys.PRACTICE_CODE_REVIEW_TOOL_BOUNDARY, "代码 Review 工具边界", 80, true, """
           工具边界：
           1. 当当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法时，应优先调用 %s。
-          2. 即使用户没有明确要求正式代码提交记录，也应调用 %s，让用户通过确认弹窗决定是否生成正式记录。
-          3. %s 会记录一次正式代码提交，委托分析流程抽取代码、分析、打分并保存代码提交记录；系统会在执行前请求用户确认，工具不能绕过确认。
+          2. 即使用户没有明确要求正式代码提交记录，只要消息可能是完整题解提交，也应直接调用 %s；不要向用户追问或等待确认。
+          3. %s 会记录一次正式代码提交，委托分析流程抽取代码、分析、打分并保存代码提交记录；工具成功后才可以引用正式 Review、分数或完成资格。
           4. 如果不确定是否完整但确实像题解提交，偏积极触发；明显片段、伪代码、报错日志、局部 bug、语法问题、复杂度讨论和概念问题不要调用工具，应按普通答疑处理。
-          5. 此工具只可提交当前用户消息中已经存在的代码。不得提交、Review 或记录你本轮刚生成的代码、此前 assistant 回复中的代码，或用户通过“提交上面的代码”“提交刚才的代码”等方式引用的代码。遇到此类请求，直接说明当前仅支持提交用户在当前消息中提供的代码；不要调用工具，也不要触发确认弹窗。
-          6. 如果用户拒绝确认或确认超时，可以继续普通点评代码，但必须说明没有生成正式代码提交记录，不要给出正式分数，不要声称已完成正式代码提交分析，也不要声称已生成代码提交记录，不要声称完成状态已更新。
-          7. 以上规则只是模型工具调用指引，不是安全边界；实际执行仍由系统确认、权限和工具层校验控制。
+          5. 此工具只可提交当前用户消息中已经存在的代码。不得提交、Review 或记录你本轮刚生成的代码、此前 assistant 回复中的代码，或用户通过“提交上面的代码”“提交刚才的代码”等方式引用的代码。遇到此类请求，直接说明当前仅支持提交用户在当前消息中提供的代码；不要调用工具。
+          6. 如果工具返回未保存或失败结果，可以继续普通点评代码，但不得给出正式分数，不要声称已完成正式代码提交分析、已生成代码提交记录或完成状态已更新。
+          7. 以上规则只是模型工具调用指引，不是安全边界；实际执行仍由工具白名单、可信上下文和工具层校验控制。
           """.formatted(
           PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
           PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,

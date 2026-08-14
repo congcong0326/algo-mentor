@@ -80,4 +80,6 @@ public interface AgentConversationMapper {
   AgentMessage findMessageById(@Param("messageId") long messageId);
 
   AgentActiveRun findActiveRun(@Param("taskId") long taskId);
+
+  int countActiveRun(@Param("taskId") long taskId, @Param("runUuid") String runUuid);
 }

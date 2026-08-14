@@ -11,6 +11,7 @@ class MicrometerOpsRecordersTest {
   private final SseOpsRecorder sse = MicrometerOpsRecorders.sse(registry);
   private final AgentOpsRecorder agent = MicrometerOpsRecorders.agent(registry);
   private final LearningOpsRecorder learning = MicrometerOpsRecorders.learning(registry);
+  private final PracticeRealtimeOpsRecorder practiceRealtime = MicrometerOpsRecorders.practiceRealtime(registry);
 
   @Test
   void recordsSseCountersAndActiveGauge() {
@@ -141,6 +142,32 @@ class MicrometerOpsRecordersTest {
     assertThat(NoopOpsRecorders.sse()).isSameAs(NoopOpsRecorders.sse());
     assertThat(NoopOpsRecorders.agent()).isSameAs(NoopOpsRecorders.agent());
     assertThat(NoopOpsRecorders.learning()).isSameAs(NoopOpsRecorders.learning());
+    assertThat(NoopOpsRecorders.practiceRealtime()).isSameAs(NoopOpsRecorders.practiceRealtime());
+  }
+
+  @Test
+  void recordsPracticeRealtimeRedisOperationsWithLowCardinalityTags() {
+    practiceRealtime.redisOperation(
+        PracticeRealtimeOperation.APPEND, PracticeRealtimeOutcome.SUCCESS, java.time.Duration.ofMillis(12));
+    practiceRealtime.redisOperation(
+        PracticeRealtimeOperation.READ, PracticeRealtimeOutcome.FAILURE, java.time.Duration.ofMillis(8));
+    practiceRealtime.redisOperation(
+        PracticeRealtimeOperation.CONNECT, PracticeRealtimeOutcome.SUCCESS, java.time.Duration.ofMillis(3));
+    practiceRealtime.redisOperation(
+        PracticeRealtimeOperation.RECONNECT, PracticeRealtimeOutcome.FAILURE, java.time.Duration.ofMillis(9));
+
+    assertThat(counter(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATIONS,
+        "operation", "append", "outcome", "success")).isEqualTo(1.0);
+    assertThat(counter(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATIONS,
+        "operation", "read", "outcome", "failure")).isEqualTo(1.0);
+    assertThat(counter(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATIONS,
+        "operation", "connect", "outcome", "success")).isEqualTo(1.0);
+    assertThat(counter(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATIONS,
+        "operation", "reconnect", "outcome", "failure")).isEqualTo(1.0);
+    assertThat(registry.get(OpsMetricNames.PRACTICE_REALTIME_REDIS_OPERATION_DURATION)
+        .tags("operation", "append", "outcome", "success")
+        .timer()
+        .count()).isEqualTo(1L);
   }
 
   private double counter(String name, String... tags) {

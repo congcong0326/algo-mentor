@@ -38,6 +38,7 @@ import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermission
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentPreparedStream;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentKey;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentLoopPolicy;
@@ -262,6 +263,24 @@ class DefaultAgentRuntimeTest {
 
     assertThat(fixture.governance.usage.consumeCalls).isEqualTo(1);
     assertThat(fixture.governance.locks.acquireCalls).isEqualTo(1);
+    assertThat(fixture.governance.locks.releaseCalls).isEqualTo(1);
+    assertThat(fixture.governance.repository.statuses)
+        .containsExactly(AiRunStatus.RUNNING, AiRunStatus.FAILED);
+  }
+
+  @Test
+  void synchronouslyFailsAndSettlesPreparedStreamWhenExecutorRejects() {
+    Fixture fixture = new Fixture();
+    DefaultAgentRuntime runtime = fixture.runtime(false, true);
+    AgentPreparedStream preparedStream = runtime.prepareStream(invocation("binary search", true));
+
+    assertThat(preparedStream.taskId()).isEqualTo(1L);
+    assertThat(preparedStream.runUuid()).isEqualTo("run-1");
+    assertThatThrownBy(() -> preparedStream.subscribe(new CollectingSubscriber(false)))
+        .isInstanceOf(AgentException.class)
+        .extracting(error -> ((AgentException) error).code())
+        .isEqualTo(AgentErrorCode.AGENT_EXECUTOR_OVERLOADED);
+
     assertThat(fixture.governance.locks.releaseCalls).isEqualTo(1);
     assertThat(fixture.governance.repository.statuses)
         .containsExactly(AiRunStatus.RUNNING, AiRunStatus.FAILED);

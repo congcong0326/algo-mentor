@@ -6,6 +6,7 @@ import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentPreparedStream;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 
 /**
@@ -20,8 +21,16 @@ public class PracticeTurnOrchestrator {
   }
 
   public Flow.Publisher<AgentStreamEvent> stream(PracticeChatAgentInput input) {
+    return agentRuntime.stream(invocation(input));
+  }
+
+  public AgentPreparedStream prepareStream(PracticeChatAgentInput input) {
+    return agentRuntime.prepareStream(invocation(input));
+  }
+
+  private AgentInvocation<PracticeChatAgentInput> invocation(PracticeChatAgentInput input) {
     PracticeChatAgentInput candidate = Objects.requireNonNull(input, "Practice chat input must not be null");
-    return agentRuntime.stream(new AgentInvocation<>(
+    return new AgentInvocation<>(
         PracticeChatAgentDefinition.KEY,
         candidate,
         new AgentInvocationContext(
@@ -31,6 +40,6 @@ public class PracticeTurnOrchestrator {
             null,
             null,
             candidate.requestSize(),
-            true)));
+            true));
   }
 }
