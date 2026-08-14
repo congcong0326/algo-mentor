@@ -64,6 +64,10 @@ class PracticeSessionServiceTest {
         .satisfies(request -> {
           assertThat(request.taskId()).isEqualTo(100);
           assertThat(request.content()).contains("# Two Sum");
+          assertThat(request.content())
+              .contains("## 代码模板（Java）")
+              .contains("class Solution")
+              .contains("```java");
           assertThat(request.metadata())
               .containsEntry(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY,
                   PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT)
@@ -516,7 +520,8 @@ class PracticeSessionServiceTest {
           "EASY",
           List.of("Array", "Hash Table"),
           "# Two Sum",
-          "https://leetcode.com/problems/two-sum/"));
+          "https://leetcode.com/problems/two-sum/",
+          List.of(new PracticeCodeTemplate("java", "Java", "class Solution { }"))));
     }
   }
 }

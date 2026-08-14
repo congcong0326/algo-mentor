@@ -11,6 +11,11 @@ import org.congcong.algomentor.api.problem.model.ProblemRelationSeedRecord;
 /** 学习元数据导入所需的唯一持久化端口。 */
 public interface ProblemLearningMetadataRepository {
 
+  /** 读取题目按语言保存的 starter code；无元数据实现时允许返回空列表。 */
+  default List<ProblemCodeTemplateSeedRecord> findCodeTemplatesByProblemSlug(String problemSlug) {
+    return List.of();
+  }
+
   Set<String> findExistingProblemSlugs(List<String> slugs);
 
   void replaceLeetCodeRelations(List<String> sourceProblemSlugs, List<ProblemRelationSeedRecord> relations);

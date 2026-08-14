@@ -2,20 +2,35 @@ package org.congcong.algomentor.api.practice.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.api.problem.model.ProblemCodeTemplateSeedRecord;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemTag;
+import org.congcong.algomentor.api.problem.repository.ProblemLearningMetadataRepository;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeTemplate;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProblemServicePracticeChatProblemCatalog implements PracticeChatProblemCatalog {
 
   private final ProblemService problemService;
+  private final ProblemLearningMetadataRepository metadataRepository;
 
   public ProblemServicePracticeChatProblemCatalog(ProblemService problemService) {
+    this(problemService, null);
+  }
+
+  @Autowired
+  public ProblemServicePracticeChatProblemCatalog(
+      ProblemService problemService,
+      ObjectProvider<ProblemLearningMetadataRepository> metadataRepositoryProvider
+  ) {
     this.problemService = problemService;
+    this.metadataRepository = metadataRepositoryProvider.getIfAvailable();
   }
 
   @Override
@@ -31,12 +46,26 @@ public class ProblemServicePracticeChatProblemCatalog implements PracticeChatPro
             problem.difficulty() == null ? null : problem.difficulty().name(),
             tagLabels(problem.tags()),
             problem.contentMarkdown(),
-            problem.leetcodeUrl()));
+            problem.leetcodeUrl(),
+            codeTemplates(slug)));
   }
 
   private List<String> tagLabels(List<ProblemTag> tags) {
     return tags.stream()
         .map(ProblemTag::label)
         .toList();
+  }
+
+  private List<PracticeCodeTemplate> codeTemplates(String problemSlug) {
+    if (metadataRepository == null) {
+      return List.of();
+    }
+    return metadataRepository.findCodeTemplatesByProblemSlug(problemSlug).stream()
+        .map(this::toCodeTemplate)
+        .toList();
+  }
+
+  private PracticeCodeTemplate toCodeTemplate(ProblemCodeTemplateSeedRecord template) {
+    return new PracticeCodeTemplate(template.languageSlug(), template.languageLabel(), template.code());
   }
 }

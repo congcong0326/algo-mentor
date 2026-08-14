@@ -4,6 +4,19 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper">
 
+  <select id="findCodeTemplatesByProblemSlug"
+      resultType="org.congcong.algomentor.api.problem.mapper.model.ProblemCodeTemplateRow">
+    SELECT template.language_slug,
+           template.language_label,
+           template.code,
+           template.source_site,
+           template.source_snapshot
+    FROM problem_code_template template
+    JOIN problem ON problem.id = template.problem_id
+    WHERE problem.slug = #{problemSlug}
+    ORDER BY template.language_slug ASC
+  </select>
+
   <select id="findExistingProblemSlugs" resultType="java.lang.String">
     SELECT slug
     FROM problem

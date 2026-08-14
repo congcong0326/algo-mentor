@@ -248,6 +248,13 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
     String statement = detail == null || isBlank(detail.contentMarkdown())
         ? "题库暂未提供题面 Markdown。"
         : detail.contentMarkdown().replace("</problem_statement>", "<\\/problem_statement>").strip();
+    PracticeCodeTemplate template = detail == null ? null : detail.templateFor(plan.programmingLanguage());
+    String codeTemplate = template == null
+        ? "题库暂未提供当前编程语言的代码模板。"
+        : "语言：%s\n```%s\n%s\n```".formatted(
+            template.languageLabel(),
+            template.languageSlug(),
+            template.code());
 
     return """
         学习计划：
@@ -275,6 +282,11 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         <problem_statement>
         %s
         </problem_statement>
+
+        代码模板：
+        <code_template>
+        %s
+        </code_template>
         """.formatted(
         context.plan().id(),
         blankToPlaceholder(plan.objective()),
@@ -291,7 +303,8 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         blankToPlaceholder(difficulty),
         tags == null || tags.isEmpty() ? "题库暂未提供标签。" : tags.stream().collect(Collectors.joining(", ")),
         blankToPlaceholder(detail == null ? null : detail.leetcodeUrl()),
-        statement).strip();
+        statement,
+        codeTemplate.replace("</code_template>", "<\\/code_template>")).strip();
   }
 
   private boolean isChatHistoryMessage(AgentMessage message) {

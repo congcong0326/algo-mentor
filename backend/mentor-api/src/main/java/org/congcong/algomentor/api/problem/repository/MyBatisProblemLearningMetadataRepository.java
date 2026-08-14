@@ -10,6 +10,7 @@ import org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryItemUpsertRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryUpsertRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemCodeTemplateUpsertRow;
+import org.congcong.algomentor.api.problem.mapper.model.ProblemCodeTemplateRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemHintUpsertRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemMetadataImportRunRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemRelationUpsertRow;
@@ -39,6 +40,22 @@ public class MyBatisProblemLearningMetadataRepository implements ProblemLearning
       return Set.of();
     }
     return Set.copyOf(new LinkedHashSet<>(mapper.findExistingProblemSlugs(slugs)));
+  }
+
+  @Override
+  public List<ProblemCodeTemplateSeedRecord> findCodeTemplatesByProblemSlug(String problemSlug) {
+    if (problemSlug == null || problemSlug.isBlank()) {
+      return List.of();
+    }
+    return mapper.findCodeTemplatesByProblemSlug(problemSlug.trim()).stream()
+        .map(row -> new ProblemCodeTemplateSeedRecord(
+            problemSlug.trim(),
+            row.languageSlug(),
+            row.languageLabel(),
+            row.code(),
+            row.sourceSite(),
+            row.sourceSnapshot()))
+        .toList();
   }
 
   @Override

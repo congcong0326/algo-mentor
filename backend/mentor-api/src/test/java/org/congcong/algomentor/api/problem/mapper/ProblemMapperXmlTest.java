@@ -110,6 +110,8 @@ class ProblemMapperXmlTest {
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.upsertCodeTemplate")).isTrue();
     assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.findCodeTemplatesByProblemSlug")).isTrue();
+    assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.upsertCategoryItem")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemLearningMetadataMapper.insertImportRun")).isTrue();

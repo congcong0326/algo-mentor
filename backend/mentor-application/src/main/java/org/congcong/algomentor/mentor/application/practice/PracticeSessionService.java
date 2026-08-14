@@ -145,14 +145,18 @@ public class PracticeSessionService {
 
     if (session.problemStatementMessageId() == null) {
       AgentMessage seedMessage = agentTaskMessageRepository.createAssistantSeedMessage(
-          new AgentAssistantSeedMessageRequest(
-              session.agentTaskId(),
-              seedContent(context.problemDetail()),
-              messageMetadata(session.id(), reference, PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT)));
+              new AgentAssistantSeedMessageRequest(
+                  session.agentTaskId(),
+                  seedContent(context.problemDetail(), context.plan().plan().programmingLanguage()),
+                  messageMetadata(session.id(), reference, PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT)));
       session = practiceSessionRepository.attachProblemStatementMessage(session.id(), seedMessage.id());
     }
 
-    return result(withProgressStatus(session, progress.status()), context.problemDetail());
+    return result(
+        withProgressStatus(session, progress.status()),
+        context.problemDetail(),
+        MESSAGE_LIMIT,
+        context.plan().plan().programmingLanguage());
   }
 
   public PracticeSessionResult get(long userId, long sessionId) {
@@ -164,7 +168,7 @@ public class PracticeSessionService {
     PracticeChatReference reference = new PracticeChatReference(
         session.planId(), session.phaseIndex(), session.problemSlug(), session.locale());
     PracticeChatContext context = requireContext(userId, reference);
-    return result(session, context.problemDetail(), messageLimit);
+    return result(session, context.problemDetail(), messageLimit, context.plan().plan().programmingLanguage());
   }
 
   public PracticeCodeReviewHistory history(long userId, long sessionId) {
@@ -215,16 +219,17 @@ public class PracticeSessionService {
     return withProgressStatus(session, progress.status());
   }
 
-  private PracticeSessionResult result(PracticeSession session, PracticeChatProblemDetail problemDetail) {
-    return result(session, problemDetail, MESSAGE_LIMIT);
-  }
-
   private PracticeSession requireSession(long userId, long sessionId) {
     return practiceSessionRepository.findSessionForUser(sessionId, userId)
         .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));
   }
 
-  private PracticeSessionResult result(PracticeSession session, PracticeChatProblemDetail problemDetail, int messageLimit) {
+  private PracticeSessionResult result(
+      PracticeSession session,
+      PracticeChatProblemDetail problemDetail,
+      int messageLimit,
+      String programmingLanguage
+  ) {
     int effectiveLimit = messageLimit < 1 ? MESSAGE_LIMIT : Math.min(messageLimit, MESSAGE_LIMIT);
     List<PracticeSessionMessage> messages = session.agentTaskId() == null
         ? List.of()
@@ -232,6 +237,7 @@ public class PracticeSessionService {
             .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
             .map(this::toPracticeSessionMessage)
             .toList();
+    messages = enrichProblemStatementTemplate(messages, problemDetail, programmingLanguage);
     messages = enrichCoachSummaryActions(session, messages);
     Optional<AgentActiveRun> activeRun = session.agentTaskId() == null
         ? Optional.empty()
@@ -239,6 +245,31 @@ public class PracticeSessionService {
     Optional<PracticeCodeReviewSummary> latestReview = reviewRepository.findLatestSummary(session.userId(), session.id());
     PracticeCompletionGate completionGate = completionGateService.evaluate(session.userId(), session, latestReview);
     return new PracticeSessionResult(session, problemDetail, messages, activeRun, latestReview.orElse(null), completionGate);
+  }
+
+  private List<PracticeSessionMessage> enrichProblemStatementTemplate(
+      List<PracticeSessionMessage> messages,
+      PracticeChatProblemDetail problemDetail,
+      String programmingLanguage
+  ) {
+    PracticeCodeTemplate template = problemDetail.templateFor(programmingLanguage);
+    if (template == null) {
+      return messages;
+    }
+    String marker = "## 代码模板（" + template.languageLabel() + "）";
+    return messages.stream().map(message -> {
+      if (!PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT.equals(message.messageType())
+          || message.contentMarkdown().contains(marker)) {
+        return message;
+      }
+      return new PracticeSessionMessage(
+          message.id(),
+          message.role(),
+          message.messageType(),
+          appendCodeTemplate(message.contentMarkdown(), template),
+          message.createdAt(),
+          message.coachSummaryAction());
+    }).toList();
   }
 
   private PracticeSession withProgressStatus(PracticeSession session, PracticeProgressStatus status) {
@@ -324,11 +355,19 @@ public class PracticeSessionService {
     return "题目练习：" + title;
   }
 
-  private String seedContent(PracticeChatProblemDetail detail) {
+  private String seedContent(PracticeChatProblemDetail detail, String programmingLanguage) {
     if (detail.contentMarkdown() == null || detail.contentMarkdown().isBlank()) {
-      return "题库暂未提供题面 Markdown。";
+      return appendCodeTemplate("题库暂未提供题面 Markdown。", detail.templateFor(programmingLanguage));
     }
-    return detail.contentMarkdown();
+    return appendCodeTemplate(detail.contentMarkdown(), detail.templateFor(programmingLanguage));
+  }
+
+  private String appendCodeTemplate(String statement, PracticeCodeTemplate template) {
+    if (template == null) {
+      return statement;
+    }
+    return "%s\n\n## 代码模板（%s）\n\n```%s\n%s\n```"
+        .formatted(statement.strip(), template.languageLabel(), template.languageSlug(), template.code()).strip();
   }
 
   private Map<String, Object> metadata(long sessionId, PracticeChatReference reference) {

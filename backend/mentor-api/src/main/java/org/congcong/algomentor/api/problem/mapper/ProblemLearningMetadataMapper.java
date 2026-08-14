@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryItemUpsertRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryUpsertRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemCodeTemplateUpsertRow;
+import org.congcong.algomentor.api.problem.mapper.model.ProblemCodeTemplateRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemHintUpsertRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemMetadataImportRunRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemRelationUpsertRow;
@@ -13,6 +14,8 @@ import org.congcong.algomentor.api.problem.mapper.model.ProblemRelationUpsertRow
 /** 元数据导入专用 SQL 边界；不向业务读取层泄漏。 */
 @Mapper
 public interface ProblemLearningMetadataMapper {
+
+  List<ProblemCodeTemplateRow> findCodeTemplatesByProblemSlug(@Param("problemSlug") String problemSlug);
 
   List<String> findExistingProblemSlugs(@Param("slugs") List<String> slugs);
 
