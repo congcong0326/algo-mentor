@@ -41,6 +41,7 @@ class MyBatisPracticeCodeReviewRepositoryTest {
     assertThat(review.deductionReasons()).containsExactly("边界条件不足");
     assertThat(review.score().total()).isEqualByComparingTo("7.0");
     assertThat(review.contentLocale()).isEqualTo("en-US");
+    assertThat(review.reviewHistorySummary()).isNull();
   }
 
   @Test

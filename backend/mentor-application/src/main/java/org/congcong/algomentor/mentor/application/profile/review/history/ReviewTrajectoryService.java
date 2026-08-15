@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
-/** 从同题、升序的正式 Review 计算分数和 finding 的纵向变化。 */
+/** 从同题、按真实提交时间升序的正式 Review 计算分数和 finding 的纵向变化。 */
 public final class ReviewTrajectoryService {
 
   public static final int MAX_VERSIONS = 5;
@@ -44,18 +44,16 @@ public final class ReviewTrajectoryService {
       throw new IllegalArgumentException("Review trajectory must contain between one and five reviews");
     }
     List<CodeReviewHistory> ordered = reviews.stream().filter(Objects::nonNull)
-        .sorted(Comparator.comparingInt(CodeReviewHistory::versionNo).thenComparingLong(CodeReviewHistory::reviewId))
+        .sorted(Comparator.comparing(CodeReviewHistory::createdAt).thenComparingLong(CodeReviewHistory::reviewId))
         .toList();
     if (ordered.size() != reviews.size()) {
       throw new IllegalArgumentException("Review trajectory must not contain null reviews");
     }
     String problemSlug = ordered.get(0).problemSlug();
-    int previousVersion = 0;
     for (CodeReviewHistory review : ordered) {
-      if (!problemSlug.equals(review.problemSlug()) || review.versionNo() <= previousVersion) {
-        throw new IllegalArgumentException("Review trajectory requires one problem and strictly increasing versions");
+      if (!problemSlug.equals(review.problemSlug())) {
+        throw new IllegalArgumentException("Review trajectory requires one problem");
       }
-      previousVersion = review.versionNo();
     }
     return ordered;
   }

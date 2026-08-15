@@ -10,6 +10,14 @@ import java.util.Set;
 public class PracticeCodeReviewStructuredOutputMapper {
 
   public PracticeReviewResult map(PracticeTurnContext context, JsonNode structuredOutput) {
+    return map(context, structuredOutput, false);
+  }
+
+  public PracticeReviewResult map(
+      PracticeTurnContext context,
+      JsonNode structuredOutput,
+      boolean historyLookupFailed
+  ) {
     if (context == null || structuredOutput == null || !structuredOutput.isObject()) {
       return invalid();
     }
@@ -98,6 +106,9 @@ public class PracticeCodeReviewStructuredOutputMapper {
           codeQuality,
           problemFit,
           total);
+      List<String> deductionReasons = deductionReasons(
+          structuredOutput.path("deductionReasons"), judgeAssessment, judgeBlocking, responseLanguage);
+      List<String> improvementSuggestions = stringList(structuredOutput.path("improvementSuggestions"));
       PracticeCodeReviewDraft draft = new PracticeCodeReviewDraft(
           context.userId(),
           context.planId(),
@@ -114,12 +125,18 @@ public class PracticeCodeReviewStructuredOutputMapper {
           textValue(structuredOutput, "contextSummary"),
           normalizedScore,
           passed,
-          deductionReasons(
-              structuredOutput.path("deductionReasons"), judgeAssessment, judgeBlocking, responseLanguage),
-          stringList(structuredOutput.path("improvementSuggestions")),
+          deductionReasons,
+          improvementSuggestions,
           textValue(structuredOutput, "reviewMarkdown"),
           affectedTagIds(context, structuredOutput.path(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS)),
-          responseLanguage.languageTag());
+          responseLanguage.languageTag(),
+          reviewHistorySummary(
+              textValue(structuredOutput, PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY),
+              passed,
+              deductionReasons,
+              improvementSuggestions,
+              responseLanguage,
+              historyLookupFailed));
       return PracticeReviewResult.reviewed(draft);
     } catch (IllegalArgumentException exception) {
       return invalid();
@@ -267,6 +284,42 @@ public class PracticeCodeReviewStructuredOutputMapper {
       values.add(0, normalizedReason);
     }
     return List.copyOf(values);
+  }
+
+  private String reviewHistorySummary(
+      String candidate,
+      boolean passed,
+      List<String> deductionReasons,
+      List<String> improvementSuggestions,
+      PracticeResponseLanguage responseLanguage,
+      boolean historyLookupFailed
+  ) {
+    String normalized = candidate == null ? "" : candidate.replaceAll("\\s+", " ").trim();
+    if (!historyLookupFailed
+        && !normalized.isBlank()
+        && normalized.length() <= PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH) {
+      return normalized;
+    }
+    String finding = deductionReasons.stream().filter(value -> value != null && !value.isBlank()).findFirst()
+        .or(() -> improvementSuggestions.stream().filter(value -> value != null && !value.isBlank()).findFirst())
+        .orElse("");
+    String fallback;
+    if (passed) {
+      fallback = responseLanguage == PracticeResponseLanguage.EN_US
+          ? "This Review concludes that the submitted solution is expected to pass."
+          : "本次 Review 结论：提交的解法预计可以通过。";
+    } else if (!finding.isBlank()) {
+      fallback = responseLanguage == PracticeResponseLanguage.EN_US
+          ? "This Review identifies: " + finding
+          : "本次 Review 结论：" + finding;
+    } else {
+      fallback = responseLanguage == PracticeResponseLanguage.EN_US
+          ? "This Review does not confirm that the submitted solution can pass."
+          : "本次 Review 结论：尚不能确认提交的解法可以通过。";
+    }
+    return fallback.length() <= PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH
+        ? fallback
+        : fallback.substring(0, PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH).strip();
   }
 
   private String blockingIssueDescription(PracticeResponseLanguage responseLanguage) {

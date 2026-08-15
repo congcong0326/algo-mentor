@@ -10,12 +10,13 @@ import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeTemplate;
+import org.congcong.algomentor.mentor.application.practice.PracticeRelatedProblemCatalog;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProblemServicePracticeChatProblemCatalog implements PracticeChatProblemCatalog {
+public class ProblemServicePracticeChatProblemCatalog implements PracticeChatProblemCatalog, PracticeRelatedProblemCatalog {
 
   private final ProblemService problemService;
   private final ProblemLearningMetadataRepository metadataRepository;
@@ -48,6 +49,14 @@ public class ProblemServicePracticeChatProblemCatalog implements PracticeChatPro
             problem.contentMarkdown(),
             problem.leetcodeUrl(),
             codeTemplates(slug)));
+  }
+
+  @Override
+  public List<String> findRelatedProblemSlugs(String problemSlug) {
+    if (metadataRepository == null || problemSlug == null || problemSlug.isBlank()) {
+      return List.of();
+    }
+    return metadataRepository.findLeetCodeSimilarProblemSlugs(problemSlug.trim());
   }
 
   private List<String> tagLabels(List<ProblemTag> tags) {

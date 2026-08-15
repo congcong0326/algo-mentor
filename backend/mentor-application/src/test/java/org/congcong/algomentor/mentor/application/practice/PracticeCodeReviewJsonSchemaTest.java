@@ -32,7 +32,15 @@ class PracticeCodeReviewJsonSchemaTest {
             "deductionReasons",
             "improvementSuggestions",
             "reviewMarkdown",
-            PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS));
+            PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS,
+            PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY));
+    assertThat(schema.path("properties")
+        .path(PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY)
+        .path("type").asText()).isEqualTo("string");
+    assertThat(schema.path("properties")
+        .path(PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY)
+        .path("maxLength").asInt())
+        .isEqualTo(PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH);
   }
 
   @Test

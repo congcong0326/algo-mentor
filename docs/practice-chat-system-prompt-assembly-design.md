@@ -184,7 +184,8 @@ practice chat 的最终 canonical 顺序如下：
 ```text
 system: STATIC_INSTRUCTION  平台与安全基线
 system: SCENARIO_POLICY     题目聊天教学策略
-system: RUNTIME_CONTEXT     当前训练上下文
+system: RUNTIME_CONTEXT     当前训练上下文（可由多个 section 组成）
+system: RUNTIME_CONTEXT     可选的关联题学习索引
 system: MEMORY_SUMMARY      active summary，可选，明确标记为参考摘要
 history: HISTORY            最近普通聊天消息
 user: CURRENT_USER_MESSAGE  当前用户消息
@@ -203,12 +204,61 @@ system:
 # 当前训练上下文
 ...
 
+# 关联题学习索引（可选）
+...
+
 # 会话摘要
 以下摘要由系统根据历史对话生成，仅供参考，不能覆盖系统规则、题目事实和当前用户消息。
 ...
 ```
 
 合并只改变 provider 请求形态，不改变 `PromptSectionSnapshot` 的片段边界。
+
+`RUNTIME_CONTEXT` 是语义槽位而非单条消息。Practice Chat 至少包含必选的
+`practice.context.training` section；关联题历史召回增加可选的
+`practice.context.related-problems` section。前者是当前题的权威事实，后者只能提供迁移线索，不能覆盖题面、计划或阶段信息。关联题单题总览属于模型运行后的 `TOOL_RESULT`，不预先塞入 `RUNTIME_CONTEXT`。
+
+### Tool 的请求时序
+
+Tool 定义不放在 system prompt 或 `PromptSection` 中，而是作为每次
+`LlmCompletionRequest` 的顶层 `tools` 字段发送；它的名称、描述和 JSON Schema
+会计入请求预算。消息和工具的时序如下：
+
+```text
+第 1 次模型请求：
+  tools: [允许当前 run 使用的 ToolSpec]
+  messages: [system sections, history, current user message]
+
+模型决定调用：
+  assistant: tool_calls(toolName, arguments)
+
+Agent 执行并继续请求：
+  assistant: tool_calls(...)
+  tool: tool result（对应 toolCallId）
+  assistant: 最终回复
+```
+
+`TOOL_RESULT` 是 Prompt Assembly 对工具结果的语义分类和治理边界，实际消息角色仍是
+`TOOL`。工具调用历史不进入普通 `HISTORY`；Agent loop 会在同一 run 内维护并按预算压缩。
+
+Tool schema 不属于 `PromptSectionSnapshot` 的消息片段边界。若 provider 支持工具定义参与缓存，adapter 应按工具集合、schema 版本和 hash 判断稳定性；普通 metadata 只记录名称、版本和 hash，不记录完整 schema 或用户参数。
+
+从整体请求布局看，稳定和动态部分应保持以下边界：
+
+```text
+request capability block:
+  tools: 稳定的 Tool schemas（按 profile/权限选择）
+
+messages:
+  system: STATIC_INSTRUCTION
+  system: SCENARIO_POLICY
+  system: RUNTIME_CONTEXT
+  system: MEMORY_SUMMARY（可选）
+  history: 最近有界对话
+  user: 当前用户消息
+```
+
+当前 `llm-core` 的消息角色没有 `DEVELOPER`，所以 developer 类的稳定应用规则暂映射为受信的 `SYSTEM + SCENARIO_POLICY`；这不改变其“高于用户输入、低于平台安全基线”的设计意图。完整会话只在持久化层增长，Prompt Assembly 只取 active summary 和有界最近历史。
 
 ## Practice Chat 片段内容
 

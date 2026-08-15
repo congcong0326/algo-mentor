@@ -12,6 +12,8 @@ import org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReview
 import org.congcong.algomentor.api.practice.mapper.model.CodeReviewHistoryRow;
 import org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetailRow;
 import org.congcong.algomentor.api.practice.mapper.model.CodeReviewSubmissionVersionRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewHistoricalFactRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryProblemRow;
 
 @Mapper
 public interface PracticeCodeReviewMapper {
@@ -76,6 +78,23 @@ public interface PracticeCodeReviewMapper {
   List<CodeReviewHistoryRow> findLatestHistoryForProblem(
       @Param("userId") long userId,
       @Param("problemSlug") String problemSlug,
+      @Param("limit") int limit
+  );
+
+  List<PracticeCodeReviewHistoricalFactRow> findRecentHistoryFactsForProblem(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug,
+      @Param("limit") int limit
+  );
+
+  List<PracticeSubmissionHistoryProblemRow> findRecentSubmittedProblems(
+      @Param("userId") long userId,
+      @Param("limit") int limit
+  );
+
+  List<PracticeSubmissionHistoryProblemRow> findRecentSubmittedProblemsForSlugs(
+      @Param("userId") long userId,
+      @Param("problemSlugs") List<String> problemSlugs,
       @Param("limit") int limit
   );
 

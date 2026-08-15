@@ -37,6 +37,7 @@
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="review_markdown" javaType="string"/>
       <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="review_history_summary" javaType="string"/>
     </constructor>
   </resultMap>
 
@@ -108,7 +109,8 @@
     deduction_reasons_json,
     improvement_suggestions_json,
     review_markdown,
-    created_at
+    created_at,
+    review_history_summary
   </sql>
 
   <sql id="PracticeCodeReviewSummaryColumns">
@@ -165,7 +167,8 @@
       passed,
       deduction_reasons_json,
       improvement_suggestions_json,
-      review_markdown
+      review_markdown,
+      review_history_summary
     )
     SELECT
       #{userId},
@@ -192,7 +195,8 @@
       #{passed},
       #{deductionReasonsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{improvementSuggestionsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
-      #{reviewMarkdown}
+      #{reviewMarkdown},
+      #{reviewHistorySummary}
     FROM next_version
     RETURNING
       <include refid="PracticeCodeReviewColumns"/>
@@ -396,10 +400,90 @@
       FROM practice_code_review review
       WHERE review.user_id = #{userId}
         AND review.problem_slug = #{problemSlug}
-      ORDER BY review.version_no DESC, review.id DESC
+      ORDER BY review.created_at DESC, review.id DESC
       LIMIT LEAST(#{limit}, 5)
     ) history
-    ORDER BY history.version_no ASC, history.review_id ASC
+    ORDER BY history.created_at ASC, history.review_id ASC
+  </select>
+
+  <select id="findRecentHistoryFactsForProblem"
+      resultType="org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewHistoricalFactRow">
+    SELECT *
+    FROM (
+      SELECT
+        review.id AS review_id,
+        review.passed,
+        COALESCE(
+          (
+            SELECT NULLIF(BTRIM(item.value), '')
+            FROM jsonb_array_elements_text(COALESCE(review.deduction_reasons_json, '[]'::jsonb))
+                WITH ORDINALITY AS item(value, ordinal)
+            WHERE NULLIF(BTRIM(item.value), '') IS NOT NULL
+            ORDER BY item.ordinal
+            LIMIT 1
+          ),
+          (
+            SELECT NULLIF(BTRIM(item.value), '')
+            FROM jsonb_array_elements_text(COALESCE(review.improvement_suggestions_json, '[]'::jsonb))
+                WITH ORDINALITY AS item(value, ordinal)
+            WHERE NULLIF(BTRIM(item.value), '') IS NOT NULL
+            ORDER BY item.ordinal
+            LIMIT 1
+          )
+        ) AS primary_finding,
+        review.created_at
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+        AND review.problem_slug = #{problemSlug}
+      ORDER BY review.created_at DESC, review.id DESC
+      LIMIT #{limit}
+    ) history
+    ORDER BY history.created_at ASC, history.review_id ASC
+  </select>
+
+  <sql id="PracticeSubmissionHistoryProblemColumns">
+    review_id,
+    problem_slug,
+    review_history_summary,
+    created_at
+  </sql>
+
+  <select id="findRecentSubmittedProblems"
+      resultType="org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryProblemRow">
+    WITH latest AS (
+      SELECT DISTINCT ON (review.problem_slug)
+        review.id AS review_id,
+        review.problem_slug,
+        review.review_history_summary,
+        review.created_at
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+      ORDER BY review.problem_slug ASC, review.created_at DESC, review.id DESC
+    )
+    SELECT <include refid="PracticeSubmissionHistoryProblemColumns"/>
+    FROM latest
+    ORDER BY created_at DESC, review_id DESC
+    LIMIT #{limit}
+  </select>
+
+  <select id="findRecentSubmittedProblemsForSlugs"
+      resultType="org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryProblemRow">
+    WITH latest AS (
+      SELECT DISTINCT ON (review.problem_slug)
+        review.id AS review_id,
+        review.problem_slug,
+        review.review_history_summary,
+        review.created_at
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+        AND review.problem_slug IN
+        <foreach collection="problemSlugs" item="problemSlug" open="(" separator="," close=")">#{problemSlug}</foreach>
+      ORDER BY review.problem_slug ASC, review.created_at DESC, review.id DESC
+    )
+    SELECT <include refid="PracticeSubmissionHistoryProblemColumns"/>
+    FROM latest
+    ORDER BY created_at DESC, review_id DESC
+    LIMIT #{limit}
   </select>
 
   <select id="findEvidenceDetail" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetailRow">

@@ -68,6 +68,37 @@ class PracticeCodeReviewStructuredOutputMapperTest {
     assertThat(draft.userMessageId()).isEqualTo(701L);
     assertThat(draft.agentRunDbId()).isEqualTo(501L);
     assertThat(draft.contentLocale()).isEqualTo("zh-CN");
+    assertThat(draft.reviewHistorySummary()).isEqualTo("本次 Review 结论：提交的解法预计可以通过。");
+  }
+
+  @Test
+  void normalizesModelHistorySummaryAndFallsBackWhenItExceedsTheLimit() {
+    ObjectNode output = (ObjectNode) structuredOutput("""
+        {
+          "isCodeSubmission": true,
+          "belongsToCurrentProblem": true,
+          "isCompleteLeetCodeSolution": true,
+          "language": "java",
+          "rawCode": "class Solution {}",
+          "normalizedCode": "class Solution {}",
+          "evidence": [],
+          "contextSummary": "提交了代码。",
+          "scores": {"correctness": 3, "complexity": 2, "edgeCases": 1, "codeQuality": 1, "problemFit": 1, "total": 8},
+          "passed": true,
+          "deductionReasons": ["边界条件不足"],
+          "improvementSuggestions": [],
+          "reviewMarkdown": "通过。",
+          "affectedTagIds": []
+        }
+        """);
+    output.put(PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY, "  此前问题已修正。\n当前版本预计通过。  ");
+
+    assertThat(mapper.map(context(), output).draft().orElseThrow().reviewHistorySummary())
+        .isEqualTo("此前问题已修正。 当前版本预计通过。");
+
+    output.put(PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY, "x".repeat(201));
+    assertThat(mapper.map(context(), output).draft().orElseThrow().reviewHistorySummary())
+        .isEqualTo("本次 Review 结论：提交的解法预计可以通过。");
   }
 
   @Test

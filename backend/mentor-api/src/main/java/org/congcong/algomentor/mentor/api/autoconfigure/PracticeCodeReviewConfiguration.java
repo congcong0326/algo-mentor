@@ -15,6 +15,7 @@ import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptReso
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewHistoryRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
@@ -66,6 +67,7 @@ public class PracticeCodeReviewConfiguration {
       PracticeCodeReviewCommitService commitService,
       @Lazy AgentRuntime agentRuntime,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
+      ObjectProvider<PracticeCodeReviewHistoryRepository> historyRepository,
       ObjectProvider<PracticeCodeReviewMetrics> metrics,
       ObjectProvider<PracticeCodeReviewObserver> observer) {
     return new PracticeCodeReviewService(
@@ -73,6 +75,7 @@ public class PracticeCodeReviewConfiguration {
         commitService,
         agentRuntime,
         outputMapper,
+        historyRepository.getIfAvailable(PracticeCodeReviewHistoryRepository::empty),
         metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),
         observer.getIfAvailable(() -> PracticeCodeReviewObserver.NOOP));
   }

@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.practice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -29,6 +30,7 @@ public class PracticeCodeReviewService {
   private final PracticeCodeReviewCommitService commitService;
   private final AgentRuntime agentRuntime;
   private final PracticeCodeReviewStructuredOutputMapper outputMapper;
+  private final PracticeCodeReviewHistoryRepository historyRepository;
   private final PracticeCodeReviewMetrics metrics;
   private final PracticeCodeReviewObserver observer;
   private final Function<PracticeTurnContext, PracticeReviewResult> delegate;
@@ -41,10 +43,23 @@ public class PracticeCodeReviewService {
       PracticeCodeReviewMetrics metrics,
       PracticeCodeReviewObserver observer
   ) {
+    this(repository, commitService, agentRuntime, outputMapper, PracticeCodeReviewHistoryRepository.empty(), metrics, observer);
+  }
+
+  public PracticeCodeReviewService(
+      PracticeCodeReviewRepository repository,
+      PracticeCodeReviewCommitService commitService,
+      AgentRuntime agentRuntime,
+      PracticeCodeReviewStructuredOutputMapper outputMapper,
+      PracticeCodeReviewHistoryRepository historyRepository,
+      PracticeCodeReviewMetrics metrics,
+      PracticeCodeReviewObserver observer
+  ) {
     this.repository = Objects.requireNonNull(repository, "repository must not be null");
     this.commitService = Objects.requireNonNull(commitService, "commitService must not be null");
     this.agentRuntime = Objects.requireNonNull(agentRuntime, "Agent runtime must not be null");
     this.outputMapper = Objects.requireNonNull(outputMapper, "outputMapper must not be null");
+    this.historyRepository = historyRepository == null ? PracticeCodeReviewHistoryRepository.empty() : historyRepository;
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
     this.observer = Objects.requireNonNull(observer, "observer must not be null");
     this.delegate = null;
@@ -55,6 +70,7 @@ public class PracticeCodeReviewService {
     this.commitService = null;
     this.agentRuntime = null;
     this.outputMapper = null;
+    this.historyRepository = PracticeCodeReviewHistoryRepository.empty();
     this.metrics = PracticeCodeReviewMetrics.NOOP;
     this.observer = PracticeCodeReviewObserver.NOOP;
     this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
@@ -93,7 +109,7 @@ public class PracticeCodeReviewService {
     log.info(
         "Practice code review existing lookup missed. sessionId={} userMessageId={} parentAgentRunDbId={} problemSlug={}",
         context.sessionId(), context.userMessageId(), context.agentRunDbId(), context.problemSlug());
-    PracticeReviewResult result = reviewWithRuntime(context, candidate);
+    PracticeReviewResult result = reviewWithRuntime(context, withHistoricalReviews(candidate));
     recordReviewResult(result);
     return result;
   }
@@ -221,7 +237,10 @@ public class PracticeCodeReviewService {
         usageSummary(runtimeOutput.usage()),
         structuredOutputSummary(runtimeOutput.structuredOutput()));
 
-    PracticeReviewResult mapped = outputMapper.map(context, runtimeOutput.structuredOutput());
+    PracticeReviewResult mapped = outputMapper.map(
+        context,
+        runtimeOutput.structuredOutput(),
+        invocation.input().historyLookupFailed());
     log.info(
         "Practice code review child structured output mapped. sessionId={} userMessageId={} parentAgentRunDbId={} status={} failureCode={} draft={}",
         context.sessionId(),
@@ -237,6 +256,26 @@ public class PracticeCodeReviewService {
       return mapped;
     }
     return saveReviewedDraft(context, mapped.draft().orElseThrow());
+  }
+
+  private AgentInvocation<PracticeCodeReviewAgentInput> withHistoricalReviews(
+      AgentInvocation<PracticeCodeReviewAgentInput> invocation
+  ) {
+    PracticeTurnContext context = invocation.input().context();
+    List<PracticeCodeReviewHistoricalFact> historicalReviews;
+    boolean historyLookupFailed = false;
+    try {
+      historicalReviews = historyRepository.findRecentForProblem(context.userId(), context.problemSlug(), 4);
+    } catch (RuntimeException exception) {
+      log.warn(
+          "Practice code review history lookup failed; continuing without history. userId={} problemSlug={} exceptionType={}",
+          context.userId(), context.problemSlug(), exception.getClass().getSimpleName());
+      historicalReviews = List.of();
+      historyLookupFailed = true;
+    }
+    PracticeCodeReviewAgentInput input = new PracticeCodeReviewAgentInput(
+        context, invocation.input().idempotencyKey(), historicalReviews, historyLookupFailed);
+    return new AgentInvocation<>(invocation.agentKey(), input, invocation.context());
   }
 
   private RuntimeReviewOutput runtimeOutput(AgentRunResult result) {

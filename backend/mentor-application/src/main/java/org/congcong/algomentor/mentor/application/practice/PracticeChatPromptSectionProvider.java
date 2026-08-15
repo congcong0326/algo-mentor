@@ -58,6 +58,8 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
     sections.add(responseLanguage(promptSnapshot, responseLanguage));
     sections.add(scenarioPolicy(promptSnapshot));
     sections.add(runtimeContext(context));
+    submittedProblems(request).ifPresent(sections::add);
+    relatedSubmittedProblems(request).ifPresent(sections::add);
     activeSummary(request, promptSnapshot).ifPresent(sections::add);
     sections.addAll(history(request));
     sections.add(currentUserMessage(currentUserMessage));
@@ -122,7 +124,11 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_CODE_REVIEW_TOOL_BOUNDARY).text(),
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_LEARNING_STATE_TOOL_BOUNDARY).text(),
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_COACH_SUMMARY_PROPOSAL_TOOL_BOUNDARY).text(),
-        promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_PROFILE_TOOL_BOUNDARY).text());
+        promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_PROFILE_TOOL_BOUNDARY).text(),
+        """
+        历史正式代码提交索引仅用于迁移学习，不是当前题答案，也不代表用户已经掌握相关知识。
+        优先请用户解释当前题思路。只有用户明确询问、确实需要类比或明显卡住时，才将索引中的一项事实转化为下一步提示；不要原样复述摘要，不要展示旧代码，也不要把关联题解释为必然相同解法。
+        """.strip());
     return ManagedSystemPromptSectionFactory.create(
         promptSnapshot,
         SystemPromptSectionKeys.PRACTICE_INTERACTION,
@@ -158,6 +164,70 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
                 PracticeChatPromptConstants.METADATA_PHASE_INDEX, context.phase().phaseIndex(),
                 PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, context.planProblem().slug())),
         Map.of(TEXT, renderContext(context)));
+  }
+
+  private java.util.Optional<PromptSection> submittedProblems(PromptAssemblyRequest request) {
+    PracticeSubmissionHistoryContext historyContext = submissionHistoryContext(request);
+    if (historyContext.submittedProblems().isEmpty()) {
+      return java.util.Optional.empty();
+    }
+    return java.util.Optional.of(submissionHistorySection(
+        PracticeChatPromptConstants.SECTION_SUBMITTED_PROBLEMS,
+        "用户曾正式提交代码的题目",
+        "你曾正式提交代码的题目（仅作为可查询索引，不代表已掌握）：",
+        historyContext.submittedProblems(),
+        40));
+  }
+
+  private java.util.Optional<PromptSection> relatedSubmittedProblems(PromptAssemblyRequest request) {
+    PracticeSubmissionHistoryContext historyContext = submissionHistoryContext(request);
+    if (historyContext.relatedSubmittedProblems().isEmpty()) {
+      return java.util.Optional.empty();
+    }
+    return java.util.Optional.of(submissionHistorySection(
+        PracticeChatPromptConstants.SECTION_RELATED_SUBMITTED_PROBLEMS,
+        "与当前题相关的历史代码提交",
+        "与当前题相关的历史代码提交（仅作为迁移线索）：",
+        historyContext.relatedSubmittedProblems(),
+        45));
+  }
+
+  private PromptSection submissionHistorySection(
+      String sectionId,
+      String displayName,
+      String heading,
+      List<PracticeSubmissionHistoryEntry> entries,
+      int priority
+  ) {
+    return new PromptSection(
+        sectionId,
+        displayName,
+        PromptSlot.RUNTIME_CONTEXT,
+        LlmMessage.Role.SYSTEM,
+        PromptTrustLevel.SERVER_VALIDATED,
+        PromptSensitivity.USER_CONTENT,
+        priority,
+        false,
+        "v1",
+        PromptCachePolicy.NO_CACHE,
+        PromptBudgetPolicy.DROP_IF_NEEDED,
+        PromptRenderMode.MARKDOWN,
+        new PromptSourceRef("practice-submission-history", sectionId, Map.of()),
+        Map.of(TEXT, renderSubmissionHistory(heading, entries)));
+  }
+
+  private String renderSubmissionHistory(String heading, List<PracticeSubmissionHistoryEntry> entries) {
+    StringBuilder text = new StringBuilder(heading).append('\n');
+    for (PracticeSubmissionHistoryEntry entry : entries) {
+      text.append("- [").append(entry.problemRef()).append("] ")
+          .append(entry.title()).append("：")
+          .append(entry.tags().isEmpty() ? "未提供标签" : String.join("、", entry.tags()))
+          .append('\n');
+      if (entry.reviewHistorySummary() != null) {
+        text.append("  提交历程摘要：").append(entry.reviewHistorySummary()).append('\n');
+      }
+    }
+    return text.toString().strip();
   }
 
   private java.util.Optional<PromptSection> activeSummary(
@@ -318,6 +388,13 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
       return context;
     }
     throw new IllegalArgumentException("Practice chat prompt context is required");
+  }
+
+  private PracticeSubmissionHistoryContext submissionHistoryContext(PromptAssemblyRequest request) {
+    Object value = request.variables().get(PracticeChatPromptConstants.VARIABLE_SUBMISSION_HISTORY_CONTEXT);
+    return value instanceof PracticeSubmissionHistoryContext context
+        ? context
+        : PracticeSubmissionHistoryContext.empty();
   }
 
   private ResolvedSystemPromptSnapshot promptSnapshot(PromptAssemblyRequest request) {

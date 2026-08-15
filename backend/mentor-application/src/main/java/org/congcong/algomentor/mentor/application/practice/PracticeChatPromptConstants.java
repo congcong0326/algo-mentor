@@ -17,6 +17,8 @@ public final class PracticeChatPromptConstants {
   public static final String SECTION_RESPONSE_LANGUAGE = "practice.strategy.response-language";
   public static final String SECTION_SCENARIO_POLICY = "practice.strategy.coach";
   public static final String SECTION_RUNTIME_CONTEXT = "practice.context.training";
+  public static final String SECTION_SUBMITTED_PROBLEMS = "practice.context.submitted-problems";
+  public static final String SECTION_RELATED_SUBMITTED_PROBLEMS = "practice.context.related-submitted-problems";
   public static final String SECTION_ACTIVE_SUMMARY = "practice.memory.active-summary";
   public static final String SECTION_CURRENT_USER_MESSAGE = "practice.current-user-message";
   public static final String SECTION_HISTORY_PREFIX = "practice.history.";
@@ -31,6 +33,8 @@ public final class PracticeChatPromptConstants {
   public static final String VARIABLE_HISTORY = "history";
   public static final String VARIABLE_COACH_STYLE = "coachStyle";
   public static final String VARIABLE_RESPONSE_LANGUAGE = "responseLanguage";
+  /** 当前 run 受信生成的用户历史正式代码提交索引。 */
+  public static final String VARIABLE_SUBMISSION_HISTORY_CONTEXT = "submissionHistoryContext";
   /** 同一 practice run 在组装前解析一次的受管理系统提示词快照。 */
   public static final String VARIABLE_SYSTEM_PROMPT_SNAPSHOT = "systemPromptSnapshot";
 

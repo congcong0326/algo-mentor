@@ -79,7 +79,7 @@ public final class PracticeCodeReviewAgentDefinition implements AgentDefinition<
     metadata.put(AgentRuntimeMetadataKeys.SCHEMA_VERSION, PracticeCodeReviewConstants.SCHEMA_VERSION);
     metadata.putAll(SystemPromptMetadataKeys.from(snapshot));
     return new AgentPreparedRequest(
-        promptBuilder.build(candidate.context(), snapshot),
+        promptBuilder.build(candidate, snapshot),
         Map.copyOf(metadata),
         executionOptions());
   }

@@ -16,6 +16,11 @@ public interface ProblemLearningMetadataRepository {
     return List.of();
   }
 
+  /** 读取题库已解析的相似题，仅供受信业务目录生成候选。 */
+  default List<String> findLeetCodeSimilarProblemSlugs(String problemSlug) {
+    return List.of();
+  }
+
   Set<String> findExistingProblemSlugs(List<String> slugs);
 
   void replaceLeetCodeRelations(List<String> sourceProblemSlugs, List<ProblemRelationSeedRecord> relations);

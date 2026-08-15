@@ -40,6 +40,9 @@ class PracticeCodeReviewMapperXmlTest {
     assertThat(configuration.hasStatement(namespace + "findById")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findByUserMessage")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findRecentByProblemSlugs")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "findRecentHistoryFactsForProblem")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "findRecentSubmittedProblems")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "findRecentSubmittedProblemsForSlugs")).isTrue();
   }
 
   @Test
@@ -91,5 +94,24 @@ class PracticeCodeReviewMapperXmlTest {
         .contains("review.improvement_suggestions_json -&gt;&gt; 0")
         .contains("WHERE row_number &lt;= #{perProblemLimit}")
         .contains("ORDER BY problem_slug ASC, created_at ASC, review_id ASC");
+  }
+
+  @Test
+  void definesCrossPlanHistoryAndPromptIndexQueriesByCreatedTimeAndId() throws Exception {
+    String mapperXml;
+    try (Reader reader = Resources.getResourceAsReader("mapper/practice/PracticeCodeReviewMapper.xml");
+        BufferedReader bufferedReader = new BufferedReader(reader)) {
+      mapperXml = bufferedReader.lines().collect(Collectors.joining("\n"));
+    }
+    String normalizedMapperXml = mapperXml.replaceAll("\\s+", " ");
+
+    assertThat(normalizedMapperXml)
+        .contains("<select id=\"findRecentHistoryFactsForProblem\"")
+        .contains("ORDER BY review.created_at DESC, review.id DESC LIMIT #{limit}")
+        .contains("ORDER BY history.created_at ASC, history.review_id ASC")
+        .contains("<select id=\"findRecentSubmittedProblems\"")
+        .contains("SELECT DISTINCT ON (review.problem_slug)")
+        .contains("review.review_history_summary")
+        .contains("ORDER BY created_at DESC, review_id DESC LIMIT #{limit}");
   }
 }

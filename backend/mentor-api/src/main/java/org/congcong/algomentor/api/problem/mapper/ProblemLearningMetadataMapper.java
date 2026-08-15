@@ -17,6 +17,11 @@ public interface ProblemLearningMetadataMapper {
 
   List<ProblemCodeTemplateRow> findCodeTemplatesByProblemSlug(@Param("problemSlug") String problemSlug);
 
+  List<String> findLeetCodeSimilarProblemSlugs(
+      @Param("problemSlug") String problemSlug,
+      @Param("relationType") String relationType
+  );
+
   List<String> findExistingProblemSlugs(@Param("slugs") List<String> slugs);
 
   int deleteRelationsForSourceProblem(@Param("problemSlug") String problemSlug, @Param("source") String source);

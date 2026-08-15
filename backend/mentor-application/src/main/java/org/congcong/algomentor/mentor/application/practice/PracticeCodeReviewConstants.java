@@ -8,7 +8,7 @@ public final class PracticeCodeReviewConstants {
 
   public static final String SCENARIO = "practice_code_review";
   public static final String SCHEMA_NAME = "practice_code_review_result";
-  public static final String SCHEMA_VERSION = "v5";
+  public static final String SCHEMA_VERSION = "v6";
   public static final String AGENT_TITLE = "practice-code-review";
   /**
    * 基于受信 sessionId 与 userMessageId 组成 Review child run 的稳定幂等键前缀。
@@ -30,6 +30,10 @@ public final class PracticeCodeReviewConstants {
   public static final String JSON_SCORE_CODE_QUALITY = "codeQuality";
   public static final String JSON_SCORE_PROBLEM_FIT = "problemFit";
   public static final String JSON_AFFECTED_TAG_IDS = "affectedTagIds";
+  /** 当前正式 Review 生成时的同题近期提交历程摘要。 */
+  public static final String JSON_REVIEW_HISTORY_SUMMARY = "reviewHistorySummary";
+  /** 历程摘要的存储和 structured output 最大长度。 */
+  public static final int REVIEW_HISTORY_SUMMARY_MAX_LENGTH = 200;
   public static final BigDecimal PASS_SCORE = new BigDecimal("6.0");
   /** 存在正确性或评测阻断时，正确性分不得超过此值。 */
   public static final BigDecimal BLOCKING_CORRECTNESS_CAP = new BigDecimal("2.0");

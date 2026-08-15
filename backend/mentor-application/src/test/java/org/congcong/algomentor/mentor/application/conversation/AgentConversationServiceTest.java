@@ -36,6 +36,11 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.practice.PracticeRelatedProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContext;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContextProvider;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryEntry;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRepository;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
@@ -287,6 +292,38 @@ class AgentConversationServiceTest {
         .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.SCOPE_UNAVAILABLE);
   }
 
+  @Test
+  void loadsSubmissionHistoryBeforePromptAssemblyAndSkipsItForIdempotentReplays() {
+    CapturingRepository repository = new CapturingRepository();
+    CountingSubmissionHistoryProvider historyProvider = new CountingSubmissionHistoryProvider();
+    AgentConversationService service = new AgentConversationService(
+        repository,
+        new ContextAssembler(),
+        ContextAssemblyPolicy.defaultPolicy(),
+        new InMemoryPlanRepository(plan()),
+        new FakePracticeProblemCatalog(),
+        new DefaultPromptAssembler(
+            new PracticeChatPromptProfileResolver(),
+            List.of(new PracticeChatPromptSectionProvider())),
+        null,
+        null,
+        null,
+        null,
+        historyProvider);
+
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "给点提示", "idem-submission-history", PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN));
+
+    assertThat(historyProvider.calls).isEqualTo(1);
+    assertThat(run.agentRequest().messages()).extracting(LlmMessage::text)
+        .anySatisfy(text -> assertThat(text).contains("[pp_test] Subarray Sum Equals K：Prefix Sum"));
+
+    service.findPracticeRunByIdempotencyKey(practiceInput(
+        "给点提示", "idem-submission-history-replay", PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN));
+
+    assertThat(historyProvider.calls).isEqualTo(1);
+  }
+
   private static PracticeChatAgentInput practiceInput(
       String message,
       String idempotencyKey,
@@ -433,6 +470,26 @@ class AgentConversationServiceTest {
           List.of("Array", "Hash Table"),
           "# Two Sum\nFind two numbers.",
           "https://leetcode.com/problems/two-sum/"));
+    }
+  }
+
+  private static final class CountingSubmissionHistoryProvider extends PracticeSubmissionHistoryContextProvider {
+    private int calls;
+
+    private CountingSubmissionHistoryProvider() {
+      super(
+          PracticeSubmissionHistoryRepository.empty(),
+          (slug, locale) -> Optional.empty(),
+          PracticeRelatedProblemCatalog.empty());
+    }
+
+    @Override
+    public PracticeSubmissionHistoryContext provide(long userId, String currentProblemSlug, String locale) {
+      calls++;
+      return new PracticeSubmissionHistoryContext(
+          List.of(new PracticeSubmissionHistoryEntry(
+              "pp_test", "Subarray Sum Equals K", List.of("Prefix Sum"), null)),
+          List.of());
     }
   }
 

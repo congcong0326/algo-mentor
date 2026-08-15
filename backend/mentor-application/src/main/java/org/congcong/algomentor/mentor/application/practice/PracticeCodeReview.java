@@ -26,7 +26,8 @@ public record PracticeCodeReview(
     String reviewMarkdown,
     Instant createdAt,
     List<Long> affectedTagIds,
-    String contentLocale
+    String contentLocale,
+    String reviewHistorySummary
 ) {
 
   public PracticeCodeReview(
@@ -38,7 +39,7 @@ public record PracticeCodeReview(
     this(id, userId, planId, phaseIndex, problemSlug, sessionId, versionNo, userMessageId, assistantMessageId,
         agentRunDbId, rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
         improvementSuggestions, reviewMarkdown, createdAt, List.of(),
-        PracticeResponseLanguage.defaultLanguage().languageTag());
+        PracticeResponseLanguage.defaultLanguage().languageTag(), null);
   }
 
   public PracticeCodeReview(
@@ -50,7 +51,18 @@ public record PracticeCodeReview(
     this(id, userId, planId, phaseIndex, problemSlug, sessionId, versionNo, userMessageId, assistantMessageId,
         agentRunDbId, rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
         improvementSuggestions, reviewMarkdown, createdAt, affectedTagIds,
-        PracticeResponseLanguage.defaultLanguage().languageTag());
+        PracticeResponseLanguage.defaultLanguage().languageTag(), null);
+  }
+
+  public PracticeCodeReview(
+      long id, long userId, long planId, int phaseIndex, String problemSlug, long sessionId, int versionNo,
+      Long userMessageId, Long assistantMessageId, Long agentRunDbId, String rawCode, String normalizedCode,
+      String language, List<PracticeCodeReviewEvidence> evidence, String contextSummary, PracticeCodeReviewScore score,
+      boolean passed, List<String> deductionReasons, List<String> improvementSuggestions, String reviewMarkdown,
+      Instant createdAt, List<Long> affectedTagIds, String contentLocale) {
+    this(id, userId, planId, phaseIndex, problemSlug, sessionId, versionNo, userMessageId, assistantMessageId,
+        agentRunDbId, rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
+        improvementSuggestions, reviewMarkdown, createdAt, affectedTagIds, contentLocale, null);
   }
 
   public PracticeCodeReview {
@@ -94,6 +106,7 @@ public record PracticeCodeReview(
     affectedTagIds = affectedTagIds == null ? List.of() : affectedTagIds.stream()
         .filter(tagId -> tagId != null && tagId > 0).distinct().toList();
     contentLocale = PracticeResponseLanguage.fromLocale(contentLocale).languageTag();
+    reviewHistorySummary = normalizeReviewHistorySummary(reviewHistorySummary);
   }
 
   private static void requirePositive(long value, String fieldName) {
@@ -120,5 +133,16 @@ public record PracticeCodeReview(
         .map(PracticeCodeReview::blankToNull)
         .filter(value -> value != null)
         .toList();
+  }
+
+  private static String normalizeReviewHistorySummary(String value) {
+    String normalized = blankToNull(value);
+    if (normalized != null) {
+      normalized = normalized.replaceAll("\\s+", " ");
+    }
+    if (normalized != null && normalized.length() > PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH) {
+      throw new IllegalArgumentException("Practice code review history summary exceeds maximum length");
+    }
+    return normalized;
   }
 }

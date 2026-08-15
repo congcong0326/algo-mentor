@@ -17,6 +17,15 @@
     ORDER BY template.language_slug ASC
   </select>
 
+  <select id="findLeetCodeSimilarProblemSlugs" resultType="java.lang.String">
+    SELECT relation.target_problem_slug
+    FROM problem_relation relation
+    JOIN problem source_problem ON source_problem.id = relation.source_problem_id
+    WHERE source_problem.slug = #{problemSlug}
+      AND relation.relation_type = #{relationType}
+    ORDER BY relation.target_problem_slug ASC
+  </select>
+
   <select id="findExistingProblemSlugs" resultType="java.lang.String">
     SELECT slug
     FROM problem

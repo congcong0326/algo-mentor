@@ -14,7 +14,7 @@ class ReviewTrajectoryServiceTest {
   private final ReviewTrajectoryService service = new ReviewTrajectoryService();
 
   @Test
-  void calculatesStableAdjacentScoreAndFindingChangesInVersionOrder() {
+  void calculatesStableAdjacentScoreAndFindingChangesInSubmissionTimeOrder() {
     ReviewTrajectory trajectory = service.calculate(List.of(
         review(12, 2, new BigDecimal("7"), List.of(" Missing null case ", "NESTED loop")),
         review(11, 1, new BigDecimal("5"), List.of("nested   loop", "Off by one")),
@@ -39,10 +39,11 @@ class ReviewTrajectoryServiceTest {
             Instant.parse("2026-01-02T00:00:00Z")))))
         .isInstanceOf(IllegalArgumentException.class);
 
-    assertThatThrownBy(() -> service.calculate(List.of(
+    assertThat(service.calculate(List.of(
         review(1, 1, BigDecimal.ONE, List.of()),
-        review(2, 1, BigDecimal.valueOf(2), List.of()))))
-        .isInstanceOf(IllegalArgumentException.class);
+        review(2, 1, BigDecimal.valueOf(2), List.of()))).versions())
+        .extracting(version -> version.review().reviewId())
+        .containsExactly(1L, 2L);
   }
 
   private static CodeReviewHistory review(long id, int version, BigDecimal total, List<String> findings) {

@@ -175,6 +175,43 @@ class PracticeChatPromptSectionProviderTest {
   }
 
   @Test
+  void rendersSubmittedProblemIndexesAsSeparateUncachedRuntimeSections() {
+    PracticeSubmissionHistoryContext history = new PracticeSubmissionHistoryContext(
+        List.of(new PracticeSubmissionHistoryEntry(
+            "pp_recent", "Subarray Sum Equals K", List.of("Prefix Sum", "Hash Table"), "此前遗漏初始化；当前版本通过。")),
+        List.of(new PracticeSubmissionHistoryEntry(
+            "pp_related", "Continuous Subarray Sum", List.of("Prefix Sum"), null)));
+    PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
+        PracticeChatPromptConstants.SCENARIO,
+        PracticeChatPromptConstants.PROFILE_ID,
+        8_000,
+        Map.of(
+            PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
+            PracticeChatPromptConstants.VARIABLE_SUBMISSION_HISTORY_CONTEXT, history,
+            PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "给点提示"),
+        Map.of()));
+
+    RenderedPromptSection submitted = section(assembly, PracticeChatPromptConstants.SECTION_SUBMITTED_PROBLEMS);
+    RenderedPromptSection related = section(assembly, PracticeChatPromptConstants.SECTION_RELATED_SUBMITTED_PROBLEMS);
+    assertThat(submitted.section().slot()).isEqualTo(PromptSlot.RUNTIME_CONTEXT);
+    assertThat(submitted.section().cachePolicy().name()).isEqualTo("NO_CACHE");
+    assertThat(related.section().cachePolicy().name()).isEqualTo("NO_CACHE");
+    assertThat(submitted.renderedText())
+        .contains("[pp_recent] Subarray Sum Equals K：Prefix Sum、Hash Table")
+        .contains("提交历程摘要：此前遗漏初始化；当前版本通过。")
+        .doesNotContain("problemSlug")
+        .doesNotContain("score");
+    assertThat(related.renderedText()).contains("[pp_related] Continuous Subarray Sum：Prefix Sum");
+    assertThat(assembly.renderedSections()).extracting(section -> section.section().id())
+        .containsSubsequence(
+            PracticeChatPromptConstants.SECTION_RUNTIME_CONTEXT,
+            PracticeChatPromptConstants.SECTION_SUBMITTED_PROBLEMS,
+            PracticeChatPromptConstants.SECTION_RELATED_SUBMITTED_PROBLEMS,
+            PracticeChatPromptConstants.SECTION_CURRENT_USER_MESSAGE);
+  }
+
+  @Test
   void coachingPolicyUsesAggressiveAutonomousReviewToolGuidance() {
     PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
         PracticeChatPromptConstants.SCENARIO,

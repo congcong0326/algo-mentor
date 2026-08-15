@@ -48,6 +48,9 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatRunAdapte
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.practice.PracticeRelatedProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContextProvider;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
@@ -157,7 +160,8 @@ public class AgentConversationApiAutoConfiguration {
       LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
       ObjectProvider<LearnerMemoryRecallService> learnerMemoryRecallService,
       ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver,
-      ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService
+      ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
+      ObjectProvider<PracticeSubmissionHistoryContextProvider> submissionHistoryContextProvider
   ) {
     LearningPlanRepository planRepository = learningPlanRepository.getIfAvailable();
     PracticeChatProblemCatalog problemCatalog = practiceProblemCatalog.getIfAvailable();
@@ -178,7 +182,8 @@ public class AgentConversationApiAutoConfiguration {
           learnerMemoryRecallService.getIfAvailable(),
           learnerMemoryRecallPromptSectionProvider,
           systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
-          reviewTrajectoryScopeService.getIfAvailable());
+          reviewTrajectoryScopeService.getIfAvailable(),
+          submissionHistoryContextProvider.getIfAvailable());
     }
     return new AgentConversationService(
         conversationRepository,
@@ -190,7 +195,23 @@ public class AgentConversationApiAutoConfiguration {
         learnerMemoryRecallService.getIfAvailable(),
         learnerMemoryRecallPromptSectionProvider,
         systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
-        reviewTrajectoryScopeService.getIfAvailable());
+        reviewTrajectoryScopeService.getIfAvailable(),
+        submissionHistoryContextProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      PracticeSubmissionHistoryRepository.class,
+      PracticeChatProblemCatalog.class,
+      PracticeRelatedProblemCatalog.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeSubmissionHistoryContextProvider practiceSubmissionHistoryContextProvider(
+      PracticeSubmissionHistoryRepository historyRepository,
+      PracticeChatProblemCatalog problemCatalog,
+      PracticeRelatedProblemCatalog relatedProblemCatalog
+  ) {
+    return new PracticeSubmissionHistoryContextProvider(historyRepository, problemCatalog, relatedProblemCatalog);
   }
 
   @Bean("practiceChatPromptAssembler")

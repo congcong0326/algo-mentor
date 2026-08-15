@@ -161,7 +161,8 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         draft.passed(),
         json(draft.deductionReasons()),
         json(draft.improvementSuggestions()),
-        defaultText(draft.reviewMarkdown()));
+        defaultText(draft.reviewMarkdown()),
+        draft.reviewHistorySummary());
   }
 
   private IllegalStateException sessionNotFound() {
@@ -198,7 +199,8 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         row.reviewMarkdown(),
         row.createdAt(),
         mapper.findAffectedTagIds(row.id()),
-        row.contentLocale());
+        row.contentLocale(),
+        row.reviewHistorySummary());
   }
 
   private PracticeCodeReviewSummary toSummary(PracticeCodeReviewSummaryRow row) {

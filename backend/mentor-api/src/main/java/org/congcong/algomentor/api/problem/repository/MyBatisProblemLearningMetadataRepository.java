@@ -59,6 +59,19 @@ public class MyBatisProblemLearningMetadataRepository implements ProblemLearning
   }
 
   @Override
+  public List<String> findLeetCodeSimilarProblemSlugs(String problemSlug) {
+    if (problemSlug == null || problemSlug.isBlank()) {
+      return List.of();
+    }
+    return mapper.findLeetCodeSimilarProblemSlugs(
+            problemSlug.trim(), ProblemLearningMetadataContract.RELATION_TYPE_LEETCODE_SIMILAR).stream()
+        .filter(slug -> slug != null && !slug.isBlank())
+        .map(String::trim)
+        .distinct()
+        .toList();
+  }
+
+  @Override
   public void replaceLeetCodeRelations(
       List<String> sourceProblemSlugs,
       List<ProblemRelationSeedRecord> relations

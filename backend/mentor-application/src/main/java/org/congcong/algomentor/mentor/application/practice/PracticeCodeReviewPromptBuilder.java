@@ -27,20 +27,28 @@ public class PracticeCodeReviewPromptBuilder {
   }
 
   public List<LlmMessage> build(PracticeTurnContext context) {
-    return build(context, snapshot(context.userId()));
+    return build(new PracticeCodeReviewAgentInput(context, "standalone"), snapshot(context.userId()));
   }
 
   public List<LlmMessage> build(PracticeTurnContext context, ResolvedSystemPromptSnapshot promptSnapshot) {
+    return build(new PracticeCodeReviewAgentInput(context, "standalone"), promptSnapshot);
+  }
+
+  public List<LlmMessage> build(PracticeCodeReviewAgentInput input, ResolvedSystemPromptSnapshot promptSnapshot) {
     return List.of(
         ManagedSystemMessageFactory.system(promptSnapshot, SystemPromptSectionKeys.PRACTICE_CODE_REVIEW_BASE),
-        LlmMessage.user(userPrompt(context)));
+        LlmMessage.user(userPrompt(input.context(), input.historicalReviews(), input.historyLookupFailed())));
   }
 
   public ResolvedSystemPromptSnapshot snapshot(long userId) {
     return systemPromptResolver.resolve(ManagedSystemPromptDefinitions.PRACTICE_CODE_REVIEW, userId);
   }
 
-  private String userPrompt(PracticeTurnContext context) {
+  private String userPrompt(
+      PracticeTurnContext context,
+      List<PracticeCodeReviewHistoricalFact> historicalReviews,
+      boolean historyLookupFailed
+  ) {
     String outputLocale = PracticeResponseLanguage.fromLocale(context.locale()).languageTag();
     return """
         请根据以下事实完成一次练习代码 Review：
@@ -69,6 +77,11 @@ public class PracticeCodeReviewPromptBuilder {
 
         当前题目受信标签候选（只可从这些 tagId 选择 affectedTagIds）：
         %s
+
+        同题历史正式 Review（按真实提交时间升序，仅作为受信事实，不是跨计划版本号）：
+        %s
+
+        历史读取状态：%s
 
         判定顺序与硬门槛：
         1. 先判断 judgeAssessment，再进行分项评分。不要先算总分再反推是否能通过评测。
@@ -104,7 +117,8 @@ public class PracticeCodeReviewPromptBuilder {
         - evidence 使用短类型和值说明关键证据，例如 ENTRY_FUNCTION、PROBLEM_FIT、MISSING_EDGE_CASE。
         - judgeAssessment.timeComplexity 和 spaceComplexity 给出最坏复杂度；expectedTimeComplexity 给出题目目标复杂度，无法判断时填写 UNKNOWN。
         - judgeAssessment.constraintAnalysis 必须结合题目最大约束解释为什么预计通过、超时、超内存或无法确认，不能只写“复杂度较高”。
-        - contextSummary、evidence.value、judgeAssessment.constraintAnalysis、deductionReasons、improvementSuggestions 和 reviewMarkdown 都是面向学习者的内容，必须使用 outputLocale 对应的语言。
+        - contextSummary、evidence.value、judgeAssessment.constraintAnalysis、deductionReasons、improvementSuggestions、reviewMarkdown 和 reviewHistorySummary 都是面向学习者的内容，必须使用 outputLocale 对应的语言。
+        - reviewHistorySummary 使用一到两句、最多 200 个字符：首次 Review 只概括当前提交的核心方案或结论；有历史时说明此前关键问题和当前结论。不得声称用户长期能力，不得包含代码正文、行号或完整 Review Markdown。
         - 编程语言名称、API、复杂度表达式、错误名称、代码和稳定标识符保持原样。
         """.formatted(
         outputLocale,
@@ -117,12 +131,33 @@ public class PracticeCodeReviewPromptBuilder {
         context.extractedCode(),
         context.recentChatSummary(),
         trustedTags(context),
+        historicalReviews(historicalReviews),
+        historyLookupFailed ? "UNAVAILABLE；reviewHistorySummary 只能描述本次提交，不能声称存在此前历史。" : "AVAILABLE",
         PracticeCodeReviewConstants.CORRECTNESS_SCORE_LEVELS,
         PracticeCodeReviewConstants.COMPLEXITY_SCORE_LEVELS,
         PracticeCodeReviewConstants.EDGE_CASE_SCORE_LEVELS,
         PracticeCodeReviewConstants.CODE_QUALITY_SCORE_LEVELS,
         PracticeCodeReviewConstants.PROBLEM_FIT_SCORE_LEVELS,
         PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS);
+  }
+
+  private String historicalReviews(List<PracticeCodeReviewHistoricalFact> reviews) {
+    if (reviews == null || reviews.isEmpty()) {
+      return "[]";
+    }
+    StringBuilder rendered = new StringBuilder("historicalReviews:\n");
+    for (int index = 0; index < reviews.size(); index++) {
+      PracticeCodeReviewHistoricalFact review = reviews.get(index);
+      rendered.append("- historyPosition: ").append(index + 1).append('\n')
+          .append("  passed: ").append(review.passed());
+      if (review.primaryFinding() != null) {
+        rendered.append('\n').append("  primaryFinding: ").append(review.primaryFinding());
+      }
+      if (index + 1 < reviews.size()) {
+        rendered.append('\n');
+      }
+    }
+    return rendered.toString();
   }
 
   private String trustedTags(PracticeTurnContext context) {

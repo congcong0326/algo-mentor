@@ -37,6 +37,41 @@ class PracticeCodeReviewPromptBuilderTest {
         .doesNotContain("reviewMarkdown 使用中文");
   }
 
+  @Test
+  void injectsOnlyBoundedHistoricalFactsWithoutCodeOrReviewMarkdown() {
+    List<LlmMessage> messages = new PracticeCodeReviewPromptBuilder().build(
+        new PracticeCodeReviewAgentInput(
+            context("zh-CN"),
+            "review-key",
+            List.of(
+                new PracticeCodeReviewHistoricalFact(
+                    11L, false, "遗漏空前缀初始化", java.time.Instant.parse("2026-01-01T00:00:00Z")),
+                new PracticeCodeReviewHistoricalFact(
+                    12L, true, null, java.time.Instant.parse("2026-01-02T00:00:00Z")))),
+        new PracticeCodeReviewPromptBuilder().snapshot(7L));
+
+    assertThat(messages.get(1).text())
+        .contains("historicalReviews:")
+        .contains("historyPosition: 1")
+        .contains("passed: false")
+        .contains("primaryFinding: 遗漏空前缀初始化")
+        .contains("历史读取状态：AVAILABLE")
+        .doesNotContain("reviewId:")
+        .doesNotContain("versionNo:");
+  }
+
+  @Test
+  void marksUnavailableHistorySoTheModelCannotClaimPriorFacts() {
+    List<LlmMessage> messages = new PracticeCodeReviewPromptBuilder().build(
+        new PracticeCodeReviewAgentInput(context("zh-CN"), "review-key", List.of(), true),
+        new PracticeCodeReviewPromptBuilder().snapshot(7L));
+
+    assertThat(messages.get(1).text())
+        .contains("历史读取状态：UNAVAILABLE")
+        .contains("reviewHistorySummary 只能描述本次提交")
+        .doesNotContain("historicalReviews:\n-");
+  }
+
   private PracticeTurnContext context(String locale) {
     return new PracticeTurnContext(
         7L,

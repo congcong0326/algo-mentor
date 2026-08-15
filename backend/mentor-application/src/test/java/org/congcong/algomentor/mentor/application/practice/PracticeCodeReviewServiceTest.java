@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -83,6 +84,59 @@ class PracticeCodeReviewServiceTest {
   }
 
   @Test
+  void readsAtMostFourCrossPlanHistoryFactsOnlyAfterTheIdempotencyMiss() {
+    FakeRepository repository = new FakeRepository();
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
+    CountingHistoryRepository historyRepository = new CountingHistoryRepository(List.of(
+        new PracticeCodeReviewHistoricalFact(90L, false, "遗漏初始化", Instant.parse("2026-01-01T00:00:00Z")),
+        new PracticeCodeReviewHistoricalFact(91L, true, null, Instant.parse("2026-01-02T00:00:00Z"))));
+    PracticeCodeReviewService service = service(repository, runtime, historyRepository);
+
+    PracticeReviewResult result = service.review(context());
+
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
+    assertThat(historyRepository.calls).isEqualTo(1);
+    assertThat(historyRepository.userId).isEqualTo(7L);
+    assertThat(historyRepository.problemSlug).isEqualTo("climbing-stairs");
+    assertThat(historyRepository.limit).isEqualTo(4);
+    PracticeCodeReviewAgentInput input = (PracticeCodeReviewAgentInput) runtime.lastInvocation.input();
+    assertThat(input.historicalReviews()).extracting(PracticeCodeReviewHistoricalFact::reviewId)
+        .containsExactly(90L, 91L);
+  }
+
+  @Test
+  void idempotencyHitDoesNotReadHistory() {
+    FakeRepository repository = new FakeRepository();
+    repository.existing = Optional.of(review());
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
+    CountingHistoryRepository historyRepository = new CountingHistoryRepository(List.of());
+    PracticeCodeReviewService service = service(repository, runtime, historyRepository);
+
+    service.review(context());
+
+    assertThat(historyRepository.calls).isZero();
+    assertThat(runtime.executeCalls).isZero();
+  }
+
+  @Test
+  void historyLookupFailureStillSavesCurrentReviewWithACurrentConclusionFallback() {
+    FakeRepository repository = new FakeRepository();
+    ObjectNode output = (ObjectNode) structuredOutput(true, true, true);
+    output.put(PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY, "此前存在问题；当前版本通过。");
+    FakeAgentRuntime runtime = new FakeAgentRuntime(output);
+    PracticeCodeReviewHistoryRepository failingHistory = (userId, problemSlug, limit) -> {
+      throw new IllegalStateException("database unavailable");
+    };
+    PracticeCodeReviewService service = service(repository, runtime, failingHistory);
+
+    PracticeReviewResult result = service.review(context());
+
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
+    assertThat(repository.savedDrafts).singleElement().satisfies(draft ->
+        assertThat(draft.reviewHistorySummary()).isEqualTo("本次 Review 结论：提交的解法预计可以通过。"));
+  }
+
+  @Test
   void replayMissingExistingReviewFailsWithoutCallingLlm() {
     FakeRepository repository = new FakeRepository();
     FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
@@ -129,6 +183,21 @@ class PracticeCodeReviewServiceTest {
         runtime,
         new PracticeCodeReviewStructuredOutputMapper(),
         metrics,
+        org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver.NOOP);
+  }
+
+  private PracticeCodeReviewService service(
+      FakeRepository repository,
+      FakeAgentRuntime runtime,
+      PracticeCodeReviewHistoryRepository historyRepository
+  ) {
+    return new PracticeCodeReviewService(
+        repository,
+        commitService(repository),
+        runtime,
+        new PracticeCodeReviewStructuredOutputMapper(),
+        historyRepository,
+        PracticeCodeReviewMetrics.NOOP,
         org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver.NOOP);
   }
 
@@ -329,6 +398,27 @@ class PracticeCodeReviewServiceTest {
     @Override
     public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       throw new UnsupportedOperationException("stream not used");
+    }
+  }
+
+  private static final class CountingHistoryRepository implements PracticeCodeReviewHistoryRepository {
+    private final List<PracticeCodeReviewHistoricalFact> result;
+    private int calls;
+    private long userId;
+    private String problemSlug;
+    private int limit;
+
+    private CountingHistoryRepository(List<PracticeCodeReviewHistoricalFact> result) {
+      this.result = result;
+    }
+
+    @Override
+    public List<PracticeCodeReviewHistoricalFact> findRecentForProblem(long userId, String problemSlug, int limit) {
+      calls++;
+      this.userId = userId;
+      this.problemSlug = problemSlug;
+      this.limit = limit;
+      return result;
     }
   }
 }

@@ -36,6 +36,8 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSec
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContext;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContextProvider;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinition;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
@@ -48,8 +50,12 @@ import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRe
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallService;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallSnapshot;
 import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgentConversationService {
+
+  private static final Logger log = LoggerFactory.getLogger(AgentConversationService.class);
 
   private final AgentConversationRepository conversationRepository;
   private final ContextAssembler contextAssembler;
@@ -61,6 +67,7 @@ public class AgentConversationService {
   private final LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider;
   private final ManagedSystemPromptResolver systemPromptResolver;
   private final PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService;
+  private final PracticeSubmissionHistoryContextProvider submissionHistoryContextProvider;
 
   public AgentConversationService(
       AgentConversationRepository conversationRepository,
@@ -176,6 +183,33 @@ public class AgentConversationService {
       ManagedSystemPromptResolver systemPromptResolver,
       PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService
   ) {
+    this(
+        conversationRepository,
+        contextAssembler,
+        contextPolicy,
+        learningPlanRepository,
+        practiceProblemCatalog,
+        practicePromptAssembler,
+        learnerMemoryRecallService,
+        learnerMemoryRecallPromptSectionProvider,
+        systemPromptResolver,
+        reviewTrajectoryScopeService,
+        null);
+  }
+
+  public AgentConversationService(
+      AgentConversationRepository conversationRepository,
+      ContextAssembler contextAssembler,
+      ContextAssemblyPolicy contextPolicy,
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog practiceProblemCatalog,
+      PromptAssembler practicePromptAssembler,
+      LearnerMemoryRecallService learnerMemoryRecallService,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
+      ManagedSystemPromptResolver systemPromptResolver,
+      PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService,
+      PracticeSubmissionHistoryContextProvider submissionHistoryContextProvider
+  ) {
     this.conversationRepository = conversationRepository;
     this.contextAssembler = contextAssembler;
     this.contextPolicy = contextPolicy == null ? ContextAssemblyPolicy.defaultPolicy() : contextPolicy;
@@ -192,6 +226,7 @@ public class AgentConversationService {
         ? ManagedSystemPrompts.defaultResolver()
         : systemPromptResolver;
     this.reviewTrajectoryScopeService = reviewTrajectoryScopeService;
+    this.submissionHistoryContextProvider = submissionHistoryContextProvider;
   }
 
   /** 为 Practice Chat 复用 session task，并准备新的 turn、run 与完整受信上下文。 */
@@ -344,6 +379,17 @@ public class AgentConversationService {
         command.governanceMetadata().get(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE));
     boolean idempotentReplay = Boolean.TRUE.equals(
         draft.metadata().get(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY));
+    PracticeSubmissionHistoryContext submissionHistoryContext = PracticeSubmissionHistoryContext.empty();
+    if (!idempotentReplay && submissionHistoryContextProvider != null) {
+      try {
+        submissionHistoryContext = submissionHistoryContextProvider.provide(
+            command.userId(), command.practiceChat().problemSlug(), command.practiceChat().locale());
+      } catch (RuntimeException exception) {
+        log.warn(
+            "Practice submission history context lookup failed; continuing without history. userId={} problemSlug={} exceptionType={}",
+            command.userId(), command.practiceChat().problemSlug(), exception.getClass().getSimpleName());
+      }
+    }
     if (!idempotentReplay && learnerMemoryRecallService != null) {
       LearnerMemoryRecallService.OpenedSnapshot openedSnapshot = learnerMemoryRecallService.openSnapshot(
           command.userId(),
@@ -369,6 +415,7 @@ public class AgentConversationService {
     variables.put(PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, command.userMessage());
     variables.put(PracticeChatPromptConstants.VARIABLE_COACH_STYLE, coachStyle);
     variables.put(PracticeChatPromptConstants.VARIABLE_RESPONSE_LANGUAGE, responseLanguage);
+    variables.put(PracticeChatPromptConstants.VARIABLE_SUBMISSION_HISTORY_CONTEXT, submissionHistoryContext);
     if (learnerMemorySnapshot != null) {
       variables.put(LearnerMemoryRecallContracts.VARIABLE_SNAPSHOT, learnerMemorySnapshot);
     }

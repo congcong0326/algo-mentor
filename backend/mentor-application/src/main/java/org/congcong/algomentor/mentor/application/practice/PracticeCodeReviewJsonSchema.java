@@ -35,12 +35,16 @@ public final class PracticeCodeReviewJsonSchema {
     properties.set("improvementSuggestions", stringArray());
     properties.set("reviewMarkdown", string());
     properties.set(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS, positiveIntegerArray());
+    properties.set(
+        PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY,
+        string(PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH));
     require(root, "isCodeSubmission", "belongsToCurrentProblem", "isCompleteLeetCodeSolution", "language",
         "rawCode", "normalizedCode", "evidence", "contextSummary",
         PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT,
         PracticeCodeReviewConstants.JSON_SCORE_EXPLANATIONS,
         "scores", "passed", "deductionReasons", "improvementSuggestions", "reviewMarkdown",
-        PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS);
+        PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS,
+        PracticeCodeReviewConstants.JSON_REVIEW_HISTORY_SUMMARY);
     return root;
   }
 
@@ -132,6 +136,12 @@ public final class PracticeCodeReviewJsonSchema {
   private static ObjectNode string() {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "string");
+    return node;
+  }
+
+  private static ObjectNode string(int maxLength) {
+    ObjectNode node = string();
+    node.put("maxLength", maxLength);
     return node;
   }
 

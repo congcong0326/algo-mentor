@@ -22,7 +22,8 @@ public record PracticeCodeReviewDraft(
     List<String> improvementSuggestions,
     String reviewMarkdown,
     List<Long> affectedTagIds,
-    String contentLocale
+    String contentLocale,
+    String reviewHistorySummary
 ) {
 
   public PracticeCodeReviewDraft(
@@ -45,6 +46,17 @@ public record PracticeCodeReviewDraft(
         rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
         improvementSuggestions, reviewMarkdown, affectedTagIds,
         PracticeResponseLanguage.defaultLanguage().languageTag());
+  }
+
+  public PracticeCodeReviewDraft(
+      long userId, long planId, int phaseIndex, String problemSlug, long sessionId, long userMessageId,
+      Long assistantMessageId, Long agentRunDbId, String rawCode, String normalizedCode, String language,
+      List<PracticeCodeReviewEvidence> evidence, String contextSummary, PracticeCodeReviewScore score, boolean passed,
+      List<String> deductionReasons, List<String> improvementSuggestions, String reviewMarkdown,
+      List<Long> affectedTagIds, String contentLocale) {
+    this(userId, planId, phaseIndex, problemSlug, sessionId, userMessageId, assistantMessageId, agentRunDbId,
+        rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
+        improvementSuggestions, reviewMarkdown, affectedTagIds, contentLocale, null);
   }
 
   public PracticeCodeReviewDraft {
@@ -81,6 +93,7 @@ public record PracticeCodeReviewDraft(
     affectedTagIds = affectedTagIds == null ? List.of() : affectedTagIds.stream()
         .filter(tagId -> tagId != null && tagId > 0).distinct().toList();
     contentLocale = PracticeResponseLanguage.fromLocale(contentLocale).languageTag();
+    reviewHistorySummary = normalizeReviewHistorySummary(reviewHistorySummary);
   }
 
   private static void requirePositive(long value, String fieldName) {
@@ -107,5 +120,16 @@ public record PracticeCodeReviewDraft(
         .map(PracticeCodeReviewDraft::blankToNull)
         .filter(value -> value != null)
         .toList();
+  }
+
+  private static String normalizeReviewHistorySummary(String value) {
+    String normalized = blankToNull(value);
+    if (normalized != null) {
+      normalized = normalized.replaceAll("\\s+", " ");
+    }
+    if (normalized != null && normalized.length() > PracticeCodeReviewConstants.REVIEW_HISTORY_SUMMARY_MAX_LENGTH) {
+      throw new IllegalArgumentException("Practice code review history summary exceeds maximum length");
+    }
+    return normalized;
   }
 }
