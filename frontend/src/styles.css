@@ -6517,7 +6517,6 @@ textarea[aria-invalid='true'] {
   cursor: help;
 }
 
-.completion-button-wrap,
 .toolbar-tooltip-wrap {
   display: inline-flex;
   position: relative;
@@ -6611,14 +6610,6 @@ textarea[aria-invalid='true'] {
   padding: 0 10px;
 }
 
-.completion-button-wrap.has-tooltip {
-  cursor: not-allowed;
-}
-
-.completion-button-wrap > button:disabled {
-  pointer-events: none;
-}
-
 .toolbar-tooltip {
   position: absolute;
   right: 0;
@@ -6642,8 +6633,6 @@ textarea[aria-invalid='true'] {
   white-space: normal;
 }
 
-.completion-button-wrap.has-tooltip:hover .completion-disabled-tooltip,
-.completion-button-wrap.has-tooltip:focus-within .completion-disabled-tooltip,
 .toolbar-tooltip-wrap:hover .toolbar-tooltip,
 .toolbar-tooltip-wrap:focus-within .toolbar-tooltip {
   opacity: 1;
@@ -6693,7 +6682,8 @@ textarea[aria-invalid='true'] {
   font-weight: 700;
 }
 
-.practice-coach-summary-action {
+.practice-coach-summary-action,
+.practice-completion-action {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -6702,14 +6692,16 @@ textarea[aria-invalid='true'] {
   border-top: 1px solid var(--border-subtle);
 }
 
-.practice-coach-summary-action button {
+.practice-coach-summary-action button,
+.practice-completion-action button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
 }
 
 .practice-coach-summary-action button svg,
-.practice-coach-summary-action p svg {
+.practice-coach-summary-action p svg,
+.practice-completion-action button svg {
   width: 16px;
   height: 16px;
   flex: 0 0 auto;

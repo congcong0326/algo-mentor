@@ -40,7 +40,11 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
+PREPROD_HOST ?= leetmentor-dev
+PREPROD_CONTAINER_NAME ?= algo-mentor
+PREPROD_BASE_REF ?=
+
+.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev deploy-preprod-fast test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
 
 build: backend-build frontend-build
 
@@ -146,6 +150,10 @@ frontend-test:
 
 frontend-dev:
 	$(NPM) run dev -- --host 0.0.0.0
+
+# 仅发布不含 Flyway 迁移的已提交应用代码；运行时配置始终保留在目标机受保护的环境文件中。
+deploy-preprod-fast:
+	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" bash scripts/deploy-preprod-fast.sh
 
 test: test-smoke
 

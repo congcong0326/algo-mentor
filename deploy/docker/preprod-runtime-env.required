@@ -1,0 +1,26 @@
+# 预发布运行时变量契约。
+#
+# 格式：<目标机 /etc/algo-mentor 下的环境文件名>:<环境变量名>
+# 此文件只记录键名，绝不记录真实值、密钥或令牌。快速发布会在替换容器前检查
+# 每个键已存在且值非空；缺失时发布直接失败，现有容器保持运行。
+#
+# 新增预发布必需变量或需要显式固定值的功能开关时，必须同步更新本文件。
+
+database.env:POSTGRES_HOST
+database.env:POSTGRES_PORT
+database.env:POSTGRES_DB
+database.env:POSTGRES_USER
+database.env:POSTGRES_PASSWORD
+
+redis.env:CACHE_REDIS_HOST
+redis.env:CACHE_REDIS_PORT
+redis.env:CACHE_REDIS_USERNAME
+redis.env:CACHE_REDIS_PASSWORD
+redis.env:REDIS_STREAM_HOST
+redis.env:REDIS_STREAM_PORT
+redis.env:REDIS_STREAM_USERNAME
+redis.env:REDIS_STREAM_PASSWORD
+
+# Tool 开关即使在 application.yml 有默认值，也在预发布环境显式固定，避免未来默认值改变。
+runtime.env:PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED
+runtime.env:PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED

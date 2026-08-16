@@ -1358,7 +1358,7 @@ describe('App', () => {
     );
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
     expect(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
 
     await act(async () => {
       practiceRunEventStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));

@@ -78,14 +78,10 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the no-review completion gate and enforces the input byte limit', async () => {
+  it('hides the completion action without a passed Review and enforces the input byte limit', async () => {
     renderWorkbench();
 
-    const completionButton = await screen.findByRole('button', { name: '标记完成' });
-    expect(completionButton).toBeDisabled();
-    expect(screen.getByRole('tooltip', {
-      name: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
-    })).toHaveClass('completion-disabled-tooltip');
+    expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
 
     const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
     fireEvent.change(composer, { target: { value: '你'.repeat(2_731) } });
@@ -126,6 +122,20 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
 
     await waitFor(() => expect(screen.queryByRole('dialog', { name: '展开输入框' })).not.toBeInTheDocument());
     expect(composer).toHaveValue('保留这段代码');
+  });
+
+  it('hides the completion action when the latest Review did not pass', async () => {
+    createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
+      latestReview: reviewSummaryFixture({ passed: false, totalScore: 55 }),
+      completionGate: completionGate({
+        reasonCode: 'LATEST_REVIEW_FAILED',
+        latestScore: 55,
+      }),
+    })));
+    renderWorkbench();
+
+    expect(await screen.findByText('给定整数数组 nums 和目标值 target。')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
   });
 
   it('starts a run through POST and reads the separately issued event URL', async () => {
@@ -315,7 +325,10 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(getPracticeSessionMessages).toHaveBeenCalledWith(101, 50, expect.any(AbortSignal));
     expect(getPracticeSession).toHaveBeenCalledWith(101, expect.any(AbortSignal));
     expect(getPracticeSessionReviews).toHaveBeenCalledWith(101, expect.any(AbortSignal));
-    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+    const reviewMessage = await screen.findByText('代码提交记录已生成。');
+    const reviewBubble = reviewMessage.closest('article');
+    expect(reviewBubble).not.toBeNull();
+    expect(within(reviewBubble!).getByRole('button', { name: '标记完成' })).not.toBeDisabled();
   });
 
   it('keeps the persisted active run visible when event replay is temporarily unavailable', async () => {

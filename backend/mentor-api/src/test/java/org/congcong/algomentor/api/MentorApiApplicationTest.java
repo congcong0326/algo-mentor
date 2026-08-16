@@ -32,6 +32,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAge
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeLearningStateAgentToolContracts;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolContracts;
 import org.congcong.algomentor.mentor.application.practice.ProposeCurrentProblemCoachSummaryAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentInput;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentInput;
@@ -71,6 +72,9 @@ class MentorApiApplicationTest {
               PracticeLearningStateAgentToolContracts.TOOL_NAME,
               ProposeCurrentProblemCoachSummaryAgentToolContracts.TOOL_NAME,
               LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+              PracticeSubmissionHistoryToolContracts.GET_PRACTICED_PROBLEM_OVERVIEW,
+              PracticeSubmissionHistoryToolContracts.LIST_PRACTICE_PROBLEM_SUBMISSIONS,
+              PracticeSubmissionHistoryToolContracts.READ_PRACTICE_SUBMISSION_DETAIL,
               ReadToolResultTool.NAME)),
       AiBusinessScenario.LEARNING_PLAN_DRAFT,
       new DefinitionExpectation(LearningPlanDraftAgentInput.class, 24, LearningPlanAgentToolNames.PLANNING_TOOLS),

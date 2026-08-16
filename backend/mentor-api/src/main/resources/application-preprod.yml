@@ -1,0 +1,66 @@
+# 预发布环境配置：连接信息和密钥全部由目标机 /etc/algo-mentor/*.env 注入。
+spring:
+  autoconfigure:
+    # 覆盖 application.yml 的本地无数据库默认值，启用 JDBC 与 Flyway 自动配置。
+    exclude: []
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  flyway:
+    enabled: true
+
+algo-mentor:
+  # 数据库备份仍由基础设施侧负责，应用容器不持有备份能力。
+  database-backup:
+    enabled: ${DATABASE_BACKUP_ENABLED:false}
+  cache:
+    enabled: ${CACHE_ENABLED:true}
+    metrics-enabled: ${CACHE_METRICS_ENABLED:true}
+    shared-provider: ${CACHE_SHARED_PROVIDER:postgres-coherent-caffeine}
+    redis:
+      enabled: ${CACHE_REDIS_ENABLED:true}
+      host: ${CACHE_REDIS_HOST}
+      port: ${CACHE_REDIS_PORT}
+      database: ${CACHE_REDIS_DATABASE:0}
+      username: ${CACHE_REDIS_USERNAME:}
+      password: ${CACHE_REDIS_PASSWORD:}
+      ssl-enabled: ${CACHE_REDIS_SSL_ENABLED:false}
+      command-timeout: ${CACHE_REDIS_COMMAND_TIMEOUT:100ms}
+      connect-timeout: ${CACHE_REDIS_CONNECT_TIMEOUT:1s}
+      shutdown-timeout: ${CACHE_REDIS_SHUTDOWN_TIMEOUT:2s}
+      max-value-bytes: ${CACHE_REDIS_MAX_VALUE_BYTES:65536}
+    coherence:
+      enabled: ${CACHE_COHERENCE_ENABLED:true}
+      poll-interval: ${CACHE_COHERENCE_POLL_INTERVAL:1s}
+      batch-size: ${CACHE_COHERENCE_BATCH_SIZE:500}
+      jitter-ratio: ${CACHE_COHERENCE_JITTER_RATIO:0.2}
+      event-retention: ${CACHE_COHERENCE_EVENT_RETENTION:24h}
+      cleanup-interval: ${CACHE_COHERENCE_CLEANUP_INTERVAL:1h}
+  queue:
+    consumer:
+      enabled: ${QUEUE_CONSUMER_ENABLED:true}
+  practice:
+    code-review:
+      enabled: ${PRACTICE_CODE_REVIEW_ENABLED:true}
+  practice-chat:
+    realtime-stream:
+      enabled: ${PRACTICE_REALTIME_STREAM_ENABLED:true}
+      host: ${REDIS_STREAM_HOST}
+      port: ${REDIS_STREAM_PORT}
+      database: ${REDIS_STREAM_DATABASE:0}
+      username: ${REDIS_STREAM_USERNAME:}
+      password: ${REDIS_STREAM_PASSWORD:}
+      ssl-enabled: ${REDIS_STREAM_SSL_ENABLED:false}
+      command-timeout: ${PRACTICE_REALTIME_STREAM_COMMAND_TIMEOUT:3s}
+      connect-timeout: ${PRACTICE_REALTIME_STREAM_CONNECT_TIMEOUT:2s}
+      shutdown-timeout: ${PRACTICE_REALTIME_STREAM_SHUTDOWN_TIMEOUT:2s}
+      read-block: ${PRACTICE_REALTIME_STREAM_READ_BLOCK:2s}
+      max-read-connections: ${PRACTICE_REALTIME_STREAM_MAX_READ_CONNECTIONS:32}
+      active-retention: ${PRACTICE_REALTIME_STREAM_ACTIVE_RETENTION:2h}
+      completed-retention: ${PRACTICE_REALTIME_STREAM_COMPLETED_RETENTION:24h}
+  learner-memory:
+    code-review-consumer:
+      enabled: ${LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED:true}
+    declared-update:
+      enabled: ${LEARNER_MEMORY_DECLARED_UPDATE_ENABLED:true}

@@ -369,6 +369,7 @@ export default function PracticeChatWorkbench({
   const [reviewHistoryError, setReviewHistoryError] = useState('');
   const [assistantWorkStates, setAssistantWorkStates] = useState<Record<number, AssistantWorkState>>({});
   const [coachSummaryApplyStates, setCoachSummaryApplyStates] = useState<Record<string, CoachSummaryApplyStatus>>({});
+  const [completionActionMessageId, setCompletionActionMessageId] = useState<number>();
   const composerCounterId = useId();
   const composerFocusModeTitleId = useId();
   const composerExpandTooltipId = useId();
@@ -382,6 +383,7 @@ export default function PracticeChatWorkbench({
   const submittingRef = useRef(false);
   const practiceLoadTokenRef = useRef(0);
   const coachSummaryProposalMessageIdsRef = useRef(new Set<number>());
+  const completionActionMessageIdRef = useRef<number | undefined>(undefined);
   const practiceRunStreamRef = useRef<PracticeRunStreamState | undefined>(undefined);
 
   useEffect(() => {
@@ -404,7 +406,9 @@ export default function PracticeChatWorkbench({
     setReviewHistoryLoading(false);
     setAssistantWorkStates({});
     setCoachSummaryApplyStates({});
+    setCompletionActionMessageId(undefined);
     coachSummaryProposalMessageIdsRef.current.clear();
+    completionActionMessageIdRef.current = undefined;
     setStatus('loading');
 
     createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)
@@ -507,19 +511,15 @@ export default function PracticeChatWorkbench({
   const completionGate = sessionResponse?.completionGate;
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
-  const shouldShowCompletionButton = Boolean(sessionId) && progressStatus !== 'COMPLETED';
   const shouldShowSkipButton = Boolean(sessionId) && progressStatus !== 'COMPLETED' && progressStatus !== 'SKIPPED';
-  const completionDisabled = !completionGate?.canComplete
-    || completionUpdating
+  const canMarkCompleted = Boolean(sessionId)
+    && completionGate?.canComplete === true
+    && progressStatus !== 'COMPLETED';
+  const completionActionDisabled = completionUpdating
     || postRunRefreshing
     || status === 'loading'
     || status === 'streaming'
     || hasActiveRun;
-  const completionDisabledReason = completionGate && !completionGate.canComplete
-    ? resources.learningPlans.completionGateMessages[completionGate.reasonCode]
-      || completionGate.message
-      || resources.learningPlans.completionGateFallback
-    : undefined;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const composerText = composerValue.trim();
   const composerBytes = utf8ByteLength(composerText);
@@ -541,6 +541,21 @@ export default function PracticeChatWorkbench({
     locale,
     resources.learningPlans.problemTraining,
   );
+
+  useEffect(() => {
+    if (!canMarkCompleted) {
+      return;
+    }
+
+    if (messages.some((message) => message.id === completionActionMessageIdRef.current)) {
+      return;
+    }
+    const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'ASSISTANT');
+    if (latestAssistantMessage) {
+      showCompletionAction(latestAssistantMessage.id);
+    }
+  }, [canMarkCompleted, messages]);
+
   useEffect(() => {
     if (!sessionId || !hasActiveRun) {
       return undefined;
@@ -765,6 +780,11 @@ export default function PracticeChatWorkbench({
     }));
   }
 
+  function showCompletionAction(assistantMessageId: number) {
+    completionActionMessageIdRef.current = assistantMessageId;
+    setCompletionActionMessageId(assistantMessageId);
+  }
+
   function reviewToolScoreSummary(result: unknown): string | undefined {
     const totalScore = readResultScore(result);
     const passed = readResultPassed(result);
@@ -879,6 +899,9 @@ export default function PracticeChatWorkbench({
           && readResultType(toolEnd.result) === REVIEW_SUBMITTED_RESULT_TYPE
           && isSavedReviewResult(toolEnd.result)) {
           reviewRefreshRequested = true;
+          if (readResultPassed(toolEnd.result)) {
+            showCompletionAction(runState.assistantMessageId);
+          }
           const scoreSummary = reviewToolScoreSummary(toolEnd.result);
           if (scoreSummary) {
             appendAssistantContent(runState.assistantMessageId, `${scoreSummary}\n\n`);
@@ -1298,31 +1321,6 @@ export default function PracticeChatWorkbench({
             {formatDifficulty(difficulty, resources)}
           </span>
           <span className="status-badge">{progressStatusLabel(progressStatus, resources)}</span>
-          {shouldShowCompletionButton && (
-            <span
-              className={`completion-button-wrap ${completionDisabledReason ? 'has-tooltip' : ''}`}
-            >
-              <button
-                className="secondary-button compact"
-                aria-describedby={completionDisabledReason ? 'completion-disabled-tooltip' : undefined}
-                disabled={completionDisabled}
-                onClick={handleMarkCompleted}
-                type="button"
-              >
-                <CheckCircle2 aria-hidden="true" />
-                <span>{resources.learningPlans.markCompleted}</span>
-              </button>
-              {completionDisabledReason && (
-                <span
-                  className="toolbar-tooltip completion-disabled-tooltip"
-                  id="completion-disabled-tooltip"
-                  role="tooltip"
-                >
-                  {completionDisabledReason}
-                </span>
-              )}
-            </span>
-          )}
           <button
             className="secondary-button compact"
             onClick={onOpenSubmissions}
@@ -1499,6 +1497,21 @@ export default function PracticeChatWorkbench({
                 {coachSummaryApplyStates[message.coachSummaryAction.proposalId] === 'error' && (
                   <span className="error-text" role="alert">{resources.learningPlans.coachSummaryApplyFailed}</span>
                 )}
+              </div>
+            )}
+            {message.role === 'ASSISTANT'
+              && message.id === completionActionMessageId
+              && canMarkCompleted && (
+              <div className="practice-completion-action">
+                <button
+                  className="primary-button compact"
+                  disabled={completionActionDisabled}
+                  onClick={() => void handleMarkCompleted()}
+                  type="button"
+                >
+                  <CheckCircle2 aria-hidden="true" />
+                  <span>{resources.learningPlans.markCompleted}</span>
+                </button>
               </div>
             )}
           </article>

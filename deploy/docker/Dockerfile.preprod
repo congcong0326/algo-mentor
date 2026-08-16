@@ -1,0 +1,15 @@
+# 预发布镜像的构建上下文只包含已验证的 mentor-api.jar 制品。
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+RUN groupadd --system algo-mentor \
+    && useradd --system --gid algo-mentor --home-dir /app --no-create-home algo-mentor
+
+COPY --chown=algo-mentor:algo-mentor mentor-api.jar /app/app.jar
+
+USER algo-mentor
+
+EXPOSE 18080
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
