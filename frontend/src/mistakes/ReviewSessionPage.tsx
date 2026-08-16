@@ -176,25 +176,6 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
 
   return (
     <section className="review-session-page" aria-labelledby="review-session-title">
-      <header className="review-workbench-toolbar">
-        <button className="secondary-button compact" onClick={handleBack} type="button">
-          <ArrowLeft aria-hidden="true" />
-          <span>{resources.reviewCenter.backToReviewCenter}</span>
-        </button>
-        <div className="review-workbench-heading">
-          <h1 id="review-session-title">{reviewProblemTitle(context, current, locale, resources.reviewCenter.spacedReview)}</h1>
-          <span>
-            {context?.problem.difficulty || current?.problemDifficulty
-              ? formatDifficulty(context?.problem.difficulty || current?.problemDifficulty, resources)
-              : resources.reviewCenter.unknownDifficulty}
-          </span>
-        </div>
-        <div className="review-workbench-status">
-          <strong>{progressLabel}</strong>
-          <span>{resources.reviewCenter.fsrsStateLabels[context?.card.fsrsState || current?.fsrsState || 'LEARNING']}</span>
-        </div>
-      </header>
-
       {error && <p className="error-text" role="alert">{error}</p>}
 
       {loading ? (
@@ -212,53 +193,74 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
       ) : (
         <article className="review-card-workbench">
           <div className="review-card-scroll">
-            <section className="review-problem-content" aria-label={resources.reviewCenter.fullStatementAriaLabel}>
-              <MarkdownView content={reviewProblemStatementMarkdown(context.problem)} />
-            </section>
-
-            <ProblemNoteEditor onDirtyChange={setNoteDirty} problemSlug={context.problem.slug} />
-
-            <details className="review-attempt-history">
-              <summary>
+            <header className="review-workbench-toolbar">
+              <button className="secondary-button compact" onClick={handleBack} type="button">
+                <ArrowLeft aria-hidden="true" />
+                <span>{resources.reviewCenter.backToReviewCenter}</span>
+              </button>
+              <div className="review-workbench-heading">
+                <h1 id="review-session-title">{reviewProblemTitle(context, current, locale, resources.reviewCenter.spacedReview)}</h1>
                 <span>
-                  <strong>{resources.reviewCenter.history}</strong>
-                  <small>
-                    {context.recentAttempts.length > 0
-                      ? resources.reviewCenter.recentCount(context.recentAttempts.length)
-                      : resources.reviewCenter.noHistory}
-                  </small>
+                  {context?.problem.difficulty || current?.problemDifficulty
+                    ? formatDifficulty(context?.problem.difficulty || current?.problemDifficulty, resources)
+                    : resources.reviewCenter.unknownDifficulty}
                 </span>
-              </summary>
-              {context.recentAttempts.length > 0 ? (
-                <ol>
-                  {context.recentAttempts.map((history) => (
-                    <li key={history.id}>
-                      <strong>{resources.reviewCenter.ratingLabels[history.rating]}</strong>
-                      <span>{formatDateTime(history.reviewedAt, locale)}</span>
-                      <small>
-                        {resources.reviewCenter.intervalChange(
-                          history.schedulingBefore.intervalDays,
-                          history.schedulingAfter.intervalDays,
-                        )}
-                      </small>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p>{resources.reviewCenter.historyAfterRating}</p>
-              )}
-            </details>
+              </div>
+              <div className="review-workbench-status">
+                <strong>{progressLabel}</strong>
+                <span>{resources.reviewCenter.fsrsStateLabels[context?.card.fsrsState || current?.fsrsState || 'LEARNING']}</span>
+              </div>
+            </header>
 
-            {attempt && (
-              <section className="review-result" aria-label={resources.reviewCenter.resultAriaLabel}>
-                <h3>{resources.reviewCenter.ratingLabels[attempt.rating]}</h3>
-                <p>{resources.reviewCenter.nextReview(formatDueLabel(
-                  attempt.schedulingAfter.dueAt,
-                  attempt.schedulingAfter.intervalDays,
-                  resources.reviewCenter,
-                ))}</p>
+            <div className="review-card-content">
+              <section className="review-problem-content" aria-label={resources.reviewCenter.fullStatementAriaLabel}>
+                <MarkdownView content={reviewProblemStatementMarkdown(context.problem)} />
               </section>
-            )}
+
+              <ProblemNoteEditor onDirtyChange={setNoteDirty} problemSlug={context.problem.slug} />
+
+              <details className="review-attempt-history">
+                <summary>
+                  <span>
+                    <strong>{resources.reviewCenter.history}</strong>
+                    <small>
+                      {context.recentAttempts.length > 0
+                        ? resources.reviewCenter.recentCount(context.recentAttempts.length)
+                        : resources.reviewCenter.noHistory}
+                    </small>
+                  </span>
+                </summary>
+                {context.recentAttempts.length > 0 ? (
+                  <ol>
+                    {context.recentAttempts.map((history) => (
+                      <li key={history.id}>
+                        <strong>{resources.reviewCenter.ratingLabels[history.rating]}</strong>
+                        <span>{formatDateTime(history.reviewedAt, locale)}</span>
+                        <small>
+                          {resources.reviewCenter.intervalChange(
+                            history.schedulingBefore.intervalDays,
+                            history.schedulingAfter.intervalDays,
+                          )}
+                        </small>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p>{resources.reviewCenter.historyAfterRating}</p>
+                )}
+              </details>
+
+              {attempt && (
+                <section className="review-result" aria-label={resources.reviewCenter.resultAriaLabel}>
+                  <h3>{resources.reviewCenter.ratingLabels[attempt.rating]}</h3>
+                  <p>{resources.reviewCenter.nextReview(formatDueLabel(
+                    attempt.schedulingAfter.dueAt,
+                    attempt.schedulingAfter.intervalDays,
+                    resources.reviewCenter,
+                  ))}</p>
+                </section>
+              )}
+            </div>
           </div>
 
           <footer className="review-rating-bar" aria-label={resources.reviewCenter.ratingAriaLabel}>

@@ -1570,8 +1570,7 @@ a {
 }
 
 .review-session-page {
-  min-height: calc(100vh - 112px);
-  grid-template-rows: auto auto minmax(0, 1fr);
+  align-content: start;
 }
 
 .review-workbench-toolbar {
@@ -1579,7 +1578,7 @@ a {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
-  padding-bottom: 14px;
+  padding: 18px 24px 14px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -1613,8 +1612,9 @@ a {
 
 .review-card-workbench {
   display: grid;
+  height: calc(100vh - 132px);
+  height: calc(100dvh - 132px);
   min-height: 0;
-  max-height: calc(100vh - 190px);
   grid-template-rows: minmax(0, 1fr) auto;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
@@ -1632,6 +1632,14 @@ a {
   max-width: 100%;
   overflow-y: auto;
   scrollbar-gutter: stable;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+.review-card-content {
+  display: grid;
+  align-content: start;
+  min-width: 0;
   padding: 24px;
 }
 
@@ -2032,11 +2040,15 @@ a {
   }
 
   .review-card-workbench {
-    max-height: none;
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
   }
 
   .review-card-scroll {
-    overflow: visible;
+    overflow-y: auto;
+  }
+
+  .review-card-content {
     padding: 16px;
   }
 
@@ -2053,10 +2065,7 @@ a {
   }
 
   .review-rating-bar {
-    position: sticky;
-    bottom: 0;
     grid-template-columns: 1fr;
-    z-index: 4;
   }
 
   .review-rating-grid {

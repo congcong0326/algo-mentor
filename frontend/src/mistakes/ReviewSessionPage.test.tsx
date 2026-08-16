@@ -59,8 +59,12 @@ describe('ReviewSessionPage', () => {
 
     const noteDisclosure = await screen.findByRole('button', { name: /我的题目笔记/ });
     const coachSummaryDisclosure = screen.getByRole('button', { name: /教练总结/ });
+    const scrollContainer = document.querySelector('.review-card-scroll');
     expect(noteDisclosure).toHaveAttribute('aria-expanded', 'false');
     expect(coachSummaryDisclosure).toHaveAttribute('aria-expanded', 'false');
+    expect(scrollContainer).toContainElement(screen.getByRole('heading', { name: '两数之和' }));
+    expect(scrollContainer).toContainElement(noteDisclosure);
+    expect(scrollContainer).toContainElement(coachSummaryDisclosure);
     expect(noteDisclosure.closest('section')?.parentElement).toBe(
       coachSummaryDisclosure.closest('section')?.parentElement,
     );
