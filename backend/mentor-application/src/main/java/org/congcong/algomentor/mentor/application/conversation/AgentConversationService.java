@@ -38,6 +38,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContext;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContextProvider;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryScopeService;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinition;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
@@ -68,6 +69,7 @@ public class AgentConversationService {
   private final ManagedSystemPromptResolver systemPromptResolver;
   private final PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService;
   private final PracticeSubmissionHistoryContextProvider submissionHistoryContextProvider;
+  private final PracticeSubmissionHistoryScopeService submissionHistoryScopeService;
 
   public AgentConversationService(
       AgentConversationRepository conversationRepository,
@@ -210,6 +212,35 @@ public class AgentConversationService {
       PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService,
       PracticeSubmissionHistoryContextProvider submissionHistoryContextProvider
   ) {
+    this(
+        conversationRepository,
+        contextAssembler,
+        contextPolicy,
+        learningPlanRepository,
+        practiceProblemCatalog,
+        practicePromptAssembler,
+        learnerMemoryRecallService,
+        learnerMemoryRecallPromptSectionProvider,
+        systemPromptResolver,
+        reviewTrajectoryScopeService,
+        submissionHistoryContextProvider,
+        null);
+  }
+
+  public AgentConversationService(
+      AgentConversationRepository conversationRepository,
+      ContextAssembler contextAssembler,
+      ContextAssemblyPolicy contextPolicy,
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog practiceProblemCatalog,
+      PromptAssembler practicePromptAssembler,
+      LearnerMemoryRecallService learnerMemoryRecallService,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
+      ManagedSystemPromptResolver systemPromptResolver,
+      PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService,
+      PracticeSubmissionHistoryContextProvider submissionHistoryContextProvider,
+      PracticeSubmissionHistoryScopeService submissionHistoryScopeService
+  ) {
     this.conversationRepository = conversationRepository;
     this.contextAssembler = contextAssembler;
     this.contextPolicy = contextPolicy == null ? ContextAssemblyPolicy.defaultPolicy() : contextPolicy;
@@ -227,6 +258,7 @@ public class AgentConversationService {
         : systemPromptResolver;
     this.reviewTrajectoryScopeService = reviewTrajectoryScopeService;
     this.submissionHistoryContextProvider = submissionHistoryContextProvider;
+    this.submissionHistoryScopeService = submissionHistoryScopeService;
   }
 
   /** 为 Practice Chat 复用 session task，并准备新的 turn、run 与完整受信上下文。 */
@@ -368,6 +400,7 @@ public class AgentConversationService {
   ) {
     AgentRunResource recallLease = AgentRunResource.none();
     AgentRunResource reviewTrajectoryLease = AgentRunResource.none();
+    AgentRunResource submissionHistoryLease = AgentRunResource.none();
     LearnerMemoryRecallSnapshot learnerMemorySnapshot = null;
     try {
     PracticeChatContext practiceContext = practiceChatContext(command.practiceChat(), command.userId());
@@ -388,6 +421,20 @@ public class AgentConversationService {
         log.warn(
             "Practice submission history context lookup failed; continuing without history. userId={} problemSlug={} exceptionType={}",
             command.userId(), command.practiceChat().problemSlug(), exception.getClass().getSimpleName());
+      }
+    }
+    PracticeSubmissionHistoryScopeService.OpenedScope submissionHistoryScope = null;
+    if (!idempotentReplay && submissionHistoryScopeService != null && !submissionHistoryContext.scopeInputs().isEmpty()) {
+      try {
+        submissionHistoryScope = submissionHistoryScopeService.openScope(
+            command.userId(),
+            command.practiceChat().locale(),
+            submissionHistoryContext,
+            command.userMessage());
+        submissionHistoryLease = submissionHistoryScope.runResource();
+      } catch (RuntimeException exception) {
+        log.warn("Practice submission history scope opening failed; continuing without history tools. exceptionType={}",
+            exception.getClass().getSimpleName());
       }
     }
     if (!idempotentReplay && learnerMemoryRecallService != null) {
@@ -438,26 +485,41 @@ public class AgentConversationService {
     if (reviewTrajectoryScope != null) {
       metadata.putAll(reviewTrajectoryScope.metadata());
     }
+    if (submissionHistoryScope != null) {
+      metadata.putAll(submissionHistoryScope.metadata());
+    }
     metadata.putAll(learnerMemoryRecallPromptSectionProvider.metadata(
         learnerMemorySnapshot, assembly, promptSnapshot));
     return new PracticeChatContextAssembly(
         new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate()),
-        combinedResource(recallLease, reviewTrajectoryLease));
+        combinedResource(recallLease, reviewTrajectoryLease, submissionHistoryLease));
     } catch (RuntimeException failure) {
       recallLease.release();
       reviewTrajectoryLease.release();
+      submissionHistoryLease.release();
       throw failure;
     }
   }
 
-  private AgentRunResource combinedResource(AgentRunResource first, AgentRunResource second) {
+  private AgentRunResource combinedResource(AgentRunResource... resources) {
     AtomicBoolean released = new AtomicBoolean();
     return () -> {
       if (released.compareAndSet(false, true)) {
-        try {
-          first.release();
-        } finally {
-          second.release();
+        RuntimeException failure = null;
+        for (AgentRunResource resource : resources == null ? new AgentRunResource[0] : resources) {
+          if (resource == null) {
+            continue;
+          }
+          try {
+            resource.release();
+          } catch (RuntimeException exception) {
+            if (failure == null) {
+              failure = exception;
+            }
+          }
+        }
+        if (failure != null) {
+          throw failure;
         }
       }
     };

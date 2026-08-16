@@ -14,6 +14,10 @@ import org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetai
 import org.congcong.algomentor.api.practice.mapper.model.CodeReviewSubmissionVersionRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewHistoricalFactRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryProblemRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryOverviewRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistorySubmissionRow;
+import org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryDetailRow;
+import java.time.Instant;
 
 @Mapper
 public interface PracticeCodeReviewMapper {
@@ -96,6 +100,25 @@ public interface PracticeCodeReviewMapper {
       @Param("userId") long userId,
       @Param("problemSlugs") List<String> problemSlugs,
       @Param("limit") int limit
+  );
+
+  PracticeSubmissionHistoryOverviewRow findSubmissionHistoryOverview(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug
+  );
+
+  List<PracticeSubmissionHistorySubmissionRow> findSubmissionHistorySubmissions(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug,
+      @Param("afterCreatedAt") Instant afterCreatedAt,
+      @Param("afterReviewId") Long afterReviewId,
+      @Param("fetchLimit") int fetchLimit
+  );
+
+  PracticeSubmissionHistoryDetailRow findSubmissionHistoryDetail(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug,
+      @Param("reviewId") long reviewId
   );
 
   CodeReviewEvidenceDetailRow findEvidenceDetail(

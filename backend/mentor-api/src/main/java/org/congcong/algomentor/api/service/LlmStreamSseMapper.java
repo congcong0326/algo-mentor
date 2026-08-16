@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentException;
@@ -11,6 +12,7 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolContracts;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -40,7 +42,8 @@ public class LlmStreamSseMapper {
       return new AgentToolStartData(start.runId(), start.stepIndex(), start.toolCallId(), start.toolName());
     }
     if (event instanceof AgentStreamEvent.AgentToolEnd end) {
-      return new AgentToolEndData(end.runId(), end.stepIndex(), end.toolCallId(), end.toolName(), end.result());
+      return new AgentToolEndData(
+          end.runId(), end.stepIndex(), end.toolCallId(), end.toolName(), sseToolResult(end));
     }
     if (event instanceof AgentStreamEvent.ToolPermissionRequest request) {
       return new ToolPermissionRequestData(
@@ -142,6 +145,16 @@ public class LlmStreamSseMapper {
     return null;
   }
 
+  /**
+   * 历史提交详情包含归一化源码，只能在 Agent run 内作为 Tool result 使用，不能投影到用户 SSE。
+   * 管理员审计仍从受保护的 run 审计接口读取原始结果。
+   */
+  private com.fasterxml.jackson.databind.JsonNode sseToolResult(AgentStreamEvent.AgentToolEnd end) {
+    return PracticeSubmissionHistoryToolContracts.READ_PRACTICE_SUBMISSION_DETAIL.equals(end.toolName())
+        ? null
+        : end.result();
+  }
+
   private record AgentRunStartData(
       String runId,
       String topic,
@@ -164,6 +177,7 @@ public class LlmStreamSseMapper {
       int stepIndex,
       String toolCallId,
       String toolName,
+      @JsonInclude(JsonInclude.Include.NON_NULL)
       com.fasterxml.jackson.databind.JsonNode result
   ) {
   }

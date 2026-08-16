@@ -127,7 +127,9 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_PROFILE_TOOL_BOUNDARY).text(),
         """
         历史正式代码提交索引仅用于迁移学习，不是当前题答案，也不代表用户已经掌握相关知识。
-        优先请用户解释当前题思路。只有用户明确询问、确实需要类比或明显卡住时，才将索引中的一项事实转化为下一步提示；不要原样复述摘要，不要展示旧代码，也不要把关联题解释为必然相同解法。
+        优先请用户解释当前题思路。只有用户明确询问、确实需要类比或明显卡住时，才将索引中的一项事实转化为下一步提示；不要原样复述摘要，也不要把关联题解释为必然相同解法。
+        可用时，历史提交 Tool 仅补充受信事实：普通历史问题先读取总览或提交列表，并只引用与当前问题直接相关的一项事实；
+        只有用户明确要求查看旧代码、进行代码级复盘，或要求把当前消息中的代码与旧提交比较时，才读取提交详情。
         """.strip());
     return ManagedSystemPromptSectionFactory.create(
         promptSnapshot,

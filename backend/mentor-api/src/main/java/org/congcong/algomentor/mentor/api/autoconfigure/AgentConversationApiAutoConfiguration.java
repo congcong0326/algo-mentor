@@ -25,11 +25,14 @@ import org.congcong.algomentor.api.config.PracticeChatLearningStateProperties;
 import org.congcong.algomentor.api.config.PracticeChatCoachSummaryProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.api.config.PracticeChatReviewTrajectoryProperties;
+import org.congcong.algomentor.api.config.PracticeChatSubmissionHistoryToolProperties;
+import org.congcong.algomentor.api.config.PracticeChatSubmissionHistoryCodeDetailProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.autoconfigure.AiGovernanceAutoConfiguration;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionController;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.api.practice.service.MyBatisTrustedProblemTagCatalog;
+import org.congcong.algomentor.api.practice.metrics.MicrometerPracticeSubmissionHistoryToolMetrics;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeConfiguration;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryCodeReviewFactRepository;
@@ -51,6 +54,15 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSec
 import org.congcong.algomentor.mentor.application.practice.PracticeRelatedProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContextProvider;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRunScopeRegistry;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryScopeService;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolMetrics;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolResultReadGuard;
+import org.congcong.algomentor.mentor.application.practice.CompositeToolResultReadGuard;
+import org.congcong.algomentor.mentor.application.practice.GetPracticedProblemOverviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.ListPracticeProblemSubmissionsAgentTool;
+import org.congcong.algomentor.mentor.application.practice.ReadPracticeSubmissionDetailAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
@@ -136,6 +148,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
     PracticeChatCoachSummaryProperties.class,
     PracticeChatPromptProperties.class,
     PracticeChatReviewTrajectoryProperties.class,
+    PracticeChatSubmissionHistoryToolProperties.class,
+    PracticeChatSubmissionHistoryCodeDetailProperties.class,
     LearnerMemoryCodeReviewConsumerProperties.class
 })
 public class AgentConversationApiAutoConfiguration {
@@ -161,7 +175,8 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<LearnerMemoryRecallService> learnerMemoryRecallService,
       ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver,
       ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
-      ObjectProvider<PracticeSubmissionHistoryContextProvider> submissionHistoryContextProvider
+      ObjectProvider<PracticeSubmissionHistoryContextProvider> submissionHistoryContextProvider,
+      ObjectProvider<PracticeSubmissionHistoryScopeService> submissionHistoryScopeService
   ) {
     LearningPlanRepository planRepository = learningPlanRepository.getIfAvailable();
     PracticeChatProblemCatalog problemCatalog = practiceProblemCatalog.getIfAvailable();
@@ -183,7 +198,8 @@ public class AgentConversationApiAutoConfiguration {
           learnerMemoryRecallPromptSectionProvider,
           systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
           reviewTrajectoryScopeService.getIfAvailable(),
-          submissionHistoryContextProvider.getIfAvailable());
+          submissionHistoryContextProvider.getIfAvailable(),
+          submissionHistoryScopeService.getIfAvailable());
     }
     return new AgentConversationService(
         conversationRepository,
@@ -196,7 +212,8 @@ public class AgentConversationApiAutoConfiguration {
         learnerMemoryRecallPromptSectionProvider,
         systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
         reviewTrajectoryScopeService.getIfAvailable(),
-        submissionHistoryContextProvider.getIfAvailable());
+        submissionHistoryContextProvider.getIfAvailable(),
+        submissionHistoryScopeService.getIfAvailable());
   }
 
   @Bean
@@ -212,6 +229,36 @@ public class AgentConversationApiAutoConfiguration {
       PracticeRelatedProblemCatalog relatedProblemCatalog
   ) {
     return new PracticeSubmissionHistoryContextProvider(historyRepository, problemCatalog, relatedProblemCatalog);
+  }
+
+  @Bean
+  @ConditionalOnBean(PracticeSubmissionHistoryToolRepository.class)
+  @ConditionalOnProperty(
+      prefix = PracticeChatSubmissionHistoryToolProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true")
+  @ConditionalOnMissingBean
+  public PracticeSubmissionHistoryRunScopeRegistry practiceSubmissionHistoryRunScopeRegistry() {
+    return new PracticeSubmissionHistoryRunScopeRegistry();
+  }
+
+  @Bean
+  @ConditionalOnBean(PracticeSubmissionHistoryRunScopeRegistry.class)
+  @ConditionalOnMissingBean
+  public PracticeSubmissionHistoryScopeService practiceSubmissionHistoryScopeService(
+      PracticeSubmissionHistoryRunScopeRegistry registry
+  ) {
+    return new PracticeSubmissionHistoryScopeService(registry);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public PracticeSubmissionHistoryToolMetrics practiceSubmissionHistoryToolMetrics(
+      ObjectProvider<MeterRegistry> meterRegistry
+  ) {
+    MeterRegistry registry = meterRegistry.getIfAvailable();
+    return registry == null ? PracticeSubmissionHistoryToolMetrics.NOOP
+        : new MicrometerPracticeSubmissionHistoryToolMetrics(registry);
   }
 
   @Bean("practiceChatPromptAssembler")
@@ -394,8 +441,59 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnMissingBean(ToolResultReadGuard.class)
   public ToolResultReadGuard learnerMemoryToolResultReadGuard(
       LearnerMemoryRunScopeRegistry scopeRegistry,
-      ObjectProvider<LearnerMemoryMetrics> metrics) {
-    return new LearnerMemoryToolResultReadGuard(scopeRegistry, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+      ObjectProvider<LearnerMemoryMetrics> metrics,
+      ObjectProvider<PracticeSubmissionHistoryRunScopeRegistry> submissionHistoryScopeRegistry,
+      ObjectProvider<PracticeSubmissionHistoryToolMetrics> submissionHistoryMetrics) {
+    java.util.List<ToolResultReadGuard> guards = new java.util.ArrayList<>();
+    guards.add(new LearnerMemoryToolResultReadGuard(scopeRegistry, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP)));
+    PracticeSubmissionHistoryRunScopeRegistry historyRegistry = submissionHistoryScopeRegistry.getIfAvailable();
+    if (historyRegistry != null) {
+      guards.add(new PracticeSubmissionHistoryToolResultReadGuard(
+          historyRegistry, submissionHistoryMetrics.getIfAvailable(() -> PracticeSubmissionHistoryToolMetrics.NOOP)));
+    }
+    return new CompositeToolResultReadGuard(guards);
+  }
+
+  @Bean
+  @ConditionalOnBean({PracticeSubmissionHistoryRunScopeRegistry.class, PracticeSubmissionHistoryToolRepository.class})
+  @ConditionalOnMissingBean
+  public GetPracticedProblemOverviewAgentTool getPracticedProblemOverviewAgentTool(
+      PracticeSubmissionHistoryRunScopeRegistry scopeRegistry,
+      PracticeSubmissionHistoryToolRepository repository,
+      PracticeSubmissionHistoryToolMetrics metrics
+  ) {
+    return new GetPracticedProblemOverviewAgentTool(scopeRegistry, repository, metrics);
+  }
+
+  @Bean
+  @ConditionalOnBean({PracticeSubmissionHistoryRunScopeRegistry.class, PracticeSubmissionHistoryToolRepository.class})
+  @ConditionalOnMissingBean
+  public ListPracticeProblemSubmissionsAgentTool listPracticeProblemSubmissionsAgentTool(
+      PracticeSubmissionHistoryRunScopeRegistry scopeRegistry,
+      PracticeSubmissionHistoryToolRepository repository,
+      ObjectProvider<TrustedProblemTagCatalog> tagCatalog,
+      PracticeSubmissionHistoryToolMetrics metrics
+  ) {
+    return new ListPracticeProblemSubmissionsAgentTool(
+        scopeRegistry, repository, tagCatalog.getIfAvailable(TrustedProblemTagCatalog::empty), metrics);
+  }
+
+  @Bean
+  @ConditionalOnBean({PracticeSubmissionHistoryRunScopeRegistry.class, PracticeSubmissionHistoryToolRepository.class})
+  @ConditionalOnProperty(
+      prefix = PracticeChatSubmissionHistoryCodeDetailProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true")
+  @ConditionalOnMissingBean
+  public ReadPracticeSubmissionDetailAgentTool readPracticeSubmissionDetailAgentTool(
+      PracticeSubmissionHistoryRunScopeRegistry scopeRegistry,
+      PracticeSubmissionHistoryToolRepository repository,
+      ObjectProvider<TrustedProblemTagCatalog> tagCatalog,
+      org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy compactionPolicy,
+      PracticeSubmissionHistoryToolMetrics metrics
+  ) {
+    return new ReadPracticeSubmissionDetailAgentTool(
+        scopeRegistry, repository, tagCatalog.getIfAvailable(TrustedProblemTagCatalog::empty), compactionPolicy, metrics);
   }
 
   @Bean
@@ -615,6 +713,10 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<ProposeCurrentProblemCoachSummaryAgentTool> coachSummaryTool,
       ObjectProvider<GetProblemReviewTrajectoryAgentTool> reviewTrajectoryTool,
       ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
+      ObjectProvider<GetPracticedProblemOverviewAgentTool> submissionHistoryOverviewTool,
+      ObjectProvider<ListPracticeProblemSubmissionsAgentTool> submissionHistoryListTool,
+      ObjectProvider<ReadPracticeSubmissionDetailAgentTool> submissionHistoryDetailTool,
+      ObjectProvider<PracticeSubmissionHistoryScopeService> submissionHistoryScopeService,
       ObjectProvider<ReadToolResultTool> readToolResultTool
   ) {
     java.util.List<String> toolNames = new java.util.ArrayList<>();
@@ -627,6 +729,11 @@ public class AgentConversationApiAutoConfiguration {
     coachSummaryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     if (reviewTrajectoryScopeService.getIfAvailable() != null) {
       reviewTrajectoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    }
+    if (submissionHistoryScopeService.getIfAvailable() != null) {
+      submissionHistoryOverviewTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+      submissionHistoryListTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+      submissionHistoryDetailTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     }
     readToolResultTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     return new PracticeChatAgentDefinition(

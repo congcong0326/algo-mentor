@@ -2,9 +2,9 @@
 
 ## 文档状态
 
-- 状态：阶段一实施基线；阶段二 Tool 仅保留演进设计
+- 状态：阶段一与阶段二历史提交 Tool 均已实施；阶段二总开关和源码详情二级开关默认开启，可按环境变量关闭
 - 适用场景：`PRACTICE_CHAT`、Practice Code Review
-- 关联设计：`practice-chat-agent-design.md`、`practice-chat-system-prompt-assembly-design.md`、`practice-code-review-technical-design.md`
+- 关联设计：`practice-chat-agent-design.md`、`practice-chat-system-prompt-assembly-design.md`、`practice-code-review-technical-design.md`、`agent-run-tool-result-compaction-design.md`、`agent-tool-catalog.md`
 - 首期事实来源：`practice_code_review`
 
 ## 1. 背景
@@ -228,19 +228,259 @@ Practice Code Review 的 provider-native structured output 新增 `reviewHistory
 
 现有 `ReviewTrajectoryService` 可复用来计算最近五条 Review 的持续、已解决和新增问题，但不应把其原始 JSON 直接注入模型。Prompt 只提供生成摘要所需的有界事实。
 
-## 7. 后续按需 Tool 演进（不属于 Phase 1）
+## 7. 阶段二：历史提交按需读取 Tool
 
-初始 Prompt 只提供索引。模型需要具体历史事实时，后续 Tool 使用通用的题目引用，而不是 `relatedProblemRef` 专用接口：
+### 7.1 范围与闭环
+
+Phase 1 的索引只负责发现历史题。用户继续追问“之前错在哪里”“我是否真的修复过”“把那版代码拿来和当前思路比较”时，模型不能从摘要臆测，也不能把 `pp_*` 当作数据库键。本阶段为同一 Agent run 增加受限的只读展开能力：
 
 ```text
-get_practiced_problem_overview(problemRef)
-list_practice_problem_submissions(problemRef, cursor, limit)
-read_practice_submission_detail(submissionRef)
+Prompt 历史题索引
+  -> get_practiced_problem_overview
+  -> list_practice_problem_submissions
+  -> read_practice_submission_detail（仅明确代码级请求）
+  -> 基于受信事实给出当前题的迁移提示
+  -> submit_practice_code_review 写入新的正式 Review
+  -> 下一轮重新生成索引和 reviewHistorySummary
 ```
 
-前两个能力分别读取某题的受限总览和提交历史。第三个能力只在用户明确要求查看旧代码、比较版本或进行代码级复盘时开放；提交历史列表本身不携带代码正文。若未来需要在未注入索引的历史题中检索，再单独设计 `search_submitted_problems`，第一版不开放任意 slug 查询。
+三个 Tool 都只读取 `practice_code_review` 的正式 Review。它们不会创建历史记录、更新学习画像、改变当前计划进度或替代 `submit_practice_code_review`。普通聊天中的代码片段、未保存的草稿和其他会话的自由文本始终不属于本阶段的数据源。
 
-`problemRef` 与未来的 `submissionRef` 都是 run-local opaque capability。服务端从可信执行上下文取得用户，并在每次读取时验证该引用属于当前用户。题目关联关系只影响关联索引的候选生成，不扩大 Tool 的用户数据读取范围。
+工具名称与职责固定如下：
+
+| Tool | 目的 | 是否返回代码 |
+| --- | --- | --- |
+| `get_practiced_problem_overview` | 确认一题的正式提交规模和最新结论，决定是否继续展开 | 否 |
+| `list_practice_problem_submissions` | 分页读取某题各次正式提交的结构化 Review 时间线 | 否 |
+| `read_practice_submission_detail` | 展开单次提交的评审代码和受限 Review 事实 | 是，需明确意图 |
+
+本阶段不实现 `search_submitted_problems`、任意 slug 查询、任意 Review ID 查询或双历史版本 diff。用户需要比较当前消息中的代码和一条旧提交时，第三个 Tool 已足够；两个历史提交的受控 diff 是独立的高敏感度需求，后续单独设计，不向第三个 Tool 增加第二个 `submissionRef`。
+
+### 7.2 公共协议与失败语义
+
+所有 Tool 使用 JSON object 入参，`additionalProperties=false`，不接受 `userId`、`problemSlug`、`reviewId`、`planId`、`phaseIndex` 或 `sessionId`。身份、当前 run、locale 和 capability scope 均从 `AgentExecutionContext.requestMetadata` 的服务端受信 metadata 取得。
+
+成功结果的 `status` 固定为 `OK`。各 Tool 可返回以下不含用户数据的失败状态：
+
+| 状态 | 含义 | 适用 Tool |
+| --- | --- | --- |
+| `UNAVAILABLE` | ref、cursor 或 scope 伪造、跨用户、跨 run、过期或已释放；统一处理，不泄露资源是否存在 | 全部 |
+| `BUDGET_EXHAUSTED` | 当前 run 的历史读取或代码可见字符预算已用尽 | 全部 |
+| `USER_INTENT_REQUIRED` | 当前用户消息没有明确要求查看旧代码或代码级复盘 | `read_practice_submission_detail` |
+| `FAILED` | 参数格式错误或受控的数据访问失败；仅可给出稳定 `failureCode`，不得包含 SQL、slug、Review ID 或正文 | 全部 |
+
+模型不能通过失败类型区分某个 ref 是不存在、属于其他用户还是仅已过期。Tool 失败不影响当前 Practice Chat 的普通回复，也不阻断正式 Code Review。
+
+### 7.3 `get_practiced_problem_overview`
+
+该 Tool 解决“这道历史题我做过多少次、最近结果是什么、是否值得展开”的问题。它是总览，不承担逐次 Review 列表职责，也不返回完整反馈。
+
+输入：
+
+```json
+{
+  "problemRef": "pp_a8K2..."
+}
+```
+
+`problemRef` 必填，必须来自本次 Prompt 的两组历史题索引。每个 `problemRef` 在一个 run 内最多读取一次。
+
+成功输出：
+
+```json
+{
+  "type": "practiced_problem_overview",
+  "status": "OK",
+  "problem": {
+    "problemRef": "pp_a8K2...",
+    "title": "Subarray Sum Equals K",
+    "tags": ["Prefix Sum", "Hash Table"],
+    "formalSubmissionCount": 3,
+    "passedSubmissionCount": 1,
+    "firstSubmittedAt": "2026-07-12T09:20:00Z",
+    "latestSubmission": {
+      "submissionRef": "ps_m4Q...",
+      "submittedAt": "2026-08-13T11:42:00Z",
+      "language": "JAVA",
+      "totalScore": 9.2,
+      "passed": true,
+      "reviewHistorySummary": "此前两次提交遗漏空前缀初始化；当前版本补齐初始化，Review 已通过。"
+    }
+  }
+}
+```
+
+`title`、`tags` 来自 scope 中已经由受信题库目录补齐的条目，保持与 Prompt 索引一致。计数以同一用户、同一题、跨计划的全部正式 Review 为范围；最早和最新时间按 `created_at`、`id` 的稳定顺序确定。返回值不包含裸 slug、数据库 ID、计划/session 信息、代码、完整 Review Markdown、检测证据，以及逐次扣分或改进建议。
+
+### 7.4 `list_practice_problem_submissions`
+
+该 Tool 在总览不足以回答问题时，按稳定时间顺序展开正式提交的 Review 事实。它不读取 `normalizedCode`，也不签发可跨 run 使用的分页标识。
+
+输入：
+
+```json
+{
+  "problemRef": "pp_a8K2...",
+  "cursor": null,
+  "limit": 3
+}
+```
+
+- `problemRef` 必填，含义同总览 Tool。
+- `cursor` 可选；首页传 `null` 或省略，后续页只能使用同一 Tool 上次返回的 opaque cursor。
+- `limit` 可选，默认 `3`，最小 `1`，最大 `5`。
+- 排序固定为 `created_at DESC, id DESC`，即最新提交在前；不接受模型提供排序或筛选条件。
+
+成功输出：
+
+```json
+{
+  "type": "practice_problem_submission_list",
+  "status": "OK",
+  "problemRef": "pp_a8K2...",
+  "submissions": [
+    {
+      "submissionRef": "ps_m4Q...",
+      "submittedAt": "2026-08-13T11:42:00Z",
+      "language": "JAVA",
+      "totalScore": 9.2,
+      "passed": true,
+      "deductionReasons": [],
+      "improvementSuggestions": ["可补充边界条件的说明。"],
+      "affectedTags": ["PREFIX_SUM"],
+      "reviewHistorySummary": "此前两次提交遗漏空前缀初始化；当前版本补齐初始化，Review 已通过。"
+    },
+    {
+      "submissionRef": "ps_t9L...",
+      "submittedAt": "2026-08-02T10:10:00Z",
+      "language": "JAVA",
+      "totalScore": 6.8,
+      "passed": false,
+      "deductionReasons": ["遗漏空前缀初始化，无法处理前缀和恰好等于 k 的情况。"],
+      "improvementSuggestions": ["初始化 frequency[0] = 1。"],
+      "affectedTags": ["PREFIX_SUM"],
+      "reviewHistorySummary": "当前版本遗漏空前缀初始化，Review 未通过。"
+    }
+  ],
+  "hasMore": false,
+  "nextCursor": null
+}
+```
+
+每一项的 `submissionRef` 在生成列表结果时由 scope 签发，映射到唯一的 `userId + problemSlug + reviewId`。`deductionReasons` 与 `improvementSuggestions` 各最多返回三条、每条使用既有 Review 字段的受控长度；字段缺失时返回空数组，不补造结论。列表不返回 `versionNo`，因为它只在单个 practice session 内有序，不能表示跨计划版本；也不返回代码、完整 Markdown、检测证据、数据库 ID 或计划/session 信息。
+
+cursor 必须封装本次查询的题目 scope 和上一页末尾的 `created_at + id` keyset 位置，不能把时间或 ID 作为模型可构造的入参。cursor 过期、跨 run 或与 `problemRef` 不匹配时统一返回 `UNAVAILABLE`。
+
+### 7.5 `read_practice_submission_detail`
+
+该 Tool 仅在用户明确要求查看旧代码、对旧版本进行代码级复盘，或将当前用户消息中的代码与某一历史提交比较时使用。它读取一条正式提交的评审代码和必要的结构化 Review，不返回完整 Markdown 或检测证据。
+
+输入：
+
+```json
+{
+  "submissionRef": "ps_m4Q..."
+}
+```
+
+`submissionRef` 必填，必须来自本 run 的提交列表或总览中的 `latestSubmission`。不提供 `includeCode`、第二个历史版本 ref、代码范围或任意其他开关；“是否可看代码”由服务端根据当前用户消息校验，不由模型自我声明。
+
+成功输出：
+
+```json
+{
+  "type": "practice_submission_detail",
+  "status": "OK",
+  "submission": {
+    "submissionRef": "ps_m4Q...",
+    "submittedAt": "2026-08-13T11:42:00Z",
+    "language": "JAVA",
+    "reviewedCode": "public int subarraySum(int[] nums, int k) { ... }",
+    "review": {
+      "totalScore": 9.2,
+      "passed": true,
+      "scoreBreakdown": {
+        "correctness": 4.0,
+        "complexity": 2.0,
+        "edgeCases": 1.5,
+        "codeQuality": 0.75,
+        "problemFit": 1.0
+      },
+      "deductionReasons": [],
+      "improvementSuggestions": ["可补充边界条件的说明。"],
+      "affectedTags": ["PREFIX_SUM"],
+      "reviewHistorySummary": "此前两次提交遗漏空前缀初始化；当前版本补齐初始化，Review 已通过。"
+    }
+  }
+}
+```
+
+`reviewedCode` 是当时实际进入正式 Review 的归一化代码，不承诺保留用户聊天消息的 Markdown 围栏、空白格式或无关文本。它是本阶段唯一可能返回源码的字段。若当前消息未通过显式代码意图校验，Tool 返回 `USER_INTENT_REQUIRED` 且不查询、读取或返回代码；这不是用户确认弹窗，也不会把原始用户消息反馈给模型。
+
+详情 Tool 每个 run 最多执行一次。它不能用于遍历历史提交或构造历史版本 diff；直接比较两个旧版本必须以后续独立 Tool 实施，并拥有单独的双 ref 授权与 diff 预算。
+
+### 7.6 run-local capability scope
+
+`problemRef` 与 `submissionRef` 都是 capability，不是数据标识。建议新增独立的 `PracticeSubmissionHistoryRunScopeRegistry`，而不复用学习者记忆 scope：二者的对象、敏感度、预算和释放时机不同。
+
+scope 必须至少保存：
+
+```text
+scopeRef（随机、不可枚举）
+userId
+locale
+problemRef -> { problemSlug, title, tags }
+submissionRef -> { problemSlug, reviewId }
+overview 已读取的 problemRef 集合
+概览/列表共享调用计数
+详情调用计数
+详情 Tool 结果及范围续读的可见字符计数
+expiresAt
+```
+
+`PracticeSubmissionHistoryContextProvider` 在生成 Prompt 可见条目时，同时产出仅服务端可见的 scope input；不能从已经裁剪的 `PracticeSubmissionHistoryEntry` 反推或暴露 slug、Review ID。`AgentConversationService.assemblePracticeChatContext` 在非幂等 replay 中打开 scope，将仅含 `scopeRef` 的 metadata 交给 Agent request，并把 scope lease 与现有 recall、Review trajectory lease 组合为同一个 `AgentRunResource`。run 终态、准备失败、取消和超时均必须释放 lease；幂等 replay 不创建新 ref 或 scope。
+
+Tool 执行过程固定为：先根据 metadata 解析有效 scope，再根据 ref 取得服务端保存的 user 和数据键，最后以 `user_id` 为首个数据库范围条件查询。不得存在“根据 ref 查不到就退回任意 slug/Review ID 查询”的路径。scope 默认有效期为 15 分钟，run 释放后立即不可用。
+
+Phase 2 不扩展 Phase 1 的窄索引 repository 去读取代码。应新增专用的 `PracticeSubmissionHistoryToolRepository`，职责限定为：
+
+```text
+findOverview(userId, problemSlug)
+findSubmissions(userId, problemSlug, afterCreatedAt, afterReviewId, limit)
+findSubmissionDetail(userId, problemSlug, reviewId)
+```
+
+三个查询都以 `user_id` 和 scope 授权的题目/Review 为条件；列表使用 keyset pagination，不使用 offset。详情查询仅在 scope 已解析 `submissionRef` 后执行，避免单独暴露按 ID 读取 Review 的 repository 能力。
+
+### 7.7 预算、长代码与 `read_tool_result`
+
+本阶段使用以下固定 run 预算：
+
+| 预算 | 上限 | 说明 |
+| --- | --- | --- |
+| 概览和列表调用 | 合计 2 次 | 允许“总览 + 首页”或“两个列表页”；同题概览最多一次 |
+| 代码详情调用 | 1 次 | 仅显式代码级意图通过后保留 |
+| 详情结果范围续读 | 最多 2 次 | 仅适用于本阶段详情 Tool 产生的结果 |
+| 详情 Tool 结果可见字符 | 合计 16,000 | 包含详情首次可见内容和后续范围读取 |
+| 列表单页 | 最多 5 条 | 默认 3 条 |
+
+`reviewedCode` 可能超过单个 Tool result 的 inline 阈值。运行时仍使用既有 `ToolResultCompactor`：完整详情结果可保存为当前 run 的 `resultRef`，模型只看到预算内 preview，随后通过已有 `read_tool_result` 读取有限范围。必须为本阶段新增 `ToolResultReadGuard` 实现，依据结果 provenance、scopeRef 和上述详情预算限制 `read_tool_result`；不能因通用范围读取而绕过“详情最多一次、最多两次续读、16,000 字符”的约束。
+
+详情结果中包含用户源码，属于高敏感度 Tool result：不得投影到用户可见聊天消息、普通业务日志、低基数 metrics 或 Prompt 索引。实现前必须确认 Tool result blob 和 Agent 审计快照对该 provenance 使用与正式 Review 源码一致或更短的留存策略；不能为范围续读无意创建无期限的第二份源码副本。
+
+### 7.8 模型调用规则
+
+系统 Prompt 增加以下行为约束：
+
+```text
+历史提交只用于帮助当前题的迁移学习，不是当前题答案。
+普通辅导优先使用最小索引和向用户追问；仅在用户明确询问历史、需要类比或明显卡住时读取概览或列表。
+读取列表后只引用与当前问题直接相关的一项受信事实，不逐条朗读历史。
+只有用户明确要求查看旧代码、代码级复盘，或要求把当前消息中的代码与旧版本比较时，才调用 read_practice_submission_detail。
+不得把题目关联关系描述为必然相同解法；不得声称用户已经掌握某种能力。
+```
+
+Tool 仅用于补充受信事实，不替代正常教学推进。用户没有请求代码时，即使模型认为旧代码“可能有帮助”，也必须先用摘要或结构化反馈引导，而不是展开源码。
 
 ## 8. 模型使用规则
 
@@ -268,6 +508,8 @@ read_practice_submission_detail(submissionRef)
 - 静态题目关系可以按题目缓存；用户 Review 历史不得使用跨用户缓存。
 - 所有历史查询以 `userId` 为首个范围条件；不记录完整题目列表、摘要正文、代码正文或自由文本反馈到低基数 metadata。
 - 历史读取或摘要生成的降级不得影响当前题普通聊天和 Code Review 的完成。
+- Phase 2 的 capability scope 仅保存在应用节点内存，并随 run resource 释放；不得写入普通会话 metadata、system prompt、用户可见消息或跨 run 缓存。
+- 源码详情的 raw Tool result 必须标记专用 provenance，并受专用范围读取 guard、留存策略和审计访问控制约束。
 
 建议记录：
 
@@ -278,7 +520,15 @@ reviewHistorySummaryAvailableCount
 reviewHistoryReadCount
 reviewHistoryReadFailure
 reviewHistorySummaryFallback
+practiceSubmissionHistoryToolCall{tool,status}
+practiceSubmissionHistoryScopeRejected{reasonCategory}
+practiceSubmissionHistoryCodeIntentRejected
+practiceSubmissionHistoryDetailVisibleChars
+practiceSubmissionHistoryDetailRangeReadCount
+practiceSubmissionHistoryToolDataAccessFailure
 ```
+
+其中 `tool` 仅允许三个固定 Tool 名，`status` 和 `reasonCategory` 仅允许低基数枚举值。不得把 `problemRef`、`submissionRef`、cursor、slug、Review ID、代码字符片段或 Review 文本作为 metric tag 或日志字段。
 
 ## 10. 测试与验收
 
@@ -306,14 +556,38 @@ reviewHistorySummaryFallback
 - 关联组只包含当前题关联范围内、且用户存在正式 Review 的题目。
 - 索引不改变稳定 system section 的 content hash，也不会跨用户命中用户状态缓存。
 
-### 10.4 后续 Tool 验收（不属于 Phase 1）
+### 10.4 Phase 2 Tool 契约
 
-- Phase 2 必须拒绝伪造、跨用户或过期的 `problemRef`、`submissionRef`。
-- 提交历史列表不返回代码正文；代码详情只在明确代码级复盘时开放。
+- 三个 Tool 的 JSON Schema 都拒绝额外字段，且不接受用户、题目 slug、Review ID、计划或 session 标识。
+- `get_practiced_problem_overview` 只返回聚合计数、稳定时间、最新提交摘要和受信题目展示字段；不得混入逐次反馈或源码。
+- `list_practice_problem_submissions` 默认返回 3 条、最大 5 条；按 `created_at DESC, id DESC` 排序，跨计划 `versionNo` 重复时仍稳定。
+- 列表 cursor 使用 keyset pagination；连续翻页没有重复、遗漏或倒序，伪造、跨题或跨 run cursor 统一为 `UNAVAILABLE`。
+- 列表的每条记录都可签发本 run 的 `submissionRef`；同一 Review 不因多次分页得到可互换的跨 run ref。
+- `read_practice_submission_detail` 只接受 scope 已签发的 `submissionRef`，并且只返回该正式 Review 的归一化代码和定义字段中的结构化 Review。
+- 列表结果不包含 `normalizedCode`、Review Markdown、检测证据或数据库 ID；详情结果不包含完整 Review Markdown、检测证据、计划/session 和聊天历史。
+
+### 10.5 Scope、安全与预算
+
+- 伪造、跨用户、跨题、跨 run、过期和已释放的 `problemRef`、`submissionRef`、cursor 都不得触发数据查询，并统一返回 `UNAVAILABLE`。
+- Idempotent replay 不打开新历史 scope，不生成新 ref，不允许旧 ref 在 replay 中复用。
+- run 正常结束、准备失败、取消、超时和异常时均释放历史 scope；释放后所有 ref 立即失效。
+- overview 与 list 合计第三次调用返回 `BUDGET_EXHAUSTED`；同一题 overview 第二次调用也必须被拒绝。
+- detail 第二次调用返回 `BUDGET_EXHAUSTED`；详情 Tool 的 `USER_INTENT_REQUIRED` 不读取代码，且不消耗详情调用或源码可见字符预算。
+- 只有当前用户消息明确包含查看旧代码、代码级复盘，或与当前消息代码比较的意图时 detail 才可执行。一般的“我之前哪里错了”只允许概览或列表。
+- `read_tool_result` 对详情 Tool 的 resultRef 最多允许两次范围读取，首次详情 preview 与续读总可见字符不超过 16,000；其他 Tool result 不受该专用 guard 的误拦截。
+- scope、Tool result 和日志中均不能出现跨用户数据；集成测试必须验证查询 SQL 的用户范围先于题目和 Review 条件。
+
+### 10.6 Repository 与端到端联调
+
+- PostgreSQL 集成测试覆盖跨计划聚合、通过次数、最早/最新时间、同时间按 ID 的稳定排序和 keyset 翻页。
+- 详情查询必须证明错误用户、错误题目或未授权 Review ID 无法命中，即使该数据库记录真实存在。
+- Practice Chat 集成测试覆盖 Prompt 索引与 scope 中的 `problemRef` 一致、Agent Definition 按开关注入三个 Tool、run resource 合并释放和 SSE 中不投影源码 Tool result。
+- 长代码场景验证 ToolResultCompactor 生成 `resultRef`，并验证受限 `read_tool_result` 能在预算内续读、预算耗尽后拒绝。
+- 本阶段不修改正式 Review 写入语义；提交新代码后，仍由 `submit_practice_code_review` 产生新的 `reviewHistorySummary`，后续新 run 才可见该历史事实。
 
 ## 11. 分阶段发布
 
-### 阶段一：Review 历程摘要与 Prompt 索引
+### 阶段一：Review 历程摘要与 Prompt 索引（已实施）
 
 - 新增 `reviewHistorySummary` structured output 和持久化字段。
 - Code Review 前读取最近四条同题、跨计划历史窄行。
@@ -324,12 +598,18 @@ reviewHistorySummaryFallback
 - 条目仅使用本设计固定字段，不注册历史读取 Tool。
 - 关联题索引只作为迁移线索，不自动展开详情。
 
-### 阶段二：通用只读 Tool
+### 阶段二：历史提交 Tool（已实施，默认开启）
 
-- 提供题目总览和提交历史读取。
-- 用户明确要求代码级复盘时，再提供提交详情或有界 diff。
+1. 已新增 `PracticeSubmissionHistoryRunScopeRegistry`、专用 `PracticeSubmissionHistoryToolRepository`、三个 Tool、常量契约和 Micrometer 指标；Phase 1 Prompt 索引的公开字段保持不变。
+2. `AgentConversationService` 会在非 replay 的 Practice Chat run 中打开并合并释放历史 scope；Practice Chat Definition 仅在 capability 已完整装配时加入对应 Tool 白名单。Tool、开关、读写副作用与预算已同步到 `agent-tool-catalog.md`。
+3. 总开关 `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` 默认 `true`。关闭时不创建历史 scope、不把三个 Tool 加入 Practice Chat 白名单，Phase 1 Prompt 索引继续照常工作。
+4. 代码详情开关 `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED` 默认 `true`，并以总开关为前置条件。关闭源码详情开关时只暴露 overview 和 list。
+5. 代码详情使用 `read_practice_submission_detail` provenance 的专用 `ToolResultReadGuard`，验证了 preview/resultRef 的两次范围读取和 16,000 字符合计上限。详情原始 Tool result 仅进入 run 内模型上下文和受保护的管理员审计链路，不投影到用户 SSE；详情 blob 沿用 Agent run 的 30 天诊断留存与管理员审计访问控制，正式 `practice_code_review` 事实不随 blob 清理删除。
+6. 发布时先在小范围用户中观察 Tool 调用量、scope 拒绝、数据访问失败、代码意图拒绝和上下文字符预算；发现越权、误触发或源码意外投影时，优先关闭代码详情二级开关，必要时关闭总开关，无需回滚正式 Review。
+
+本阶段未增加业务表或回填任务；历史 Tool 直接读取既有正式 Review 事实。
 
 ## 12. 待确认事项
 
 1. 关联题候选是否同时包含反向关系；不影响跨计划 Review 历程语义。
-2. 通用 Tool 的首期开放开关和灰度策略。
+2. 源码详情 Tool result 沿用 Agent run 的 30 天诊断留存和管理员审计访问控制；如后续合规要求进一步缩短源码 blob 留存，应以独立迁移和留存评审实施。

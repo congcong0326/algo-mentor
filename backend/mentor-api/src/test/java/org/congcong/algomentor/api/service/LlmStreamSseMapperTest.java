@@ -23,6 +23,7 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolContracts;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
@@ -141,6 +142,24 @@ class LlmStreamSseMapperTest {
     assertThat(serializedData(stepStart)).contains("\"stepIndex\":1");
     assertThat(sseText(runEnd)).contains("event:agent_run_end");
     assertThat(serializedData(runEnd)).contains("\"finishReason\":\"STOP\"");
+  }
+
+  @Test
+  void excludesHistoricalSubmissionSourceDetailFromUserVisibleToolEndEvents() throws Exception {
+    String sourceSentinel = "private-historical-source-code";
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(new AgentStreamEvent.AgentToolEnd(
+        "run_1",
+        1,
+        "call_1",
+        PracticeSubmissionHistoryToolContracts.READ_PRACTICE_SUBMISSION_DETAIL,
+        objectMapper.readTree("""
+            {"type":"practice_submission_detail","submission":{"reviewedCode":"%s"}}
+            """.formatted(sourceSentinel))));
+
+    assertThat(sseText(event)).contains("event:agent_tool_end");
+    assertThat(serializedData(event))
+        .contains("\"toolName\":\"read_practice_submission_detail\"")
+        .doesNotContain("result", "reviewedCode", sourceSentinel);
   }
 
   @Test

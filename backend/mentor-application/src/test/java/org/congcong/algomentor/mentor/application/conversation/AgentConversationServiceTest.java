@@ -41,6 +41,10 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHis
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContextProvider;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryEntry;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRunScopeRegistry;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryScopeInput;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryScopeService;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolContracts;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
@@ -324,6 +328,43 @@ class AgentConversationServiceTest {
     assertThat(historyProvider.calls).isEqualTo(1);
   }
 
+  @Test
+  void opensAndReleasesSubmissionHistoryScopeWithoutExposingTheSlugInRequestMetadata() {
+    CapturingRepository repository = new CapturingRepository();
+    CountingSubmissionHistoryProvider historyProvider = new CountingSubmissionHistoryProvider();
+    PracticeSubmissionHistoryRunScopeRegistry registry = new PracticeSubmissionHistoryRunScopeRegistry();
+    AgentConversationService service = new AgentConversationService(
+        repository,
+        new ContextAssembler(),
+        ContextAssemblyPolicy.defaultPolicy(),
+        new InMemoryPlanRepository(plan()),
+        new FakePracticeProblemCatalog(),
+        new DefaultPromptAssembler(
+            new PracticeChatPromptProfileResolver(),
+            List.of(new PracticeChatPromptSectionProvider())),
+        null,
+        null,
+        null,
+        null,
+        historyProvider,
+        new PracticeSubmissionHistoryScopeService(registry));
+
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "请展示之前提交的代码", "idem-submission-history-scope", PracticeCoachStyle.GUIDED,
+        PracticeResponseLanguage.ZH_CN));
+
+    String scopeRef = run.agentRequest().metadata()
+        .get(PracticeSubmissionHistoryToolContracts.METADATA_SCOPE_REF).toString();
+    assertThat(scopeRef).startsWith("ph_").doesNotContain("two-sum");
+    assertThat(run.agentRequest().metadata())
+        .containsEntry(PracticeSubmissionHistoryToolContracts.METADATA_CODE_DETAIL_INTENT, true);
+    assertThat(registry.reserveOverview(scopeRef, "pp_test").granted()).isTrue();
+
+    run.runResource().release();
+    assertThat(registry.reserveOverview(scopeRef, "pp_test").status())
+        .isEqualTo(PracticeSubmissionHistoryRunScopeRegistry.ScopeUseStatus.UNAVAILABLE);
+  }
+
   private static PracticeChatAgentInput practiceInput(
       String message,
       String idempotencyKey,
@@ -489,7 +530,9 @@ class AgentConversationServiceTest {
       return new PracticeSubmissionHistoryContext(
           List.of(new PracticeSubmissionHistoryEntry(
               "pp_test", "Subarray Sum Equals K", List.of("Prefix Sum"), null)),
-          List.of());
+          List.of(),
+          List.of(new PracticeSubmissionHistoryScopeInput(
+              "pp_test", "two-sum", "Subarray Sum Equals K", List.of("Prefix Sum"))));
     }
   }
 

@@ -20,6 +20,7 @@ import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReview
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewHistoryRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSubmissionHistoryRepository;
+import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSubmissionHistoryToolRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
 import org.congcong.algomentor.api.profile.mapper.LearnerMemoryMapper;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryClaimRepository;
@@ -58,6 +59,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRep
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewIndexRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewHistoryRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.coachsummary.CoachSummaryProposalRepository;
 import org.congcong.algomentor.mentor.application.profile.claim.repository.LearnerMemoryClaimRepository;
@@ -316,6 +318,15 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(PracticeSubmissionHistoryRepository.class)
   public PracticeSubmissionHistoryRepository practiceSubmissionHistoryRepository(PracticeCodeReviewMapper mapper) {
     return new MyBatisPracticeSubmissionHistoryRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(PracticeSubmissionHistoryToolRepository.class)
+  public PracticeSubmissionHistoryToolRepository practiceSubmissionHistoryToolRepository(
+      PracticeCodeReviewMapper mapper,
+      ObjectMapper objectMapper
+  ) {
+    return new MyBatisPracticeSubmissionHistoryToolRepository(mapper, objectMapper);
   }
 
   @Bean

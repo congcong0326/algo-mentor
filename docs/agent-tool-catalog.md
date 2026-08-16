@@ -18,7 +18,7 @@
 - 只存在于设计文档、尚未实现的规划工具。
 - 普通 Java `util`、前端工具栏和根目录 `tools/` 下的数据准备脚本。
 
-截至当前代码，生产代码共有 **17 个 `AgentTool` 实现**。需要特别区分两个概念：
+截至当前代码，生产代码共有 **20 个 `AgentTool` 实现**。需要特别区分两个概念：
 
 - **已注册**：Spring Bean 被收集进全局 `AgentToolRegistry`。
 - **可调用**：某个 `AgentDefinition.allowedToolNames()` 把工具加入当前 run 的白名单，模型才会看到并执行它。
@@ -28,7 +28,7 @@
 按 `application.yml` 默认值并假设 PostgreSQL 等完整依赖均已装配：
 
 - 默认实际暴露给业务 Agent 的工具有 9 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`query_learning_plan_revision`、`compile_learning_plan_revision`、`submit_practice_code_review`、`get_current_problem_learning_state`、`propose_current_problem_coach_summary`、`get_problem_review_trajectory`。
-- 通过可选能力开关可再暴露 7 个学习者记忆工具。
+- 通过可选能力开关可再暴露 7 个学习者记忆工具，以及 3 个历史正式提交 Tool。
 - `calculator` 和 `get_problem_statement` 虽然默认注册，但当前没有任何统一 Runtime Definition 将其加入白名单。
 
 ## 2. Tool 运行与隔离模型
@@ -62,7 +62,7 @@ Spring AgentTool Bean
 | 学习计划草案 `LEARNING_PLAN_DRAFT` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 学习计划修订 `LEARNING_PLAN_REVISION` | 24 | `query_learning_plan_revision`、`compile_learning_plan_revision` | 开启 |
 | 学习计划扩展 `LEARNING_PLAN_EXTENSION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
-| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`propose_current_problem_coach_summary`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像和记忆召回工具 | 开启 |
+| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`propose_current_problem_coach_summary`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像、记忆召回和历史正式提交工具 | 开启 |
 | Code Review 画像后台更新 `CODE_REVIEW_PROFILE_UPDATE` | 4 | `get_problem_review_trajectory`、`get_code_review_evidence`、`compare_submission_versions` | 默认关闭 |
 | Practice Code Review 子 Agent | 1 | 无 | 随 Review 能力开启 |
 | 学习者自述画像决策子 Agent | 1 | 无 | 默认关闭 |
@@ -330,6 +330,27 @@ Spring AgentTool Bean
 - 当前没有单独的确认弹窗；安全边界依赖用户明确表达、Prompt 规则、可信消息校验和原子写入服务。
 - 配置：`LEARNER_MEMORY_DECLARED_UPDATE_ENABLED`，默认 `false`。
 
+### 6.5 历史正式提交 Tool
+
+`get_practiced_problem_overview`、`list_practice_problem_submissions` 和 `read_practice_submission_detail` 只服务于当前 Practice Chat run 的历史正式代码提交。它们均为只读能力，不触发权限确认，也不改变 Review、练习进度或用户资料。
+
+- `get_practiced_problem_overview` 输入一个本 run 签发的 `problemRef`，返回跨计划正式提交次数、通过次数、首次时间、题目展示字段和最新提交的紧凑结论；不返回源码、逐次反馈或完整 Review Markdown。
+- `list_practice_problem_submissions` 输入 `problemRef`、可选的本 run keyset `cursor` 与最多 5 条的 `limit`，返回按 `created_at DESC, id DESC` 排列的受限 Review 时间线，并为每条记录签发仅本 run 有效的 `submissionRef`。
+- `read_practice_submission_detail` 只接受已签发的 `submissionRef`。仅当服务端从当前用户消息确认“查看旧代码、代码级复盘或与当前代码比较”的明确意图时，返回一次归一化代码和定义字段内的结构化 Review；普通的“我之前哪里错了”不会授权读取代码。
+
+**隔离与预算**
+
+- 模型参数中不接受用户、裸 `problemSlug`、Review ID、计划或 session。所有查询先由不可枚举的 run-local ref 解析出服务端保存的 `userId + problemSlug (+ reviewId)`；伪造、跨题、跨 run、过期或已释放 ref 在查询前返回 `UNAVAILABLE`。
+- scope 仅驻留应用节点内存，默认 15 分钟过期，并随 run 正常结束、取消、超时、准备失败或异常释放。幂等 replay 不打开新 scope，也不能复用旧 ref。
+- overview 与 list 合计每个 run 最多两次，且同题 overview 最多一次；detail 最多一次。`USER_INTENT_REQUIRED` 不查询代码，也不消耗 detail 次数或字符预算。
+- 详情大结果经 `read_tool_result` 续读时，最多两次范围读取；首次 preview 加两次续读合计最多向模型暴露 16,000 字符。该 guard 只拦截 `read_practice_submission_detail` 的 result provenance，不影响其他 Tool。
+- 代码详情 blob 沿用 Agent run 的诊断留存与管理员审计访问控制：诊断数据和 `tool_result` blob 在 run 终态后最多保留 30 天，清理任务会删除 blob 并脱敏相关 Tool trace；正式 `practice_code_review` 事实不受此短期诊断留存影响。
+
+**开关**
+
+- `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` 默认 `true`。关闭时不创建 scope、不注册三个 Tool 到 Practice Chat 白名单，Phase 1 Prompt 索引仍照常注入。
+- `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED` 默认 `true`，且以总开关为前置条件。关闭源码详情开关时只暴露 overview 与 list。
+
 ## 7. Practice Chat 记忆召回工具
 
 这三个工具只读取当前 Practice Chat run 启动时创建的学习者记忆快照，不直接遍历用户的全部长期记忆。默认开关关闭。
@@ -418,7 +439,7 @@ Spring AgentTool Bean
 **边界**
 
 - 只允许读取当前 Agent run 产生的结果 blob，不能跨 run 使用 `resultRef`。
-- 对学习者记忆工具结果额外执行专用读取预算；其他工具结果使用通用压缩策略上限。
+- 对学习者记忆工具和历史提交详情结果额外执行各自的专用读取预算；其他工具结果使用通用压缩策略上限。
 - 当前只被 Practice Chat Definition 加入白名单。
 - 没有独立功能开关；存在 `ToolResultStore` 时注册。完整 PostgreSQL 装配会提供 `PostgresToolResultStore`。
 
@@ -454,6 +475,8 @@ Spring AgentTool Bean
 | `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` | `true` | Practice Chat 的 `get_current_problem_learning_state` |
 | `PRACTICE_CHAT_COACH_SUMMARY_TOOL_ENABLED` | `true` | Practice Chat 的 `propose_current_problem_coach_summary` |
 | `PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED` | `true` | Practice Chat 的当前题 `get_problem_review_trajectory` |
+| `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` | `true` | `get_practiced_problem_overview`、`list_practice_problem_submissions`，并创建 run-local 历史 scope |
+| `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED` | `true` | `read_practice_submission_detail`；必须同时开启历史提交总开关 |
 | `LEARNER_MEMORY_DECLARED_UPDATE_ENABLED` | `false` | `update_learner_declared_profile` |
 | `LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED` | `false` | 三个 Practice Chat 记忆召回工具 |
 | `LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED` | `false` | 三个 Code Review 画像后台工具的 Agent Definition |
@@ -490,6 +513,10 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 
 `submit_practice_code_review` 在 `PRACTICE_CHAT` 中由“模型识别疑似完整提交 + 精确工具名与受信 agentKey 自动授权 + 服务端可信上下文校验”组成闭环，不展示确认弹窗；`propose_current_problem_coach_summary` 本身无正式写副作用，先在聊天中展示候选，再由用户点击一次性 apply 按钮写入；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。三者采用与业务风险匹配的不同授权语义。
 
+### 11.6 历史提交能力默认开启
+
+历史正式提交 Tool 已实现，总开关与源码详情二级开关在 `application.yml` 中均默认开启。源码详情仍需通过当前消息的服务端意图判定和专用 `read_tool_result` 预算；需要收紧暴露范围时，可先关闭二级开关而不影响正式 Review 数据。
+
 ## 12. 主要代码依据
 
 - Tool 抽象与注册：`backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentTool.java`、`AgentToolRegistry.java`。
@@ -499,5 +526,6 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 - Practice Chat 与记忆装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`。
 - 当前题学习状态工具：`backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`。
 - 当前题教练总结候选：`backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/ProposeCurrentProblemCoachSummaryAgentTool.java`、`practice/coachsummary/CoachSummaryProposalService.java`。
+- 历史正式提交 Tool：`PracticeSubmissionHistoryRunScopeRegistry.java`、`GetPracticedProblemOverviewAgentTool.java`、`ListPracticeProblemSubmissionsAgentTool.java`、`ReadPracticeSubmissionDetailAgentTool.java`、`PracticeSubmissionHistoryToolResultReadGuard.java`。
 - 正式 Review 装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/PracticeCodeReviewConfiguration.java`。
 - 默认配置：`backend/mentor-api/src/main/resources/application.yml`。

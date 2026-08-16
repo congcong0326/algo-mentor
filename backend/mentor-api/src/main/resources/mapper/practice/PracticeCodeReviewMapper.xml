@@ -486,6 +486,75 @@
     LIMIT #{limit}
   </select>
 
+  <sql id="PracticeSubmissionHistoryToolReviewColumns">
+    review.id AS review_id,
+    review.created_at AS submitted_at,
+    review.language,
+    review.total_score,
+    review.passed,
+    review.correctness_score,
+    review.complexity_score,
+    review.edge_case_score,
+    review.code_quality_score,
+    review.problem_fit_score,
+    review.deduction_reasons_json::TEXT AS deduction_reasons_json,
+    review.improvement_suggestions_json::TEXT AS improvement_suggestions_json,
+    COALESCE((
+      SELECT jsonb_agg(review_tag.tag_id ORDER BY review_tag.tag_id)::TEXT
+      FROM practice_code_review_tag review_tag
+      WHERE review_tag.review_id = review.id
+    ), '[]') AS affected_tag_ids_json,
+    review.review_history_summary
+  </sql>
+
+  <select id="findSubmissionHistoryOverview"
+      resultType="org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryOverviewRow">
+    WITH scoped AS (
+      SELECT *
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+        AND review.problem_slug = #{problemSlug}
+    ), latest AS (
+      SELECT *
+      FROM scoped
+      ORDER BY created_at DESC, id DESC
+      LIMIT 1
+    )
+    SELECT
+      (SELECT COUNT(*) FROM scoped) AS formal_submission_count,
+      (SELECT COUNT(*) FROM scoped WHERE passed) AS passed_submission_count,
+      (SELECT MIN(created_at) FROM scoped) AS first_submitted_at,
+      <include refid="PracticeSubmissionHistoryToolReviewColumns"/>
+    FROM latest review
+  </select>
+
+  <select id="findSubmissionHistorySubmissions"
+      resultType="org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistorySubmissionRow">
+    SELECT <include refid="PracticeSubmissionHistoryToolReviewColumns"/>
+    FROM practice_code_review review
+    WHERE review.user_id = #{userId}
+      AND review.problem_slug = #{problemSlug}
+      <if test="afterCreatedAt != null and afterReviewId != null">
+        AND (
+          review.created_at &lt; #{afterCreatedAt}
+          OR (review.created_at = #{afterCreatedAt} AND review.id &lt; #{afterReviewId})
+        )
+      </if>
+    ORDER BY review.created_at DESC, review.id DESC
+    LIMIT #{fetchLimit}
+  </select>
+
+  <select id="findSubmissionHistoryDetail"
+      resultType="org.congcong.algomentor.api.practice.mapper.model.PracticeSubmissionHistoryDetailRow">
+    SELECT
+      <include refid="PracticeSubmissionHistoryToolReviewColumns"/>,
+      review.normalized_code
+    FROM practice_code_review review
+    WHERE review.user_id = #{userId}
+      AND review.problem_slug = #{problemSlug}
+      AND review.id = #{reviewId}
+  </select>
+
   <select id="findEvidenceDetail" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetailRow">
     SELECT
       <include refid="CodeReviewHistoryColumns"/>,

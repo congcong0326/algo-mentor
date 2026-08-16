@@ -46,18 +46,21 @@ public class PracticeSubmissionHistoryContextProvider {
             userId, relatedSlugs, PracticeSubmissionHistoryContext.RELATED_SUBMITTED_PROBLEM_LIMIT);
 
     Map<String, String> refsBySlug = new HashMap<>();
+    Map<String, PracticeSubmissionHistoryScopeInput> scopeInputsByRef = new java.util.LinkedHashMap<>();
     return new PracticeSubmissionHistoryContext(
-        entries(submitted, locale, refsBySlug),
-        entries(related, locale, refsBySlug));
+        entries(submitted, locale, refsBySlug, scopeInputsByRef),
+        entries(related, locale, refsBySlug, scopeInputsByRef),
+        List.copyOf(scopeInputsByRef.values()));
   }
 
   private List<PracticeSubmissionHistoryEntry> entries(
       List<PracticeSubmissionHistoryProblem> problems,
       String locale,
-      Map<String, String> refsBySlug
+      Map<String, String> refsBySlug,
+      Map<String, PracticeSubmissionHistoryScopeInput> scopeInputsByRef
   ) {
     return problems.stream()
-        .map(problem -> toEntry(problem, locale, refsBySlug))
+        .map(problem -> toEntry(problem, locale, refsBySlug, scopeInputsByRef))
         .flatMap(java.util.Optional::stream)
         .toList();
   }
@@ -65,14 +68,17 @@ public class PracticeSubmissionHistoryContextProvider {
   private java.util.Optional<PracticeSubmissionHistoryEntry> toEntry(
       PracticeSubmissionHistoryProblem problem,
       String locale,
-      Map<String, String> refsBySlug
+      Map<String, String> refsBySlug,
+      Map<String, PracticeSubmissionHistoryScopeInput> scopeInputsByRef
   ) {
     return problemCatalog.findProblemBySlug(problem.problemSlug(), locale)
-        .map(detail -> new PracticeSubmissionHistoryEntry(
-            refsBySlug.computeIfAbsent(problem.problemSlug(), ignored -> opaqueProblemRef()),
-            title(detail, locale),
-            detail.tags(),
-            problem.reviewHistorySummary()));
+        .map(detail -> {
+          String problemRef = refsBySlug.computeIfAbsent(problem.problemSlug(), ignored -> opaqueProblemRef());
+          String title = title(detail, locale);
+          scopeInputsByRef.putIfAbsent(problemRef, new PracticeSubmissionHistoryScopeInput(
+              problemRef, problem.problemSlug(), title, detail.tags()));
+          return new PracticeSubmissionHistoryEntry(problemRef, title, detail.tags(), problem.reviewHistorySummary());
+        });
   }
 
   private String opaqueProblemRef() {

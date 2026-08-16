@@ -7,6 +7,7 @@
 - `pyproject.toml` / `uv.lock` / `.python-version`：测试工程 Python 3.12 + uv 环境配置，供后续 smoke/eval runner 使用。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：可选的本地 Docker Compose 应用/PostgreSQL 便利配置；默认开发流程直接运行本机进程和本机 PostgreSQL。
+- `deploy/docker/Dockerfile.preprod`：仅接收已构建 `mentor-api.jar` 的预发布运行镜像定义；不启动数据库或 Redis。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
 - `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，固定移除 common pool、Agent 工作线程同步投递 SSE 和无队列执行池；执行组舱壁另见执行组设计。
 - `docs/agent-execution-group-bulkhead-design.md`：Agent 执行组舱壁隔离研发设计，定义 Definition 代码声明执行组、`27/2/1` 严格容量、按组信号量、容量总和推导物理线程池上限、CHILD 内联继承和组级指标。
@@ -142,6 +143,7 @@
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentExecutorProperties.java`：绑定 `algo-mentor.agent.executor` 的线程数、空闲回收、关停超时和线程名前缀配置。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，包含 Agent executor 环境变量映射，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
+- `backend/mentor-api/src/main/resources/application-preprod.yml`：预发布环境配置，启用 JDBC/Flyway，并从受保护的环境文件读取 PostgreSQL、缓存 Redis 和 Streams Redis 连接信息。
 - `backend/mentor-api/src/main/resources/db/migration`：mentor API 自有 Flyway 迁移脚本目录。
 - `backend/mentor-api/src/main/resources/db/migration/V27__problem_recommendation_reasons.sql`：为题目表增加中英文推荐理由字段。
 - `backend/mentor-api/src/main/resources/db/migration/V33__problem_tag_normalization.sql`：创建题目标签目录和关联表，按稳定频次规则回填历史数组，并在迁移内校验有序双写一致性。

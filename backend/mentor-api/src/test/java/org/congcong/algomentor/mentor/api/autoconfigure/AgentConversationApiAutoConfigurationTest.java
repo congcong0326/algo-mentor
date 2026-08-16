@@ -18,8 +18,10 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentTool;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
@@ -60,6 +62,13 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatu
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryRunScopeRegistry;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryScopeService;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolRepository;
+import org.congcong.algomentor.mentor.application.practice.GetPracticedProblemOverviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.ListPracticeProblemSubmissionsAgentTool;
+import org.congcong.algomentor.mentor.application.practice.ReadPracticeSubmissionDetailAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryToolContracts;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.congcong.algomentor.mentor.application.practice.ProposeCurrentProblemCoachSummaryAgentTool;
 import org.congcong.algomentor.mentor.application.practice.ProposeCurrentProblemCoachSummaryAgentToolContracts;
@@ -225,6 +234,86 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
           assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
               .containsExactly(PracticeLearningStateAgentToolContracts.TOOL_NAME);
+        });
+  }
+
+  @Test
+  void keepsPracticeSubmissionHistoryToolsAndScopeDisabledByDefault() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(PracticeSubmissionHistoryToolRepository.class, () -> mock(PracticeSubmissionHistoryToolRepository.class))
+        .withBean(ReadToolResultTool.class, () -> new ReadToolResultTool(
+            new InMemoryToolResultStore(), ToolResultCompactionPolicy.defaults()))
+        .run(context -> {
+          assertThat(context).doesNotHaveBean(PracticeSubmissionHistoryRunScopeRegistry.class);
+          assertThat(context).doesNotHaveBean(PracticeSubmissionHistoryScopeService.class);
+          assertThat(context).doesNotHaveBean(GetPracticedProblemOverviewAgentTool.class);
+          assertThat(context).doesNotHaveBean(ListPracticeProblemSubmissionsAgentTool.class);
+          assertThat(context).doesNotHaveBean(ReadPracticeSubmissionDetailAgentTool.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(ReadToolResultTool.NAME);
+        });
+  }
+
+  @Test
+  void exposesOnlyOverviewAndListWhenSubmissionHistoryTotalFlagIsEnabled() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(PracticeSubmissionHistoryToolRepository.class, () -> mock(PracticeSubmissionHistoryToolRepository.class))
+        .withBean(ReadToolResultTool.class, () -> new ReadToolResultTool(
+            new InMemoryToolResultStore(), ToolResultCompactionPolicy.defaults()))
+        .withPropertyValues("algo-mentor.practice-chat.submission-history-tool.enabled=true")
+        .run(context -> {
+          assertThat(context).hasSingleBean(PracticeSubmissionHistoryRunScopeRegistry.class);
+          assertThat(context).hasSingleBean(PracticeSubmissionHistoryScopeService.class);
+          assertThat(context).hasSingleBean(GetPracticedProblemOverviewAgentTool.class);
+          assertThat(context).hasSingleBean(ListPracticeProblemSubmissionsAgentTool.class);
+          assertThat(context).doesNotHaveBean(ReadPracticeSubmissionDetailAgentTool.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(
+                  PracticeSubmissionHistoryToolContracts.GET_PRACTICED_PROBLEM_OVERVIEW,
+                  PracticeSubmissionHistoryToolContracts.LIST_PRACTICE_PROBLEM_SUBMISSIONS,
+                  ReadToolResultTool.NAME);
+        });
+  }
+
+  @Test
+  void codeDetailFlagRequiresTheSubmissionHistoryTotalFlag() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(PracticeSubmissionHistoryToolRepository.class, () -> mock(PracticeSubmissionHistoryToolRepository.class))
+        .withBean(ToolResultCompactionPolicy.class, ToolResultCompactionPolicy::defaults)
+        .withBean(ReadToolResultTool.class, () -> new ReadToolResultTool(
+            new InMemoryToolResultStore(), ToolResultCompactionPolicy.defaults()))
+        .withPropertyValues("algo-mentor.practice-chat.submission-history-code-detail.enabled=true")
+        .run(context -> {
+          assertThat(context).doesNotHaveBean(PracticeSubmissionHistoryRunScopeRegistry.class);
+          assertThat(context).doesNotHaveBean(ReadPracticeSubmissionDetailAgentTool.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(ReadToolResultTool.NAME);
+        });
+
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(PracticeSubmissionHistoryToolRepository.class, () -> mock(PracticeSubmissionHistoryToolRepository.class))
+        .withBean(ToolResultCompactionPolicy.class, ToolResultCompactionPolicy::defaults)
+        .withBean(ReadToolResultTool.class, () -> new ReadToolResultTool(
+            new InMemoryToolResultStore(), ToolResultCompactionPolicy.defaults()))
+        .withPropertyValues(
+            "algo-mentor.practice-chat.submission-history-tool.enabled=true",
+            "algo-mentor.practice-chat.submission-history-code-detail.enabled=true")
+        .run(context -> {
+          assertThat(context).hasSingleBean(ReadPracticeSubmissionDetailAgentTool.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(
+                  PracticeSubmissionHistoryToolContracts.GET_PRACTICED_PROBLEM_OVERVIEW,
+                  PracticeSubmissionHistoryToolContracts.LIST_PRACTICE_PROBLEM_SUBMISSIONS,
+                  PracticeSubmissionHistoryToolContracts.READ_PRACTICE_SUBMISSION_DETAIL,
+                  ReadToolResultTool.NAME);
         });
   }
 

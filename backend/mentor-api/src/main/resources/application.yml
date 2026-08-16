@@ -191,6 +191,10 @@ algo-mentor:
       enabled: ${PRACTICE_CHAT_COACH_SUMMARY_TOOL_ENABLED:true}
     review-trajectory:
       enabled: ${PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED:true}
+    submission-history-tool:
+      enabled: ${PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED:true}
+    submission-history-code-detail:
+      enabled: ${PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED:true}
     prompt:
       total-token-budget: ${PRACTICE_CHAT_PROMPT_TOKEN_BUDGET:8000}
   practice:
