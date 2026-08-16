@@ -416,7 +416,8 @@ export async function getReviewCardContext(
   cardId: number,
   signal?: AbortSignal,
 ): Promise<ApiResponse<ReviewCardContext>> {
-  const response = await apiFetch(`/api/review-cards/${cardId}/context`, {
+  const query = new URLSearchParams({ timezone: browserTimezone() });
+  const response = await apiFetch(`/api/review-cards/${cardId}/context?${query.toString()}`, {
     headers: jsonHeaders,
     signal,
   });
@@ -434,7 +435,8 @@ export async function submitReviewAttempt(
   rating: string,
   signal?: AbortSignal,
 ): Promise<ApiResponse<ReviewAttempt>> {
-  const response = await apiFetch(`/api/review-cards/${cardId}/attempts`, {
+  const query = new URLSearchParams({ timezone: browserTimezone() });
+  const response = await apiFetch(`/api/review-cards/${cardId}/attempts?${query.toString()}`, {
     method: 'POST',
     headers: {
       ...jsonHeaders,

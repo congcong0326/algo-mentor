@@ -39,19 +39,23 @@ PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED=true
 
 若第 3 步遗漏，命令会在旧容器仍运行时失败，并指出缺少的文件名和变量名。
 
+脚本还会扫描打包的 `application*.yml`：任何未提供默认值的环境变量必须出现在该契约中，避免新增硬性 Spring Boot 配置后遗漏预发布登记。
+
 ## 使用方式
 
-首次使用时，当前运行中的旧容器没有发布提交标签，需要明确提供它对应的已部署提交：
+先执行只读预检。它会检查后端、前端、预发布 Dockerfile 与环境变量契约的发布状态、Flyway 迁移、关联测试、本地打包、SSH 访问和目标机的运行时变量契约，但绝不上传制品、构建远端镜像或替换容器。预检允许当前 Makefile、发布脚本和说明文档未提交，便于先验证发布工具本身：
 
 ```bash
-make deploy-preprod-fast PREPROD_BASE_REF=ab91550
+make deploy-preprod-fast-preflight
 ```
 
-成功后，容器会带有提交标签，后续正常发布不需要再传入基线：
+预检通过后发布：
 
 ```bash
 make deploy-preprod-fast
 ```
+
+当前旧容器没有提交标签，Makefile 已记录其已验证的首次比较基线 `ab91550`。首次成功后，新容器会带有提交标签，后续脚本自动从运行中容器读取基线，不再使用该值。只有部署到非标准目标或需要纠正历史状态时，才传入 `PREPROD_BASE_REF=<已部署提交>`。
 
 可通过 `PREPROD_HOST` 和 `PREPROD_CONTAINER_NAME` 覆盖默认目标，但只能用于具有相同目录、受保护环境文件与 Docker 运行约定的预发布主机。
 

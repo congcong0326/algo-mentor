@@ -24,6 +24,7 @@ import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverview
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewRating;
+import org.congcong.algomentor.mentor.application.review.schedule.ReviewZoneId;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,6 +95,7 @@ public class ReviewCardController {
   public ApiResponse<ReviewCardContextResponse> context(
       @PathVariable long cardId,
       @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
+      @RequestParam(required = false) String timezone,
       HttpServletResponse response
   ) {
     response.addHeader(HttpHeaders.VARY, ApiContractConstants.ACCEPT_LANGUAGE_HEADER);
@@ -101,19 +103,22 @@ public class ReviewCardController {
         requiredQueueService().context(
             requireCurrentUserId(),
             cardId,
-            ApiErrorLocales.parse(acceptLanguage).toLanguageTag())));
+            ApiErrorLocales.parse(acceptLanguage).toLanguageTag(),
+            ReviewZoneId.parse(timezone))));
   }
 
   @PostMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH + "/{cardId}/attempts")
   public ApiResponse<ReviewAttemptResponse> submitAttempt(
       @PathVariable long cardId,
+      @RequestParam(required = false) String timezone,
       @Valid @RequestBody SubmitReviewAttemptRequest request
   ) {
     return ApiResponse.success(ReviewResponseMapper.toAttemptResponse(requiredAttemptService().submit(
         requireCurrentUserId(),
         cardId,
         request.clientAttemptId(),
-        ReviewRating.parse(request.rating()))));
+        ReviewRating.parse(request.rating()),
+        ReviewZoneId.parse(timezone))));
   }
 
   @GetMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH + "/{cardId}/attempts")

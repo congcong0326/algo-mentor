@@ -132,8 +132,13 @@ algo-mentor:
       desired-retention: ${REVIEW_DESIRED_RETENTION:0.90}
       maximum-interval-days: ${REVIEW_MAXIMUM_INTERVAL_DAYS:36500}
       enable-fuzzing: ${REVIEW_ENABLE_FUZZING:true}
+      graduating-interval-days: ${REVIEW_GRADUATING_INTERVAL_DAYS:1}
+      easy-interval-days: ${REVIEW_EASY_INTERVAL_DAYS:4}
     seed:
       high-score-ratio: ${REVIEW_HIGH_SCORE_RATIO:0.90}
+      low-confidence-first-interval-days: ${REVIEW_LOW_CONFIDENCE_FIRST_INTERVAL_DAYS:1}
+      passed-first-interval-days: ${REVIEW_PASSED_FIRST_INTERVAL_DAYS:3}
+      passed-high-score-interval-days: ${REVIEW_PASSED_HIGH_SCORE_INTERVAL_DAYS:4}
     queue:
       daily-cap: ${REVIEW_QUEUE_DAILY_CAP:20}
       daily-new-limit: ${REVIEW_DAILY_NEW_LIMIT:10}

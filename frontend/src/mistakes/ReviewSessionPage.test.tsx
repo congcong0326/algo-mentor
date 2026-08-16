@@ -68,6 +68,23 @@ describe('ReviewSessionPage', () => {
     expect(screen.queryByText('这段教练总结只能只读展示。')).not.toBeInTheDocument();
   });
 
+  it('rounds the five-and-a-half minute Hard preview up to six minutes', async () => {
+    const now = Date.parse('2026-07-24T08:00:00Z');
+    vi.spyOn(Date, 'now').mockReturnValue(now);
+    const context = reviewContext();
+    context.intervalPreviews = [
+      { rating: 'AGAIN', dueAt: new Date(now + 60_000).toISOString(), intervalDays: 0 },
+      { rating: 'HARD', dueAt: new Date(now + 330_000).toISOString(), intervalDays: 0 },
+      { rating: 'GOOD', dueAt: new Date(now + 600_000).toISOString(), intervalDays: 0 },
+      { rating: 'EASY', dueAt: '2026-07-28T00:00:00Z', intervalDays: 4 },
+    ];
+    vi.mocked(getReviewCardContext).mockResolvedValue(apiResponse(context));
+
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    expect(await screen.findByRole('button', { name: /困难，.*6 分钟后/ })).toBeEnabled();
+  });
+
   it('tracks structured notes and coach summary content independently', async () => {
     vi.mocked(getProblemNote).mockResolvedValue(apiResponse(problemNote({
       outline: emptyProblemSolutionOutline(),

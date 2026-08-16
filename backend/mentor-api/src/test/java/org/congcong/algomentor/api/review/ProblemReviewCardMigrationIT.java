@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.review;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.congcong.algomentor.api.support.PostgresIntegrationTestSupport;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,30 @@ class ProblemReviewCardMigrationIT extends PostgresIntegrationTestSupport {
 
     assertNewReviewSchema();
     assertOldReviewSchemaRemoved();
+  }
+
+  @Test
+  void resetsCorruptedRelearningCardsBeforeTheyProduceMultiYearIntervals() throws Exception {
+    migrateTo("65");
+    String problemSlug = "remove-duplicates-from-sorted-array";
+    insertProblem(problemSlug, 26, List.of("ARRAY"), List.of("Array"), List.of("数组"));
+    long userId = insertUser();
+    execute("""
+        INSERT INTO problem_review_card (
+          user_id, problem_slug, source, source_detail_json,
+          repetitions, interval_days, fsrs_state, fsrs_step,
+          fsrs_stability, fsrs_difficulty, due_at, lapses, created_at, updated_at
+        ) VALUES (?, ?, 'REVIEW_FAILED', '{}'::jsonb, 0, 0, 'RELEARNING', 0,
+          16.150700, 2.482439, NOW(), 1, NOW(), NOW())
+        """, userId, problemSlug);
+
+    migrateLatest();
+
+    assertThat(queryString("SELECT fsrs_state FROM problem_review_card WHERE user_id = ?", userId))
+        .isEqualTo("LEARNING");
+    assertThat(queryLong("SELECT COUNT(*) FROM problem_review_card WHERE user_id = ?"
+        + " AND fsrs_stability IS NULL AND fsrs_difficulty IS NULL AND last_reviewed_at IS NULL", userId))
+        .isEqualTo(1L);
   }
 
   private void assertNewReviewSchema() throws Exception {

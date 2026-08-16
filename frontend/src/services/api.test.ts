@@ -18,11 +18,13 @@ import {
   readPracticeRunEvents,
   getLearnerProfile,
   getLearnerProfileStatementEvidence,
+  getReviewCardContext,
   getReviewSummary,
   getUserAiPreference,
   listReviewCards,
   logout,
   requireApiData,
+  submitReviewAttempt,
   setApiLocale,
   createLearningPlanDraftFromTemplate,
   streamLearningPlanDraft,
@@ -122,6 +124,21 @@ describe('api service', () => {
     const url = new URL(String(calledUrl), 'http://localhost');
     expect(url.pathname).toBe('/api/review-sessions/summary');
     expect(url.searchParams.get('timezone')).toBeTruthy();
+  });
+
+  it('uses the browser timezone for review previews and submissions', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({ success: true, data: {} })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getReviewCardContext(42);
+    await submitReviewAttempt(42, '2f55ecf4-c0f5-45b9-b86e-e27f1590e576', 'HARD');
+
+    const contextUrl = new URL(String(fetchMock.mock.calls[0][0]), 'http://localhost');
+    const submitUrl = new URL(String(fetchMock.mock.calls[1][0]), 'http://localhost');
+    expect(contextUrl.pathname).toBe('/api/review-cards/42/context');
+    expect(contextUrl.searchParams.get('timezone')).toBeTruthy();
+    expect(submitUrl.pathname).toBe('/api/review-cards/42/attempts');
+    expect(submitUrl.searchParams.get('timezone')).toBeTruthy();
   });
 
   it('requests the current ability profile with json and locale headers', async () => {

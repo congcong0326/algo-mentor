@@ -12,6 +12,11 @@ public record ReviewSchedulerProperties(
     Duration[] relearningSteps,
     int maximumIntervalDays,
     boolean enableFuzzing,
+    int graduatingIntervalDays,
+    int easyIntervalDays,
+    int lowConfidenceFirstIntervalDays,
+    int passedFirstIntervalDays,
+    int passedHighScoreIntervalDays,
     int dailyNewLimit,
     int dailyLearningLimit,
     int dailyReviewLimit
@@ -33,6 +38,24 @@ public record ReviewSchedulerProperties(
     if (maximumIntervalDays <= 0) {
       maximumIntervalDays = 36500;
     }
+    if (graduatingIntervalDays <= 0) {
+      graduatingIntervalDays = 1;
+    }
+    if (easyIntervalDays <= 0) {
+      easyIntervalDays = 4;
+    }
+    if (easyIntervalDays < graduatingIntervalDays) {
+      easyIntervalDays = graduatingIntervalDays;
+    }
+    if (lowConfidenceFirstIntervalDays <= 0) {
+      lowConfidenceFirstIntervalDays = 1;
+    }
+    if (passedFirstIntervalDays <= 0) {
+      passedFirstIntervalDays = 3;
+    }
+    if (passedHighScoreIntervalDays <= 0) {
+      passedHighScoreIntervalDays = 4;
+    }
     if (dailyNewLimit < 0) {
       dailyNewLimit = 10;
     }
@@ -53,6 +76,11 @@ public record ReviewSchedulerProperties(
         null,
         36500,
         true,
+        1,
+        4,
+        1,
+        3,
+        4,
         10,
         50,
         20);
@@ -62,8 +90,9 @@ public record ReviewSchedulerProperties(
     if (steps == null) {
       return defaults;
     }
-    return Arrays.stream(steps)
+    Duration[] normalized = Arrays.stream(steps)
         .filter(step -> step != null && !step.isNegative() && !step.isZero())
         .toArray(Duration[]::new);
+    return normalized.length == defaults.length ? normalized : defaults;
   }
 }

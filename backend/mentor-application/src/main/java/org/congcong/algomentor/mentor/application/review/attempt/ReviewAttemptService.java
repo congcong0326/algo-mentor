@@ -2,6 +2,8 @@ package org.congcong.algomentor.mentor.application.review.attempt;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Objects;
 import java.util.UUID;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
@@ -46,10 +48,22 @@ public class ReviewAttemptService {
       UUID clientAttemptId,
       ReviewRating rating
   ) {
+    return submit(userId, reviewCardId, clientAttemptId, rating, ZoneOffset.UTC);
+  }
+
+  @Transactional
+  public ReviewAttemptResult submit(
+      long userId,
+      long reviewCardId,
+      UUID clientAttemptId,
+      ReviewRating rating,
+      ZoneId userZone
+  ) {
     if (clientAttemptId == null) {
       throw new ReviewException("CLIENT_ATTEMPT_ID_REQUIRED", "clientAttemptId 不能为空。");
     }
     Objects.requireNonNull(rating, "rating must not be null");
+    Objects.requireNonNull(userZone, "userZone must not be null");
     ProblemReviewCard card = cardRepository.findForUpdate(userId, reviewCardId)
         .orElseThrow(() -> new ReviewException("REVIEW_CARD_NOT_FOUND", "复习卡不存在。"));
     var existing = attemptRepository.findByUserAndClientAttemptId(userId, clientAttemptId);
@@ -59,7 +73,12 @@ public class ReviewAttemptService {
 
     Instant reviewedAt = Instant.now(clock);
     ReviewPreference preference = preferenceService.get(userId);
-    FsrsReviewSchedulerService.Scheduled scheduled = schedulerService.apply(card, rating, preference, reviewedAt);
+    FsrsReviewSchedulerService.Scheduled scheduled = schedulerService.apply(
+        card,
+        rating,
+        preference,
+        reviewedAt,
+        userZone);
     ProblemReviewAttempt pending = new ProblemReviewAttempt(
         0,
         card.id(),

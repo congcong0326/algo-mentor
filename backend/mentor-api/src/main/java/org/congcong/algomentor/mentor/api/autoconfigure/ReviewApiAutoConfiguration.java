@@ -44,6 +44,11 @@ public class ReviewApiAutoConfiguration {
         null,
         properties.getScheduler().getMaximumIntervalDays(),
         properties.getScheduler().isEnableFuzzing(),
+        properties.getScheduler().getGraduatingIntervalDays(),
+        properties.getScheduler().getEasyIntervalDays(),
+        properties.getSeed().getLowConfidenceFirstIntervalDays(),
+        properties.getSeed().getPassedFirstIntervalDays(),
+        properties.getSeed().getPassedHighScoreIntervalDays(),
         properties.getQueue().getDailyNewLimit(),
         properties.getQueue().getDailyLearningLimit(),
         properties.getQueue().getDailyReviewLimit());

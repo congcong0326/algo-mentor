@@ -93,6 +93,7 @@
 - `docs/mistake-notebook-review-technical-design.md`：旧版错题本技术详设，已由 V40 双面复习卡架构取代，仅用于追溯历史实现。
 - `docs/review-card-content-fix-design.md`：旧版复习卡内容修复设计，相关 `/api/mistake-notes` 契约已删除。
 - `docs/problem-review-card-dual-side-refactoring-plan.md`：当前题目复习卡与题目笔记实施基线，将复习收敛为“完整题面 + 默认折叠的题目级用户笔记 + 直接自评 + FSRS”，并破坏性删除 AI 卡片生成、AI 复述评价、旧表和旧接口。
+- `docs/review-scheduling-anki-alignment-design.md`：复习中心采用两步 Anki 式学习步骤、固定毕业间隔与 FSRS 长期调度的分层设计，包含 Code Review 入队和用户时区日边界。
 - `docs/internal-beta-admin-capabilities-design.md`：5-20 人封闭内测管理员业务能力研发设计，说明数据库邮箱白名单、临时密码、动态 AI 额度、模型价格与成本估算、AI run 排障、30 天诊断保留、反馈信箱、管理员概览和低敏审计边界。
 - `docs/internal-beta-admin-capabilities-implementation-plan.md`：内测管理员业务能力分阶段实施计划，按准入与账号运维、AI 止损与成本观测、run 排障、反馈与概览拆分任务、测试和发布门禁。
 - `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`：内测管理员能力阶段二详细实施计划，固化 `/admin/ai` 与用户管理的产品边界，细化动态 AI 策略、V32 调用级 Token 台账、当前价格成本估算、直接 LLM 调用治理、管理员 API、前端工作区、测试和发布门禁。
@@ -203,6 +204,7 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewToolResultMapper.java`：Review 工具结果映射，输出 `practice_code_review_submitted` 摘要给 Agent 主模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeChatPromptSectionProvider.java`：题目聊天 prompt 片段，包含 Review、学习状态和确认追加题目笔记的工具边界，以及拒绝/超时后的回复约束。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review`：题目复习应用层，按 `card`、`attempt`、`note`、`schedule`、`preference`、`catalog` 分包，分别负责复习卡、幂等评级流水、题目级长期笔记、FSRS、用户配置和题库读取。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/schedule/AnkiLearningPolicy.java`、`FsrsReviewBootstrap.java`、`ReviewDayBoundary.java`：两步学习阶段的固定评级语义、毕业/seed 稳定度校准及用户时区日级到期时间计算。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/note/UserProblemNoteSummary.java`：不含 Markdown 正文的题目笔记提纲摘要，生产 MyBatis 查询只返回正文存在标记。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/review`：复习卡、复习队列和题目笔记 API，使用 `/api/review-cards`、`/api/review-sessions`、`/api/problems/{slug}/note` 契约。
 - `backend/mentor-api/src/main/resources/db/migration/V40__rebuild_problem_review_card.sql`：破坏性删除旧错题/复述表和 AI 建议字段，创建 `problem_review_card`、`problem_review_attempt`、`user_problem_note`。

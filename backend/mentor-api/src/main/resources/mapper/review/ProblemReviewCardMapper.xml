@@ -63,7 +63,8 @@
       fsrs_stability,
       fsrs_difficulty,
       due_at,
-      lapses
+      lapses,
+      last_reviewed_at
     ) VALUES (
       #{userId},
       #{problemSlug},
@@ -76,7 +77,8 @@
       #{fsrsStability},
       #{fsrsDifficulty},
       #{dueAt},
-      #{lapses}
+      #{lapses},
+      #{lastReviewedAt}
     )
     ON CONFLICT (user_id, problem_slug) DO UPDATE SET
       source = CASE
@@ -97,18 +99,33 @@
       END,
       fsrs_state = CASE
         WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
-          THEN 'RELEARNING'
+          THEN EXCLUDED.fsrs_state
         ELSE problem_review_card.fsrs_state
       END,
       fsrs_step = CASE
         WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
-          THEN 0
+          THEN EXCLUDED.fsrs_step
         ELSE problem_review_card.fsrs_step
+      END,
+      fsrs_stability = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN EXCLUDED.fsrs_stability
+        ELSE problem_review_card.fsrs_stability
+      END,
+      fsrs_difficulty = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN EXCLUDED.fsrs_difficulty
+        ELSE problem_review_card.fsrs_difficulty
       END,
       due_at = CASE
         WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
           THEN EXCLUDED.due_at
         ELSE problem_review_card.due_at
+      END,
+      last_reviewed_at = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN EXCLUDED.last_reviewed_at
+        ELSE problem_review_card.last_reviewed_at
       END,
       lapses = CASE
         WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'

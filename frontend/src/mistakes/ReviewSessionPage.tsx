@@ -349,7 +349,7 @@ function formatDueLabel(
   resources: LocaleResources['reviewCenter'],
 ) {
   if (intervalDays <= 0) {
-    const minutes = Math.max(1, Math.round((new Date(dueAt).getTime() - Date.now()) / 60_000));
+    const minutes = Math.max(1, Math.ceil((new Date(dueAt).getTime() - Date.now()) / 60_000));
     return Number.isFinite(minutes) && minutes < 24 * 60
       ? resources.minutesLater(minutes)
       : resources.reviewLater;

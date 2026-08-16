@@ -53,7 +53,8 @@ public class MyBatisReviewCardRepository implements ReviewCardRepository {
         state.fsrsStability(),
         state.fsrsDifficulty(),
         state.lapses(),
-        seed.dueAt())));
+        seed.dueAt(),
+        seed.reviewedAt())));
   }
 
   @Override

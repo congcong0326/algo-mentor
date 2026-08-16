@@ -1,9 +1,9 @@
 package org.congcong.algomentor.mentor.application.review.card;
 
 import java.time.Clock;
-import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +20,7 @@ import org.congcong.algomentor.mentor.application.review.schedule.FsrsReviewSche
 import org.congcong.algomentor.mentor.application.review.schedule.FsrsState;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewRating;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewSchedulerProperties;
+import org.congcong.algomentor.mentor.application.review.schedule.ReviewZoneId;
 
 public class ReviewQueueService {
 
@@ -65,7 +66,7 @@ public class ReviewQueueService {
 
   public ReviewSummary summary(long userId, String timezone) {
     Instant now = Instant.now(clock);
-    ZoneId zoneId = zoneId(timezone);
+    ZoneId zoneId = ReviewZoneId.parse(timezone);
     Instant tomorrowStart = now.atZone(zoneId)
         .toLocalDate()
         .plusDays(1)
@@ -83,6 +84,11 @@ public class ReviewQueueService {
   }
 
   public ReviewCardContext context(long userId, long cardId, String locale) {
+    return context(userId, cardId, locale, ZoneOffset.UTC);
+  }
+
+  public ReviewCardContext context(long userId, long cardId, String locale, ZoneId userZone) {
+    Objects.requireNonNull(userZone, "userZone must not be null");
     ProblemReviewCard card = cardRepository.findForUser(userId, cardId)
         .orElseThrow(() -> new ReviewException("REVIEW_CARD_NOT_FOUND", "复习卡不存在。"));
     var problem = problemCatalog.findBySlug(card.problemSlug(), locale)
@@ -97,10 +103,10 @@ public class ReviewQueueService {
         note,
         attemptRepository.findRecent(userId, cardId, ReviewContractConstants.RECENT_ATTEMPT_LIMIT),
         List.of(
-            schedulerService.preview(card, ReviewRating.AGAIN, preference, now),
-            schedulerService.preview(card, ReviewRating.HARD, preference, now),
-            schedulerService.preview(card, ReviewRating.GOOD, preference, now),
-            schedulerService.preview(card, ReviewRating.EASY, preference, now)));
+            schedulerService.preview(card, ReviewRating.AGAIN, preference, now, userZone),
+            schedulerService.preview(card, ReviewRating.HARD, preference, now, userZone),
+            schedulerService.preview(card, ReviewRating.GOOD, preference, now, userZone),
+            schedulerService.preview(card, ReviewRating.EASY, preference, now, userZone)));
   }
 
   private List<ProblemReviewCard> splitQueue(
@@ -131,12 +137,4 @@ public class ReviewQueueService {
         || card.scheduling().fsrsState() == FsrsState.RELEARNING;
   }
 
-  private ZoneId zoneId(String timezone) {
-    String normalized = timezone == null || timezone.isBlank() ? "UTC" : timezone.trim();
-    try {
-      return ZoneId.of(normalized);
-    } catch (DateTimeException exception) {
-      throw new ReviewException("REVIEW_TIMEZONE_INVALID", "时区参数无效。");
-    }
-  }
 }

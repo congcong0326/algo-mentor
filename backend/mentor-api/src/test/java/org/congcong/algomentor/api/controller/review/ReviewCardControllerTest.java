@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -80,10 +81,12 @@ class ReviewCardControllerTest {
 
   @Test
   void submitsDirectRatingWithClientAttemptId() throws Exception {
-    when(attemptService.submit(42L, 88L, ATTEMPT_ID, ReviewRating.GOOD))
+    ZoneId timezone = ZoneId.of("Asia/Shanghai");
+    when(attemptService.submit(42L, 88L, ATTEMPT_ID, ReviewRating.GOOD, timezone))
         .thenReturn(new ReviewAttemptResult(attempt(), false));
 
     mockMvc.perform(post("/api/review-cards/88/attempts")
+            .queryParam("timezone", "Asia/Shanghai")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"clientAttemptId\":\"" + ATTEMPT_ID + "\",\"rating\":\"GOOD\"}"))
         .andExpect(status().isOk())
@@ -91,7 +94,7 @@ class ReviewCardControllerTest {
         .andExpect(jsonPath("$.data.rating").value("GOOD"))
         .andExpect(jsonPath("$.data.duplicate").value(false));
 
-    verify(attemptService).submit(42L, 88L, ATTEMPT_ID, ReviewRating.GOOD);
+    verify(attemptService).submit(42L, 88L, ATTEMPT_ID, ReviewRating.GOOD, timezone);
   }
 
   @Test
@@ -107,9 +110,11 @@ class ReviewCardControllerTest {
 
   @Test
   void returnsLocalizedEnglishContextFromAcceptLanguage() throws Exception {
-    when(queueService.context(42L, 88L, "en-US")).thenReturn(context());
+    ZoneId timezone = ZoneId.of("America/Los_Angeles");
+    when(queueService.context(42L, 88L, "en-US", timezone)).thenReturn(context());
 
     mockMvc.perform(get("/api/review-cards/88/context")
+            .queryParam("timezone", "America/Los_Angeles")
             .header("Accept-Language", "en-US,en;q=0.9"))
         .andExpect(status().isOk())
         .andExpect(header().string("Vary", "Accept-Language"))
@@ -118,7 +123,7 @@ class ReviewCardControllerTest {
         .andExpect(jsonPath("$.data.problem.titleCn").doesNotExist())
         .andExpect(jsonPath("$.data.problem.contentMarkdown").value("# Two Sum\n\nEnglish statement."));
 
-    verify(queueService).context(42L, 88L, "en-US");
+    verify(queueService).context(42L, 88L, "en-US", timezone);
   }
 
   private ProblemReviewAttempt attempt() {

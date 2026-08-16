@@ -16,6 +16,7 @@ public record ProblemReviewCardUpsertRow(
     BigDecimal fsrsStability,
     BigDecimal fsrsDifficulty,
     int lapses,
-    Instant dueAt
+    Instant dueAt,
+    Instant lastReviewedAt
 ) {
 }

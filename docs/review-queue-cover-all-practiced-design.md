@@ -220,7 +220,7 @@ algo-mentor:
     seed:
       passed-first-interval-days: 3       # 普通达标首间隔
       passed-high-score-interval-days: 4  # 高分达标首间隔
-      low-confidence-interval-days: 1     # 低置信通过首间隔
+      low-confidence-first-interval-days: 1 # 低置信通过首间隔
       high-score-ratio: 0.9               # 分数/满分 ≥ 此比例且非 HARD 视为高分
     queue:
       daily-cap: 20                       # 首页/队列提醒的每日软上限

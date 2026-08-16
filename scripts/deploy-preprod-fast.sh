@@ -7,6 +7,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPOSITORY_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 readonly PREPROD_HOST="${PREPROD_HOST:-leetmentor-dev}"
 readonly PREPROD_CONTAINER_NAME="${PREPROD_CONTAINER_NAME:-algo-mentor}"
+readonly PREPROD_BOOTSTRAP_BASE_REF="${PREPROD_BOOTSTRAP_BASE_REF:-}"
 readonly PREPROD_RUNTIME_DIR="${PREPROD_RUNTIME_DIR:-/etc/algo-mentor}"
 readonly PREPROD_RELEASE_ROOT="${PREPROD_RELEASE_ROOT:-/opt/algo-mentor/releases}"
 readonly PREPROD_PORT="${PREPROD_PORT:-18080}"
@@ -42,15 +43,17 @@ remote_command() {
 }
 
 validate_worktree() {
+  local allow_deployment_tool_changes="$1"
   local -a release_input_paths=(
-    Makefile
-    pom.xml
     backend
     frontend
     deploy/docker/Dockerfile.preprod
     deploy/docker/preprod-runtime-env.required
-    scripts/deploy-preprod-fast.sh
   )
+  if [[ "${allow_deployment_tool_changes}" != true ]]; then
+    release_input_paths+=(Makefile pom.xml scripts/deploy-preprod-fast.sh)
+  fi
+
   git -C "${REPOSITORY_ROOT}" diff --quiet -- "${release_input_paths[@]}" \
     || fail "commit or stash tracked application-release changes first."
   git -C "${REPOSITORY_ROOT}" diff --cached --quiet -- "${release_input_paths[@]}" \
@@ -59,8 +62,13 @@ validate_worktree() {
   local untracked_file
   while IFS= read -r untracked_file; do
     case "${untracked_file}" in
-      backend/*|frontend/*|deploy/docker/Dockerfile.preprod|deploy/docker/preprod-runtime-env.required|scripts/deploy-preprod-fast.sh)
+      backend/*|frontend/*|deploy/docker/Dockerfile.preprod|deploy/docker/preprod-runtime-env.required)
         fail "commit or remove untracked application-release input: ${untracked_file}"
+        ;;
+      Makefile|pom.xml|scripts/deploy-preprod-fast.sh)
+        if [[ "${allow_deployment_tool_changes}" != true ]]; then
+          fail "commit or remove untracked application-release input: ${untracked_file}"
+        fi
         ;;
     esac
   done < <(git -C "${REPOSITORY_ROOT}" ls-files --others --exclude-standard)
@@ -74,17 +82,22 @@ read_remote_commit() {
 }
 
 resolve_base_ref() {
+  local remote_commit
+  remote_commit="$(read_remote_commit)"
+  if [[ -n "${remote_commit}" && "${remote_commit}" != "<no value>" ]]; then
+    printf '%s\n' "${remote_commit}"
+    return
+  fi
+
   if [[ -n "${PREPROD_BASE_REF:-}" ]]; then
     printf '%s\n' "${PREPROD_BASE_REF}"
     return
   fi
 
-  local remote_commit
-  remote_commit="$(read_remote_commit)"
-  [[ -n "${remote_commit}" && "${remote_commit}" != "<no value>" ]] || {
-    fail "the running container has no release label. Run once with PREPROD_BASE_REF=<currently deployed commit>."
+  [[ -n "${PREPROD_BOOTSTRAP_BASE_REF}" ]] || {
+    fail "the running container has no release label or bootstrap base ref."
   }
-  printf '%s\n' "${remote_commit}"
+  printf '%s\n' "${PREPROD_BOOTSTRAP_BASE_REF}"
 }
 
 validate_runtime_contract() {
@@ -97,16 +110,16 @@ validate_runtime_contract() {
     fail "runtime contract format is invalid: ${RUNTIME_CONTRACT}"
   fi
 
-  local strict_preprod_variables
-  strict_preprod_variables="$({
+  local strict_runtime_variables
+  strict_runtime_variables="$({
     rg --no-filename -o '\$\{[A-Z][A-Z0-9_]*\}' \
-      "${REPOSITORY_ROOT}"/backend/**/src/main/resources/application-preprod.yml \
+      "${REPOSITORY_ROOT}"/backend/**/src/main/resources/application*.yml \
       2>/dev/null || true
   } | sed -E 's/^\$\{([^}]+)\}$/\1/' | sort -u)"
 
   local contract_variables missing_variables
   contract_variables="$(awk -F: '/^[[:space:]]*($|#)/ { next } { print $2 }' "${RUNTIME_CONTRACT}" | sort -u)"
-  missing_variables="$(comm -23 <(printf '%s\n' "${strict_preprod_variables}") <(printf '%s\n' "${contract_variables}"))"
+  missing_variables="$(comm -23 <(printf '%s\n' "${strict_runtime_variables}") <(printf '%s\n' "${contract_variables}"))"
   [[ -z "${missing_variables}" ]] || {
     echo "The following required preprod variables are not represented in ${RUNTIME_CONTRACT}:" >&2
     printf '%s\n' "${missing_variables}" >&2
@@ -158,8 +171,39 @@ stage_release() {
   cp "${REPOSITORY_ROOT}/deploy/docker/Dockerfile.preprod" "${stage_dir}/Dockerfile"
   cp "${RUNTIME_CONTRACT}" "${stage_dir}/preprod-runtime-env.required"
   git -C "${REPOSITORY_ROOT}" rev-parse "${release_ref}" > "${stage_dir}/commit.txt"
-  sha256sum "${stage_dir}/mentor-api.jar" > "${stage_dir}/mentor-api.jar.sha256"
+  (
+    cd "${stage_dir}"
+    sha256sum mentor-api.jar
+  ) > "${stage_dir}/mentor-api.jar.sha256"
   printf '%s\n' "${release_id}" > "${stage_dir}/release-id.txt"
+}
+
+verify_remote_runtime_contract() {
+  local contract_entries
+  contract_entries="$(awk -F: '/^[[:space:]]*($|#)/ { next } { print }' "${RUNTIME_CONTRACT}" | tr '\n' ',')"
+
+  remote_command "sudo /bin/bash -s -- '${PREPROD_RUNTIME_DIR}' '${contract_entries}'" <<'REMOTE_SCRIPT'
+set -euo pipefail
+
+readonly runtime_dir="$1"
+readonly contract_entries="$2"
+
+IFS=, read -r -a entries <<<"${contract_entries}"
+for entry in "${entries[@]}"; do
+  [[ -z "${entry}" ]] && continue
+  IFS=: read -r environment_file environment_key <<<"${entry}"
+  if ! awk -F= -v wanted="${environment_key}" '
+    /^[[:space:]]*#/ { next }
+    $1 == wanted && length($2) > 0 { found = 1 }
+    END { exit found ? 0 : 1 }
+  ' "${runtime_dir}/${environment_file}"; then
+    echo "Missing required preprod environment variable: ${environment_file}:${environment_key}" >&2
+    exit 1
+  fi
+done
+
+echo 'Remote runtime contract is satisfied.'
+REMOTE_SCRIPT
 }
 
 deploy_remote_release() {
@@ -287,8 +331,20 @@ main() {
   require_command sha256sum
   require_command rg
 
+  local preflight_only=false
+  case "${1:-}" in
+    "")
+      ;;
+    --preflight)
+      preflight_only=true
+      ;;
+    *)
+      fail "unsupported argument: $1"
+      ;;
+  esac
+
   validate_deployment_parameters
-  validate_worktree
+  validate_worktree "${preflight_only}"
   validate_runtime_contract
 
   local release_ref base_ref release_commit release_id stage_dir
@@ -308,6 +364,11 @@ main() {
   trap 'rm -rf "${stage_dir}"' EXIT
 
   stage_release "${release_ref}" "${release_id}" "${stage_dir}"
+  if [[ "${preflight_only}" == true ]]; then
+    verify_remote_runtime_contract
+    echo "Preprod fast deployment preflight passed for ${release_commit}."
+    return
+  fi
   deploy_remote_release "${release_commit}" "${release_id}" "${stage_dir}"
 }
 
