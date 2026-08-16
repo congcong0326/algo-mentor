@@ -7675,26 +7675,99 @@ textarea[aria-invalid='true'] {
   background: var(--surface-card);
 }
 
+.practice-composer-backdrop {
+  position: fixed;
+  z-index: 49;
+  inset: 0;
+  background: rgb(15 23 42 / 42%);
+}
+
 .practice-composer textarea {
   width: 100%;
   min-height: 84px;
-  max-height: 220px;
-  padding: 10px 12px;
+  max-height: min(42dvh, 360px);
+  padding: 10px 46px 10px 12px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-control);
   background: var(--surface-muted);
   line-height: 1.5;
-  resize: vertical;
+  overflow-y: auto;
+  resize: none;
 }
 
 .practice-composer-input {
   display: grid;
   gap: 6px;
   min-width: 0;
+  position: relative;
+}
+
+.practice-composer-expand-control {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+.practice-composer-expand-control .icon-button {
+  height: 30px;
+  width: 30px;
+}
+
+.practice-composer-expand-control svg {
+  height: 16px;
+  width: 16px;
 }
 
 .practice-composer > button {
   align-self: end;
+}
+
+.practice-composer-expanded-header {
+  display: none;
+}
+
+.practice-composer.is-expanded {
+  position: fixed;
+  z-index: 50;
+  top: 84px;
+  left: 50%;
+  width: min(920px, calc(100vw - 48px));
+  height: min(32rem, calc(100dvh - 10rem));
+  transform: translateX(-50%);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-hover);
+}
+
+.practice-composer.is-expanded .practice-composer-expanded-header {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.practice-composer.is-expanded .practice-composer-input {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.practice-composer.is-expanded textarea {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  padding: 16px;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  line-height: 1.55;
+}
+
+.practice-composer.is-expanded > .primary-button {
+  grid-column: 2;
+  grid-row: 3;
 }
 
 .wizard-panel {
@@ -10378,6 +10451,22 @@ textarea[aria-invalid='true'] {
 
   .practice-composer {
     grid-template-columns: 1fr;
+  }
+
+  .practice-composer.is-expanded {
+    inset: 0;
+    width: auto;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 14px;
+    border: 0;
+    border-radius: 0;
+    transform: none;
+  }
+
+  .practice-composer.is-expanded > .primary-button {
+    grid-column: 1;
+    justify-self: end;
   }
 
   .template-card-grid,

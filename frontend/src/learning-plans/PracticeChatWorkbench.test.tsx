@@ -88,10 +88,44 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     })).toHaveClass('completion-disabled-tooltip');
 
     const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
-    fireEvent.change(composer, { target: { value: '你'.repeat(5_462) } });
-    expect(screen.getByText('16386 / 16384 字节')).toHaveClass('is-over-limit');
+    fireEvent.change(composer, { target: { value: '你'.repeat(2_731) } });
+    expect(screen.getByText('8193 / 8192 字节')).toHaveClass('is-over-limit');
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
     expect(startPracticeMessage).not.toHaveBeenCalled();
+  });
+
+  it('grows the composer to its cap and supports focus editing with keyboard send', async () => {
+    renderWorkbench();
+    await screen.findByText('给定整数数组 nums 和目标值 target。');
+
+    const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+    Object.defineProperty(composer, 'scrollHeight', { configurable: true, value: 480 });
+    fireEvent.change(composer, { target: { value: '第一行\n第二行\n第三行' } });
+    expect(composer).toHaveStyle({ height: '360px' });
+
+    fireEvent.click(screen.getByRole('button', { name: '展开输入框' }));
+    expect(screen.getByRole('dialog', { name: '展开输入框' })).toBeInTheDocument();
+    expect(composer).toHaveFocus();
+
+    fireEvent.keyDown(composer, { key: 'Enter', ctrlKey: true });
+    await waitFor(() => expect(startPracticeMessage).toHaveBeenCalledWith(
+      101,
+      { message: '第一行\n第二行\n第三行' },
+      expect.objectContaining({ idempotencyKey: expect.any(String), signal: expect.any(AbortSignal) }),
+    ));
+  });
+
+  it('closes the expanded composer with Escape without discarding input', async () => {
+    renderWorkbench();
+    await screen.findByText('给定整数数组 nums 和目标值 target。');
+
+    const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+    fireEvent.change(composer, { target: { value: '保留这段代码' } });
+    fireEvent.click(screen.getByRole('button', { name: '展开输入框' }));
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: '展开输入框' })).not.toBeInTheDocument());
+    expect(composer).toHaveValue('保留这段代码');
   });
 
   it('starts a run through POST and reads the separately issued event URL', async () => {

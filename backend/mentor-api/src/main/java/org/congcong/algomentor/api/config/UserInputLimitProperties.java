@@ -243,7 +243,7 @@ public class UserInputLimitProperties {
   public static class PracticeMessage {
 
     @NotNull
-    private DataSize messageMaxBytes = DataSize.ofKilobytes(16);
+    private DataSize messageMaxBytes = DataSize.ofKilobytes(8);
 
     @NotNull
     private DataSize requestMaxBytes = DataSize.ofKilobytes(20);

@@ -16,6 +16,7 @@ describe('user input limit helpers', () => {
   it('counts actual UTF-8 bytes for practice messages', () => {
     expect(utf8ByteLength('abc')).toBe(3);
     expect(utf8ByteLength('中文')).toBe(6);
+    expect(DEFAULT_USER_INPUT_LIMITS.practiceMessage.messageMaxBytes).toBe(8_192);
   });
 
   it('detects review note text, item count and custom item violations', () => {

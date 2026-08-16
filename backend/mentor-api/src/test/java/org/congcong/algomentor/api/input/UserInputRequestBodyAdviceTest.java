@@ -37,7 +37,7 @@ class UserInputRequestBodyAdviceTest {
 
   @Test
   void rejectsPracticeMessageOverUtf8ByteLimit() throws Exception {
-    String message = "你".repeat(5_462);
+    String message = "你".repeat(2_731);
 
     mockMvc.perform(post("/test/practice")
             .contentType(MediaType.APPLICATION_JSON)
@@ -45,7 +45,7 @@ class UserInputRequestBodyAdviceTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value(UserInputValidationException.LIMIT_EXCEEDED_CODE))
         .andExpect(jsonPath("$.error.metadata.field").value("message"))
-        .andExpect(jsonPath("$.error.metadata.max").value(16_384))
+        .andExpect(jsonPath("$.error.metadata.max").value(8_192))
         .andExpect(jsonPath("$.error.metadata.unit").value("bytes"));
   }
 

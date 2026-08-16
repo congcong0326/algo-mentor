@@ -21,7 +21,7 @@ export const DEFAULT_USER_INPUT_LIMITS: UserInputLimits = {
     requestMaxBytes: 8 * 1_024,
   },
   practiceMessage: {
-    messageMaxBytes: 16 * 1_024,
+    messageMaxBytes: 8 * 1_024,
     requestMaxBytes: 20 * 1_024,
   },
 };

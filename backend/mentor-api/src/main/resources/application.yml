@@ -60,7 +60,7 @@ algo-mentor:
       weekly-hours-max: ${USER_INPUT_PLAN_WEEKLY_HOURS_MAX:80}
       request-max-bytes: ${USER_INPUT_PLAN_REQUEST_MAX_BYTES:8KB}
     practice-message:
-      message-max-bytes: ${USER_INPUT_PRACTICE_MESSAGE_MAX_BYTES:16KB}
+      message-max-bytes: ${USER_INPUT_PRACTICE_MESSAGE_MAX_BYTES:8KB}
       request-max-bytes: ${USER_INPUT_PRACTICE_REQUEST_MAX_BYTES:20KB}
   api:
     sse:

@@ -1659,6 +1659,9 @@ export interface LocaleResources {
     sendMessage: string;
     composerLabel: string;
     composerPlaceholder: string;
+    expandComposer: string;
+    collapseComposer: string;
+    composerFocusMode: string;
     practiceMessageTooLong: (maxBytes: number) => string;
     send: string;
     waitingGenerate: string;
@@ -3351,6 +3354,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       sendMessage: '发送消息',
       composerLabel: '输入你的思路、问题、代码或 LeetCode 反馈',
       composerPlaceholder: '输入你的思路、问题、代码或 LeetCode 反馈...',
+      expandComposer: '展开输入框',
+      collapseComposer: '收起输入框',
+      composerFocusMode: '展开输入框',
       practiceMessageTooLong: (maxBytes) => `消息最多允许 ${maxBytes} 字节，请缩短后再发送。`,
       send: '发送',
       waitingGenerate: '等待生成',
@@ -5103,6 +5109,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       sendMessage: 'Send message',
       composerLabel: 'Enter your approach, question, code, or LeetCode feedback',
       composerPlaceholder: 'Enter your approach, question, code, or LeetCode feedback...',
+      expandComposer: 'Expand composer',
+      collapseComposer: 'Collapse composer',
+      composerFocusMode: 'Expanded composer',
       practiceMessageTooLong: (maxBytes) => `Messages are limited to ${maxBytes} bytes. Shorten this message before sending.`,
       send: 'Send',
       waitingGenerate: 'Waiting to generate',

@@ -29,7 +29,7 @@ class UserInputLimitPropertiesTest {
   @Test
   void practiceRequestMustLeaveRoomForJsonEnvelope() {
     UserInputLimitProperties properties = new UserInputLimitProperties();
-    properties.getPracticeMessage().setRequestMaxBytes(DataSize.ofKilobytes(16));
+    properties.getPracticeMessage().setRequestMaxBytes(DataSize.ofKilobytes(8));
 
     assertThat(validator.validate(properties))
         .extracting(violation -> violation.getPropertyPath().toString())

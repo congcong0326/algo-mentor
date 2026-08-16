@@ -1,6 +1,6 @@
-import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info, MoreHorizontal, Save, SkipForward } from 'lucide-react';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info, Maximize2, Minimize2, MoreHorizontal, Save, SkipForward } from 'lucide-react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import AiCapacityUnavailableDialog from '../components/AiCapacityUnavailableDialog';
 import { utf8ByteLength, useUserInputLimits } from '../config/userInputLimits';
@@ -50,6 +50,7 @@ const AUTO_SCROLL_THRESHOLD_PX = 96;
 const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
 const RUN_STREAM_RECONNECT_ATTEMPTS = 2;
 const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
+const COMPOSER_AUTO_RESIZE_MAX_HEIGHT_PX = 360;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
 const COACH_SUMMARY_PROPOSAL_TOOL_NAME = 'propose_current_problem_coach_summary';
@@ -355,6 +356,7 @@ export default function PracticeChatWorkbench({
   const [sessionResponse, setSessionResponse] = useState<PracticeSessionResponse>();
   const [messages, setMessages] = useState<PracticeMessage[]>([]);
   const [composerValue, setComposerValue] = useState('');
+  const [composerExpanded, setComposerExpanded] = useState(false);
   const [status, setStatus] = useState<'loading' | 'idle' | 'streaming' | 'blocked' | 'error'>('loading');
   const [error, setError] = useState('');
   const [capacityUnavailable, setCapacityUnavailable] = useState(false);
@@ -367,7 +369,11 @@ export default function PracticeChatWorkbench({
   const [reviewHistoryError, setReviewHistoryError] = useState('');
   const [assistantWorkStates, setAssistantWorkStates] = useState<Record<number, AssistantWorkState>>({});
   const [coachSummaryApplyStates, setCoachSummaryApplyStates] = useState<Record<string, CoachSummaryApplyStatus>>({});
+  const composerCounterId = useId();
+  const composerFocusModeTitleId = useId();
+  const composerExpandTooltipId = useId();
   const localMessageIdRef = useRef(-1);
+  const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
   const moreActionsRef = useRef<HTMLSpanElement | null>(null);
@@ -389,6 +395,7 @@ export default function PracticeChatWorkbench({
     setSessionResponse(undefined);
     setMessages([]);
     setError('');
+    setComposerExpanded(false);
     setCompletionUpdating(false);
     setMoreActionsOpen(false);
     setSkipConfirmationOpen(false);
@@ -477,6 +484,21 @@ export default function PracticeChatWorkbench({
     document.addEventListener('keydown', closeSkipConfirmationOnEscape);
     return () => document.removeEventListener('keydown', closeSkipConfirmationOnEscape);
   }, [completionUpdating, skipConfirmationOpen]);
+
+  useEffect(() => {
+    if (!composerExpanded) {
+      return undefined;
+    }
+
+    function closeComposerOnEscape(event: globalThis.KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setComposerExpanded(false);
+      }
+    }
+
+    document.addEventListener('keydown', closeComposerOnEscape);
+    return () => document.removeEventListener('keydown', closeComposerOnEscape);
+  }, [composerExpanded]);
 
   const sessionId = sessionResponse?.session.id;
   activeSessionIdRef.current = sessionId;
@@ -609,6 +631,27 @@ export default function PracticeChatWorkbench({
       messageList.scrollTop = messageList.scrollHeight;
     }
   }, [assistantWorkStates, messages, error, status]);
+
+  useLayoutEffect(() => {
+    const composer = composerRef.current;
+    if (!composer) {
+      return;
+    }
+
+    if (composerExpanded) {
+      composer.style.height = '';
+      return;
+    }
+
+    composer.style.height = 'auto';
+    composer.style.height = `${Math.min(composer.scrollHeight, COMPOSER_AUTO_RESIZE_MAX_HEIGHT_PX)}px`;
+  }, [composerExpanded, composerValue]);
+
+  useEffect(() => {
+    if (composerExpanded) {
+      composerRef.current?.focus();
+    }
+  }, [composerExpanded]);
 
   useEffect(() => {
     const timers = Object.entries(assistantWorkStates).flatMap(([messageId, value]) => {
@@ -966,6 +1009,7 @@ export default function PracticeChatWorkbench({
     setAssistantWorkState(assistantMessageId, { status: 'ORGANIZING' });
     setStatus('streaming');
     setComposerValue('');
+    setComposerExpanded(false);
     setMessages((current) => [
       ...current,
       {
@@ -1056,6 +1100,18 @@ export default function PracticeChatWorkbench({
         submittingRef.current = false;
       }
     }
+  }
+
+  function handleComposerKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== 'Enter'
+      || (!event.ctrlKey && !event.metaKey)
+      || event.nativeEvent.isComposing
+      || sendDisabled) {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.form?.requestSubmit();
   }
 
   async function handleMarkCompleted() {
@@ -1457,19 +1513,67 @@ export default function PracticeChatWorkbench({
         </span>
       )}
 
-      <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>
+      {composerExpanded && (
+        <div
+          aria-hidden="true"
+          className="practice-composer-backdrop"
+          onMouseDown={() => setComposerExpanded(false)}
+        />
+      )}
+      <form
+        aria-label={composerExpanded ? undefined : resources.learningPlans.sendMessage}
+        aria-labelledby={composerExpanded ? composerFocusModeTitleId : undefined}
+        aria-modal={composerExpanded || undefined}
+        className={`practice-composer${composerExpanded ? ' is-expanded' : ''}`}
+        onSubmit={handleSubmit}
+        role={composerExpanded ? 'dialog' : undefined}
+      >
+        {composerExpanded && (
+          <div className="practice-composer-expanded-header">
+            <span className="visually-hidden" id={composerFocusModeTitleId}>{resources.learningPlans.composerFocusMode}</span>
+            <button
+              aria-label={resources.learningPlans.collapseComposer}
+              className="icon-button"
+              onClick={() => setComposerExpanded(false)}
+              type="button"
+            >
+              <Minimize2 aria-hidden="true" />
+            </button>
+          </div>
+        )}
         <div className="practice-composer-input">
           <textarea
+            aria-describedby={composerCounterId}
             aria-invalid={composerOverLimit}
             aria-label={resources.learningPlans.composerLabel}
             disabled={composerInputDisabled}
             onChange={(event) => setComposerValue(event.target.value)}
+            onKeyDown={handleComposerKeyDown}
             placeholder={resources.learningPlans.practiceComposerPlaceholderReview}
+            ref={composerRef}
             value={composerValue}
           />
+          {!composerExpanded && (
+            <span className="toolbar-tooltip-wrap practice-composer-expand-control">
+              <button
+                aria-describedby={composerExpandTooltipId}
+                aria-expanded={false}
+                aria-label={resources.learningPlans.expandComposer}
+                className="icon-button"
+                disabled={composerInputDisabled}
+                onClick={() => setComposerExpanded(true)}
+                type="button"
+              >
+                <Maximize2 aria-hidden="true" />
+              </button>
+              <span className="toolbar-tooltip" id={composerExpandTooltipId} role="tooltip">
+                {resources.learningPlans.expandComposer}
+              </span>
+            </span>
+          )}
           <small className={composerOverLimit
             ? 'input-limit-counter is-over-limit'
-            : 'input-limit-counter'}>
+            : 'input-limit-counter'} id={composerCounterId}>
             {resources.common.byteCount(composerBytes, inputLimits.practiceMessage.messageMaxBytes)}
           </small>
         </div>
