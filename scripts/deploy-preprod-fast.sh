@@ -82,15 +82,15 @@ read_remote_commit() {
 }
 
 resolve_base_ref() {
+  if [[ -n "${PREPROD_BASE_REF:-}" ]]; then
+    printf '%s\n' "${PREPROD_BASE_REF}"
+    return
+  fi
+
   local remote_commit
   remote_commit="$(read_remote_commit)"
   if [[ -n "${remote_commit}" && "${remote_commit}" != "<no value>" ]]; then
     printf '%s\n' "${remote_commit}"
-    return
-  fi
-
-  if [[ -n "${PREPROD_BASE_REF:-}" ]]; then
-    printf '%s\n' "${PREPROD_BASE_REF}"
     return
   fi
 
