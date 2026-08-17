@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import jakarta.servlet.SessionCookieConfig;
 import jakarta.servlet.http.Cookie;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,15 +40,12 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
-import org.springframework.boot.web.server.Cookie.SameSite;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,6 +59,8 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -93,10 +91,7 @@ class AuthSecurityAutoConfigurationTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private ServletContextInitializer authSessionCookieInitializer;
-
-  @Autowired
-  private CookieSameSiteSupplier authSessionCookieSameSiteSupplier;
+  private DefaultCookieSerializer sessionCookieSerializer;
 
   @Autowired
   private ConversionService springSessionConversionService;
@@ -270,7 +265,8 @@ class AuthSecurityAutoConfigurationTest {
             .cookie(new Cookie("XSRF-TOKEN", csrfToken))
             .header("X-XSRF-TOKEN", csrfToken)
             .with(authentication(authenticationToken())))
-        .andExpect(status().is3xxRedirection());
+        .andExpect(status().is3xxRedirection())
+        .andExpect(cookie().maxAge(AuthSecurityPaths.SESSION_COOKIE_NAME, 0));
   }
 
   @Test
@@ -311,24 +307,17 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   @Test
-  void appliesSessionCookiePropertiesFromAuthConfiguration() throws Exception {
-    MockServletContext servletContext = new MockServletContext();
+  void configuresTheSpringSessionCookieUsedByBrowserRequests() {
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    sessionCookieSerializer.writeCookieValue(new CookieSerializer.CookieValue(
+        new MockHttpServletRequest(), response, "session-id"));
 
-    authSessionCookieInitializer.onStartup(servletContext);
-
-    SessionCookieConfig cookieConfig = servletContext.getSessionCookieConfig();
-    assertThat(cookieConfig.isHttpOnly()).isTrue();
-    assertThat(cookieConfig.isSecure()).isFalse();
-    assertThat(servletContext.getSessionTimeout()).isEqualTo(10080);
-  }
-
-  @Test
-  void suppliesSameSiteForSessionCookie() {
-    jakarta.servlet.http.Cookie sessionCookie = new jakarta.servlet.http.Cookie("JSESSIONID", "session");
-    jakarta.servlet.http.Cookie otherCookie = new jakarta.servlet.http.Cookie("OTHER", "value");
-
-    assertThat(authSessionCookieSameSiteSupplier.getSameSite(sessionCookie)).isEqualTo(SameSite.LAX);
-    assertThat(authSessionCookieSameSiteSupplier.getSameSite(otherCookie)).isNull();
+    assertThat(response.getHeader("Set-Cookie"))
+        .startsWith(AuthSecurityPaths.SESSION_COOKIE_NAME + "=")
+        .contains("Path=/")
+        .contains("HttpOnly")
+        .contains("SameSite=Lax")
+        .doesNotContain("Secure");
   }
 
   @Test
@@ -430,6 +419,7 @@ class AuthSecurityAutoConfigurationTest {
   @ImportAutoConfiguration({
       JacksonAutoConfiguration.class,
       HttpMessageConvertersAutoConfiguration.class,
+      SessionAutoConfiguration.class,
       WebMvcAutoConfiguration.class,
       AuthApiAutoConfiguration.class,
       AuthSecurityAutoConfiguration.class

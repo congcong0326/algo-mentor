@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.session.DefaultCookieSerializerCustomizer;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -36,11 +38,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.boot.web.server.Cookie.SameSite;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 import org.springframework.session.jdbc.PostgreSqlJdbcIndexedSessionRepositoryCustomizer;
 import org.springframework.session.config.SessionRepositoryCustomizer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
@@ -61,7 +62,7 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
-@AutoConfiguration
+@AutoConfiguration(after = SessionAutoConfiguration.class)
 @EnableWebSecurity
 @EnableMethodSecurity
 @ConditionalOnClass(SecurityFilterChain.class)
@@ -73,19 +74,10 @@ public class AuthSecurityAutoConfiguration {
   private static final String GOOGLE_USER_INFO_URI = "https://openidconnect.googleapis.com/v1/userinfo";
 
   @Bean
-  public ServletContextInitializer authSessionCookieInitializer(AuthProperties properties) {
-    return servletContext -> {
-      servletContext.setSessionTimeout(Math.toIntExact(properties.getSessionTimeout().toMinutes()));
-      servletContext.getSessionCookieConfig().setHttpOnly(true);
-      servletContext.getSessionCookieConfig().setSecure(properties.isCookieSecure());
-      servletContext.getSessionCookieConfig().setName(AuthSecurityPaths.SESSION_COOKIE_NAME);
-    };
-  }
-
-  @Bean
-  public CookieSameSiteSupplier authSessionCookieSameSiteSupplier(AuthProperties properties) {
-    return CookieSameSiteSupplier.of(sameSite(properties.getCookieSameSite()))
-        .whenHasName(AuthSecurityPaths.SESSION_COOKIE_NAME);
+  public DefaultCookieSerializerCustomizer authSessionCookieSerializerCustomizer(
+      AuthProperties properties
+  ) {
+    return cookieSerializer -> configureSessionCookie(cookieSerializer, properties);
   }
 
   @Bean("springSessionConversionService")
@@ -222,7 +214,7 @@ public class AuthSecurityAutoConfiguration {
             .logoutUrl(AuthSecurityPaths.AUTH_LOGOUT_PATH)
             .logoutSuccessUrl(properties.getLogoutSuccessUrl())
             .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID"))
+            .deleteCookies(AuthSecurityPaths.SESSION_COOKIE_NAME))
         .sessionManagement(Customizer.withDefaults());
 
     http.addFilterAfter(
@@ -303,5 +295,16 @@ public class AuthSecurityAutoConfiguration {
       return SameSite.LAX;
     }
     return SameSite.valueOf(value.trim().replace('-', '_').toUpperCase(Locale.ROOT));
+  }
+
+  private static void configureSessionCookie(
+      DefaultCookieSerializer cookieSerializer,
+      AuthProperties properties
+  ) {
+    cookieSerializer.setCookieName(AuthSecurityPaths.SESSION_COOKIE_NAME);
+    cookieSerializer.setCookiePath("/");
+    cookieSerializer.setUseHttpOnlyCookie(true);
+    cookieSerializer.setUseSecureCookie(properties.isCookieSecure());
+    cookieSerializer.setSameSite(sameSite(properties.getCookieSameSite()).attributeValue());
   }
 }
