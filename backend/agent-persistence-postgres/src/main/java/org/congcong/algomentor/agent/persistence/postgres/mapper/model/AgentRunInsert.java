@@ -1,5 +1,7 @@
 package org.congcong.algomentor.agent.persistence.postgres.mapper.model;
 
+import java.util.Map;
+
 /** 插入一条 Agent run 审计记录所需的字段。 */
 public record AgentRunInsert(
     long taskId,
@@ -11,7 +13,8 @@ public record AgentRunInsert(
     String triggerType,
     Long parentRunId,
     Integer parentStepIndex,
-    Long retryOfRunId
+    Long retryOfRunId,
+    Map<String, Object> metadata
 ) {
 
   public AgentRunInsert {
@@ -33,5 +36,6 @@ public record AgentRunInsert(
     if ((parentRunId == null) != (parentStepIndex == null)) {
       throw new IllegalArgumentException("Agent run parent run and step index must be provided together");
     }
+    metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
   }
 }

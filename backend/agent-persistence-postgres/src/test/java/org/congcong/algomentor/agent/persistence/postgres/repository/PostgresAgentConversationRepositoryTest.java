@@ -217,8 +217,10 @@ class PostgresAgentConversationRepositoryTest {
             AgentRunInsert::parentRunId,
             AgentRunInsert::parentStepIndex,
             AgentRunInsert::retryOfRunId,
-            AgentRunInsert::maxSteps)
-        .containsExactly("practice.code-review", "CHILD", 401L, 2, null, 3);
+            AgentRunInsert::maxSteps,
+            AgentRunInsert::metadata)
+        .containsExactly("practice.code-review", "CHILD", 401L, 2, null, 3,
+            Map.of("prompt", "must not persist on task"));
     assertThat(run)
         .extracting(
             PreparedAgentRun::agentKey,
@@ -390,6 +392,20 @@ class PostgresAgentConversationRepositoryTest {
     assertThat(mapper.calls).containsExactly("findActiveRun:101");
   }
 
+  @Test
+  void readsRealtimeProtocolVersionAndDefaultsMissingMetadataToLegacy() {
+    mapper.realtimeProtocolVersion = 2;
+
+    assertThat(repository.realtimeProtocolVersion(101L, "run-101")).isEqualTo(2);
+    assertThat(mapper.calls).containsExactly("findRealtimeProtocolVersion:101:run-101");
+
+    mapper.calls.clear();
+    mapper.realtimeProtocolVersion = null;
+
+    assertThat(repository.realtimeProtocolVersion(101L, "run-101")).isEqualTo(1);
+    assertThat(mapper.calls).containsExactly("findRealtimeProtocolVersion:101:run-101");
+  }
+
   private static final class FakeConversationMapper implements AgentConversationMapper {
     private final List<String> calls = new ArrayList<>();
     private Long existingRunId;
@@ -403,6 +419,7 @@ class PostgresAgentConversationRepositoryTest {
     private Map<String, Object> lastTaskMetadata = Map.of();
     private String lastTaskTitle;
     private AgentRunInsert lastRunInsert;
+    private Integer realtimeProtocolVersion = 1;
     private long nextTaskId = 1L;
     private long nextTurnId = 1L;
     private long nextMessageId = 1L;
@@ -532,6 +549,18 @@ class PostgresAgentConversationRepositoryTest {
     public int countActiveRun(long taskId, String runUuid) {
       calls.add("countActiveRun:" + taskId + ":" + runUuid);
       return activeRun != null && activeRun.taskId() == taskId && activeRun.runUuid().equals(runUuid) ? 1 : 0;
+    }
+
+    @Override
+    public int countRun(long taskId, String runUuid) {
+      calls.add("countRun:" + taskId + ":" + runUuid);
+      return countActiveRun(taskId, runUuid);
+    }
+
+    @Override
+    public Integer findRealtimeProtocolVersion(long taskId, String runUuid) {
+      calls.add("findRealtimeProtocolVersion:" + taskId + ":" + runUuid);
+      return realtimeProtocolVersion;
     }
   }
 }

@@ -33,6 +33,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeMessageStream
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
+import org.congcong.algomentor.agent.core.AgentStreamEventNames;
 import org.congcong.algomentor.ops.observability.SseFailureType;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.congcong.algomentor.ops.observability.SseStreamType;
@@ -199,7 +200,8 @@ public class PracticeSessionController {
             subscription.runUuid(),
             subscription.status(),
             eventsUrl(sessionId, subscription.runUuid()),
-            PracticeRealtimeProtocol.INITIAL_AFTER)));
+            PracticeRealtimeProtocol.INITIAL_AFTER,
+            subscription.realtimeProtocolVersion())));
   }
 
   @GetMapping(value = ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
@@ -207,23 +209,29 @@ public class PracticeSessionController {
   public SseEmitter events(
       @PathVariable long sessionId,
       @PathVariable String runUuid,
-      @RequestParam(name = ApiContractConstants.PRACTICE_RUN_EVENTS_AFTER_PARAM, required = false) String after
+    @RequestParam(name = ApiContractConstants.PRACTICE_RUN_EVENTS_AFTER_PARAM, required = false) String after
   ) {
     long userId = requireCurrentUserId();
-    String cursor = PracticeRealtimeCursor.normalizeAfter(after);
+    // 先拒绝所有协议都不接受的格式，避免无效请求触发数据库查询。
+    PracticeRealtimeCursor.normalizeAfter(after);
     PracticeSessionResponse session = PracticeSessionResponseMapper.toResponse(
         requiredPracticeSessionService().get(userId, sessionId));
-    if (session.activeRun() == null || !runUuid.equals(session.activeRun().runUuid())) {
+    long taskId = session.session().agentTaskId();
+    AgentTaskMessageRepository taskMessageRepository = requiredAgentTaskMessageRepository();
+    if (!taskMessageRepository.hasRun(taskId, runUuid)) {
       throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
-          "PRACTICE_RUN_NOT_FOUND", "题目训练运行不存在或已结束。");
+          "PRACTICE_RUN_NOT_FOUND", "题目训练运行不存在。");
     }
+    String cursor = taskMessageRepository.realtimeProtocolVersion(taskId, runUuid)
+        == PracticeRealtimeProtocol.REALTIME_PROTOCOL_VERSION
+        ? PracticeRealtimeCursor.normalizeV2After(after)
+        : PracticeRealtimeCursor.normalizeAfter(after);
     SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
     PracticeRealtimeSseLifecycle lifecycle = new PracticeRealtimeSseLifecycle(sseOpsRecorder);
     lifecycle.opened();
     emitter.onCompletion(lifecycle::onCompletion);
     emitter.onTimeout(lifecycle::onTimeout);
     emitter.onError(lifecycle::onError);
-    long taskId = session.activeRun().taskId();
     Thread reader = new Thread(
         () -> replayEvents(emitter, taskId, runUuid, cursor, lifecycle), "practice-realtime-sse");
     reader.setDaemon(true);
@@ -269,7 +277,8 @@ public class PracticeSessionController {
         for (PracticeRealtimeEvent event : events) {
           emitter.send(SseEmitter.event().id(event.cursor()).name(event.eventName()).data(event.data()));
           cursor = event.cursor();
-          if ("agent_run_end".equals(event.eventName()) || "agent_error".equals(event.eventName())) {
+          if (AgentStreamEventNames.AGENT_RUN_END.equals(event.eventName())
+              || AgentStreamEventNames.AGENT_ERROR.equals(event.eventName())) {
             lifecycle.complete(emitter);
             return;
           }

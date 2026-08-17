@@ -82,4 +82,8 @@ public interface AgentConversationMapper {
   AgentActiveRun findActiveRun(@Param("taskId") long taskId);
 
   int countActiveRun(@Param("taskId") long taskId, @Param("runUuid") String runUuid);
+
+  int countRun(@Param("taskId") long taskId, @Param("runUuid") String runUuid);
+
+  Integer findRealtimeProtocolVersion(@Param("taskId") long taskId, @Param("runUuid") String runUuid);
 }

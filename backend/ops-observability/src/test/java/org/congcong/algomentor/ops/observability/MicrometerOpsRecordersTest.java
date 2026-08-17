@@ -170,6 +170,21 @@ class MicrometerOpsRecordersTest {
         .count()).isEqualTo(1L);
   }
 
+  @Test
+  void recordsPublicPracticePayloadBytesByWhitelistedEventName() {
+    practiceRealtime.publicEventAppend("content_delta", 42, PracticeRealtimeOutcome.SUCCESS);
+    practiceRealtime.publicEventAppend("content_delta", 17, PracticeRealtimeOutcome.FAILURE);
+
+    assertThat(counter(OpsMetricNames.PRACTICE_REALTIME_PUBLIC_EVENT_APPENDS,
+        "event_name", "content_delta", "outcome", "success")).isEqualTo(1.0);
+    assertThat(counter(OpsMetricNames.PRACTICE_REALTIME_PUBLIC_EVENT_APPENDS,
+        "event_name", "content_delta", "outcome", "failure")).isEqualTo(1.0);
+    assertThat(registry.get(OpsMetricNames.PRACTICE_REALTIME_PUBLIC_EVENT_PAYLOAD_BYTES)
+        .tag("event_name", "content_delta")
+        .summary()
+        .count()).isEqualTo(2L);
+  }
+
   private double counter(String name, String... tags) {
     return registry.get(name).tags(tags).counter().count();
   }

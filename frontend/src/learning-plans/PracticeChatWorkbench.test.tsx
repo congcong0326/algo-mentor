@@ -331,6 +331,193 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(within(reviewBubble!).getByRole('button', { name: '标记完成' })).not.toBeDisabled();
   });
 
+  it('confirms a complete v2 run in memory without messages or active-run reads', async () => {
+    const subscription = captureSubscription();
+    startPracticeMessage.mockResolvedValue({ ...runSubscription(), realtimeProtocolVersion: 2 });
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 1 }, '1-0'));
+      options.onEvent(sseEvent('content_delta', { content: '直接确认的回复。' }, '2-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 1, finishReason: 'STOP', toolCallCount: 0 },
+        '3-0',
+      ));
+      options.onEvent(sseEvent(
+        'agent_run_end',
+        { runId: 'run-80', steps: 1, finishReason: 'STOP' },
+        '4-0',
+      ));
+    });
+    renderWorkbench();
+    await screen.findByText('给定整数数组 nums 和目标值 target。');
+    const messagesBefore = getPracticeSessionMessages.mock.calls.length;
+    const activeBefore = getPracticeSessionActiveRun.mock.calls.length;
+
+    await sendMessage('v2 直接确认');
+
+    expect(await screen.findByText('直接确认的回复。')).toBeInTheDocument();
+    expect(getPracticeSessionMessages).toHaveBeenCalledTimes(messagesBefore);
+    expect(getPracticeSessionActiveRun).toHaveBeenCalledTimes(activeBefore);
+    expect(getPracticeSession).not.toHaveBeenCalled();
+    expect(getPracticeSessionReviews).not.toHaveBeenCalled();
+    expect(subscription.emit).not.toHaveBeenCalled();
+  });
+
+  it('falls back after a v2 sequence gap and never treats the stream as final', async () => {
+    startPracticeMessage.mockResolvedValue({ ...runSubscription(), realtimeProtocolVersion: 2 });
+    getPracticeSessionActiveRun.mockResolvedValue(apiResponse(null));
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 1 }, '1-0'));
+      options.onEvent(sseEvent('agent_run_end', { runId: 'run-80', steps: 1, finishReason: 'STOP' }, '3-0'));
+    });
+    renderWorkbench();
+
+    await sendMessage('模拟缺口');
+
+    await waitFor(() => expect(getPracticeSessionMessages).toHaveBeenCalledWith(
+      101,
+      50,
+      expect.any(AbortSignal),
+    ));
+    expect(getPracticeSessionActiveRun).toHaveBeenCalled();
+  });
+
+  it('keeps only the final assistant step text after an unprojected v2 Tool', async () => {
+    startPracticeMessage.mockResolvedValue({ ...runSubscription(), realtimeProtocolVersion: 2 });
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 1 }, '1-0'));
+      options.onEvent(sseEvent('content_delta', { content: '第一轮草稿。' }, '2-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 1, finishReason: 'TOOL_CALLS', toolCallCount: 1 },
+        '3-0',
+      ));
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 2 }, '4-0'));
+      options.onEvent(sseEvent('content_delta', { content: '最后一轮文本。' }, '5-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 2, finishReason: 'STOP', toolCallCount: 0 },
+        '6-0',
+      ));
+      options.onEvent(sseEvent(
+        'agent_run_end',
+        { runId: 'run-80', steps: 2, finishReason: 'STOP' },
+        '7-0',
+      ));
+    });
+    renderWorkbench();
+
+    await sendMessage('请多轮思考后作答');
+
+    const finalAnswer = await screen.findByText('最后一轮文本。');
+    expect(finalAnswer.closest('article')).not.toHaveTextContent('第一轮草稿。');
+    expect(screen.queryByText('第一轮草稿。')).not.toBeInTheDocument();
+  });
+
+  it('refreshes reviews once after a complete v2 Review run without reading messages or active-run', async () => {
+    startPracticeMessage.mockResolvedValue({ ...runSubscription(), realtimeProtocolVersion: 2 });
+    getPracticeSessionReviews.mockResolvedValue(apiResponse(historyFixture({
+      latestReview: reviewSummaryFixture(),
+      reviews: [reviewSummaryFixture()],
+      completionGate: completionGate({ canComplete: true, reasonCode: 'PASSED', latestScore: 92 }),
+    })));
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 1 }, '1-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 1, finishReason: 'TOOL_CALLS', toolCallCount: 1 },
+        '2-0',
+      ));
+      options.onEvent(sseEvent('agent_tool_start', agentToolEvent(), '3-0'));
+      options.onEvent(sseEvent('agent_tool_end', agentToolEndEvent({
+        result: {
+          type: 'practice_code_review_submitted',
+          status: 'SAVED',
+          totalScore: 92,
+          passed: true,
+        },
+      }), '4-0'));
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 2 }, '5-0'));
+      options.onEvent(sseEvent('content_delta', { content: 'Review 已完成。' }, '6-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 2, finishReason: 'STOP', toolCallCount: 0 },
+        '7-0',
+      ));
+      options.onEvent(sseEvent(
+        'agent_run_end',
+        { runId: 'run-80', steps: 2, finishReason: 'STOP' },
+        '8-0',
+      ));
+    });
+    renderWorkbench();
+    await screen.findByText('给定整数数组 nums 和目标值 target。');
+    const messagesBefore = getPracticeSessionMessages.mock.calls.length;
+    const activeBefore = getPracticeSessionActiveRun.mock.calls.length;
+
+    await sendMessage('请 Review 这段完整代码。');
+
+    expect(await screen.findByText('Review 已完成。')).toBeInTheDocument();
+    await waitFor(() => expect(getPracticeSessionReviews).toHaveBeenCalledTimes(1));
+    expect(getPracticeSessionReviews).toHaveBeenCalledWith(101, expect.any(AbortSignal));
+    expect(getPracticeSessionMessages).toHaveBeenCalledTimes(messagesBefore);
+    expect(getPracticeSessionActiveRun).toHaveBeenCalledTimes(activeBefore);
+    expect(getPracticeSession).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+  });
+
+  it('confirms a v2 run after multiple projected Tools without fallback reads', async () => {
+    startPracticeMessage.mockResolvedValue({ ...runSubscription(), realtimeProtocolVersion: 2 });
+    const profileToolStart = agentToolEvent({
+      toolName: 'update_learner_declared_profile',
+      toolCallId: 'profile-call-1',
+    });
+    const proposalToolStart = agentToolEvent({
+      toolName: 'propose_current_problem_coach_summary',
+      toolCallId: 'proposal-call-1',
+    });
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 1 }, '1-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 1, finishReason: 'TOOL_CALLS', toolCallCount: 2 },
+        '2-0',
+      ));
+      options.onEvent(sseEvent('agent_tool_start', profileToolStart, '3-0'));
+      options.onEvent(sseEvent('agent_tool_end', {
+        ...profileToolStart,
+        result: { type: 'learner_declared_profile_update', status: 'UPDATED' },
+      }, '4-0'));
+      options.onEvent(sseEvent('agent_tool_start', proposalToolStart, '5-0'));
+      options.onEvent(sseEvent('agent_tool_end', {
+        ...proposalToolStart,
+        result: { type: 'current_problem_coach_summary_proposed', status: 'PROPOSED' },
+      }, '6-0'));
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 2 }, '7-0'));
+      options.onEvent(sseEvent('content_delta', { content: '多个 Tool 已完成。' }, '8-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 2, finishReason: 'STOP', toolCallCount: 0 },
+        '9-0',
+      ));
+      options.onEvent(sseEvent(
+        'agent_run_end',
+        { runId: 'run-80', steps: 2, finishReason: 'STOP' },
+        '10-0',
+      ));
+    });
+    renderWorkbench();
+    await screen.findByText('给定整数数组 nums 和目标值 target。');
+    const messagesBefore = getPracticeSessionMessages.mock.calls.length;
+    const activeBefore = getPracticeSessionActiveRun.mock.calls.length;
+
+    await sendMessage('测试多个 Tool');
+
+    expect(await screen.findByText('多个 Tool 已完成。')).toBeInTheDocument();
+    expect(getPracticeSessionMessages).toHaveBeenCalledTimes(messagesBefore);
+    expect(getPracticeSessionActiveRun).toHaveBeenCalledTimes(activeBefore);
+  });
+
   it('keeps the persisted active run visible when event replay is temporarily unavailable', async () => {
     getPracticeSessionActiveRun.mockResolvedValue(apiResponse(activeRun()));
     readPracticeRunEvents.mockRejectedValue(new Error('Redis stream unavailable'));
@@ -418,17 +605,20 @@ function activeRun() {
   };
 }
 
-function agentToolEvent(overrides: { toolName?: string } = {}) {
+function agentToolEvent(overrides: { toolName?: string; toolCallId?: string } = {}) {
   return {
     runId: 'run-80',
     stepIndex: 1,
-    toolCallId: 'call-1',
+    toolCallId: overrides.toolCallId ?? 'call-1',
     toolName: overrides.toolName ?? 'submit_practice_code_review',
   };
 }
 
-function agentToolEndEvent(overrides: { result: Record<string, unknown>; toolName?: string }) {
-  return { ...agentToolEvent({ toolName: overrides.toolName }), result: overrides.result };
+function agentToolEndEvent(overrides: { result: Record<string, unknown>; toolName?: string; toolCallId?: string }) {
+  return {
+    ...agentToolEvent({ toolName: overrides.toolName, toolCallId: overrides.toolCallId }),
+    result: overrides.result,
+  };
 }
 
 function learnerProfileToolEvent() {

@@ -35,6 +35,12 @@ public final class OpsMetricNames {
   /** Practice Chat Redis Stream 操作耗时，按 operation 与 outcome 聚合。 */
   public static final String PRACTICE_REALTIME_REDIS_OPERATION_DURATION =
       "algo.mentor.practice.realtime.redis.operation.duration";
+  /** Practice Chat 公开事件异步写入次数，按白名单 event_name 与 outcome 聚合。 */
+  public static final String PRACTICE_REALTIME_PUBLIC_EVENT_APPENDS =
+      "algo.mentor.practice.realtime.public_event.appends";
+  /** Practice Chat 公开事件 envelope 字节数，按白名单 event_name 聚合。 */
+  public static final String PRACTICE_REALTIME_PUBLIC_EVENT_PAYLOAD_BYTES =
+      "algo.mentor.practice.realtime.public_event.payload.bytes";
 
   private OpsMetricNames() {
   }

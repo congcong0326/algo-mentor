@@ -3,7 +3,6 @@ package org.congcong.algomentor.api.practice.realtime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.congcong.algomentor.api.config.PracticeRealtimeStreamProperties;
-import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.ops.observability.PracticeRealtimeOpsRecorder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class PracticeRealtimeConfiguration {
 
   @Bean(destroyMethod = "close")
-  @ConditionalOnBean(LlmStreamSseMapper.class)
+  @ConditionalOnBean(PracticeRealtimeEventPayloadMapper.class)
   @ConditionalOnMissingBean(PracticeRealtimeEventStore.class)
   @ConditionalOnProperty(
       prefix = MentorConfigurationKeys.PRACTICE_REALTIME_STREAM_PREFIX,
@@ -26,10 +25,10 @@ public class PracticeRealtimeConfiguration {
   public PracticeRealtimeEventStore practiceRealtimeEventStore(
       PracticeRealtimeStreamProperties properties,
       ObjectMapper objectMapper,
-      LlmStreamSseMapper sseMapper,
+      PracticeRealtimeEventPayloadMapper payloadMapper,
       PracticeRealtimeOpsRecorder opsRecorder
   ) {
-    return new LettucePracticeRealtimeEventStore(properties, objectMapper, sseMapper, opsRecorder);
+    return new LettucePracticeRealtimeEventStore(properties, objectMapper, payloadMapper, opsRecorder);
   }
 
   @Bean

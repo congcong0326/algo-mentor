@@ -113,7 +113,17 @@ class AgentMapperXmlTest {
         .contains("agent_key")
         .contains("parent_step_index")
         .contains("#{triggerType}")
-        .contains("#{retryOfRunId}");
+        .contains("#{retryOfRunId}")
+        .contains("#{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler}");
+  }
+
+  @Test
+  void realtimeProtocolLookupReadsPersistedRunMetadata() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
+
+    assertThat(sql)
+        .contains("<select id=\"findRealtimeProtocolVersion\" resultType=\"int\">")
+        .contains("metadata -&gt;&gt; 'practiceRealtimeProtocolVersion' = '2'");
   }
 
   @Test

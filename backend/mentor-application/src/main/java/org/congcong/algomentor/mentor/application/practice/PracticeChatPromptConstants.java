@@ -5,6 +5,9 @@ package org.congcong.algomentor.mentor.application.practice;
  */
 public final class PracticeChatPromptConstants {
 
+  /** run metadata 中的 Practice Chat 实时下行协议版本。 */
+  public static final String METADATA_REALTIME_PROTOCOL_VERSION = "practiceRealtimeProtocolVersion";
+
   public static final String SCENARIO = "PRACTICE_CHAT";
   public static final String PROFILE_ID = "PRACTICE_CHAT_V1";
   public static final String PROFILE_VERSION = "2026-07-21";

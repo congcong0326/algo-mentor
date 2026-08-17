@@ -3,13 +3,19 @@ package org.congcong.algomentor.api.practice.realtime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.api.config.PracticeRealtimeStreamProperties;
-import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
+import org.congcong.algomentor.ops.observability.PracticeRealtimeOperation;
+import org.congcong.algomentor.ops.observability.PracticeRealtimeOpsRecorder;
+import org.congcong.algomentor.ops.observability.PracticeRealtimeOutcome;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -29,7 +35,7 @@ class LettucePracticeRealtimeEventStoreLocalRedisIT {
   void appendsRunEventsReplaysStrictlyAfterCursorAndUsesTerminalRetention() {
     String runUuid = "local-it-" + UUID.randomUUID();
     try (LettucePracticeRealtimeEventStore store = new LettucePracticeRealtimeEventStore(
-        properties(), new ObjectMapper(), new LlmStreamSseMapper(), NoopOpsRecorders.practiceRealtime())) {
+        properties(), new ObjectMapper(), new PracticeRealtimeEventPayloadMapper(), NoopOpsRecorders.practiceRealtime())) {
       awaitWriteConnection(store);
       store.append(runUuid, new AgentStreamEvent.AgentStepStart(runUuid, 1));
       store.append(runUuid, new AgentStreamEvent.AgentRunEnd(
@@ -38,11 +44,38 @@ class LettucePracticeRealtimeEventStoreLocalRedisIT {
       List<PracticeRealtimeEvent> events = awaitEvents(store, runUuid, 2);
       assertThat(events).extracting(PracticeRealtimeEvent::eventName)
           .containsExactly("agent_step_start", "agent_run_end");
-      assertThat(events.get(0).cursor()).isNotEqualTo(events.get(1).cursor());
+      assertThat(events).extracting(PracticeRealtimeEvent::cursor).containsExactly("1-0", "2-0");
       assertThat(store.readAfter(runUuid, events.get(0).cursor(), false))
           .extracting(PracticeRealtimeEvent::eventName)
           .containsExactly("agent_run_end");
       assertThat(redisTtl(runUuid)).isGreaterThan(0L).isLessThanOrEqualTo(120L);
+    }
+  }
+
+  @Test
+  void leavesAGapAfterAnXaddFailureInsteadOfReusingTheSequence() {
+    String runUuid = "local-it-gap-" + UUID.randomUUID();
+    PracticeRealtimeStreamProperties properties = properties();
+    RecordingPracticeRealtimeOpsRecorder recorder = new RecordingPracticeRealtimeOpsRecorder();
+    try (LettucePracticeRealtimeEventStore store = new LettucePracticeRealtimeEventStore(
+            properties, new ObjectMapper(), new PracticeRealtimeEventPayloadMapper(), recorder);
+        RedisClient redisClient = RedisClient.create(redisUri(properties));
+        StatefulRedisConnection<String, String> redisConnection = redisClient.connect()) {
+      awaitWriteConnection(store);
+      String key = PracticeRealtimeProtocol.streamKey(runUuid);
+      redisConnection.sync().set(key, "not-a-stream");
+
+      store.append(runUuid, new AgentStreamEvent.AgentStepStart(runUuid, 1));
+      awaitCondition(() -> recorder.failedPublicAppends.get() == 1, "Timed out waiting for failed XADD");
+      redisConnection.sync().del(key);
+
+      store.append(runUuid, new AgentStreamEvent.AgentRunEnd(
+          runUuid, 1, LlmFinishReason.STOP, java.util.Map.of()));
+
+      List<PracticeRealtimeEvent> events = awaitEvents(store, runUuid, 1);
+      assertThat(events).extracting(PracticeRealtimeEvent::cursor).containsExactly("2-0");
+      assertThat(events).extracting(PracticeRealtimeEvent::eventName).containsExactly("agent_run_end");
+      assertThat(recorder.failedPublicAppends.get()).isEqualTo(1);
     }
   }
 
@@ -83,16 +116,40 @@ class LettucePracticeRealtimeEventStoreLocalRedisIT {
   }
 
   private static void awaitWriteConnection(LettucePracticeRealtimeEventStore store) {
+    awaitCondition(store::writeConnectionReady, "Timed out waiting for Redis write connection");
+  }
+
+  private static void awaitCondition(BooleanSupplier condition, String timeoutMessage) {
     long deadline = System.nanoTime() + EVENTUAL_TIMEOUT.toNanos();
-    while (!store.writeConnectionReady()) {
+    while (!condition.getAsBoolean()) {
       if (System.nanoTime() >= deadline) {
-        throw new AssertionError("Timed out waiting for Redis write connection");
+        throw new AssertionError(timeoutMessage);
       }
       try {
         Thread.sleep(20);
       } catch (InterruptedException interrupted) {
         Thread.currentThread().interrupt();
         throw new AssertionError(interrupted);
+      }
+    }
+  }
+
+  private static String redisUri(PracticeRealtimeStreamProperties properties) {
+    return "redis://" + properties.getHost() + ":" + properties.getPort();
+  }
+
+  private static final class RecordingPracticeRealtimeOpsRecorder implements PracticeRealtimeOpsRecorder {
+
+    private final AtomicInteger failedPublicAppends = new AtomicInteger();
+
+    @Override
+    public void redisOperation(PracticeRealtimeOperation operation, PracticeRealtimeOutcome outcome, Duration duration) {
+    }
+
+    @Override
+    public void publicEventAppend(String eventName, int payloadBytes, PracticeRealtimeOutcome outcome) {
+      if (outcome == PracticeRealtimeOutcome.FAILURE) {
+        failedPublicAppends.incrementAndGet();
       }
     }
   }

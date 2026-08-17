@@ -7,7 +7,8 @@ public record PracticeChatRunSubscriptionResponse(
     String runUuid,
     String status,
     String eventsUrl,
-    String initialAfter
+    String initialAfter,
+    int realtimeProtocolVersion
 ) {
 
   public static final String TYPE_ACCEPTED = "accepted";

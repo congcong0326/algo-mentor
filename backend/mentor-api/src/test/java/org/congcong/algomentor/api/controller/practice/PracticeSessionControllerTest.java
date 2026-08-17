@@ -4,16 +4,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +28,7 @@ import java.util.Set;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.ai.governance.model.AiActor;
@@ -34,6 +40,8 @@ import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.config.ApiSseProperties;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEvent;
+import org.congcong.algomentor.api.practice.realtime.PracticeRealtimeEventStore;
 import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
@@ -74,6 +82,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = PracticeSessionController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -96,11 +105,18 @@ class PracticeSessionControllerTest {
   private CurrentUserIdProvider currentUserIdProvider;
 
   @Autowired
+  private AgentTaskMessageRepository agentTaskMessageRepository;
+
+  @Autowired
+  private PracticeRealtimeEventStore realtimeEventStore;
+
+  @Autowired
   private ApiSseProperties sseProperties;
 
   @BeforeEach
   void resetMocks() {
-    reset(practiceSessionService, streamService, currentUserIdProvider, sseProperties);
+    reset(practiceSessionService, streamService, currentUserIdProvider, sseProperties, agentTaskMessageRepository,
+        realtimeEventStore);
     when(sseProperties.practiceMessageTimeoutMillis()).thenReturn(360_000L);
   }
 
@@ -361,6 +377,21 @@ class PracticeSessionControllerTest {
   }
 
   @Test
+  void eventsRejectsNonSequenceCursorForAPersistedV2Run() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L)).thenReturn(result(PracticeProgressStatus.IN_PROGRESS));
+    when(agentTaskMessageRepository.hasRun(80L, "run-80")).thenReturn(true);
+    when(agentTaskMessageRepository.realtimeProtocolVersion(80L, "run-80")).thenReturn(2);
+
+    mockMvc.perform(get("/api/practice-sessions/50/runs/run-80/events?after=1-1"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_REALTIME_CURSOR_INVALID"));
+
+    verify(agentTaskMessageRepository).hasRun(80L, "run-80");
+    verify(agentTaskMessageRepository).realtimeProtocolVersion(80L, "run-80");
+  }
+
+  @Test
   void eventsRequireAuthenticationBeforeResolvingTheSession() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
 
@@ -372,15 +403,44 @@ class PracticeSessionControllerTest {
   }
 
   @Test
-  void eventsTreatsATerminalRunAsNotFoundSoTheClientReadsPersistedMessages() throws Exception {
+  void eventsRejectsRunThatDoesNotBelongToTheSessionTask() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(practiceSessionService.get(42L, 50L)).thenReturn(result(PracticeProgressStatus.IN_PROGRESS));
+    when(agentTaskMessageRepository.hasRun(80L, "run-80")).thenReturn(false);
 
     mockMvc.perform(get("/api/practice-sessions/50/runs/run-80/events"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error.code").value("PRACTICE_RUN_NOT_FOUND"));
 
     verify(practiceSessionService).get(42L, 50L);
+    verify(agentTaskMessageRepository).hasRun(80L, "run-80");
+  }
+
+  @Test
+  void eventsReplaysTerminalStreamForAnEndedRunThatBelongsToTheSessionTask() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L)).thenReturn(result(PracticeProgressStatus.IN_PROGRESS));
+    when(agentTaskMessageRepository.hasRun(80L, "run-80")).thenReturn(true);
+    when(agentTaskMessageRepository.realtimeProtocolVersion(80L, "run-80")).thenReturn(2);
+    when(realtimeEventStore.readAfter("run-80", "0-0", true)).thenReturn(List.of(new PracticeRealtimeEvent(
+        "1-0",
+        "agent_run_end",
+        JsonNodeFactory.instance.objectNode()
+            .put("runId", "run-80")
+            .put("steps", 1)
+            .put("finishReason", "STOP"))));
+
+    MvcResult result = mockMvc.perform(get("/api/practice-sessions/50/runs/run-80/events")
+            .accept(MediaType.TEXT_EVENT_STREAM))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result))
+        .andExpect(status().isOk())
+        .andExpect(content().string(org.hamcrest.Matchers.containsString("event:agent_run_end")));
+
+    verify(realtimeEventStore).readAfter("run-80", "0-0", true);
+    verify(agentTaskMessageRepository, never()).isActiveRun(80L, "run-80");
   }
 
   @Test
@@ -655,6 +715,12 @@ class PracticeSessionControllerTest {
     @Bean
     CurrentUserIdProvider currentUserIdProvider() {
       return mock(CurrentUserIdProvider.class);
+    }
+
+    @Bean
+    @Primary
+    AgentTaskMessageRepository agentTaskMessageRepository() {
+      return mock(AgentTaskMessageRepository.class);
     }
 
     @Bean

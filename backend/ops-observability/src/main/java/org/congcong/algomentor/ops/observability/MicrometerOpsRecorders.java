@@ -1,6 +1,7 @@
 package org.congcong.algomentor.ops.observability;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -248,6 +249,26 @@ public final class MicrometerOpsRecorders {
           .tag(OpsMetricTags.OUTCOME, outcome.tagValue())
           .register(registry)
           .record(duration);
+    }
+
+    @Override
+    public void publicEventAppend(String eventName, int payloadBytes, PracticeRealtimeOutcome outcome) {
+      if (eventName == null || eventName.isBlank()) {
+        throw new IllegalArgumentException("eventName must not be blank");
+      }
+      if (payloadBytes < 0) {
+        throw new IllegalArgumentException("payloadBytes must not be negative");
+      }
+      outcome = Objects.requireNonNull(outcome, "outcome must not be null");
+      Counter.builder(OpsMetricNames.PRACTICE_REALTIME_PUBLIC_EVENT_APPENDS)
+          .tag(OpsMetricTags.EVENT_NAME, eventName)
+          .tag(OpsMetricTags.OUTCOME, outcome.tagValue())
+          .register(registry)
+          .increment();
+      DistributionSummary.builder(OpsMetricNames.PRACTICE_REALTIME_PUBLIC_EVENT_PAYLOAD_BYTES)
+          .tag(OpsMetricTags.EVENT_NAME, eventName)
+          .register(registry)
+          .record(payloadBytes);
     }
   }
 

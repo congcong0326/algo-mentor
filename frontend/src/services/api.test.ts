@@ -1000,6 +1000,22 @@ describe('practice run realtime api', () => {
       data: { content: '第一段' },
     });
   });
+
+  it('surfaces invalid JSON for v2 Practice events', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
+      'id:1-0',
+      'event:content_delta',
+      'data:{not-json}',
+      '',
+      '',
+    ])));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(readPracticeRunEvents('/api/practice-sessions/101/runs/run-80/events', {
+      realtimeProtocolVersion: 2,
+      onEvent: vi.fn(),
+    })).rejects.toThrow('not valid JSON');
+  });
 });
 
 describe('learning plan proposal api', () => {

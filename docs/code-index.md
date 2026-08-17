@@ -32,6 +32,7 @@
 - `docs/practice-chat-workbench-design.md`：题目聊天工作台研发设计，说明方案详情、题目聊天页、固定工具栏、题目状态、训练会话和 AI 聊天接口草案。
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。
 - `docs/design_for_decoupling_the_agent_real-time_message_channel.md`：Practice Chat Agent 实时消息通道第一阶段解耦设计，定义 `POST /messages` 控制面、run 级 Redis Stream SSE 回放、PostgreSQL 终态回读、故障降级和验收标准。
+- `docs/practice-chat-sse-completeness-and-payload-design.md`：Practice Chat SSE 完整性与下行载荷收敛设计，定义公开 metadata 白名单、连续 Redis Stream ID、前端免回读成功路径和 PostgreSQL 兜底。
 - `docs/redis-cache-migration-plan.md`：Redis 缓存与独立 Streams Redis 的迁移规划，明确缓存和实时事件通道的实例、配置及发布边界。
 - `docs/practice-chat-system-prompt-assembly-design.md`：题目聊天系统提示词拼装设计，说明结构化片段、分层 prompt、动态 profile、预算裁剪、metadata 追踪和测试策略。
 - `docs/practice-related-problem-history-recall-design.md`：Practice Chat 跨会话代码提交历史召回设计，定义正式 Code Review 事实、跨计划时间序列、最小 Prompt 索引、近期 Review 历程摘要和通用历史 Tool 演进。

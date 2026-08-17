@@ -135,6 +135,20 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
     return runUuid != null && !runUuid.isBlank() && conversationMapper.countActiveRun(taskId, runUuid) > 0;
   }
 
+  @Override
+  public boolean hasRun(long taskId, String runUuid) {
+    return runUuid != null && !runUuid.isBlank() && conversationMapper.countRun(taskId, runUuid) > 0;
+  }
+
+  @Override
+  public int realtimeProtocolVersion(long taskId, String runUuid) {
+    if (runUuid == null || runUuid.isBlank()) {
+      return 1;
+    }
+    Integer version = conversationMapper.findRealtimeProtocolVersion(taskId, runUuid);
+    return version == null ? 1 : version;
+  }
+
   private PreparedAgentRun existingDraft(long runId) {
     AgentRunRecord record = conversationMapper.findRunRecord(runId);
     if (record == null) {
@@ -235,7 +249,8 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         mode.databaseValue(),
         parentRunId,
         parentStepIndex,
-        source.runId()));
+        source.runId(),
+        request.metadata()));
     conversationMapper.attachTurnRun(source.turnId(), runId);
     return new PreparedAgentRun(
         source.taskId(),
@@ -272,7 +287,8 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         request.mode().databaseValue(),
         parentLink == null ? request.parentRunId() : parentLink.runId(),
         parentLink == null ? request.parentStepIndex() : parentLink.stepIndex(),
-        retryOfRunId);
+        retryOfRunId,
+        request.metadata());
   }
 
   private PreparedAgentRun preparedRun(

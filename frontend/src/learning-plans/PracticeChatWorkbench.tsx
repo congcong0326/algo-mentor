@@ -73,6 +73,126 @@ interface PracticeRunStreamState {
   eventsUrl: string;
   lastEventId: string;
   assistantMessageId: number;
+  realtimeProtocolVersion: 1 | 2;
+  nextExpectedSequence: number;
+  realtimeIncomplete: boolean;
+  successfulRunEndReceived: boolean;
+  currentStepIndex?: number;
+  toolExecutionStepIndex?: number;
+  activeToolCallIds: Set<string>;
+  nextExpectedStepIndex: number;
+  stepBuffers: Map<number, string>;
+  confirmedAssistantContent: string;
+}
+
+class PracticeRealtimeIncompleteError extends Error {
+  constructor() {
+    super('Practice realtime stream is incomplete');
+    this.name = 'PracticeRealtimeIncompleteError';
+  }
+}
+
+function isPracticeRealtimeV2(runState: PracticeRunStreamState): boolean {
+  return runState.realtimeProtocolVersion === 2;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function hasOnlyFields(value: Record<string, unknown>, fields: readonly string[]): boolean {
+  return Object.keys(value).every((key) => fields.includes(key));
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0;
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+}
+
+function isPublicPracticeToolName(value: unknown): value is string {
+  return value === REVIEW_TOOL_NAME
+    || value === COACH_SUMMARY_PROPOSAL_TOOL_NAME
+    || value === LEARNER_DECLARED_PROFILE_TOOL_NAME;
+}
+
+function isPublicToolResult(toolName: string, value: unknown): boolean {
+  if (!isRecord(value)) {
+    return false;
+  }
+  const fieldsByTool: Record<string, readonly string[]> = {
+    [REVIEW_TOOL_NAME]: ['type', 'status', 'totalScore', 'passed', 'failureCode'],
+    [COACH_SUMMARY_PROPOSAL_TOOL_NAME]: ['type', 'status', 'proposalId', 'summaryMarkdown', 'operation'],
+    [LEARNER_DECLARED_PROFILE_TOOL_NAME]: ['type', 'status'],
+  };
+  if (!hasOnlyFields(value, fieldsByTool[toolName] ?? [])
+    || typeof value.type !== 'string'
+    || typeof value.status !== 'string') {
+    return false;
+  }
+  if (toolName === REVIEW_TOOL_NAME) {
+    return (!('totalScore' in value) || (typeof value.totalScore === 'number' && Number.isFinite(value.totalScore)))
+      && (!('passed' in value) || typeof value.passed === 'boolean')
+      && (!('failureCode' in value) || typeof value.failureCode === 'string');
+  }
+  if (toolName === COACH_SUMMARY_PROPOSAL_TOOL_NAME) {
+    return (!('proposalId' in value) || typeof value.proposalId === 'string')
+      && (!('summaryMarkdown' in value) || typeof value.summaryMarkdown === 'string')
+      && (!('operation' in value) || typeof value.operation === 'string');
+  }
+  return true;
+}
+
+function assertValidPracticeV2Event(runState: PracticeRunStreamState, event: import('../types/api').SseStreamEvent) {
+  const expectedId = `${runState.nextExpectedSequence}-0`;
+  if (event.id !== expectedId || !isRecord(event.data)) {
+    throw new PracticeRealtimeIncompleteError();
+  }
+
+  const data = event.data;
+  const validRunId = data.runId === runState.runUuid;
+  let valid = false;
+  if (event.eventName === 'content_delta') {
+    valid = hasOnlyFields(data, ['content']) && typeof data.content === 'string' && runState.currentStepIndex !== undefined;
+  } else if (event.eventName === 'agent_step_start') {
+    valid = hasOnlyFields(data, ['runId', 'stepIndex']) && validRunId && isPositiveInteger(data.stepIndex);
+  } else if (event.eventName === 'agent_step_end') {
+    valid = hasOnlyFields(data, ['runId', 'stepIndex', 'finishReason', 'toolCallCount'])
+      && validRunId
+      && isPositiveInteger(data.stepIndex)
+      && typeof data.finishReason === 'string'
+      && isNonNegativeInteger(data.toolCallCount);
+  } else if (event.eventName === 'agent_tool_start') {
+    valid = hasOnlyFields(data, ['runId', 'stepIndex', 'toolCallId', 'toolName'])
+      && validRunId
+      && isPositiveInteger(data.stepIndex)
+      && typeof data.toolCallId === 'string'
+      && isPublicPracticeToolName(data.toolName);
+  } else if (event.eventName === 'agent_tool_end') {
+    valid = hasOnlyFields(data, ['runId', 'stepIndex', 'toolCallId', 'toolName', 'result'])
+      && validRunId
+      && isPositiveInteger(data.stepIndex)
+      && typeof data.toolCallId === 'string'
+      && isPublicPracticeToolName(data.toolName)
+      && isPublicToolResult(data.toolName, data.result);
+  } else if (event.eventName === 'agent_run_end') {
+    valid = hasOnlyFields(data, ['runId', 'steps', 'finishReason'])
+      && validRunId
+      && isPositiveInteger(data.steps)
+      && typeof data.finishReason === 'string';
+  } else if (event.eventName === 'agent_error') {
+    valid = hasOnlyFields(data, ['runId', 'code', 'message', 'retryable'])
+      && validRunId
+      && typeof data.code === 'string'
+      && typeof data.message === 'string'
+      && typeof data.retryable === 'boolean';
+  }
+
+  if (!valid) {
+    throw new PracticeRealtimeIncompleteError();
+  }
 }
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
@@ -245,22 +365,6 @@ function isSavedReviewResult(result: unknown): boolean {
     && result.status === 'SAVED';
 }
 
-function readResultScore(result: unknown): number | undefined {
-  if (typeof result !== 'object' || result === null || !('totalScore' in result)) {
-    return undefined;
-  }
-
-  const totalScore = (result as { totalScore?: unknown }).totalScore;
-  if (typeof totalScore === 'number' && Number.isFinite(totalScore)) {
-    return totalScore;
-  }
-  if (typeof totalScore === 'string' && totalScore.trim()) {
-    const parsed = Number(totalScore);
-    return Number.isFinite(parsed) ? parsed : undefined;
-  }
-  return undefined;
-}
-
 function readResultPassed(result: unknown): boolean | undefined {
   if (typeof result !== 'object' || result === null || !('passed' in result)) {
     return undefined;
@@ -277,6 +381,21 @@ function readResultPassed(result: unknown): boolean | undefined {
     if (passed.toLowerCase() === 'false') {
       return false;
     }
+  }
+  return undefined;
+}
+
+function readResultScore(result: unknown): number | undefined {
+  if (!isRecord(result) || !('totalScore' in result)) {
+    return undefined;
+  }
+  const totalScore = result.totalScore;
+  if (typeof totalScore === 'number' && Number.isFinite(totalScore)) {
+    return totalScore;
+  }
+  if (typeof totalScore === 'string' && totalScore.trim()) {
+    const parsed = Number(totalScore);
+    return Number.isFinite(parsed) ? parsed : undefined;
   }
   return undefined;
 }
@@ -635,6 +754,14 @@ export default function PracticeChatWorkbench({
       eventsUrl: `/api/practice-sessions/${sessionId}/runs/${activeRun.runUuid}/events`,
       lastEventId: '0-0',
       assistantMessageId,
+      realtimeProtocolVersion: 1,
+      nextExpectedSequence: 1,
+      realtimeIncomplete: false,
+      successfulRunEndReceived: false,
+      activeToolCallIds: new Set(),
+      nextExpectedStepIndex: 1,
+      stepBuffers: new Map(),
+      confirmedAssistantContent: '',
     }, controller, createdAt);
 
     return () => controller.abort();
@@ -749,6 +876,12 @@ export default function PracticeChatWorkbench({
     }));
   }
 
+  function replaceAssistantContent(assistantMessageId: number, content: string) {
+    setMessages((current) => current.map((message) => (
+      message.id === assistantMessageId ? { ...message, contentMarkdown: content } : message
+    )));
+  }
+
   function showCoachSummaryProposal(
     assistantMessageId: number,
     action: CoachSummaryProposalAction,
@@ -783,20 +916,6 @@ export default function PracticeChatWorkbench({
   function showCompletionAction(assistantMessageId: number) {
     completionActionMessageIdRef.current = assistantMessageId;
     setCompletionActionMessageId(assistantMessageId);
-  }
-
-  function reviewToolScoreSummary(result: unknown): string | undefined {
-    const totalScore = readResultScore(result);
-    const passed = readResultPassed(result);
-    if (totalScore === undefined || passed === undefined) {
-      return undefined;
-    }
-
-    const statusLabel = passed ? resources.learningPlans.reviewPassed : resources.learningPlans.reviewFailed;
-    return resources.learningPlans.reviewToolScoreSummary(
-      statusLabel,
-      resources.learningPlans.reviewScoreText(totalScore, completionGate?.passScore),
-    );
   }
 
   function updateLearnerProfileToolStatus(
@@ -845,6 +964,19 @@ export default function PracticeChatWorkbench({
     });
   }
 
+  function reviewToolScoreSummary(result: unknown): string | undefined {
+    const totalScore = readResultScore(result);
+    const passed = readResultPassed(result);
+    if (totalScore === undefined || passed === undefined) {
+      return undefined;
+    }
+    const statusLabel = passed ? resources.learningPlans.reviewPassed : resources.learningPlans.reviewFailed;
+    return resources.learningPlans.reviewToolScoreSummary(
+      statusLabel,
+      resources.learningPlans.reviewScoreText(totalScore, completionGate?.passScore),
+    );
+  }
+
   async function consumePracticeRun(
     runState: PracticeRunStreamState,
     controller: AbortController,
@@ -854,26 +986,13 @@ export default function PracticeChatWorkbench({
     let terminalEventReceived = false;
     let reviewRefreshRequested = false;
 
-    const processEvent = (event: import('../types/api').SseStreamEvent) => {
-      if (event.eventName === 'content_delta') {
-        const delta = readContentDelta(event.data);
-        if (delta) {
-          appendAssistantContent(runState.assistantMessageId, delta);
-        }
-      }
-
-      if (event.eventName === 'agent_run_end' || event.eventName === 'agent_error') {
-        terminalEventReceived = true;
-      }
-
-      if (event.eventName === 'agent_error' && isAgentExecutorOverloaded(event.data)) {
-        setCapacityUnavailable(true);
-        setError(resources.common.aiCapacityUnavailable);
-      }
-
+    const processProjectedToolEvent = (event: import('../types/api').SseStreamEvent) => {
       if (event.eventName === 'agent_tool_end') {
         const toolEnd = readAgentToolEndEvent(event.data);
         if (!toolEnd) {
+          if (isPracticeRealtimeV2(runState)) {
+            throw new PracticeRealtimeIncompleteError();
+          }
           return;
         }
 
@@ -902,9 +1021,11 @@ export default function PracticeChatWorkbench({
           if (readResultPassed(toolEnd.result)) {
             showCompletionAction(runState.assistantMessageId);
           }
-          const scoreSummary = reviewToolScoreSummary(toolEnd.result);
-          if (scoreSummary) {
-            appendAssistantContent(runState.assistantMessageId, `${scoreSummary}\n\n`);
+          if (!isPracticeRealtimeV2(runState)) {
+            const scoreSummary = reviewToolScoreSummary(toolEnd.result);
+            if (scoreSummary) {
+              appendAssistantContent(runState.assistantMessageId, `${scoreSummary}\n\n`);
+            }
           }
         }
       }
@@ -912,6 +1033,9 @@ export default function PracticeChatWorkbench({
       if (event.eventName === 'agent_tool_start') {
         const toolStart = readAgentToolStartEvent(event.data);
         if (!toolStart) {
+          if (isPracticeRealtimeV2(runState)) {
+            throw new PracticeRealtimeIncompleteError();
+          }
           return;
         }
         if (toolStart.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
@@ -925,17 +1049,119 @@ export default function PracticeChatWorkbench({
       }
     };
 
+    const processV2Event = (event: import('../types/api').SseStreamEvent) => {
+      assertValidPracticeV2Event(runState, event);
+      const data = event.data as Record<string, unknown>;
+      if (event.eventName === 'agent_step_start') {
+        const stepIndex = data.stepIndex as number;
+        if (runState.currentStepIndex !== undefined
+          || runState.activeToolCallIds.size > 0
+          || stepIndex !== runState.nextExpectedStepIndex) {
+          throw new PracticeRealtimeIncompleteError();
+        }
+        runState.toolExecutionStepIndex = undefined;
+        runState.currentStepIndex = stepIndex;
+        runState.stepBuffers.set(runState.currentStepIndex, '');
+        runState.nextExpectedStepIndex += 1;
+      } else if (event.eventName === 'content_delta') {
+        const content = data.content as string;
+        const stepIndex = runState.currentStepIndex;
+        if (stepIndex === undefined) {
+          throw new PracticeRealtimeIncompleteError();
+        }
+        const nextContent = `${runState.stepBuffers.get(stepIndex) ?? ''}${content}`;
+        runState.stepBuffers.set(stepIndex, nextContent);
+        replaceAssistantContent(runState.assistantMessageId, `${runState.confirmedAssistantContent}${nextContent}`);
+      } else if (event.eventName === 'agent_step_end') {
+        const stepIndex = data.stepIndex as number;
+        if (runState.currentStepIndex !== stepIndex) {
+          throw new PracticeRealtimeIncompleteError();
+        }
+        if (data.toolCallCount === 0) {
+          runState.confirmedAssistantContent = runState.stepBuffers.get(stepIndex) ?? '';
+          replaceAssistantContent(runState.assistantMessageId, runState.confirmedAssistantContent);
+        } else {
+          replaceAssistantContent(runState.assistantMessageId, runState.confirmedAssistantContent);
+          // Tool 在模型声明调用后才执行，此时所属 step 已结束。
+          runState.toolExecutionStepIndex = stepIndex;
+        }
+        runState.currentStepIndex = undefined;
+      } else if (event.eventName === 'agent_run_end') {
+        if (runState.currentStepIndex !== undefined
+          || runState.toolExecutionStepIndex !== undefined
+          || runState.activeToolCallIds.size > 0
+          || data.steps !== runState.nextExpectedStepIndex - 1) {
+          throw new PracticeRealtimeIncompleteError();
+        }
+        runState.successfulRunEndReceived = true;
+        terminalEventReceived = true;
+      } else if (event.eventName === 'agent_error') {
+        runState.realtimeIncomplete = true;
+        terminalEventReceived = true;
+      }
+
+      if (event.eventName === 'agent_tool_start' || event.eventName === 'agent_tool_end') {
+        const stepIndex = data.stepIndex as number;
+        const toolCallId = data.toolCallId as string;
+        if (runState.currentStepIndex !== undefined || runState.toolExecutionStepIndex !== stepIndex) {
+          throw new PracticeRealtimeIncompleteError();
+        }
+        if (event.eventName === 'agent_tool_start') {
+          if (runState.activeToolCallIds.has(toolCallId)) {
+            throw new PracticeRealtimeIncompleteError();
+          }
+          runState.activeToolCallIds.add(toolCallId);
+        } else if (!runState.activeToolCallIds.delete(toolCallId)) {
+          throw new PracticeRealtimeIncompleteError();
+        }
+        processProjectedToolEvent(event);
+      }
+      if (event.eventName === 'agent_error' && isAgentExecutorOverloaded(event.data)) {
+        setCapacityUnavailable(true);
+        setError(resources.common.aiCapacityUnavailable);
+      }
+      runState.lastEventId = event.id!;
+      runState.nextExpectedSequence += 1;
+    };
+
+    const processLegacyEvent = (event: import('../types/api').SseStreamEvent) => {
+      if (event.eventName === 'content_delta') {
+        const delta = readContentDelta(event.data);
+        if (delta) {
+          appendAssistantContent(runState.assistantMessageId, delta);
+        }
+      }
+
+      if (event.eventName === 'agent_run_end' || event.eventName === 'agent_error') {
+        terminalEventReceived = true;
+      }
+
+      if (event.eventName === 'agent_error' && isAgentExecutorOverloaded(event.data)) {
+        setCapacityUnavailable(true);
+        setError(resources.common.aiCapacityUnavailable);
+      }
+      processProjectedToolEvent(event);
+    };
+
+    const processEvent = (event: import('../types/api').SseStreamEvent) => {
+      if (isPracticeRealtimeV2(runState)) {
+        processV2Event(event);
+      } else {
+        processLegacyEvent(event);
+        if (event.id) {
+          runState.lastEventId = event.id;
+        }
+      }
+    };
+
     for (let attempt = 0; attempt <= RUN_STREAM_RECONNECT_ATTEMPTS && !controller.signal.aborted; attempt += 1) {
       try {
         await readPracticeRunEvents(runState.eventsUrl, {
           after: runState.lastEventId,
           signal: controller.signal,
+          realtimeProtocolVersion: runState.realtimeProtocolVersion,
           onEvent: (event) => {
             processEvent(event);
-            // 只有成功处理事件后才推进内存 cursor，短暂断线会从该位置严格补发。
-            if (event.id) {
-              runState.lastEventId = event.id;
-            }
           },
         });
         if (terminalEventReceived || attempt === RUN_STREAM_RECONNECT_ATTEMPTS) {
@@ -944,6 +1170,10 @@ export default function PracticeChatWorkbench({
       } catch (error) {
         if (controller.signal.aborted) {
           return;
+        }
+        if (error instanceof PracticeRealtimeIncompleteError) {
+          runState.realtimeIncomplete = true;
+          break;
         }
         if (attempt === RUN_STREAM_RECONNECT_ATTEMPTS) {
           break;
@@ -955,7 +1185,16 @@ export default function PracticeChatWorkbench({
       return;
     }
 
-    await reconcilePracticeRunAfterStream(runState, controller.signal, terminalEventReceived, reviewRefreshRequested);
+    const realtimeComplete = isPracticeRealtimeV2(runState)
+      && runState.successfulRunEndReceived
+      && !runState.realtimeIncomplete;
+    await reconcilePracticeRunAfterStream(
+      runState,
+      controller.signal,
+      terminalEventReceived,
+      reviewRefreshRequested,
+      realtimeComplete,
+    );
   }
 
   async function reconcilePracticeRunAfterStream(
@@ -963,8 +1202,25 @@ export default function PracticeChatWorkbench({
     signal: AbortSignal,
     terminalEventReceived: boolean,
     reviewRefreshRequested: boolean,
+    realtimeComplete: boolean,
   ) {
     try {
+      if (realtimeComplete) {
+        const activeLoadToken = practiceLoadTokenRef.current;
+        setSessionResponse((current) => current && current.session.id === runState.sessionId
+          ? { ...current, activeRun: null }
+          : current);
+        setStatus('idle');
+        setError('');
+        if (practiceRunStreamRef.current?.runUuid === runState.runUuid) {
+          practiceRunStreamRef.current = undefined;
+        }
+        clearTransientAssistantWorkState(runState.assistantMessageId);
+        if (reviewRefreshRequested) {
+          await refreshReviews(runState.sessionId, activeLoadToken, signal);
+        }
+        return;
+      }
       const activeRunResponse = await getPracticeSessionActiveRun(runState.sessionId, signal);
       if (signal.aborted || !isCurrentSession(runState.sessionId, practiceLoadTokenRef.current)) {
         return;
@@ -1062,6 +1318,14 @@ export default function PracticeChatWorkbench({
         eventsUrl: subscription.eventsUrl,
         lastEventId: subscription.initialAfter,
         assistantMessageId,
+        realtimeProtocolVersion: subscription.realtimeProtocolVersion === 2 ? 2 : 1,
+        nextExpectedSequence: 1,
+        realtimeIncomplete: false,
+        successfulRunEndReceived: false,
+        activeToolCallIds: new Set(),
+        nextExpectedStepIndex: 1,
+        stepBuffers: new Map(),
+        confirmedAssistantContent: '',
       };
       // 先登记订阅，再发布 activeRun 状态，避免 effect 与提交链路并发创建两个订阅。
       practiceRunStreamRef.current = runState;

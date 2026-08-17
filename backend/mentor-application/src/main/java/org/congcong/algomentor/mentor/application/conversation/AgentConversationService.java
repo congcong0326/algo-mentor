@@ -34,6 +34,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptCon
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatRunSubscription;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 import org.congcong.algomentor.mentor.application.practice.PracticeSubmissionHistoryContext;
@@ -363,6 +364,9 @@ public class AgentConversationService {
     metadata.put(AgentRuntimeMetadataKeys.ASSISTANT_MESSAGE_METADATA, practiceAssistantMessageMetadata(input));
     metadata.put(PracticeChatPromptConstants.METADATA_COACH_STYLE, input.coachStyle().name());
     metadata.put(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, input.responseLanguage().name());
+    metadata.put(
+        PracticeChatPromptConstants.METADATA_REALTIME_PROTOCOL_VERSION,
+        PracticeChatRunSubscription.REALTIME_PROTOCOL_VERSION);
     return Map.copyOf(metadata);
   }
 

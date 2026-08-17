@@ -98,7 +98,8 @@ public class PracticeMessageStreamService {
     AgentPreparedStream preparedStream = orchestrator.prepareStream(input);
     if (preparedStream.idempotentReplay()) {
       return new PracticeChatRunSubscription(
-          preparedStream.taskId(), preparedStream.runUuid(), PracticeChatRunSubscription.ACCEPTED);
+          preparedStream.taskId(), preparedStream.runUuid(), PracticeChatRunSubscription.ACCEPTED,
+          PracticeChatRunSubscription.LEGACY_REALTIME_PROTOCOL_VERSION);
     }
     preparedStream.subscribe(new PracticeChatRunEventSubscriber(
         preparedStream.runUuid(), eventStore, () -> touchSession(sessionId)));

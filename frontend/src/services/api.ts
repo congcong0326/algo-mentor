@@ -1597,7 +1597,16 @@ export async function startPracticeMessage(
 export interface ReadPracticeRunEventsOptions {
   after?: string;
   signal?: AbortSignal;
+  /** v2 Practice Stream 必须把非法 JSON 暴露为错误，而不是降级成普通字符串。 */
+  realtimeProtocolVersion?: 1 | 2;
   onEvent: (event: SseStreamEvent) => void;
+}
+
+export class SseEventDataParseError extends Error {
+  constructor() {
+    super('Practice realtime event data is not valid JSON');
+    this.name = 'SseEventDataParseError';
+  }
 }
 
 export async function readPracticeRunEvents(
@@ -1615,7 +1624,7 @@ export async function readPracticeRunEvents(
   if (!response.body) {
     throw new Error('Practice run event response does not include a readable body');
   }
-  await readEventStream(response.body, options.onEvent);
+  await readEventStream(response.body, options.onEvent, options.realtimeProtocolVersion === 2);
 }
 
 export async function getLearningPlans(
@@ -2220,6 +2229,7 @@ function apiResponseToRequestError<T>(
 async function readEventStream(
   body: ReadableStream<Uint8Array>,
   onEvent: (event: SseStreamEvent) => void,
+  strictJson = false,
 ): Promise<void> {
   const reader = body.getReader();
   const decoder = new TextDecoder();
@@ -2229,11 +2239,11 @@ async function readEventStream(
     for (;;) {
       const { done, value } = await reader.read();
       buffer += decoder.decode(value, { stream: !done }).replace(/\r\n/g, '\n');
-      buffer = drainEventBuffer(buffer, onEvent);
+      buffer = drainEventBuffer(buffer, onEvent, strictJson);
 
       if (done) {
         if (buffer.trim()) {
-          parseEventBlock(buffer, onEvent);
+          parseEventBlock(buffer, onEvent, strictJson);
         }
         return;
       }
@@ -2246,13 +2256,14 @@ async function readEventStream(
 function drainEventBuffer(
   buffer: string,
   onEvent: (event: SseStreamEvent) => void,
+  strictJson: boolean,
 ): string {
   let nextBuffer = buffer;
   let separatorIndex = nextBuffer.indexOf('\n\n');
 
   while (separatorIndex >= 0) {
     const block = nextBuffer.slice(0, separatorIndex);
-    parseEventBlock(block, onEvent);
+    parseEventBlock(block, onEvent, strictJson);
     nextBuffer = nextBuffer.slice(separatorIndex + 2);
     separatorIndex = nextBuffer.indexOf('\n\n');
   }
@@ -2260,7 +2271,11 @@ function drainEventBuffer(
   return nextBuffer;
 }
 
-function parseEventBlock(block: string, onEvent: (event: SseStreamEvent) => void) {
+function parseEventBlock(
+  block: string,
+  onEvent: (event: SseStreamEvent) => void,
+  strictJson: boolean,
+) {
   let eventName: SseEventName | undefined;
   let id: string | undefined;
   const dataLines: string[] = [];
@@ -2284,11 +2299,11 @@ function parseEventBlock(block: string, onEvent: (event: SseStreamEvent) => void
   onEvent({
     id,
     eventName,
-    data: parseEventData(dataLines.join('\n')),
+    data: parseEventData(dataLines.join('\n'), strictJson),
   });
 }
 
-function parseEventData(rawData: string): unknown {
+function parseEventData(rawData: string, strictJson: boolean): unknown {
   if (!rawData) {
     return {};
   }
@@ -2296,6 +2311,9 @@ function parseEventData(rawData: string): unknown {
   try {
     return JSON.parse(rawData);
   } catch {
+    if (strictJson) {
+      throw new SseEventDataParseError();
+    }
     return rawData;
   }
 }

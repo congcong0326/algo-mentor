@@ -1,0 +1,2 @@
+ALTER TABLE agent_run
+  ADD COLUMN metadata JSONB NOT NULL DEFAULT '{}'::JSONB;

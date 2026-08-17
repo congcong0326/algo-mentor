@@ -18,6 +18,8 @@ public final class OpsMetricTags {
   public static final String OPERATION = "operation";
   /** Practice Chat Redis Stream 操作结果。 */
   public static final String OUTCOME = "outcome";
+  /** Practice Chat 公开 SSE 事件名，来自固定白名单。 */
+  public static final String EVENT_NAME = "event_name";
 
   private OpsMetricTags() {
   }

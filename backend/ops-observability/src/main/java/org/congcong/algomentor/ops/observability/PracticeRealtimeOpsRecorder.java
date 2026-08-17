@@ -10,4 +10,7 @@ public interface PracticeRealtimeOpsRecorder {
       PracticeRealtimeOutcome outcome,
       Duration duration
   );
+
+  /** 记录公开 payload 的异步写入结果和已序列化字节数，不记录正文或 run 标识。 */
+  void publicEventAppend(String eventName, int payloadBytes, PracticeRealtimeOutcome outcome);
 }

@@ -111,7 +111,11 @@ class PracticeMessageStreamServiceTest {
     PracticeChatRunSubscription replay = replayService.start(
         7L, 50L, "hint", "idem-1", "en-US", 4, (runUuid, event) -> appendedRunUuids.add(runUuid));
 
-    assertThat(replay).isEqualTo(new PracticeChatRunSubscription(100L, "run-1", "ACCEPTED"));
+    assertThat(replay).isEqualTo(new PracticeChatRunSubscription(
+        100L,
+        "run-1",
+        "ACCEPTED",
+        PracticeChatRunSubscription.LEGACY_REALTIME_PROTOCOL_VERSION));
     assertThat(replayOrchestrator.prepareCalls).isEqualTo(1);
     assertThat(replayOrchestrator.subscribeCalls).isZero();
   }

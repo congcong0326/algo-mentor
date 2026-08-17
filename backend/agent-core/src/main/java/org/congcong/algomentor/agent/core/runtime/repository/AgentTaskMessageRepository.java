@@ -24,4 +24,14 @@ public interface AgentTaskMessageRepository {
         .map(run -> run.runUuid().equals(runUuid))
         .orElse(false);
   }
+
+  /** 指定 run 是否归属于 task，不要求 run 仍处于 active。 */
+  default boolean hasRun(long taskId, String runUuid) {
+    return isActiveRun(taskId, runUuid);
+  }
+
+  /** run 级实时协议版本；缺失时按 legacy v1 处理，兼容已有持久化 run。 */
+  default int realtimeProtocolVersion(long taskId, String runUuid) {
+    return 1;
+  }
 }

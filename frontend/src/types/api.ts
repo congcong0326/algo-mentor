@@ -1270,6 +1270,8 @@ export interface PracticeChatRunSubscription {
   status: 'ACCEPTED';
   eventsUrl: string;
   initialAfter: string;
+  /** 仅值为 2 时允许以连续 SSE 事件直接确认 assistant 正文。 */
+  realtimeProtocolVersion?: 1 | 2;
 }
 
 export type PracticeCompletionGateReasonCode =

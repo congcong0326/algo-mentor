@@ -219,6 +219,7 @@
       parent_run_id,
       parent_step_index,
       retry_of_run_id,
+      metadata,
       status,
       max_steps,
       started_at,
@@ -235,6 +236,7 @@
       #{parentRunId},
       #{parentStepIndex},
       #{retryOfRunId},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler},
       'running',
       #{maxSteps},
       NOW(),
@@ -323,5 +325,22 @@
     WHERE task_id = #{taskId}
       AND run_uuid = #{runUuid}
       AND status = 'running'
+  </select>
+
+  <select id="countRun" resultType="int">
+    SELECT COUNT(*)
+    FROM agent_run
+    WHERE task_id = #{taskId}
+      AND run_uuid = #{runUuid}
+  </select>
+
+  <select id="findRealtimeProtocolVersion" resultType="int">
+    SELECT CASE
+      WHEN metadata -&gt;&gt; 'practiceRealtimeProtocolVersion' = '2' THEN 2
+      ELSE 1
+    END
+    FROM agent_run
+    WHERE task_id = #{taskId}
+      AND run_uuid = #{runUuid}
   </select>
 </mapper>

@@ -9,6 +9,7 @@ import io.lettuce.core.RedisFuture;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.StreamMessage;
+import io.lettuce.core.XAddArgs;
 import io.lettuce.core.XReadArgs;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
@@ -19,16 +20,16 @@ import io.lettuce.core.event.connection.ConnectedEvent;
 import io.lettuce.core.event.connection.ReconnectAttemptEvent;
 import io.lettuce.core.event.connection.ReconnectFailedEvent;
 import java.time.Duration;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.api.config.PracticeRealtimeStreamProperties;
-import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
 import org.congcong.algomentor.ops.observability.PracticeRealtimeOperation;
 import org.congcong.algomentor.ops.observability.PracticeRealtimeOpsRecorder;
@@ -45,32 +46,33 @@ public final class LettucePracticeRealtimeEventStore implements PracticeRealtime
 
   private final PracticeRealtimeStreamProperties properties;
   private final ObjectMapper objectMapper;
-  private final LlmStreamSseMapper sseMapper;
+  private final PracticeRealtimeEventPayloadMapper payloadMapper;
   private final RedisClient client;
   private final PracticeRealtimeOpsRecorder opsRecorder;
   private final CompletableFuture<StatefulRedisConnection<String, String>> writeConnection;
   private final Semaphore readConnections;
   private final Disposable connectionEventSubscription;
   private final AtomicLong reconnectStartedAt = new AtomicLong();
+  private final ConcurrentMap<String, AtomicLong> nextSequences = new ConcurrentHashMap<>();
 
   public LettucePracticeRealtimeEventStore(
       PracticeRealtimeStreamProperties properties,
       ObjectMapper objectMapper,
-      LlmStreamSseMapper sseMapper
+      PracticeRealtimeEventPayloadMapper payloadMapper
   ) {
-    this(properties, objectMapper, sseMapper, NoopOpsRecorders.practiceRealtime());
+    this(properties, objectMapper, payloadMapper, NoopOpsRecorders.practiceRealtime());
   }
 
   public LettucePracticeRealtimeEventStore(
       PracticeRealtimeStreamProperties properties,
       ObjectMapper objectMapper,
-      LlmStreamSseMapper sseMapper,
+      PracticeRealtimeEventPayloadMapper payloadMapper,
       PracticeRealtimeOpsRecorder opsRecorder
   ) {
     this.properties = Objects.requireNonNull(properties, "Practice realtime properties must not be null");
     this.properties.validate();
     this.objectMapper = Objects.requireNonNull(objectMapper, "ObjectMapper must not be null");
-    this.sseMapper = Objects.requireNonNull(sseMapper, "SSE mapper must not be null");
+    this.payloadMapper = Objects.requireNonNull(payloadMapper, "Practice realtime payload mapper must not be null");
     this.opsRecorder = Objects.requireNonNull(opsRecorder, "Practice realtime ops recorder must not be null");
     this.client = RedisClient.create(redisUri(properties));
     this.client.setOptions(ClientOptions.builder()
@@ -85,13 +87,20 @@ public final class LettucePracticeRealtimeEventStore implements PracticeRealtime
 
   @Override
   public void append(String runUuid, AgentStreamEvent event) {
+    PracticeRealtimeEventPayload publicEvent = payloadMapper.map(event).orElse(null);
+    if (publicEvent == null) {
+      return;
+    }
     String key = PracticeRealtimeProtocol.streamKey(runUuid);
     long appendStartedAt = System.nanoTime();
+    long sequence = nextSequences.computeIfAbsent(runUuid, ignored -> new AtomicLong(1L)).getAndIncrement();
+    String entryId = streamEntryId(sequence);
     try {
-      String serialized = envelope(event);
-      queueAppend(key, serialized, retention(event), appendStartedAt);
+      String serialized = envelope(publicEvent);
+      queueAppend(key, entryId, publicEvent.eventName(), serialized, retention(event), appendStartedAt);
     } catch (RuntimeException failure) {
       recordFailure(PracticeRealtimeOperation.APPEND, appendStartedAt, failure);
+      recordPublicAppend(publicEvent.eventName(), 0, PracticeRealtimeOutcome.FAILURE);
     }
   }
 
@@ -148,13 +157,12 @@ public final class LettucePracticeRealtimeEventStore implements PracticeRealtime
     }
   }
 
-  private String envelope(AgentStreamEvent event) {
+  private String envelope(PracticeRealtimeEventPayload event) {
     try {
-      Map<String, Object> envelope = new LinkedHashMap<>();
-      envelope.put(PracticeRealtimeProtocol.ENVELOPE_VERSION_FIELD, PracticeRealtimeProtocol.ENVELOPE_VERSION);
-      envelope.put(PracticeRealtimeProtocol.ENVELOPE_EVENT_NAME_FIELD, event.name());
-      envelope.put(PracticeRealtimeProtocol.ENVELOPE_DATA_FIELD, sseMapper.toData(event));
-      return objectMapper.writeValueAsString(envelope);
+      return objectMapper.writeValueAsString(Map.of(
+          PracticeRealtimeProtocol.ENVELOPE_VERSION_FIELD, PracticeRealtimeProtocol.ENVELOPE_VERSION,
+          PracticeRealtimeProtocol.ENVELOPE_EVENT_NAME_FIELD, event.eventName(),
+          PracticeRealtimeProtocol.ENVELOPE_DATA_FIELD, event.data()));
     } catch (JsonProcessingException failure) {
       throw new IllegalStateException("Practice realtime event envelope serialization failed", failure);
     }
@@ -168,14 +176,22 @@ public final class LettucePracticeRealtimeEventStore implements PracticeRealtime
    * <p>同一 run 仅由唯一事件出口在单个 worker 线程依次调用本方法；Lettuce 单连接会按命令提交顺序
    * 写出 XADD/EXPIRE，因此正常连接下该 run 的 entry 顺序仍与 Agent 事件顺序一致。</p>
    */
-  private void queueAppend(String key, String serialized, Duration retention, long appendStartedAt) {
+  private void queueAppend(
+      String key,
+      String entryId,
+      String eventName,
+      String serialized,
+      Duration retention,
+      long appendStartedAt
+  ) {
     StatefulRedisConnection<String, String> connection = writeConnection.getNow(null);
     if (connection == null) {
       recordFailure(PracticeRealtimeOperation.APPEND, appendStartedAt,
           new PracticeRealtimeUnavailableException("Practice realtime Redis write connection is unavailable"));
+      recordPublicAppend(eventName, serializedBytes(serialized), PracticeRealtimeOutcome.FAILURE);
       return;
     }
-    appendAsync(connection, key, serialized, retention, appendStartedAt);
+    appendAsync(connection, key, entryId, eventName, serialized, retention, appendStartedAt);
   }
 
   /** 同包集成测试用于在写入前等待独立异步连接完成。 */
@@ -200,19 +216,31 @@ public final class LettucePracticeRealtimeEventStore implements PracticeRealtime
   private void appendAsync(
       StatefulRedisConnection<String, String> connection,
       String key,
+      String entryId,
+      String eventName,
       String serialized,
       Duration retention,
       long appendStartedAt
   ) {
     RedisAsyncCommands<String, String> commands = connection.async();
-    RedisFuture<String> append = commands.xadd(key, Map.of(STREAM_FIELD_ENVELOPE, serialized));
-    append.whenComplete((entryId, failure) -> {
-      if (failure == null) {
-        record(PracticeRealtimeOperation.APPEND, PracticeRealtimeOutcome.SUCCESS, appendStartedAt);
-      } else {
-        recordFailure(PracticeRealtimeOperation.APPEND, appendStartedAt, failure);
-      }
-    });
+    try {
+      RedisFuture<String> append = commands.xadd(
+          key,
+          new XAddArgs().id(entryId),
+          Map.of(STREAM_FIELD_ENVELOPE, serialized));
+      append.whenComplete((ignored, failure) -> {
+        if (failure == null) {
+          record(PracticeRealtimeOperation.APPEND, PracticeRealtimeOutcome.SUCCESS, appendStartedAt);
+          recordPublicAppend(eventName, serializedBytes(serialized), PracticeRealtimeOutcome.SUCCESS);
+        } else {
+          recordFailure(PracticeRealtimeOperation.APPEND, appendStartedAt, failure);
+          recordPublicAppend(eventName, serializedBytes(serialized), PracticeRealtimeOutcome.FAILURE);
+        }
+      });
+    } catch (RuntimeException failure) {
+      recordFailure(PracticeRealtimeOperation.APPEND, appendStartedAt, failure);
+      recordPublicAppend(eventName, serializedBytes(serialized), PracticeRealtimeOutcome.FAILURE);
+    }
 
     long expireStartedAt = System.nanoTime();
     try {
@@ -269,6 +297,18 @@ public final class LettucePracticeRealtimeEventStore implements PracticeRealtime
     record(operation, PracticeRealtimeOutcome.FAILURE, startedAt);
     log.warn("Practice realtime Redis operation failed. operation={} exceptionType={}",
         operation.tagValue(), failure.getClass().getSimpleName());
+  }
+
+  private void recordPublicAppend(String eventName, int payloadBytes, PracticeRealtimeOutcome outcome) {
+    opsRecorder.publicEventAppend(eventName, payloadBytes, outcome);
+  }
+
+  private int serializedBytes(String serialized) {
+    return serialized.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
+  }
+
+  private String streamEntryId(long sequence) {
+    return sequence + "-" + PracticeRealtimeProtocol.STREAM_ID_GENERATION;
   }
 
   /**

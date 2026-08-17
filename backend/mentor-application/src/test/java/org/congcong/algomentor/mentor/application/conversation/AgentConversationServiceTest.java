@@ -100,7 +100,8 @@ class AgentConversationServiceTest {
     assertThat(repository.lastRequest.metadata())
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum");
+        .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum")
+        .containsEntry(PracticeChatPromptConstants.METADATA_REALTIME_PROTOCOL_VERSION, 2);
     assertThat(repository.lastRequest.userMessageMetadata())
         .containsEntry(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT)
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);

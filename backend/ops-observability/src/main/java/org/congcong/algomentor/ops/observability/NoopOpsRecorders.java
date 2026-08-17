@@ -99,6 +99,10 @@ public final class NoopOpsRecorders {
         java.time.Duration duration
     ) {
     }
+
+    @Override
+    public void publicEventAppend(String eventName, int payloadBytes, PracticeRealtimeOutcome outcome) {
+    }
   }
 
 }
