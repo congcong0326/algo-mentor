@@ -262,7 +262,10 @@ trap rollback ERR
 [[ -f "\${remote_stage}/mentor-api.jar" ]] || { echo 'Uploaded JAR is missing.' >&2; exit 1; }
 [[ -f "\${remote_stage}/Dockerfile" ]] || { echo 'Uploaded Dockerfile is missing.' >&2; exit 1; }
 
-sha256sum -c "\${remote_stage}/mentor-api.jar.sha256" >/dev/null
+(
+  cd "\${remote_stage}"
+  sha256sum -c mentor-api.jar.sha256 >/dev/null
+)
 
 while IFS=: read -r environment_file environment_key; do
   [[ -z "\${environment_file}" || "\${environment_file}" == \#* ]] && continue
