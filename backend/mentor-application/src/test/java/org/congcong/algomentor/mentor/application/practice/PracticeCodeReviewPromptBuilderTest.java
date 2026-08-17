@@ -18,6 +18,8 @@ class PracticeCodeReviewPromptBuilderTest {
         .contains("TLE 时 complexity=0")
         .contains("total<=8；不得给 9 分或 10 分")
         .contains("basis=USER_REPORTED_EXECUTION")
+        .contains("isCompleteLeetCodeSolution 只描述本轮代码是否构成当前题的完整 LeetCode 解法")
+        .contains("运行时错误、WA、TLE、MLE 或边界缺陷")
         .contains("n 最大为 100000")
         .contains("expectedTimeComplexity")
         .contains("codeQuality 只可取 [0, 0.5, 0.75, 1]")

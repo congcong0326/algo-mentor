@@ -415,6 +415,8 @@ belongsToCurrentProblem == true
 isCompleteLeetCodeSolution == true
 ```
 
+`isCompleteLeetCodeSolution` 只表示提交是否具有当前题完整 LeetCode 解法的结构，不表示它能够通过评测。完整提交存在 WA、编译错误、运行时错误、TLE、MLE、边界遗漏或核心逻辑错误时，仍必须生成正式 Review；这些问题通过 `judgeAssessment`、评分上限和 `passed=false` 表达。只有片段、辅助函数、伪代码、报错日志或缺少解法主体的内容才不落库。
+
 应用层校验：
 
 - 五个维度分不能超过产品定义上限。

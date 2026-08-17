@@ -93,6 +93,7 @@ public class PracticeCodeReviewPromptBuilder {
         7. 如果代码预计可以通过，但没有达到题目明确要求、follow-up 或公认目标复杂度，meetsExpectedComplexity=false、complexity<=1、total<=8；不得给 9 分或 10 分。
         8. 如果缺少题面约束且无法可靠判断性能，verdict=UNKNOWN、basis=INSUFFICIENT_CONTEXT、blockingIssue=true，不得声称正式通过。
         9. 如果 originalMessage 明确报告本次提交为 WA、TLE、MLE、Compile Error 或 Runtime Error，且没有相反的服务端执行事实，必须采用对应 verdict、basis=USER_REPORTED_EXECUTION、blockingIssue=true。
+        10. isCompleteLeetCodeSolution 只描述本轮代码是否构成当前题的完整 LeetCode 解法，不能由正确性、编译结果、运行时错误、WA、TLE、MLE 或边界缺陷决定。上述问题出现在结构完整的提交中时，该字段必须为 true，并按对应 verdict 生成正式 Review；只有代码片段、辅助函数、伪代码、报错日志或缺少解法主体时才为 false。
 
         复杂度评分锚点：
         - 2.0：达到题目要求或公认目标复杂度，且最大约束下可通过。
