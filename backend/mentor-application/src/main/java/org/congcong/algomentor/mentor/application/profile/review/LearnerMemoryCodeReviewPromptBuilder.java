@@ -57,6 +57,8 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
             + "容量为 SOFT_LIMIT 时优先 CONFIRM、REVISE、RETIRE 与去重，不新增判断。\n")
         .append("每个 ADD 和 REVISE 必须带 observationType：CURRENT_STRENGTH 只能引用每题最新通过版本并使用 "
             + "RESOLVED role；RECOVERED_CHALLENGE 必须引用同题失败 OBSERVED 后的通过 RESOLVED；"
+            + "同题恢复使用 SAME_PROBLEM_RECOVERY，跨两题及以上恢复使用 CROSS_PROBLEM_RECOVERY；"
+            + "CURRENT_STRENGTH 的跨题通用观察使用 CROSS_PROBLEM_RECURRENCE，标签表现使用 TAG_BREADTH；"
             + "ACTIVE_RISK 只能引用当前最新失败版本。\n");
     appendFactSnapshot(output, input.reviewFactSnapshot());
     Map<Long, String> findingSummaries = findingSummaries(input.reviewFactSnapshot());

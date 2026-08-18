@@ -301,6 +301,7 @@ public final class ManagedSystemPromptDefinitions {
           - CURRENT_STRENGTH：描述每题最新通过版本形成的当前掌握；引用的每条 Review 必须是该题最新正式版本且通过，role 使用 RESOLVED。
           - RECOVERED_CHALLENGE：描述同题失败后修正的成长轨迹；至少引用失败 OBSERVED 和其后通过 RESOLVED，不得把它写成当前风险。
           - ACTIVE_RISK：描述当前仍未修正的实现风险；必须引用该题最新失败版本，role 使用 OBSERVED。
+          - pattern 必须与判断范围匹配：同题恢复使用 SAME_PROBLEM_RECOVERY，跨题恢复使用 CROSS_PROBLEM_RECOVERY；跨题当前掌握使用 CROSS_PROBLEM_RECURRENCE，标签广度使用 TAG_BREADTH；SINGLE_REVIEW 仅用于单条 Review 的 TAG_ASSESSMENT。
           - 每个 ADD 与 REVISE 都必须带 observationType。该字段受服务端校验，当前阶段不持久化；不得试图用正文或 reason 绕过其语义。
 
           GENERAL_OBSERVATION 形成门槛：

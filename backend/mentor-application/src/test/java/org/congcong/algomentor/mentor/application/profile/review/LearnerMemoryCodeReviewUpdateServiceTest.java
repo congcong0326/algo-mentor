@@ -75,8 +75,13 @@ class LearnerMemoryCodeReviewUpdateServiceTest {
   void evidenceRepairPromptRestatesTrustedEvidenceAndPatternRules() {
     LearnerMemoryCodeReviewPromptBuilder promptBuilder = new LearnerMemoryCodeReviewPromptBuilder();
 
+    String normalPrompt = promptBuilder.build(input(false), promptBuilder.snapshot(7L)).get(1).text();
     String prompt = promptBuilder.build(input(true), promptBuilder.snapshot(7L)).get(1).text();
 
+    assertThat(normalPrompt)
+        .contains("同题恢复使用 SAME_PROBLEM_RECOVERY")
+        .contains("跨两题及以上恢复使用 CROSS_PROBLEM_RECOVERY")
+        .contains("CURRENT_STRENGTH 的跨题通用观察使用 CROSS_PROBLEM_RECURRENCE");
     assertThat(prompt)
         .contains("唯一一次修复调用")
         .contains("SAME_PROBLEM_RECOVERY")

@@ -191,7 +191,19 @@ public class LearnerMemoryCodeReviewUpdateService {
         DecisionRound round = decide(userId, input);
         toolCallCount = round.toolCallCount();
         updateRunRepository.bindAgentRun(updateRun.id(), round.agentRunId());
-        List<LearnerMemoryOperation> operations = outputMapper.map(round.structuredOutput(), input);
+        List<LearnerMemoryOperation> operations;
+        try {
+          operations = outputMapper.map(round.structuredOutput(), input);
+        } catch (IllegalArgumentException invalidOutput) {
+          if (evidenceRepair) {
+            throw invalidOutput;
+          }
+          metrics.recordInvalidOutput("VALIDATION");
+          log.info("Code review memory structured output was rejected; starting the single repair attempt.");
+          evidenceRepair = true;
+          retryOfRunId = round.agentRunId();
+          continue;
+        }
         LearnerMemoryOperationBatch batch = new LearnerMemoryOperationBatch(
             userId,
             updateRun.id(),
