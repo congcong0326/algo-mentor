@@ -47,8 +47,10 @@ import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCo
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewQueueContracts;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentInput;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateResult;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateService;
 import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewHistoryRepository;
+import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshot;
 import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
 import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
 import org.congcong.algomentor.queue.config.PersistentQueueProperties;
@@ -89,7 +91,7 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
         "SELECT COUNT(*) FROM learner_memory_update_run WHERE agent_run_id = ?", agentRunId)).isEqualTo(1L);
     assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_update_run_review")).isEqualTo(5L);
     assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_claim_revision WHERE status = 'ACTIVE'"))
-        .isEqualTo(2L);
+        .isEqualTo(1L);
     assertThat(queryString("SELECT to_regclass('learner_profile_entry')::text")).isNull();
   }
 
@@ -121,7 +123,65 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
     assertThat(queryLong("SELECT agent_run_id FROM learner_memory_update_run WHERE trigger_type = 'CODE_REVIEW_BATCH'"))
         .isEqualTo(repairAgentRunId);
     assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_claim_revision WHERE status = 'ACTIVE'"))
-        .isEqualTo(2L);
+        .isEqualTo(1L);
+  }
+
+  @Test
+  void includesAllNineReviewsInTheAgentFactSnapshotWhileKeepingTheFiveReviewBatch() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    long tagId = insertCatalog("array", "Array", "数组", true);
+    List<SampleReview> sample = List.of(
+        new SampleReview("merge-sorted-array", false),
+        new SampleReview("merge-sorted-array", true),
+        new SampleReview("remove-element", false),
+        new SampleReview("remove-element", true),
+        new SampleReview("remove-duplicates-from-sorted-array", true),
+        new SampleReview("remove-duplicates-from-sorted-array", false),
+        new SampleReview("remove-duplicates-from-sorted-array", true),
+        new SampleReview("remove-duplicates-from-sorted-array-ii", true),
+        new SampleReview("majority-element", true));
+    List<String> problemSlugs = sample.stream().map(SampleReview::problemSlug).distinct().toList();
+    for (int index = 0; index < problemSlugs.size(); index++) {
+      String slug = problemSlugs.get(index);
+      insertProblem(slug, index + 1, List.of(), List.of(), List.of());
+      assignTag(slug, tagId, 0);
+    }
+
+    PracticeCodeReviewCommitService commitService = commitService();
+    Map<String, Long> sessions = new java.util.HashMap<>();
+    for (SampleReview review : sample) {
+      Long existingSessionId = sessions.get(review.problemSlug());
+      long sessionId = existingSessionId == null
+          ? insertPracticeSession(userId, review.problemSlug())
+          : existingSessionId;
+      sessions.put(review.problemSlug(), sessionId);
+      long messageId = insertUserMessage(userId);
+      PracticeCodeReviewCommitResult result = transactionTemplate().execute(status ->
+          commitService.commit(draft(userId, sessionId, messageId, tagId, review.problemSlug(), review.passed())));
+      assertThat(result.created()).isTrue();
+    }
+
+    LearnerMemoryCodeReviewFactRepository facts = new MyBatisLearnerMemoryCodeReviewFactRepository(
+        sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),
+        objectMapper);
+    List<org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewFact> allFacts =
+        facts.findAllForUser(userId);
+    FixedRuntime runtime = new FixedRuntime(insertAgentRun(userId));
+
+    assertThat(updateService(facts, runtime).update(userId, allFacts.subList(4, 9)).status())
+        .isEqualTo(LearnerMemoryCodeReviewUpdateResult.Status.UPDATED);
+    assertThat(runtime.inputs).singleElement().satisfies(input -> {
+      LearnerReviewFactSnapshot factSnapshot = input.reviewFactSnapshot();
+      assertThat(factSnapshot.coverage().reviewCount()).isEqualTo(9);
+      assertThat(factSnapshot.coverage().distinctProblemCount()).isEqualTo(5);
+      assertThat(factSnapshot.overall().passedReviewCount()).isEqualTo(6);
+      assertThat(factSnapshot.overall().failedReviewCount()).isEqualTo(3);
+      assertThat(factSnapshot.overall().latestByProblem()).isEqualTo(new LearnerReviewFactSnapshot.PassCount(5, 5));
+      assertThat(factSnapshot.overall().firstAttemptByProblem()).isEqualTo(new LearnerReviewFactSnapshot.PassCount(3, 5));
+      assertThat(factSnapshot.overall().recoveredFailureCount()).isEqualTo(3);
+      assertThat(factSnapshot.overall().unresolvedFailureCount()).isZero();
+    });
   }
 
   private PracticeCodeReviewCommitService commitService() throws Exception {
@@ -199,13 +259,28 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
   }
 
   private PracticeCodeReviewDraft draft(long userId, long sessionId, long messageId, long tagId) {
-    return new PracticeCodeReviewDraft(
-        userId, 1, 1, "two-sum", sessionId, messageId, null, null,
-        "class Solution {}", "class Solution {}", "java", List.of(), "",
-        new PracticeCodeReviewScore(
+    return draft(userId, sessionId, messageId, tagId, "two-sum", true);
+  }
+
+  private PracticeCodeReviewDraft draft(
+      long userId,
+      long sessionId,
+      long messageId,
+      long tagId,
+      String problemSlug,
+      boolean passed
+  ) {
+    PracticeCodeReviewScore score = passed
+        ? new PracticeCodeReviewScore(
             new BigDecimal("4"), new BigDecimal("2"), new BigDecimal("2"), BigDecimal.ONE, BigDecimal.ONE,
-            new BigDecimal("10")),
-        true, List.of("边界条件遗漏"), List.of("补充边界测试"), "OK", List.of(tagId));
+            new BigDecimal("10"))
+        : new PracticeCodeReviewScore(BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+            new BigDecimal("5"));
+    return new PracticeCodeReviewDraft(
+        userId, 1, 1, problemSlug, sessionId, messageId, null, null,
+        "class Solution {}", "class Solution {}", "java", List.of(), "",
+        score,
+        passed, List.of("边界条件遗漏"), List.of("补充边界测试"), "OK", List.of(tagId));
   }
 
   private long insertAgentRun(long userId) throws Exception {
@@ -235,39 +310,25 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
   }
 
   private JsonNode decisions(LearnerMemoryCodeReviewUpdateAgentInput input) {
-    long firstReviewId = input.scopeReviews().get(0).reviewId();
     long lastReviewId = input.scopeReviews().get(input.scopeReviews().size() - 1).reviewId();
     LearnerMemoryClaimScope tagScope = input.allowedScopes().stream()
         .filter(scope -> scope.kind() == LearnerMemoryClaimContract.Kind.TAG_ASSESSMENT)
         .findFirst().orElseThrow();
     ObjectNode root = objectMapper.createObjectNode();
     ArrayNode operations = root.putArray(LearnerMemoryCodeReviewJsonSchema.OPERATIONS);
-    ObjectNode general = operations.addObject();
-    general.put(LearnerMemoryCodeReviewJsonSchema.ACTION, "ADD");
-    general.putObject(LearnerMemoryCodeReviewJsonSchema.SCOPE)
-        .put(LearnerMemoryCodeReviewJsonSchema.KIND, "GENERAL_OBSERVATION")
-        .put(LearnerMemoryCodeReviewJsonSchema.DIMENSION, "PROBLEM_SOLVING_APPROACH");
-    general.put(LearnerMemoryCodeReviewJsonSchema.CLAIM_TEXT, "提交前需要系统检查边界条件。");
-    general.put(LearnerMemoryCodeReviewJsonSchema.PATTERN, "SAME_PROBLEM_PERSISTENCE");
-    general.put(LearnerMemoryCodeReviewJsonSchema.REASON, "同题多版 Review 持续记录边界遗漏。");
-    general.putArray(LearnerMemoryCodeReviewJsonSchema.REVIEW_EVIDENCE)
-        .addObject().put(LearnerMemoryCodeReviewJsonSchema.REVIEW_ID, firstReviewId)
-        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "OBSERVED");
-    general.withArray(LearnerMemoryCodeReviewJsonSchema.REVIEW_EVIDENCE)
-        .addObject().put(LearnerMemoryCodeReviewJsonSchema.REVIEW_ID, lastReviewId)
-        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "PERSISTED");
     ObjectNode tag = operations.addObject();
     tag.put(LearnerMemoryCodeReviewJsonSchema.ACTION, "ADD");
     tag.putObject(LearnerMemoryCodeReviewJsonSchema.SCOPE)
         .put(LearnerMemoryCodeReviewJsonSchema.KIND, "TAG_ASSESSMENT")
         .put(LearnerMemoryCodeReviewJsonSchema.DIMENSION, "TAG_MASTERY")
         .put(LearnerMemoryCodeReviewJsonSchema.TAG_ID, tagScope.tagId());
-    tag.put(LearnerMemoryCodeReviewJsonSchema.CLAIM_TEXT, "数组题的边界检查需要持续复盘。");
+    tag.put(LearnerMemoryCodeReviewJsonSchema.CLAIM_TEXT, "本窗口的数组题当前提交已通过，并保留边界检查习惯。");
+    tag.put(LearnerMemoryCodeReviewJsonSchema.OBSERVATION_TYPE, "CURRENT_STRENGTH");
     tag.put(LearnerMemoryCodeReviewJsonSchema.PATTERN, "SINGLE_REVIEW");
     tag.put(LearnerMemoryCodeReviewJsonSchema.REASON, "当前 Review 包含数组标签和边界问题。");
     tag.putArray(LearnerMemoryCodeReviewJsonSchema.REVIEW_EVIDENCE)
         .addObject().put(LearnerMemoryCodeReviewJsonSchema.REVIEW_ID, lastReviewId)
-        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "OBSERVED");
+        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "RESOLVED");
     return root;
   }
 
@@ -311,5 +372,8 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
     public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       throw new UnsupportedOperationException("stream not used");
     }
+  }
+
+  private record SampleReview(String problemSlug, boolean passed) {
   }
 }

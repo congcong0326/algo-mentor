@@ -214,6 +214,7 @@ Agent 输出受控的 `evidencePattern`，服务端按引用记录重新计算�
 | `SAME_PROBLEM_PERSISTENCE` | 同题至少两个不同版本 |
 | `SAME_PROBLEM_RECOVERY` | 同题早期和后续版本，至少包含 `OBSERVED + RESOLVED` |
 | `SAME_PROBLEM_REGRESSION` | 同题至少三个时间有序版本，包含改善后再次出现 |
+| `CROSS_PROBLEM_RECOVERY` | 至少两个不同题目，且每题都存在有序的 `OBSERVED -> RESOLVED` 轨迹 |
 | `CROSS_PROBLEM_RECURRENCE` | 至少两个不同 problem slug |
 | `CROSS_PROBLEM_LONGITUDINAL` | 至少两个不同 problem slug，且至少一个包含多版本轨迹 |
 | `TAG_BREADTH` | 至少两个不同题目，且 Review 均关联目标 tag |

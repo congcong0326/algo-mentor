@@ -52,4 +52,15 @@ public interface LearnerMemoryMetrics {
 
   default void recordProfileProjection(String status, String projectorVersion, int citationCount) {
   }
+
+  /** 记录一次全量 Review 事实快照的统计分布，不带用户或题目维度。 */
+  default void recordReviewSnapshot(int reviewCount, int recoveredCount, int unresolvedCount) {
+  }
+
+  /** 阶段 A 的瞬时画像判断分类，状态仅限生成、拒绝和改写。 */
+  default void recordReviewObservation(String observationType, String status) {
+  }
+
+  default void recordLanguageGuardRejected() {
+  }
 }

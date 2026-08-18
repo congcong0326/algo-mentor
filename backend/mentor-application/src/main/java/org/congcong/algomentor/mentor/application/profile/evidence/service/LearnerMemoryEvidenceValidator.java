@@ -3,7 +3,6 @@ package org.congcong.algomentor.mentor.application.profile.evidence.service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
@@ -14,6 +13,11 @@ import org.congcong.algomentor.mentor.application.profile.operation.service.Lear
 
 /** 按受信来源、窗口和 pattern 结构校验 evidence；grade 由独立计算器派生。 */
 public final class LearnerMemoryEvidenceValidator {
+
+  private static final Comparator<LearnerMemoryEvidenceValidationContext.ReviewSource> REVIEW_ORDER =
+      Comparator.comparing(LearnerMemoryEvidenceValidationContext.ReviewSource::createdAt)
+          .thenComparingInt(LearnerMemoryEvidenceValidationContext.ReviewSource::versionNo)
+          .thenComparingLong(LearnerMemoryEvidenceValidationContext.ReviewSource::reviewId);
 
   public void validate(
       LearnerMemoryEvidenceReferences references,
@@ -51,18 +55,26 @@ public final class LearnerMemoryEvidenceValidator {
       }
       case SAME_PROBLEM_PERSISTENCE -> {
         requireReviewOnly(references, messages);
-        requireSameProblemDistinctVersions(reviews, 2);
+        requireSameProblemDistinctAttempts(reviews, 2);
       }
       case SAME_PROBLEM_RECOVERY -> {
         requireReviewOnly(references, messages);
-        requireSameProblemDistinctVersions(reviews, 2);
-        requireOrderedReviewRoles(references, reviews,
-            LearnerMemoryEvidenceContract.ReviewRole.OBSERVED,
-            LearnerMemoryEvidenceContract.ReviewRole.RESOLVED);
+        requireSameProblemDistinctAttempts(reviews, 2);
+        if (!hasRecoveryTrajectory(references, reviews)) {
+          fail();
+        }
       }
       case SAME_PROBLEM_REGRESSION -> {
         requireReviewOnly(references, messages);
         requireRegression(references, reviews);
+      }
+      case CROSS_PROBLEM_RECOVERY -> {
+        requireReviewOnly(references, messages);
+        requireDistinctProblemCount(reviews, 2);
+        if (groupByProblem(reviews).values().stream()
+            .anyMatch(problemReviews -> !hasRecoveryTrajectory(references, problemReviews))) {
+          fail();
+        }
       }
       case CROSS_PROBLEM_RECURRENCE -> {
         requireReviewOnly(references, messages);
@@ -71,7 +83,7 @@ public final class LearnerMemoryEvidenceValidator {
       case CROSS_PROBLEM_LONGITUDINAL -> {
         requireReviewOnly(references, messages);
         requireDistinctProblemCount(reviews, 2);
-        if (groupByProblem(reviews).values().stream().noneMatch(this::hasMultipleVersions)) {
+        if (groupByProblem(reviews).values().stream().noneMatch(this::hasMultipleAttempts)) {
           fail();
         }
       }
@@ -112,23 +124,12 @@ public final class LearnerMemoryEvidenceValidator {
     }
   }
 
-  private void requireOrderedReviewRoles(
-      LearnerMemoryEvidenceReferences references,
+  /** Review 的 versionNo 仅在一次训练 session 内递增，跨 session 重试必须按独立尝试处理。 */
+  private void requireSameProblemDistinctAttempts(
       List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews,
-      LearnerMemoryEvidenceContract.ReviewRole first,
-      LearnerMemoryEvidenceContract.ReviewRole second) {
-    List<LearnerMemoryEvidenceContract.ReviewRole> ordered = orderedRoles(references, reviews);
-    if (ordered.indexOf(first) < 0 || ordered.indexOf(second) <= ordered.indexOf(first)) {
-      fail();
-    }
-  }
-
-  private void requireSameProblemDistinctVersions(
-      List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews,
-      int minimumVersions) {
+      int minimumAttempts) {
     if (reviews.isEmpty() || groupByProblem(reviews).size() != 1
-        || reviews.stream().map(LearnerMemoryEvidenceValidationContext.ReviewSource::versionNo).distinct().count()
-        < minimumVersions) {
+        || reviews.size() < minimumAttempts) {
       fail();
     }
   }
@@ -136,15 +137,32 @@ public final class LearnerMemoryEvidenceValidator {
   private void requireRegression(
       LearnerMemoryEvidenceReferences references,
       List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews) {
-    requireSameProblemDistinctVersions(reviews, 3);
-    List<LearnerMemoryEvidenceContract.ReviewRole> ordered = orderedRoles(references, reviews);
-    if (ordered.indexOf(LearnerMemoryEvidenceContract.ReviewRole.OBSERVED) < 0
-        || ordered.indexOf(LearnerMemoryEvidenceContract.ReviewRole.RESOLVED)
-            <= ordered.indexOf(LearnerMemoryEvidenceContract.ReviewRole.OBSERVED)
-        || ordered.lastIndexOf(LearnerMemoryEvidenceContract.ReviewRole.REGRESSED)
-            <= ordered.indexOf(LearnerMemoryEvidenceContract.ReviewRole.RESOLVED)) {
+    requireSameProblemDistinctAttempts(reviews, 3);
+    Map<Long, LearnerMemoryEvidenceContract.ReviewRole> roles = reviewRoles(references);
+    boolean regressed = reviews.stream()
+        .filter(review -> !review.passed()
+            && roles.get(review.reviewId()) == LearnerMemoryEvidenceContract.ReviewRole.OBSERVED)
+        .anyMatch(observed -> reviews.stream()
+            .filter(review -> review.passed()
+                && roles.get(review.reviewId()) == LearnerMemoryEvidenceContract.ReviewRole.RESOLVED
+                && REVIEW_ORDER.compare(observed, review) < 0)
+            .anyMatch(resolved -> reviews.stream().anyMatch(review -> !review.passed()
+                && roles.get(review.reviewId()) == LearnerMemoryEvidenceContract.ReviewRole.REGRESSED
+                && REVIEW_ORDER.compare(resolved, review) < 0)));
+    if (!regressed) {
       fail();
     }
+  }
+
+  private boolean hasRecoveryTrajectory(
+      LearnerMemoryEvidenceReferences references,
+      List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews) {
+    Map<Long, LearnerMemoryEvidenceContract.ReviewRole> roles = reviewRoles(references);
+    return reviews.stream().filter(review -> !review.passed()
+            && roles.get(review.reviewId()) == LearnerMemoryEvidenceContract.ReviewRole.OBSERVED)
+        .anyMatch(observed -> reviews.stream().anyMatch(resolved -> resolved.passed()
+            && roles.get(resolved.reviewId()) == LearnerMemoryEvidenceContract.ReviewRole.RESOLVED
+            && REVIEW_ORDER.compare(observed, resolved) < 0));
   }
 
   private void requireDistinctProblemCount(
@@ -156,18 +174,12 @@ public final class LearnerMemoryEvidenceValidator {
     }
   }
 
-  private List<LearnerMemoryEvidenceContract.ReviewRole> orderedRoles(
-      LearnerMemoryEvidenceReferences references,
-      List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews) {
-    Map<Long, LearnerMemoryEvidenceContract.ReviewRole> roles = references.reviews().stream()
+  private Map<Long, LearnerMemoryEvidenceContract.ReviewRole> reviewRoles(
+      LearnerMemoryEvidenceReferences references) {
+    return references.reviews().stream()
         .collect(Collectors.toMap(
             LearnerMemoryEvidenceReferences.ReviewReference::reviewId,
             LearnerMemoryEvidenceReferences.ReviewReference::role));
-    return reviews.stream()
-        .sorted(Comparator.comparingInt(LearnerMemoryEvidenceValidationContext.ReviewSource::versionNo)
-            .thenComparingLong(LearnerMemoryEvidenceValidationContext.ReviewSource::reviewId))
-        .map(review -> roles.get(review.reviewId()))
-        .toList();
   }
 
   private Map<String, List<LearnerMemoryEvidenceValidationContext.ReviewSource>> groupByProblem(
@@ -176,8 +188,8 @@ public final class LearnerMemoryEvidenceValidator {
         LearnerMemoryEvidenceValidationContext.ReviewSource::problemSlug));
   }
 
-  private boolean hasMultipleVersions(List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews) {
-    return reviews.stream().map(LearnerMemoryEvidenceValidationContext.ReviewSource::versionNo).distinct().count() >= 2;
+  private boolean hasMultipleAttempts(List<LearnerMemoryEvidenceValidationContext.ReviewSource> reviews) {
+    return reviews.size() >= 2;
   }
 
   private static void fail() {

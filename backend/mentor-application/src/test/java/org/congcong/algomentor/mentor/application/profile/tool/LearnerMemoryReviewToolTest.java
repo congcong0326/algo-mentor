@@ -112,6 +112,26 @@ class LearnerMemoryReviewToolTest {
   }
 
   @Test
+  void omitsUnscopedHistoryFromReviewUpdateTrajectories() {
+    FakeHistoryRepository repository = new FakeHistoryRepository();
+    repository.addHistory(review(103, 3, List.of("later private review")));
+    LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+    LearnerMemoryRunScopeRegistry.ScopeLease lease = registry.openUpdateScope(
+        7, List.of(verification(102, "two-sum", 2)));
+    GetProblemReviewTrajectoryAgentTool tool = new GetProblemReviewTrajectoryAgentTool(
+        registry, repository, new ReviewTrajectoryService());
+
+    JsonNode result = tool.execute(
+        object(LearnerMemoryAgentToolContracts.ARGUMENT_PROBLEM_SLUG, "two-sum"), context(registry, lease));
+
+    assertThat(result.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_STATUS).asText())
+        .isEqualTo(LearnerMemoryAgentToolContracts.STATUS_OK);
+    assertThat(result.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_VERSIONS)).hasSize(1);
+    assertThat(result.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_VERSIONS).get(0)
+        .path(LearnerMemoryAgentToolContracts.RESULT_FIELD_REVIEW_ID).asLong()).isEqualTo(102L);
+  }
+
+  @Test
   void readsPracticeChatTrajectoryOnlyForTheTrustedCurrentProblemAndUser() {
     FakeHistoryRepository repository = new FakeHistoryRepository();
     LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
@@ -175,8 +195,8 @@ class LearnerMemoryReviewToolTest {
 
   private static final class FakeHistoryRepository implements CodeReviewHistoryRepository {
 
-    private final List<CodeReviewHistory> history = List.of(
-        review(101, 1, List.of("nested loop")), review(102, 2, List.of("null case")));
+    private final List<CodeReviewHistory> history = new java.util.ArrayList<>(List.of(
+        review(101, 1, List.of("nested loop")), review(102, 2, List.of("null case"))));
     private int evidenceCalls;
     private int versionCalls;
     private int trajectoryCalls;
@@ -187,6 +207,10 @@ class LearnerMemoryReviewToolTest {
       trajectoryCalls++;
       lastTrajectoryUserId = userId;
       return "two-sum".equals(problemSlug) ? history : List.of();
+    }
+
+    private void addHistory(CodeReviewHistory review) {
+      history.add(review);
     }
 
     @Override

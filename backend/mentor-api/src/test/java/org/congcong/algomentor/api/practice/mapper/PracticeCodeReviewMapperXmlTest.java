@@ -39,6 +39,7 @@ class PracticeCodeReviewMapperXmlTest {
     assertThat(configuration.hasStatement(namespace + "findSummaries")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findById")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findByUserMessage")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "findAllProfileFactsForUser")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findRecentByProblemSlugs")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findRecentHistoryFactsForProblem")).isTrue();
     assertThat(configuration.hasStatement(namespace + "findRecentSubmittedProblems")).isTrue();

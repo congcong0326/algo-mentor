@@ -30,6 +30,7 @@ public final class LearnerMemoryEvidenceValidationContext {
       long reviewId,
       String problemSlug,
       int versionNo,
+      boolean passed,
       Set<Long> tagIds,
       Instant createdAt
   ) {

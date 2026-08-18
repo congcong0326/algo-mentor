@@ -46,6 +46,10 @@ class LearnerMemoryCodeReviewFactsIT extends PostgresIntegrationTestSupport {
         9);
 
     assertThat(batchFacts).extracting(LearnerMemoryCodeReviewFact::reviewId).containsExactly(batchOldVersion);
+    assertThat(repository.findAllForUser(userId)).extracting(LearnerMemoryCodeReviewFact::reviewId)
+        .containsExactly(batchOldVersion, batchLatestVersion, otherReviews.get(0), otherReviews.get(1), otherReviews.get(2),
+            otherReviews.get(3), otherReviews.get(4), otherReviews.get(5), otherReviews.get(6), otherReviews.get(7),
+            otherReviews.get(8), otherReviews.get(9), otherReviews.get(10));
     assertThat(currentBatchProblem).extracting(LearnerMemoryCodeReviewFact::reviewId).containsExactly(batchLatestVersion);
     assertThat(currentBatchProblem.get(0).affectedTagIds()).containsExactly(tagId);
     assertThat(supplement).hasSize(9);
@@ -53,6 +57,20 @@ class LearnerMemoryCodeReviewFactsIT extends PostgresIntegrationTestSupport {
         .doesNotContain("batch-problem").doesNotHaveDuplicates();
     assertThat(currentBatchProblem.size() + supplement.size()).isEqualTo(10);
     assertThat(otherReviews).hasSize(11);
+  }
+
+  @Test
+  void selectsTheHighestVersionWhenReviewTimestampsAreEqual() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    long tagId = insertCatalog("array", "Array", "数组", true);
+    Instant createdAt = Instant.parse("2026-01-01T00:00:00Z");
+    long versionTwo = insertReview(userId, "same-time", 2, createdAt, tagId);
+    insertReview(userId, "same-time", 1, createdAt, tagId);
+
+    assertThat(repository().findLatestForProblemSlugs(userId, List.of("same-time")))
+        .extracting(LearnerMemoryCodeReviewFact::reviewId)
+        .containsExactly(versionTwo);
   }
 
   private LearnerMemoryCodeReviewFactRepository repository() throws Exception {

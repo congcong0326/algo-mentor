@@ -12,7 +12,7 @@ import org.congcong.algomentor.mentor.application.profile.operation.model.Learne
 /** Code Review Claim operation 的 provider-native 严格 JSON Schema。 */
 public final class LearnerMemoryCodeReviewJsonSchema {
 
-  public static final String SCHEMA_NAME = "learner_memory_code_review_update_v2";
+  public static final String SCHEMA_NAME = "learner_memory_code_review_update_v3";
   public static final String OPERATIONS = "operations";
   public static final String ACTION = "action";
   public static final String SCOPE = "scope";
@@ -21,6 +21,7 @@ public final class LearnerMemoryCodeReviewJsonSchema {
   public static final String TAG_ID = "tagId";
   public static final String TARGET_REVISION_ID = "targetRevisionId";
   public static final String CLAIM_TEXT = "claimText";
+  public static final String OBSERVATION_TYPE = "observationType";
   public static final String PATTERN = "pattern";
   public static final String REASON = "reason";
   public static final String REVIEW_EVIDENCE = "reviewEvidence";
@@ -56,8 +57,9 @@ public final class LearnerMemoryCodeReviewJsonSchema {
     properties.set(ACTION, stringEnum(List.of("ADD")));
     properties.set(SCOPE, scope());
     properties.set(CLAIM_TEXT, string(1, LearnerMemoryClaimContract.CLAIM_TEXT_TARGET_MAX_CHARS));
+    properties.set(OBSERVATION_TYPE, observationType());
     addEvidence(properties);
-    require(root, ACTION, SCOPE, CLAIM_TEXT, PATTERN, REASON, REVIEW_EVIDENCE);
+    require(root, ACTION, SCOPE, CLAIM_TEXT, OBSERVATION_TYPE, PATTERN, REASON, REVIEW_EVIDENCE);
     return root;
   }
 
@@ -77,8 +79,9 @@ public final class LearnerMemoryCodeReviewJsonSchema {
     properties.set(ACTION, stringEnum(List.of("REVISE")));
     properties.set(TARGET_REVISION_ID, positiveInteger());
     properties.set(CLAIM_TEXT, string(1, LearnerMemoryClaimContract.CLAIM_TEXT_TARGET_MAX_CHARS));
+    properties.set(OBSERVATION_TYPE, observationType());
     addEvidence(properties);
-    require(root, ACTION, TARGET_REVISION_ID, CLAIM_TEXT, PATTERN, REASON, REVIEW_EVIDENCE);
+    require(root, ACTION, TARGET_REVISION_ID, CLAIM_TEXT, OBSERVATION_TYPE, PATTERN, REASON, REVIEW_EVIDENCE);
     return root;
   }
 
@@ -152,6 +155,11 @@ public final class LearnerMemoryCodeReviewJsonSchema {
     require(item, REVIEW_ID, ROLE);
     array.set("items", item);
     return array;
+  }
+
+  private static ObjectNode observationType() {
+    return stringEnum(java.util.Arrays.stream(LearnerMemoryReviewObservationType.values())
+        .map(Enum::name).toList());
   }
 
   private static ObjectNode string(int minLength, int maxLength) {

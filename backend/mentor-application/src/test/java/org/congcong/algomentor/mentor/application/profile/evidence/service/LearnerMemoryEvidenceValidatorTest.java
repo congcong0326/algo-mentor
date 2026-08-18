@@ -21,8 +21,9 @@ class LearnerMemoryEvidenceValidatorTest {
   private final LearnerMemoryEvidenceGradeCalculator grades = new LearnerMemoryEvidenceGradeCalculator();
   private final LearnerMemoryEvidenceValidationContext context = new LearnerMemoryEvidenceValidationContext(
       List.of(
-          review(1L, "one", 1, Set.of(9L)), review(2L, "one", 2, Set.of(9L)),
-          review(3L, "one", 3, Set.of(9L)), review(4L, "two", 1, Set.of(9L))),
+          review(1L, "one", 1, false, Set.of(9L)), review(2L, "one", 2, true, Set.of(9L)),
+          review(3L, "one", 3, false, Set.of(9L)), review(4L, "two", 1, false, Set.of(9L)),
+          review(5L, "two", 2, true, Set.of(9L))),
       List.of(message(11L), message(12L)));
 
   @Test
@@ -57,6 +58,10 @@ class LearnerMemoryEvidenceValidatorTest {
     LearnerMemoryEvidenceReferences regression = reviews(
         LearnerMemoryEvidenceContract.Pattern.SAME_PROBLEM_REGRESSION,
         reference(1L, "OBSERVED"), reference(2L, "RESOLVED"), reference(3L, "REGRESSED"));
+    LearnerMemoryEvidenceReferences crossProblemRecovery = reviews(
+        LearnerMemoryEvidenceContract.Pattern.CROSS_PROBLEM_RECOVERY,
+        reference(1L, "OBSERVED"), reference(2L, "RESOLVED"),
+        reference(4L, "OBSERVED"), reference(5L, "RESOLVED"));
     LearnerMemoryEvidenceReferences recurrence = reviews(
         LearnerMemoryEvidenceContract.Pattern.CROSS_PROBLEM_RECURRENCE,
         reference(1L, "OBSERVED"), reference(4L, "PERSISTED"));
@@ -73,6 +78,7 @@ class LearnerMemoryEvidenceValidatorTest {
     assertThatCode(() -> validator.validate(persistence, general, context)).doesNotThrowAnyException();
     assertThatCode(() -> validator.validate(recovery, general, context)).doesNotThrowAnyException();
     assertThatCode(() -> validator.validate(regression, general, context)).doesNotThrowAnyException();
+    assertThatCode(() -> validator.validate(crossProblemRecovery, general, context)).doesNotThrowAnyException();
     assertThatCode(() -> validator.validate(recurrence, general, context)).doesNotThrowAnyException();
     assertThatCode(() -> validator.validate(longitudinal, general, context)).doesNotThrowAnyException();
     assertThatCode(() -> validator.validate(breadth, tag, context)).doesNotThrowAnyException();
@@ -81,6 +87,7 @@ class LearnerMemoryEvidenceValidatorTest {
     assertThat(grades.calculate(single, context)).isEqualTo(LearnerMemoryEvidenceContract.Grade.LIMITED);
     assertThat(grades.calculate(persistence, context)).isEqualTo(LearnerMemoryEvidenceContract.Grade.SUPPORTED);
     assertThat(grades.calculate(longitudinal, context)).isEqualTo(LearnerMemoryEvidenceContract.Grade.STRONG);
+    assertThat(grades.calculate(crossProblemRecovery, context)).isEqualTo(LearnerMemoryEvidenceContract.Grade.STRONG);
   }
 
   @Test
@@ -126,6 +133,62 @@ class LearnerMemoryEvidenceValidatorTest {
         .isEqualTo(LearnerMemoryOperationFailure.Code.INVALID_EVIDENCE);
   }
 
+  @Test
+  void rejectsCrossProblemRecoveryWithoutACompleteOrderedTrajectoryForEveryProblem() {
+    LearnerMemoryClaimScope general = scope(
+        LearnerMemoryClaimContract.Kind.GENERAL_OBSERVATION,
+        LearnerMemoryClaimContract.Dimension.PROBLEM_SOLVING_APPROACH,
+        null);
+
+    assertThatThrownBy(() -> validator.validate(reviews(
+        LearnerMemoryEvidenceContract.Pattern.CROSS_PROBLEM_RECOVERY,
+        reference(1L, "OBSERVED"), reference(2L, "RESOLVED"), reference(4L, "OBSERVED")), general, context))
+        .isInstanceOf(LearnerMemoryOperationFailure.class)
+        .extracting(error -> ((LearnerMemoryOperationFailure) error).code())
+        .isEqualTo(LearnerMemoryOperationFailure.Code.INVALID_EVIDENCE);
+    assertThatThrownBy(() -> validator.validate(reviews(
+        LearnerMemoryEvidenceContract.Pattern.CROSS_PROBLEM_RECOVERY,
+        reference(1L, "RESOLVED"), reference(2L, "OBSERVED"),
+        reference(4L, "OBSERVED"), reference(5L, "RESOLVED")), general, context))
+        .isInstanceOf(LearnerMemoryOperationFailure.class)
+        .extracting(error -> ((LearnerMemoryOperationFailure) error).code())
+        .isEqualTo(LearnerMemoryOperationFailure.Code.INVALID_EVIDENCE);
+  }
+
+  @Test
+  void acceptsRecoveryAcrossSessionsWhenVersionNumbersAreReused() {
+    LearnerMemoryEvidenceValidationContext retryContext = new LearnerMemoryEvidenceValidationContext(List.of(
+        review(101L, "retry", 1, false, Set.of(9L), Instant.parse("2026-07-30T00:00:00Z")),
+        review(102L, "retry", 1, true, Set.of(9L), Instant.parse("2026-07-31T00:00:00Z"))), List.of());
+    LearnerMemoryClaimScope general = scope(
+        LearnerMemoryClaimContract.Kind.GENERAL_OBSERVATION,
+        LearnerMemoryClaimContract.Dimension.REVIEW_AND_GROWTH_PERFORMANCE,
+        null);
+
+    assertThatCode(() -> validator.validate(reviews(
+        LearnerMemoryEvidenceContract.Pattern.SAME_PROBLEM_RECOVERY,
+        reference(101L, "OBSERVED"), reference(102L, "RESOLVED")), general, retryContext))
+        .doesNotThrowAnyException();
+  }
+
+  @Test
+  void rejectsRecoveryWhenRolesDoNotMatchFailedThenPassedFacts() {
+    LearnerMemoryEvidenceValidationContext inconsistentContext = new LearnerMemoryEvidenceValidationContext(List.of(
+        review(101L, "retry", 1, true, Set.of(9L), Instant.parse("2026-07-30T00:00:00Z")),
+        review(102L, "retry", 1, false, Set.of(9L), Instant.parse("2026-07-31T00:00:00Z"))), List.of());
+    LearnerMemoryClaimScope general = scope(
+        LearnerMemoryClaimContract.Kind.GENERAL_OBSERVATION,
+        LearnerMemoryClaimContract.Dimension.REVIEW_AND_GROWTH_PERFORMANCE,
+        null);
+
+    assertThatThrownBy(() -> validator.validate(reviews(
+        LearnerMemoryEvidenceContract.Pattern.SAME_PROBLEM_RECOVERY,
+        reference(101L, "OBSERVED"), reference(102L, "RESOLVED")), general, inconsistentContext))
+        .isInstanceOf(LearnerMemoryOperationFailure.class)
+        .extracting(error -> ((LearnerMemoryOperationFailure) error).code())
+        .isEqualTo(LearnerMemoryOperationFailure.Code.INVALID_EVIDENCE);
+  }
+
   private static LearnerMemoryClaimScope scope(
       LearnerMemoryClaimContract.Kind kind,
       LearnerMemoryClaimContract.Dimension dimension,
@@ -153,9 +216,14 @@ class LearnerMemoryEvidenceValidatorTest {
   }
 
   private static LearnerMemoryEvidenceValidationContext.ReviewSource review(
-      long id, String slug, int version, Set<Long> tags) {
+      long id, String slug, int version, boolean passed, Set<Long> tags) {
+    return review(id, slug, version, passed, tags, Instant.parse("2026-07-30T00:00:00Z").plusSeconds(id));
+  }
+
+  private static LearnerMemoryEvidenceValidationContext.ReviewSource review(
+      long id, String slug, int version, boolean passed, Set<Long> tags, Instant createdAt) {
     return new LearnerMemoryEvidenceValidationContext.ReviewSource(
-        id, slug, version, tags, Instant.parse("2026-07-30T00:00:00Z").plusSeconds(id));
+        id, slug, version, passed, tags, createdAt);
   }
 
   private static LearnerMemoryEvidenceValidationContext.MessageSource message(long id) {

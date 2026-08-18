@@ -63,6 +63,8 @@ public interface PracticeCodeReviewMapper {
       @Param("userMessageId") long userMessageId
   );
 
+  List<LearnerMemoryCodeReviewFactRow> findAllProfileFactsForUser(@Param("userId") long userId);
+
   List<LearnerMemoryCodeReviewFactRow> findProfileFactsByReviewIds(
       @Param("userId") long userId,
       @Param("reviewIds") List<Long> reviewIds

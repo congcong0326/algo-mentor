@@ -48,6 +48,7 @@
 - `docs/ai-memory-system-current-state-audit.md`：AI 记忆系统现状审计基线，区分学习者画像长期记忆与 Agent 会话短期记忆，梳理数据模型、写入、召回、用户界面、可靠性、隐私和待决策问题。
 - `docs/ai-memory-system-optimization-discussion.md`：AI 记忆系统历史方向讨论稿，记录跨题最新窗口、单题历史探索和证据化输出的形成过程；其中最大等待、刷新和模型 confidence 结论已由后续重构设计覆盖。
 - `docs/ai-memory-system-claim-evidence-redesign.md`：AI 记忆系统破坏性重构设计稿，以大容量原子 claim、版本化 Review/消息证据和固定五条批处理替代整段画像存储；Practice Chat 使用启动索引、直接命中、记忆搜索/章节/证据工具及范围读取按需探索，用户侧投影为带句子级引用的单篇 Markdown 风格画像。
+- `docs/learner-profile-review-fact-snapshot-design.md`：学习画像 Review 全量事实快照与按需取证优化设计，定义当前掌握、已修正挑战和仍需关注三类判断，以及服务端聚合、模型按需读取和证据校验边界。
 - `docs/ai-memory-system-claim-evidence-redesign-tasks/`：上述重构的 AMR-00 至 AMR-14 可执行研发任务、固定契约、状态板和上下文恢复指针；支持按波次连续执行，但要求每个任务完成后落盘交接并使用干净上下文继续。
 - `docs/ai-memory-system-rollout-runbook.md`：claim/evidence 最终迁移的发布顺序、开关、数据库健康检查、观察阈值和仅向前止损流程。
 - `docs/ai-learner-profile-data-model-and-storage-design.md`：AI 学习者画像数据建模与存储研发设计，说明题目标签规范化、自然语言画像正文、`NO_CHANGE / REPLACE` 更新、画像版本链和 PostgreSQL 表结构。

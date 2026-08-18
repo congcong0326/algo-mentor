@@ -17,6 +17,7 @@ import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryCodeReviewConsumerProperties;
+import org.congcong.algomentor.api.config.LearnerReviewFactSnapshotProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryRecallProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryDeclaredUpdateProperties;
 import org.congcong.algomentor.api.config.MentorConfigurationKeys;
@@ -97,6 +98,7 @@ import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCo
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateService;
+import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshotBuilder;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdatePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
@@ -150,7 +152,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
     PracticeChatReviewTrajectoryProperties.class,
     PracticeChatSubmissionHistoryToolProperties.class,
     PracticeChatSubmissionHistoryCodeDetailProperties.class,
-    LearnerMemoryCodeReviewConsumerProperties.class
+    LearnerMemoryCodeReviewConsumerProperties.class,
+    LearnerReviewFactSnapshotProperties.class
 })
 public class AgentConversationApiAutoConfiguration {
 
@@ -599,6 +602,14 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public LearnerReviewFactSnapshotBuilder learnerReviewFactSnapshotBuilder(
+      LearnerReviewFactSnapshotProperties properties
+  ) {
+    return new LearnerReviewFactSnapshotBuilder(properties.toPolicy());
+  }
+
+  @Bean
   @ConditionalOnBean(LearnerMemoryRunScopeRegistry.class)
   @ConditionalOnProperty(
       prefix = LearnerMemoryCodeReviewConsumerProperties.PREFIX,
@@ -614,8 +625,10 @@ public class AgentConversationApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerMemoryCodeReviewStructuredOutputMapper learnerMemoryCodeReviewStructuredOutputMapper() {
-    return new LearnerMemoryCodeReviewStructuredOutputMapper();
+  public LearnerMemoryCodeReviewStructuredOutputMapper learnerMemoryCodeReviewStructuredOutputMapper(
+      ObjectProvider<LearnerMemoryMetrics> metrics
+  ) {
+    return new LearnerMemoryCodeReviewStructuredOutputMapper(metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
   }
 
   @Bean
@@ -652,6 +665,7 @@ public class AgentConversationApiAutoConfiguration {
       LearnerMemoryUpdateRunLifecycleService runLifecycleService,
       @Lazy AgentRuntime agentRuntime,
       LearnerMemoryCodeReviewStructuredOutputMapper outputMapper,
+      LearnerReviewFactSnapshotBuilder reviewFactSnapshotBuilder,
       LearnerMemoryMetrics metrics,
       LearnerMemoryCodeReviewConsumerProperties properties
   ) {
@@ -666,6 +680,7 @@ public class AgentConversationApiAutoConfiguration {
         agentRuntime,
         outputMapper,
         properties.getMaxStaleRetries(),
+        reviewFactSnapshotBuilder,
         metrics);
   }
 

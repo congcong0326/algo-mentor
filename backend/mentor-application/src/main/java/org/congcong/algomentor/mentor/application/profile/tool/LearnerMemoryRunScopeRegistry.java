@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,6 +31,10 @@ public final class LearnerMemoryRunScopeRegistry {
 
   public static final Duration DEFAULT_TTL = Duration.ofMinutes(15);
   private static final int REF_BYTES = 32;
+  private static final Comparator<CodeReviewVerification> REVIEW_ORDER =
+      Comparator.comparing(CodeReviewVerification::createdAt)
+          .thenComparingInt(CodeReviewVerification::versionNo)
+          .thenComparingLong(CodeReviewVerification::reviewId);
 
   private final ConcurrentHashMap<String, ScopeState> scopes = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, RecallScopeState> recallScopes = new ConcurrentHashMap<>();
@@ -440,7 +445,7 @@ public final class LearnerMemoryRunScopeRegistry {
       CodeReviewVerification from = reviewsById.get(request.fromReviewId());
       CodeReviewVerification to = reviewsById.get(request.toReviewId());
       return from != null && to != null && from.problemSlug().equals(to.problemSlug())
-          && from.versionNo() < to.versionNo();
+          && REVIEW_ORDER.compare(from, to) < 0;
     }
 
     private ScopeSnapshot snapshot() {

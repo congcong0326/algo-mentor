@@ -19,13 +19,16 @@ public final class MicrometerLearnerMemoryMetrics implements LearnerMemoryMetric
   private static final Set<String> INVALID_OUTPUT_REASONS = Set.of("SCHEMA", "VALIDATION", "STALE", "TOOL_FAILURE");
   private static final Set<String> EVIDENCE_PATTERNS = Set.of(
       "USER_DECLARATION", "USER_CORRECTION", "SINGLE_REVIEW", "SAME_PROBLEM_PERSISTENCE",
-      "SAME_PROBLEM_RECOVERY", "SAME_PROBLEM_REGRESSION", "CROSS_PROBLEM_RECURRENCE",
+      "SAME_PROBLEM_RECOVERY", "SAME_PROBLEM_REGRESSION", "CROSS_PROBLEM_RECOVERY", "CROSS_PROBLEM_RECURRENCE",
       "CROSS_PROBLEM_LONGITUDINAL", "TAG_BREADTH");
   private static final Set<String> EVIDENCE_GRADES = Set.of("LIMITED", "SUPPORTED", "STRONG", "USER_AUTHORED");
   private static final Set<String> RECALL_SCENARIOS = Set.of("PRACTICE_CHAT");
   private static final Set<String> RANGE_READ_STATUSES = Set.of("SUCCEEDED", "REJECTED");
   private static final Set<String> PROJECTION_STATUSES = Set.of("SUCCEEDED", "FAILED");
   private static final Set<String> ACTIVE_LIMIT_LEVELS = Set.of("SOFT", "HARD");
+  private static final Set<String> REVIEW_OBSERVATION_TYPES = Set.of(
+      "CURRENT_STRENGTH", "RECOVERED_CHALLENGE", "ACTIVE_RISK");
+  private static final Set<String> REVIEW_OBSERVATION_STATUSES = Set.of("GENERATED", "REJECTED", "REVISED");
 
   private final MeterRegistry registry;
 
@@ -131,6 +134,28 @@ public final class MicrometerLearnerMemoryMetrics implements LearnerMemoryMetric
         .register(registry)
         .increment();
     record("learner_memory_profile_citation_count", citationCount);
+  }
+
+  @Override
+  public void recordReviewSnapshot(int reviewCount, int recoveredCount, int unresolvedCount) {
+    record("learner_memory_review_snapshot_review_count", reviewCount);
+    record("learner_memory_review_snapshot_recovered_count", recoveredCount);
+    record("learner_memory_review_snapshot_unresolved_count", unresolvedCount);
+  }
+
+  @Override
+  public void recordReviewObservation(String observationType, String status) {
+    Counter.builder("learner_memory_profile_claim_type_total")
+        .tags(
+            "type", allowed(REVIEW_OBSERVATION_TYPES, observationType),
+            "status", allowed(REVIEW_OBSERVATION_STATUSES, status))
+        .register(registry)
+        .increment();
+  }
+
+  @Override
+  public void recordLanguageGuardRejected() {
+    Counter.builder("learner_memory_profile_language_guard_rejected_total").register(registry).increment();
   }
 
   private void record(String metric, int value, String... tags) {

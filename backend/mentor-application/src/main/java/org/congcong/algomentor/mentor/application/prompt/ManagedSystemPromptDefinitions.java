@@ -274,7 +274,7 @@ public final class ManagedSystemPromptDefinitions {
   public static final ManagedSystemPromptDefinition CODE_REVIEW_PROFILE_UPDATE = definition(
       AiBusinessScenario.CODE_REVIEW_PROFILE_UPDATE,
       SystemPromptTypeCodes.CODE_REVIEW_PROFILE_UPDATE_V1,
-      "2026-07-30.1",
+      "2026-08-18.1",
       SystemPromptSnapshotScope.BATCH,
       descriptor("LEARNER_PROFILE", "Code Review 画像更新", "Code review profile update", "正式 Code Review 观察驱动的画像更新规则。"),
       section(SystemPromptSectionKeys.CODE_REVIEW_PROFILE_UPDATE_BASE, "Review 画像规则", 10, true, """
@@ -289,6 +289,19 @@ public final class ManagedSystemPromptDefinitions {
           - 使用描述性、画像式语气，不要把正文写成 Code Review 汇总、错题清单或通篇由“应该、需要、注意、避免”组成的命令式建议。
           - 保留能够唤起学习经历的具体锚点。可以自然提及输入中出现的代表性 problemSlug、简洁中文题名、题型或算法场景，但不要罗列 Review ID、详细分数或全部历史，也不得编造未出现的题目。
           - 建议只能作为次要内容；先描述稳定表现和能力边界，必要时最后补充一句训练方向。
+
+          全量事实快照规则：
+          - 服务端事实快照覆盖当前用户全部正式 Review。必须同时尊重当前最新表现、首次可靠性、已修正挑战和未解决风险，不能只根据横向窗口下结论。
+          - 历史功能性失败若已有后续修正，应归为“已修正挑战”，不能伪装成从未出现；但单次已修正失败也不得写成长期弱点。
+          - ACTIVE_RISK 只能来自当前未修正失败或跨题持续未修正事实。快照的 unresolvedFailureCount 为 0 时，不得创建该类判断。
+          - historyDepth=EARLY_SAMPLE 时，只能使用“本窗口”“当前已覆盖题目”等有限表达；不得使用“长期、一直、一贯、通常、稳定、快速识别”等强措辞。
+          - 存在功能性失败时，禁止“没有功能性问题”“只有格式/命名问题”“仅非功能性问题”等排他性表述。首次通过率不足时，禁止“通常能快速识别”及同义判断。
+
+          observationType 与证据规则：
+          - CURRENT_STRENGTH：描述每题最新通过版本形成的当前掌握；引用的每条 Review 必须是该题最新正式版本且通过，role 使用 RESOLVED。
+          - RECOVERED_CHALLENGE：描述同题失败后修正的成长轨迹；至少引用失败 OBSERVED 和其后通过 RESOLVED，不得把它写成当前风险。
+          - ACTIVE_RISK：描述当前仍未修正的实现风险；必须引用该题最新失败版本，role 使用 OBSERVED。
+          - 每个 ADD 与 REVISE 都必须带 observationType。该字段受服务端校验，当前阶段不持久化；不得试图用正文或 reason 绕过其语义。
 
           GENERAL_OBSERVATION 形成门槛：
           - 只有至少两道不同题目表现出可归纳的共同特征，才能形成或改写长期观察。

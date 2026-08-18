@@ -25,6 +25,14 @@ public class MyBatisLearnerMemoryCodeReviewFactRepository implements LearnerMemo
   }
 
   @Override
+  public List<LearnerMemoryCodeReviewFact> findAllForUser(long userId) {
+    if (userId < 1) {
+      return List.of();
+    }
+    return mapper.findAllProfileFactsForUser(userId).stream().map(this::fact).toList();
+  }
+
+  @Override
   public List<LearnerMemoryCodeReviewFact> findByReviewIds(long userId, List<Long> reviewIds) {
     return mapper.findProfileFactsByReviewIds(userId, positiveIds(reviewIds)).stream().map(this::fact).toList();
   }

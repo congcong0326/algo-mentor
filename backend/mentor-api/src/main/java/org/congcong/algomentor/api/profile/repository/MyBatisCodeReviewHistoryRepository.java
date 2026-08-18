@@ -74,7 +74,7 @@ public class MyBatisCodeReviewHistoryRepository implements CodeReviewHistoryRepo
     }
     return mapper.verifyHistoryReviews(userId, ids).stream()
         .map(row -> new CodeReviewVerification(
-            row.reviewId(), row.problemSlug(), row.versionNo(), readTagIds(row.affectedTagIdsJson()), row.createdAt()))
+            row.reviewId(), row.problemSlug(), row.versionNo(), row.passed(), readTagIds(row.affectedTagIdsJson()), row.createdAt()))
         .toList();
   }
 

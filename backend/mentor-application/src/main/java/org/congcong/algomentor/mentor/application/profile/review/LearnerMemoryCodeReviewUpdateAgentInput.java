@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemorySnapshotToken;
+import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshot;
+import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshotBuilder;
 import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewVerification;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRunScopeRegistry;
 
@@ -16,6 +18,7 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
 
   private final long userId;
   private final List<LearnerMemoryCodeReviewFact> windowFacts;
+  private final LearnerReviewFactSnapshot reviewFactSnapshot;
   private final List<CodeReviewVerification> scopeReviews;
   private final List<CodeReviewVerification> evidenceReviews;
   private final List<ActiveClaim> activeClaims;
@@ -42,6 +45,37 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
       Long retryOfRunId,
       boolean evidenceRepair
   ) {
+    this(
+        userId,
+        windowFacts,
+        new LearnerReviewFactSnapshotBuilder().build(windowFacts),
+        scopeReviews,
+        evidenceReviews,
+        activeClaims,
+        capacities,
+        snapshotToken,
+        activeClaimCount,
+        capacityState,
+        idempotencyKey,
+        retryOfRunId,
+        evidenceRepair);
+  }
+
+  public LearnerMemoryCodeReviewUpdateAgentInput(
+      long userId,
+      List<LearnerMemoryCodeReviewFact> windowFacts,
+      LearnerReviewFactSnapshot reviewFactSnapshot,
+      List<CodeReviewVerification> scopeReviews,
+      List<CodeReviewVerification> evidenceReviews,
+      List<ActiveClaim> activeClaims,
+      List<ScopeCapacity> capacities,
+      LearnerMemorySnapshotToken snapshotToken,
+      int activeClaimCount,
+      LearnerMemoryClaimContract.CapacityState capacityState,
+      String idempotencyKey,
+      Long retryOfRunId,
+      boolean evidenceRepair
+  ) {
     if (userId < 1) {
       throw new IllegalArgumentException("Code review memory Agent user id must be positive");
     }
@@ -50,6 +84,7 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
     if (this.windowFacts.isEmpty() || this.windowFacts.size() > LearnerMemoryCodeReviewConsumerConstants.MAX_DISTINCT_PROBLEMS) {
       throw new IllegalArgumentException("Code review memory Agent window facts are invalid");
     }
+    this.reviewFactSnapshot = Objects.requireNonNull(reviewFactSnapshot, "reviewFactSnapshot");
     this.scopeReviews = immutableDistinct(scopeReviews, CodeReviewVerification::reviewId, "scope reviews");
     if (this.scopeReviews.isEmpty()) {
       throw new IllegalArgumentException("Code review memory Agent scope reviews must not be empty");
@@ -88,6 +123,11 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
 
   public List<LearnerMemoryCodeReviewFact> windowFacts() {
     return windowFacts;
+  }
+
+  /** 全量 Review 聚合后的紧凑事实，供 Prompt 与输出语义校验共享。 */
+  public LearnerReviewFactSnapshot reviewFactSnapshot() {
+    return reviewFactSnapshot;
   }
 
   public List<CodeReviewVerification> scopeReviews() {

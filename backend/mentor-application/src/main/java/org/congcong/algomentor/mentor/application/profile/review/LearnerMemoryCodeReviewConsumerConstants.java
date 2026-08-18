@@ -9,9 +9,13 @@ public final class LearnerMemoryCodeReviewConsumerConstants {
 
   public static final int BATCH_SIZE = 5;
   public static final int MAX_DISTINCT_PROBLEMS = 10;
+  /** 单次画像 Prompt 中保留的单题轨迹上限；完整聚合统计仍覆盖全部正式 Review。 */
+  public static final int MAX_SNAPSHOT_TRAJECTORIES = 10;
+  /** 单次画像 Prompt 中保留的标签事实行上限。 */
+  public static final int MAX_SNAPSHOT_TAG_FACTS = 20;
   public static final int MAX_STALE_RETRIES = 1;
-  public static final String PROMPT_VERSION = "code-review-claim-update-v4";
-  public static final String SCHEMA_VERSION = "v2";
+  public static final String PROMPT_VERSION = "code-review-claim-update-v6";
+  public static final String SCHEMA_VERSION = "v3";
   public static final String AGENT_TITLE = "code-review-profile-update";
   public static final String BACKGROUND_IDEMPOTENCY_KEY_PREFIX = "code-review-profile:";
   public static final String BACKGROUND_RETRY_IDEMPOTENCY_KEY_SEPARATOR = ":retry:";

@@ -92,6 +92,11 @@ class LearnerMemoryCodeReviewBatchConsumerTest {
     private boolean omitLastFact;
 
     @Override
+    public List<LearnerMemoryCodeReviewFact> findAllForUser(long userId) {
+      return List.of();
+    }
+
+    @Override
     public List<LearnerMemoryCodeReviewFact> findByReviewIds(long userId, List<Long> reviewIds) {
       calls.add(List.copyOf(reviewIds));
       return reviewIds.stream()

@@ -78,6 +78,7 @@ Evidence pattern：
 | `SAME_PROBLEM_PERSISTENCE` | 同题至少两个不同版本 |
 | `SAME_PROBLEM_RECOVERY` | 同题至少 `OBSERVED + RESOLVED` |
 | `SAME_PROBLEM_REGRESSION` | 同题至少三个有序版本，改善后再次出现 |
+| `CROSS_PROBLEM_RECOVERY` | 至少两个不同题目，且每题都有有序的 `OBSERVED + RESOLVED` |
 | `CROSS_PROBLEM_RECURRENCE` | 至少两个不同 problem slug |
 | `CROSS_PROBLEM_LONGITUDINAL` | 至少两个不同题目，且至少一题含多版本轨迹 |
 | `TAG_BREADTH` | 至少两个不同题目，且 Review 都关联目标 tag |

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
+import org.congcong.algomentor.mentor.application.profile.evidence.model.LearnerMemoryEvidenceContract;
 import org.junit.jupiter.api.Test;
 
 class LearnerMemoryCodeReviewJsonSchemaTest {
@@ -24,5 +25,8 @@ class LearnerMemoryCodeReviewJsonSchemaTest {
     assertThat(schema.findValues("oneOf")).isEmpty();
     assertThat(schema.path("properties").path(LearnerMemoryCodeReviewJsonSchema.OPERATIONS).path("maxItems").asInt())
         .isEqualTo(12);
+    assertThat(variants.get(0).path("properties").path(LearnerMemoryCodeReviewJsonSchema.PATTERN).path("enum"))
+        .extracting(JsonNode::asText)
+        .contains(LearnerMemoryEvidenceContract.Pattern.CROSS_PROBLEM_RECOVERY.name());
   }
 }

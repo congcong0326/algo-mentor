@@ -38,6 +38,8 @@ import org.congcong.algomentor.mentor.application.profile.operation.service.Lear
 import org.congcong.algomentor.mentor.application.profile.observability.LearnerMemoryMetrics;
 import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewHistoryRepository;
 import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewVerification;
+import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshot;
+import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshotBuilder;
 import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemoryRunContract;
 import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemoryUpdateRun;
 import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemoryUpdateRunDraft;
@@ -61,6 +63,7 @@ public class LearnerMemoryCodeReviewUpdateService {
   private final LearnerMemoryUpdateRunLifecycleService runLifecycleService;
   private final AgentRuntime agentRuntime;
   private final LearnerMemoryCodeReviewStructuredOutputMapper outputMapper;
+  private final LearnerReviewFactSnapshotBuilder reviewFactSnapshotBuilder;
   private final int maxStaleRetries;
   private final LearnerMemoryMetrics metrics;
 
@@ -79,7 +82,7 @@ public class LearnerMemoryCodeReviewUpdateService {
     this(
         factRepository, historyRepository, claimQueryService, evidenceRepository, updateRunRepository,
         atomicApplyService, runLifecycleService, agentRuntime, outputMapper, maxStaleRetries,
-        LearnerMemoryMetrics.NOOP);
+        new LearnerReviewFactSnapshotBuilder(), LearnerMemoryMetrics.NOOP);
   }
 
   public LearnerMemoryCodeReviewUpdateService(
@@ -95,6 +98,26 @@ public class LearnerMemoryCodeReviewUpdateService {
       int maxStaleRetries,
       LearnerMemoryMetrics metrics
   ) {
+    this(
+        factRepository, historyRepository, claimQueryService, evidenceRepository, updateRunRepository,
+        atomicApplyService, runLifecycleService, agentRuntime, outputMapper, maxStaleRetries,
+        new LearnerReviewFactSnapshotBuilder(), metrics);
+  }
+
+  public LearnerMemoryCodeReviewUpdateService(
+      LearnerMemoryCodeReviewFactRepository factRepository,
+      CodeReviewHistoryRepository historyRepository,
+      LearnerMemoryClaimQueryService claimQueryService,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      LearnerMemoryUpdateRunRepository updateRunRepository,
+      LearnerMemoryAtomicApplyService atomicApplyService,
+      LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+      AgentRuntime agentRuntime,
+      LearnerMemoryCodeReviewStructuredOutputMapper outputMapper,
+      int maxStaleRetries,
+      LearnerReviewFactSnapshotBuilder reviewFactSnapshotBuilder,
+      LearnerMemoryMetrics metrics
+  ) {
     if (maxStaleRetries < 0 || maxStaleRetries > LearnerMemoryCodeReviewConsumerConstants.MAX_STALE_RETRIES) {
       throw new IllegalArgumentException("Code review memory stale retries are invalid");
     }
@@ -107,6 +130,7 @@ public class LearnerMemoryCodeReviewUpdateService {
     this.runLifecycleService = runLifecycleService;
     this.agentRuntime = agentRuntime;
     this.outputMapper = outputMapper;
+    this.reviewFactSnapshotBuilder = Objects.requireNonNull(reviewFactSnapshotBuilder, "reviewFactSnapshotBuilder");
     this.maxStaleRetries = maxStaleRetries;
     this.metrics = Objects.requireNonNullElse(metrics, LearnerMemoryMetrics.NOOP);
   }
@@ -126,7 +150,13 @@ public class LearnerMemoryCodeReviewUpdateService {
     int windowProblemCount = 0;
     try {
       List<Long> batchReviewIds = validatedBatchReviewIds(userId, batchFacts);
-      List<CodeReviewVerification> batchReviews = verifiedReviews(userId, batchReviewIds);
+      verifiedReviews(userId, batchReviewIds);
+      List<LearnerMemoryCodeReviewFact> allReviewFacts = allReviewFacts(userId, batchReviewIds);
+      LearnerReviewFactSnapshot reviewFactSnapshot = reviewFactSnapshotBuilder.build(allReviewFacts);
+      metrics.recordReviewSnapshot(
+          reviewFactSnapshot.coverage().reviewCount(),
+          reviewFactSnapshot.overall().recoveredFailureCount(),
+          reviewFactSnapshot.overall().unresolvedFailureCount());
       String idempotencyKey = backgroundIdempotencyKey(userId, batchFacts);
       updateRun = findOrCreateRun(userId, batchReviewIds, idempotencyKey);
       if (updateRun.status() == LearnerMemoryRunContract.Status.FAILED) {
@@ -140,7 +170,8 @@ public class LearnerMemoryCodeReviewUpdateService {
 
       List<LearnerMemoryCodeReviewFact> window = window(userId, batchFacts);
       windowProblemCount = window.size();
-      List<CodeReviewVerification> scopeReviews = verifiedReviews(userId, unionReviewIds(batchReviews, window));
+      List<CodeReviewVerification> scopeReviews = verifiedReviews(
+          userId, snapshotReviewIds(reviewFactSnapshot));
       LearnerMemoryClaimSnapshot snapshot = claimQueryService.snapshot(userId);
       Long retryOfRunId = null;
       int staleAttempt = 0;
@@ -149,6 +180,7 @@ public class LearnerMemoryCodeReviewUpdateService {
         LearnerMemoryCodeReviewUpdateAgentInput input = input(
             userId,
             window,
+            reviewFactSnapshot,
             scopeReviews,
             snapshot,
             attemptIdempotencyKey(
@@ -294,13 +326,14 @@ public class LearnerMemoryCodeReviewUpdateService {
   private LearnerMemoryCodeReviewUpdateAgentInput input(
       long userId,
       List<LearnerMemoryCodeReviewFact> window,
+      LearnerReviewFactSnapshot reviewFactSnapshot,
       List<CodeReviewVerification> scopeReviews,
       LearnerMemoryClaimSnapshot snapshot,
       String idempotencyKey,
       Long retryOfRunId,
       boolean evidenceRepair
   ) {
-    List<LearnerMemoryClaimScope> scopes = allowedScopes(window);
+    List<LearnerMemoryClaimScope> scopes = allowedScopes(reviewFactSnapshot);
     Set<LearnerMemoryClaimScope> scopeSet = Set.copyOf(scopes);
     Map<Long, List<LearnerMemoryClaimReviewEvidence>> evidenceByRevision = evidenceRepository
         .findReviewEvidenceByRevisionIds(userId, snapshot.activeClaims().stream().map(LearnerMemoryClaimRevision::id).toList())
@@ -336,6 +369,7 @@ public class LearnerMemoryCodeReviewUpdateService {
     return new LearnerMemoryCodeReviewUpdateAgentInput(
         userId,
         window,
+        reviewFactSnapshot,
         scopeReviews,
         evidenceReviews,
         activeClaims,
@@ -348,7 +382,7 @@ public class LearnerMemoryCodeReviewUpdateService {
         evidenceRepair);
   }
 
-  private List<LearnerMemoryClaimScope> allowedScopes(List<LearnerMemoryCodeReviewFact> window) {
+  private List<LearnerMemoryClaimScope> allowedScopes(LearnerReviewFactSnapshot reviewFactSnapshot) {
     List<LearnerMemoryClaimScope> scopes = new ArrayList<>();
     for (org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension dimension
         : LearnerMemoryCodeReviewConsumerConstants.GENERAL_DIMENSIONS) {
@@ -357,7 +391,8 @@ public class LearnerMemoryCodeReviewUpdateService {
           LearnerMemoryClaimContract.Dimension.valueOf(dimension.name()),
           null));
     }
-    window.stream().flatMap(fact -> fact.affectedTagIds().stream()).distinct().sorted().forEach(tagId -> scopes.add(
+    reviewFactSnapshot.tagFacts().stream().map(org.congcong.algomentor.mentor.application.profile.review.snapshot.TagReviewFacts::tagId)
+        .sorted().forEach(tagId -> scopes.add(
         new LearnerMemoryClaimScope(
             LearnerMemoryClaimContract.Kind.TAG_ASSESSMENT,
             LearnerMemoryClaimContract.Dimension.TAG_MASTERY,
@@ -405,15 +440,37 @@ public class LearnerMemoryCodeReviewUpdateService {
             review.reviewId(),
             review.problemSlug(),
             review.versionNo(),
+            review.passed(),
             Set.copyOf(review.affectedTagIds()),
             review.createdAt())).toList(), List.of());
   }
 
-  private List<Long> unionReviewIds(List<CodeReviewVerification> batchReviews, List<LearnerMemoryCodeReviewFact> window) {
-    LinkedHashSet<Long> ids = new LinkedHashSet<>();
-    batchReviews.forEach(review -> ids.add(review.reviewId()));
-    window.forEach(fact -> ids.add(fact.reviewId()));
-    return List.copyOf(ids);
+  /**
+   * 仅授权事实快照中保留了 reviewId 的版本给本次 Agent。
+   *
+   * <p>较早压缩版本仍参与统计和状态计算，但不能被模型猜测后读取详情或新增为 citation。</p>
+   */
+  private List<Long> snapshotReviewIds(LearnerReviewFactSnapshot snapshot) {
+    return snapshot.problemTrajectories().stream()
+        .flatMap(trajectory -> trajectory.attempts().stream())
+        .map(org.congcong.algomentor.mentor.application.profile.review.snapshot.ReviewFactSnapshotAttempt::reviewId)
+        .distinct()
+        .toList();
+  }
+
+  private List<LearnerMemoryCodeReviewFact> allReviewFacts(long userId, List<Long> batchReviewIds) {
+    List<LearnerMemoryCodeReviewFact> facts = factRepository.findAllForUser(userId);
+    Map<Long, LearnerMemoryCodeReviewFact> byId = facts.stream().collect(Collectors.toMap(
+        LearnerMemoryCodeReviewFact::reviewId,
+        fact -> fact,
+        (first, second) -> {
+          throw new IllegalStateException("Code review memory full fact query is duplicated");
+        },
+        LinkedHashMap::new));
+    if (byId.isEmpty() || !byId.keySet().containsAll(batchReviewIds)) {
+      throw new IllegalStateException("Code review memory full fact query excludes the trusted batch");
+    }
+    return List.copyOf(byId.values());
   }
 
   private List<CodeReviewVerification> verifiedReviews(long userId, List<Long> reviewIds) {

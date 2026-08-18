@@ -77,6 +77,10 @@ public final class GetProblemReviewTrajectoryAgentTool implements AgentTool {
     try {
       List<CodeReviewHistory> reviews = historyRepository.findLatestForProblem(
           use.scope().userId(), problemSlug, ReviewTrajectoryService.MAX_VERSIONS);
+      if (use.scope().purpose() == LearnerMemoryRunScopeRegistry.ScopePurpose.REVIEW_UPDATE) {
+        reviews = reviews.stream().filter(review -> matchesScope(
+            use.scope().reviewsById().get(review.reviewId()), review)).toList();
+      }
       if (reviews.isEmpty()) {
         return observability.record(purpose, LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
             LearnerMemoryReviewToolSupport.failure(
@@ -93,6 +97,14 @@ public final class GetProblemReviewTrajectoryAgentTool implements AgentTool {
           LearnerMemoryAgentToolContracts.STATUS_FAILED,
           LearnerMemoryAgentToolContracts.FAILURE_INTERNAL));
     }
+  }
+
+  private boolean matchesScope(
+      org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewVerification expected,
+      CodeReviewHistory actual
+  ) {
+    return expected != null && expected.reviewId() == actual.reviewId()
+        && expected.problemSlug().equals(actual.problemSlug()) && expected.versionNo() == actual.versionNo();
   }
 
   private JsonNode render(ReviewTrajectory trajectory) {

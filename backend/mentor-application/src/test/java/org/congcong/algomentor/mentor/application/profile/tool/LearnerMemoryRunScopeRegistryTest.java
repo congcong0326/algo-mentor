@@ -64,6 +64,17 @@ class LearnerMemoryRunScopeRegistryTest {
   }
 
   @Test
+  void permitsChronologicalDiffForSameProblemRetriesAcrossSessions() {
+    LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+    LearnerMemoryRunScopeRegistry.ScopeLease lease = registry.openUpdateScope(7, List.of(
+        review(101, "two-sum", 1, Instant.parse("2026-01-01T00:00:00Z")),
+        review(102, "two-sum", 1, Instant.parse("2026-01-02T00:00:00Z"))));
+
+    assertThat(registry.reserveDiff(lease.scopeRef(), 101, 102).status())
+        .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.GRANTED);
+  }
+
+  @Test
   void limitsPracticeChatTrajectoryScopeToItsCurrentProblemAndOneLookup() {
     LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
     LearnerMemoryRunScopeRegistry.ScopeLease lease = registry.openPracticeChatTrajectoryScope(7, "two-sum");
@@ -106,6 +117,10 @@ class LearnerMemoryRunScopeRegistryTest {
 
   private static CodeReviewVerification review(long id, String slug, int version) {
     return new CodeReviewVerification(id, slug, version, List.of(8L), Instant.parse("2026-01-01T00:00:00Z"));
+  }
+
+  private static CodeReviewVerification review(long id, String slug, int version, Instant createdAt) {
+    return new CodeReviewVerification(id, slug, version, List.of(8L), createdAt);
   }
 
   private static LearnerMemoryClaimRevision recallClaim() {

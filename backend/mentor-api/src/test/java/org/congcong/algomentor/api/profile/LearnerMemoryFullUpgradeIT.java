@@ -141,6 +141,23 @@ class LearnerMemoryFullUpgradeIT extends PostgresIntegrationTestSupport {
         .isEqualTo(1);
   }
 
+  @Test
+  void addsCrossProblemRecoveryToThePersistedEvidencePatternContract() throws Exception {
+    migrateTo("67");
+    long userId = insertUser();
+    long updateRunId = insertUpdateRun(userId, "run-" + UUID.randomUUID(), insertAgentRun(userId));
+
+    assertThatThrownBy(() -> insertClaimWithPattern(
+        userId, updateRunId, UUID.randomUUID(), 1, "GENERAL_OBSERVATION", "REVIEW_AND_GROWTH_PERFORMANCE",
+        null, "ACTIVE", "8".repeat(64), null, "CROSS_PROBLEM_RECOVERY")).isInstanceOf(Exception.class);
+
+    migrateLatest();
+
+    assertThat(insertClaimWithPattern(
+        userId, updateRunId, UUID.randomUUID(), 1, "GENERAL_OBSERVATION", "REVIEW_AND_GROWTH_PERFORMANCE",
+        null, "ACTIVE", "8".repeat(64), null, "CROSS_PROBLEM_RECOVERY")).isPositive();
+  }
+
   private long insertUpdateRun(long userId, String idempotencyKey, Long agentRunId) throws SQLException {
     return queryLong(
         """
@@ -164,16 +181,34 @@ class LearnerMemoryFullUpgradeIT extends PostgresIntegrationTestSupport {
       String status,
       String hash,
       Long supersedesRevisionId) throws SQLException {
+    return insertClaimWithPattern(
+        userId, updateRunId, claimKey, revisionNo, kind, dimension, tagId, status, hash, supersedesRevisionId,
+        "CROSS_PROBLEM_RECURRENCE");
+  }
+
+  private long insertClaimWithPattern(
+      long userId,
+      long updateRunId,
+      UUID claimKey,
+      int revisionNo,
+      String kind,
+      String dimension,
+      Long tagId,
+      String status,
+      String hash,
+      Long supersedesRevisionId,
+      String evidencePattern) throws SQLException {
     return queryLong(
         """
         INSERT INTO learner_memory_claim_revision (
           claim_key, user_id, entry_kind, dimension, tag_id, revision_no, status, claim_text, claim_text_hash,
           origin_type, evidence_pattern, evidence_grade, update_run_id, supersedes_revision_id, valid_from, valid_to)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'claim text', ?, 'SYSTEM_DERIVED', 'CROSS_PROBLEM_RECURRENCE',
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'claim text', ?, 'SYSTEM_DERIVED', ?,
           'SUPPORTED', ?, ?, NOW(), CASE WHEN ? = 'SUPERSEDED' THEN NOW() ELSE NULL END)
         RETURNING id
         """,
-        claimKey, userId, kind, dimension, tagId, revisionNo, status, hash, updateRunId, supersedesRevisionId, status);
+        claimKey, userId, kind, dimension, tagId, revisionNo, status, hash, evidencePattern,
+        updateRunId, supersedesRevisionId, status);
   }
 
   private long insertAgentRun(long userId) throws SQLException {
