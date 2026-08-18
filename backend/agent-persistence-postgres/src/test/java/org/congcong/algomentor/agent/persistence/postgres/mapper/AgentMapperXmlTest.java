@@ -111,7 +111,7 @@ class AgentMapperXmlTest {
 
     assertThat(sql)
         .contains("<update id=\"markRunSucceeded\">")
-        .contains("SET status = 'succeeded', error = NULL,");
+        .contains("SET status = 'succeeded', error = '{}'::jsonb,");
   }
 
   @Test
