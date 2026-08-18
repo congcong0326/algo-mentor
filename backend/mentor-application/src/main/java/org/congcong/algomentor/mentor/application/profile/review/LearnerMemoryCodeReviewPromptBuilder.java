@@ -217,6 +217,8 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
         .append("- CROSS_PROBLEM_RECURRENCE：至少两个不同 problemSlug。\n")
         .append("- CROSS_PROBLEM_LONGITUDINAL：至少两个不同 problemSlug，且其中一题至少两版。\n")
         .append("- TAG_BREADTH：至少两个不同 problemSlug，且每条 Review 都含目标 tag。\n")
+        .append("若快照 historyDepth=EARLY_SAMPLE，claimText 禁止使用长期、一贯、持续、通常、稳定、快速识别等强措辞；"
+            + "请改用“当前已覆盖题目”或“本窗口”。\n")
         .append("本次修复可用的有界 Review 事实：\n");
     for (CodeReviewVerification review : repairEvidenceReviews(input)) {
       output.append("reviewId=").append(review.reviewId())

@@ -87,6 +87,8 @@ class LearnerMemoryCodeReviewUpdateServiceTest {
         .contains("SAME_PROBLEM_RECOVERY")
         .contains("CROSS_PROBLEM_RECOVERY")
         .contains("CROSS_PROBLEM_LONGITUDINAL")
+        .contains("historyDepth=EARLY_SAMPLE")
+        .contains("claimText 禁止使用长期、一贯、持续、通常、稳定、快速识别")
         .contains("reviewId=701 problemSlug=two-sum version=1")
         .contains("reviewId=702 problemSlug=two-sum version=2");
   }
