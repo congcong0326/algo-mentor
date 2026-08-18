@@ -106,6 +106,15 @@ class AgentMapperXmlTest {
   }
 
   @Test
+  void successfulRunSqlClearsAnEarlierError() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentRunMapper.xml");
+
+    assertThat(sql)
+        .contains("<update id=\"markRunSucceeded\">")
+        .contains("SET status = 'succeeded', error = NULL,");
+  }
+
+  @Test
   void runInsertSqlPersistsRuntimeAuditFields() throws Exception {
     String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
 

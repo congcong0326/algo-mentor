@@ -45,6 +45,7 @@
   <update id="markRunSucceeded">
     UPDATE agent_run
     SET status = 'succeeded',
+        error = NULL,
         provider = #{provider},
         model = #{model},
         finish_reason = #{finishReason},

@@ -130,7 +130,8 @@ public final class LearnerMemoryAtomicApplyService {
       recordCommittedApply(result);
       return result;
     } catch (LearnerMemoryOperationFailure failure) {
-      if (failure.code() != LearnerMemoryOperationFailure.Code.STALE_SNAPSHOT) {
+      if (failure.code() != LearnerMemoryOperationFailure.Code.STALE_SNAPSHOT
+          && failure.code() != LearnerMemoryOperationFailure.Code.INVALID_EVIDENCE) {
         runLifecycleService.markFailed(batch, failure.code());
       }
       throw failure;

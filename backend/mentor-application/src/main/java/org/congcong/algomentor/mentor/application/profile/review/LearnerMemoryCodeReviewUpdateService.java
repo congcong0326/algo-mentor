@@ -143,14 +143,19 @@ public class LearnerMemoryCodeReviewUpdateService {
       List<CodeReviewVerification> scopeReviews = verifiedReviews(userId, unionReviewIds(batchReviews, window));
       LearnerMemoryClaimSnapshot snapshot = claimQueryService.snapshot(userId);
       Long retryOfRunId = null;
-      for (int attempt = 0; attempt <= maxStaleRetries; attempt++) {
+      int staleAttempt = 0;
+      boolean evidenceRepair = false;
+      while (true) {
         LearnerMemoryCodeReviewUpdateAgentInput input = input(
             userId,
             window,
             scopeReviews,
             snapshot,
-            attemptIdempotencyKey(deliveryAttemptIdempotencyKey(idempotencyKey, deliveryAttempt), attempt),
-            retryOfRunId);
+            attemptIdempotencyKey(
+                evidenceRepairIdempotencyKey(deliveryAttemptIdempotencyKey(idempotencyKey, deliveryAttempt), evidenceRepair),
+                staleAttempt),
+            retryOfRunId,
+            evidenceRepair);
         DecisionRound round = decide(userId, input);
         toolCallCount = round.toolCallCount();
         updateRunRepository.bindAgentRun(updateRun.id(), round.agentRunId());
@@ -161,17 +166,29 @@ public class LearnerMemoryCodeReviewUpdateService {
             input.snapshotToken(),
             round.toolCallCount(),
             operations);
-        LearnerMemoryAtomicApplyService.ApplyResult result = atomicApplyService.apply(
-            batch, evidenceContext(input.evidenceReviews()));
+        LearnerMemoryAtomicApplyService.ApplyResult result;
+        try {
+          result = atomicApplyService.apply(batch, evidenceContext(input.evidenceReviews()));
+        } catch (LearnerMemoryOperationFailure failure) {
+          if (failure.code() != LearnerMemoryOperationFailure.Code.INVALID_EVIDENCE || evidenceRepair) {
+            throw failure;
+          }
+          metrics.recordInvalidOutput("VALIDATION");
+          log.info("Code review memory evidence was rejected; starting the single repair attempt.");
+          evidenceRepair = true;
+          retryOfRunId = round.agentRunId();
+          continue;
+        }
         if (result.status() == LearnerMemoryAtomicApplyService.ApplyStatus.STALE) {
           metrics.recordInvalidOutput("STALE");
-          if (attempt == maxStaleRetries) {
+          if (staleAttempt == maxStaleRetries) {
             runLifecycleService.markFailed(
                 userId, updateRun.id(), toolCallCount, LearnerMemoryOperationFailure.Code.STALE_SNAPSHOT);
             return failed(updateRun.id(), windowProblemCount);
           }
           retryOfRunId = round.agentRunId();
           snapshot = claimQueryService.snapshot(userId);
+          staleAttempt++;
           continue;
         }
         return new LearnerMemoryCodeReviewUpdateResult(
@@ -280,7 +297,8 @@ public class LearnerMemoryCodeReviewUpdateService {
       List<CodeReviewVerification> scopeReviews,
       LearnerMemoryClaimSnapshot snapshot,
       String idempotencyKey,
-      Long retryOfRunId
+      Long retryOfRunId,
+      boolean evidenceRepair
   ) {
     List<LearnerMemoryClaimScope> scopes = allowedScopes(window);
     Set<LearnerMemoryClaimScope> scopeSet = Set.copyOf(scopes);
@@ -326,7 +344,8 @@ public class LearnerMemoryCodeReviewUpdateService {
         snapshot.activeClaims().size(),
         capacityState(snapshot.activeClaims().size()),
         idempotencyKey,
-        retryOfRunId);
+        retryOfRunId,
+        evidenceRepair);
   }
 
   private List<LearnerMemoryClaimScope> allowedScopes(List<LearnerMemoryCodeReviewFact> window) {
@@ -464,6 +483,12 @@ public class LearnerMemoryCodeReviewUpdateService {
     return attempt == 0 ? logicalIdempotencyKey
         : logicalIdempotencyKey + LearnerMemoryCodeReviewConsumerConstants.BACKGROUND_RETRY_IDEMPOTENCY_KEY_SEPARATOR
             + attempt;
+  }
+
+  private static String evidenceRepairIdempotencyKey(String logicalIdempotencyKey, boolean evidenceRepair) {
+    return evidenceRepair
+        ? logicalIdempotencyKey + LearnerMemoryCodeReviewConsumerConstants.BACKGROUND_EVIDENCE_REPAIR_IDEMPOTENCY_KEY_SUFFIX
+        : logicalIdempotencyKey;
   }
 
   private static String sha256(String value) {

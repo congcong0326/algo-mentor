@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -72,15 +73,7 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
     insertProblem("two-sum", 1, List.of(), List.of(), List.of());
     assignTag("two-sum", tagId, 0);
     long sessionId = insertPracticeSession(userId, "two-sum");
-    PracticeCodeReviewCommitService commitService = commitService();
-
-    for (int index = 0; index < LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE; index++) {
-      long messageId = insertUserMessage(userId);
-      PracticeCodeReviewCommitResult result = transactionTemplate().execute(
-          status -> commitService.commit(draft(userId, sessionId, messageId, tagId)));
-      assertThat(result.created()).isTrue();
-      assertThat(result.queueMessageId()).isPositive();
-    }
+    enqueueFiveFormalReviews(userId, sessionId, tagId);
 
     long agentRunId = insertAgentRun(userId);
     FixedRuntime runtime = new FixedRuntime(agentRunId);
@@ -100,12 +93,54 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
     assertThat(queryString("SELECT to_regclass('learner_profile_entry')::text")).isNull();
   }
 
+  @Test
+  void repairsInvalidEvidenceOnceBeforeQueueRetry() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    long tagId = insertCatalog("array", "Array", "数组", true);
+    insertProblem("two-sum", 1, List.of(), List.of(), List.of());
+    assignTag("two-sum", tagId, 0);
+    long sessionId = insertPracticeSession(userId, "two-sum");
+    enqueueFiveFormalReviews(userId, sessionId, tagId);
+
+    long initialAgentRunId = insertAgentRun(userId);
+    long repairAgentRunId = insertAgentRun(userId);
+    FixedRuntime runtime = new FixedRuntime(List.of(initialAgentRunId, repairAgentRunId), true);
+
+    assertThat(dispatcher(runtime).dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
+        .containsExactly(QueueDispatchOutcome.DISPATCHED);
+
+    assertThat(runtime.calls).isEqualTo(2);
+    assertThat(runtime.inputs).hasSize(2);
+    assertThat(runtime.inputs.get(0).evidenceRepair()).isFalse();
+    assertThat(runtime.inputs.get(1).evidenceRepair()).isTrue();
+    assertThat(runtime.inputs.get(1).retryOfRunId()).isEqualTo(initialAgentRunId);
+    assertThat(runtime.inputs.get(1).idempotencyKey()).endsWith(":evidence-repair");
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE topic = ? AND status = 'SUCCEEDED'",
+        LearnerMemoryCodeReviewQueueContracts.TOPIC)).isEqualTo(5L);
+    assertThat(queryLong("SELECT agent_run_id FROM learner_memory_update_run WHERE trigger_type = 'CODE_REVIEW_BATCH'"))
+        .isEqualTo(repairAgentRunId);
+    assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_claim_revision WHERE status = 'ACTIVE'"))
+        .isEqualTo(2L);
+  }
+
   private PracticeCodeReviewCommitService commitService() throws Exception {
     return new PracticeCodeReviewCommitService(
         new MyBatisPracticeCodeReviewRepository(
             sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),
             objectMapper),
         new PostgresQueuePublisher(objectMapper, queueRepository(), new PersistentQueueProperties()));
+  }
+
+  private void enqueueFiveFormalReviews(long userId, long sessionId, long tagId) throws Exception {
+    PracticeCodeReviewCommitService commitService = commitService();
+    for (int index = 0; index < LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE; index++) {
+      long messageId = insertUserMessage(userId);
+      PracticeCodeReviewCommitResult result = transactionTemplate().execute(
+          status -> commitService.commit(draft(userId, sessionId, messageId, tagId)));
+      assertThat(result.created()).isTrue();
+      assertThat(result.queueMessageId()).isPositive();
+    }
   }
 
   private QueueDispatcher dispatcher(AgentRuntime runtime) throws Exception {
@@ -237,23 +272,39 @@ class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
   }
 
   private final class FixedRuntime implements AgentRuntime {
-    private final long agentRunId;
+    private final List<Long> agentRunIds;
+    private final boolean rejectFirstEvidence;
+    private final List<LearnerMemoryCodeReviewUpdateAgentInput> inputs = new ArrayList<>();
     private int calls;
 
     private FixedRuntime(long agentRunId) {
-      this.agentRunId = agentRunId;
+      this(List.of(agentRunId), false);
+    }
+
+    private FixedRuntime(List<Long> agentRunIds, boolean rejectFirstEvidence) {
+      this.agentRunIds = List.copyOf(agentRunIds);
+      this.rejectFirstEvidence = rejectFirstEvidence;
     }
 
     @Override
     public AgentRunResult execute(AgentInvocation<?> invocation) {
       calls++;
-      JsonNode output = decisions((LearnerMemoryCodeReviewUpdateAgentInput) invocation.input());
+      if (calls > agentRunIds.size()) {
+        throw new IllegalStateException("Fixed runtime has no response for the invocation");
+      }
+      LearnerMemoryCodeReviewUpdateAgentInput input = (LearnerMemoryCodeReviewUpdateAgentInput) invocation.input();
+      inputs.add(input);
+      JsonNode output = decisions(input);
+      if (rejectFirstEvidence && calls == 1) {
+        ((ObjectNode) output.path(LearnerMemoryCodeReviewJsonSchema.OPERATIONS).get(0))
+            .put(LearnerMemoryCodeReviewJsonSchema.PATTERN, "CROSS_PROBLEM_RECURRENCE");
+      }
       return new AgentRunResult(
           1,
           LlmFinishReason.STOP,
           new AgentOutput("", output, LearnerMemoryCodeReviewJsonSchema.SCHEMA_NAME,
               LearnerMemoryCodeReviewConsumerConstants.SCHEMA_VERSION, Map.of()),
-          Map.of(AgentRuntimeMetadataKeys.RUN_DB_ID, agentRunId));
+          Map.of(AgentRuntimeMetadataKeys.RUN_DB_ID, agentRunIds.get(calls - 1)));
     }
 
     @Override

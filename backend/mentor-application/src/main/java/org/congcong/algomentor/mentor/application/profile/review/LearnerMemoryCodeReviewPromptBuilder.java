@@ -8,6 +8,7 @@ import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptReso
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
+import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewVerification;
 
 /** 构造受限 Review 窗口、当前 Claim 与容量事实的 Code Review Claim 更新 Prompt。 */
 public final class LearnerMemoryCodeReviewPromptBuilder {
@@ -56,6 +57,7 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
           .append("\nfindings=").append(fact.deductionReasons())
           .append("\nsuggestions=").append(fact.improvementSuggestions()).append('\n');
     }
+    appendEvidenceRepairInstructions(output, input);
     output.append("\n允许操作的当前 ACTIVE claim：\n");
     if (input.activeClaims().isEmpty()) {
       output.append("(无)\n");
@@ -76,6 +78,30 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
     output.append("用户 ACTIVE 总数=").append(input.activeClaimCount())
         .append(" capacityState=").append(input.capacityState()).append('\n');
     return output.toString();
+  }
+
+  private void appendEvidenceRepairInstructions(StringBuilder output, LearnerMemoryCodeReviewUpdateAgentInput input) {
+    if (!input.evidenceRepair()) {
+      return;
+    }
+    output.append("\n上一次候选 operations 未通过服务端证据校验。这是唯一一次修复调用：重新输出完整 operations，"
+            + "删除不能被下列受信 Review 严格支持的操作；不要解释校验过程。\n")
+        .append("所有 reviewEvidence 只能引用下列 reviewId。所有 pattern 只能使用 Review 证据：\n")
+        .append("- SINGLE_REVIEW：恰好一条 Review，且仅可用于该 Review 含有目标 tag 的 TAG_ASSESSMENT。\n")
+        .append("- SAME_PROBLEM_PERSISTENCE：同一 problemSlug 至少两条不同 version。\n")
+        .append("- SAME_PROBLEM_RECOVERY：同题至少两版，版本顺序中的角色为 OBSERVED 后 RESOLVED。\n")
+        .append("- SAME_PROBLEM_REGRESSION：同题至少三版，版本顺序中的角色为 OBSERVED、RESOLVED、REGRESSED。\n")
+        .append("- CROSS_PROBLEM_RECURRENCE：至少两个不同 problemSlug。\n")
+        .append("- CROSS_PROBLEM_LONGITUDINAL：至少两个不同 problemSlug，且其中一题至少两版。\n")
+        .append("- TAG_BREADTH：至少两个不同 problemSlug，且每条 Review 都含目标 tag。\n")
+        .append("可用 Review 事实：\n");
+    for (CodeReviewVerification review : input.evidenceReviews()) {
+      output.append("reviewId=").append(review.reviewId())
+          .append(" problemSlug=").append(review.problemSlug())
+          .append(" version=").append(review.versionNo())
+          .append(" tags=").append(review.affectedTagIds())
+          .append('\n');
+    }
   }
 
   private String scope(org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope value) {

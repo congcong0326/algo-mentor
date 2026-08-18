@@ -25,6 +25,7 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
   private final LearnerMemoryClaimContract.CapacityState capacityState;
   private final String idempotencyKey;
   private final Long retryOfRunId;
+  private final boolean evidenceRepair;
   private final AtomicReference<LearnerMemoryRunScopeRegistry.ScopeLease> scopeLease = new AtomicReference<>();
 
   public LearnerMemoryCodeReviewUpdateAgentInput(
@@ -38,7 +39,8 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
       int activeClaimCount,
       LearnerMemoryClaimContract.CapacityState capacityState,
       String idempotencyKey,
-      Long retryOfRunId
+      Long retryOfRunId,
+      boolean evidenceRepair
   ) {
     if (userId < 1) {
       throw new IllegalArgumentException("Code review memory Agent user id must be positive");
@@ -77,6 +79,7 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
       throw new IllegalArgumentException("Code review memory Agent retry source run id must be positive");
     }
     this.retryOfRunId = retryOfRunId;
+    this.evidenceRepair = evidenceRepair;
   }
 
   public long userId() {
@@ -121,6 +124,11 @@ public final class LearnerMemoryCodeReviewUpdateAgentInput {
 
   public Long retryOfRunId() {
     return retryOfRunId;
+  }
+
+  /** 当前调用是否为一次证据校验失败后的受限修复。 */
+  public boolean evidenceRepair() {
+    return evidenceRepair;
   }
 
   public Set<LearnerMemoryClaimScope> allowedScopes() {

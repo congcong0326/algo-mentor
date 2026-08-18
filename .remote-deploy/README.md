@@ -1,6 +1,6 @@
 # 预发布环境
 
-本文记录当前预发布环境、已核验的部署状态及后续发布约定。基础设施最后核验时间：2026-08-13（UTC）；应用、容器与 SSH 最后核验时间：2026-08-16（UTC）。
+本文记录当前预发布环境、已核验的部署状态及后续发布约定。基础设施最后核验时间：2026-08-13（UTC）；应用、容器与 SSH 最后核验时间：2026-08-17（UTC）。
 
 ## 环境概览
 
@@ -19,7 +19,7 @@
 - `postgresql@16-main` 已启用并运行，监听 `127.0.0.1:5432` 和 `192.168.10.121:5432`；数据目录为 `/data/postgresql/16/main`。
 - 数据库为 `algo_mentor`，应用角色为同名非超级用户。SCRAM/HBA 仅允许本机和 `leetmentor-dev`（`192.168.10.118`）连接；`nftables` 对 5432 执行相同的来源限制。
 - `leetmentor-dev:/etc/algo-mentor/database.env` 保存随机数据库凭据，目录权限为 `0750 root:algo-mentor`，文件权限为 `0640 root:algo-mentor`。真实密码不进入仓库。
-- 2026-08-16 已发布提交 `85aade15c4ba`，`flyway_schema_history` 当前有 66 条 SQL 迁移且均成功；最新 `V66__repair_problem_review_card_scheduling.sql` 已执行。迁移前已在业务主机创建并校验逻辑备份 `/var/backups/algo-mentor/pre-v66-20260816T131727Z.dump`（SHA-256：`a72691b1280d7f8798c8dd7fa960bafa52e1008ae68e49df07fe7f5105466aff`）。WAL 归档、PITR、异机备份、恢复演练和监控告警尚未配置，因此该数据库不具备生产就绪条件。
+- 2026-08-17 已发布提交 `4fa4a9f97ffba64b46b4d80b58c325a9d8880aa5`，`flyway_schema_history` 当前有 67 条 SQL 迁移且均成功；最新 `V67__agent_run_metadata.sql` 已执行。迁移前已在业务主机创建并通过 `pg_restore --list` 校验逻辑备份 `/var/backups/algo-mentor/pre-v67-4fa4a9f97ffb-20260817T032215Z.dump`（SHA-256：`b93739ad5d2a2cd86dc4a848754d151eb51b8c6cc0298d730d8c304be13790c2`）。WAL 归档、PITR、异机备份、恢复演练和监控告警尚未配置，因此该数据库不具备生产就绪条件。
 - 2026-08-15 已完成基础 seed 数据初始化：`3591` 道题目（`3202` 双语、`389` 仅中文）、`441` 家公司和 `33138` 条公司题目信号；学习元数据导入审计为 1 次，包含 `4424` 条关联、`11841` 条提示和 `68153` 条代码模板；学习计划模板为 `35` 个、题目引用为 `1738` 条（`1699` 条已匹配本地题库）。
 - 已从官方源码包（SHA-256 已核验）安装 Redis `7.4.10`，二进制位于 `/opt/redis/7.4.10/bin/`；`redis-cache.service` 与 `redis-stream.service` 均已启用并运行。
 - `redis-cache` 监听 `127.0.0.1:6379` 和 `192.168.10.121:6379`，用于 Shared TTL 缓存；`maxmemory=384mb`、`allkeys-lfu`，关闭 RDB/AOF 持久化。`redis-stream` 监听对应的 `6380`，用于 Redis Streams；`maxmemory=768mb`、`noeviction`，启用 RDB 和 AOF `everysec`。
@@ -29,13 +29,13 @@
 ### leetmentor 预发布业务主机
 
 - 已安装并启用 Ubuntu `docker.io` `29.1.3`，`docker.service` 为 enabled 和 active。
-- `algo-mentor` 容器正在运行，使用非 root 容器用户 `algo-mentor`，镜像为 `algo-mentor-api:preprod-85aade15c4ba-20260816T132504Z`，重启策略为 `unless-stopped`。该版本对应提交 `85aade15c4ba12a2ef76cd451b7bb50f4b8c644e`，发布制品 SHA-256 为 `29a6a735e4eb1415f974ccf99d35fea18610ca5fb2242f4777430a2ac8cedbe8`。
+- `algo-mentor` 容器正在运行，使用非 root 容器用户 `algo-mentor`，镜像为 `algo-mentor-api:preprod-4fa4a9f97ffb-20260817T032215Z`，重启策略为 `unless-stopped`。该版本对应提交 `4fa4a9f97ffba64b46b4d80b58c325a9d8880aa5`，发布制品 SHA-256 为 `cec5e7af45ee9de1b8d911b307d30695c62112694dcfb4ae8aaa0a5728e34bf1`。
 - 容器将 Spring Boot HTTP 端口直接映射为 `0.0.0.0:18080` 与 `[::]:18080`；前置代理可按现有约定将流量转发至该端口。
 - 运行时配置位于 `/etc/algo-mentor/`：`database.env`、`redis.env` 和由当前工作机 `.env` 迁移而来的 `runtime.env`。目录权限为 `0750 root:algo-mentor`，每个文件权限为 `0640 root:algo-mentor`；2026-08-15 已校验 `runtime.env` 与本机 `.env` 完全一致。2026-08-16 已显式加入并验证 `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED=true` 与 `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED=true`，发布前配置备份为 `/etc/algo-mentor/runtime.env.bak.20260816T080926Z`。密码登录已禁用（`AUTH_PASSWORD_LOGIN_ENABLED=false`），真实值不进入仓库。
 - 已安装 `postgresql-client-16` 用于连通性验证，应用容器已连接 PASS PostgreSQL 并完成 Flyway。缓存 Redis（6379）与 Streams Redis（6380）的连接配置继续使用既有受保护文件。
-- 发布制品和 Dockerfile 位于 `/opt/algo-mentor/releases/85aade15c4ba-20260816T132504Z/`；前一版本容器以 `algo-mentor-previous-85aade15c4ba-20260816T132504Z` 停止保留，可用于容器级回滚。本次基础数据 seed 及其校验输入位于 `/opt/algo-mentor/releases/20260815T134000Z/seed/`，由 root 管理。启动前与导入前逻辑备份位于 `/var/backups/algo-mentor/`，权限为 `0600 root:root`。
+- 发布制品和 Dockerfile 位于 `/opt/algo-mentor/releases/4fa4a9f97ffb-20260817T032215Z/`；前一版本容器以 `algo-mentor-previous-4fa4a9f97ffb-20260817T032215Z` 停止保留，可用于容器级回滚。本次基础数据 seed 及其校验输入位于 `/opt/algo-mentor/releases/20260815T134000Z/seed/`，由 root 管理。启动前与导入前逻辑备份位于 `/var/backups/algo-mentor/`，权限为 `0600 root:root`。
 
-实际部署、健康检查、日志和回滚边界详见 `预发布应用部署结果-2026-08-15.md`。
+实际部署、健康检查、日志和回滚边界详见 `预发布应用升级结果-2026-08-17.md`。
 
 ## 访问方式
 
@@ -53,7 +53,7 @@ ssh congcong@192.168.10.118  # leetmentor
 - `pass-dev`（`192.168.10.121`）：`SHA256:Vf4whl22d8QIJsU9tva0N911IQinax56BrPYxkJHcsc`
 - `leetmentor-dev`（`192.168.10.118`）：`SHA256:B3nijoHMlNHhlAi54Ii5p8pSXGM6FYm2hAxYAQAUXJ0`
 
-该工作机项目公钥的指纹为 `SHA256:FkyPs7kmXw0YdKh7RJ6w4O9Qj0mClYuEPPzpiY827i8`（ED25519）。2026-08-15 已在两台主机的 `congcong` 账户中备份原有 `authorized_keys` 后追加该公钥，且保留既有授权键。`pass-dev` 的备份为 `authorized_keys.backup-20260815T125506Z`，`leetmentor-dev` 的备份为 `authorized_keys.backup-20260815T125538Z`。两台主机的 `.ssh` 目录权限均为 `0700`，`authorized_keys` 权限均为 `0600`；无交互公钥登录已分别验证为 `pass`/`congcong` 和 `leetmentor`/`congcong`，**当前 SSH 访问可用于部署**。密码、私钥和其他凭据均未写入仓库。
+该工作机项目公钥的指纹为 `SHA256:FkyPs7kmXw0YdKh7RJ6w4O9Qj0mClYuEPPzpiY827i8`（ED25519）。2026-08-15 已在两台主机的 `congcong` 账户中备份原有 `authorized_keys` 后追加该公钥，且保留既有授权键。`pass-dev` 的备份为 `authorized_keys.backup-20260815T125506Z`，`leetmentor-dev` 的备份为 `authorized_keys.backup-20260815T125538Z`。两台主机的 `.ssh` 目录权限均为 `0700`，`authorized_keys` 权限均为 `0600`；无交互公钥登录已分别验证为 `pass`/`congcong` 和 `leetmentor`/`congcong`。2026-08-17 已将同一项目部署公钥追加至 `leetmentor-dev` 的 `root` 授权键，保留原有键并创建备份 `/root/.ssh/authorized_keys.bak.20260817T064427Z`；`PermitRootLogin without-password` 与仅公钥认证仍然生效，`ssh leetmentor-root` 已验证可直连 root。**当前 SSH 访问可用于预发布部署**。密码、私钥和其他凭据均未写入仓库。
 
 ## 发布约定
 
@@ -63,4 +63,4 @@ ssh congcong@192.168.10.118  # leetmentor
 
 ## 核验范围
 
-2026-08-11 已通过 SSH/root 完成 PostgreSQL 首次部署与核验：安装 PostgreSQL 16、创建 `/data/postgresql/16/main` 集群、配置监听/HBA/SCRAM/资源参数和持久化 5432 防火墙规则，并创建 `algo_mentor` 数据库、最小权限角色及受保护的应用主机连接配置。2026-08-13 已在同一基础设施主机完成 Redis 7.4.10 双实例部署：缓存与 Streams 服务启动、ACL/网络限制、AOF/RDB、首个 Streams 归档及隔离恢复、应用主机认证读写和 `XADD → XGROUP → XREADGROUP → XACK` 均已验证。2026-08-15 完成当前工作机 SSH 专用密钥、严格主机键校验和两台目标机的公钥授权；同时完成 Docker 安装、`algo-mentor` 容器部署、Flyway 迁移、基础数据 seed 导入、容器重启和 HTTP 健康检查。状态会随部署变更；每次环境调整后应重新核验并更新本文档。
+2026-08-11 已通过 SSH/root 完成 PostgreSQL 首次部署与核验：安装 PostgreSQL 16、创建 `/data/postgresql/16/main` 集群、配置监听/HBA/SCRAM/资源参数和持久化 5432 防火墙规则，并创建 `algo_mentor` 数据库、最小权限角色及受保护的应用主机连接配置。2026-08-13 已在同一基础设施主机完成 Redis 7.4.10 双实例部署：缓存与 Streams 服务启动、ACL/网络限制、AOF/RDB、首个 Streams 归档及隔离恢复、应用主机认证读写和 `XADD → XGROUP → XREADGROUP → XACK` 均已验证。2026-08-15 完成当前工作机 SSH 专用密钥、严格主机键校验和两台目标机的公钥授权；同时完成 Docker 安装、`algo-mentor` 容器部署、Flyway 迁移、基础数据 seed 导入、容器重启和 HTTP 健康检查。2026-08-17 已完成提交 `4fa4a9f` 的数据库感知升级：迁移前备份通过校验，Flyway `V67`、容器替换和内外部健康检查均已确认。状态会随部署变更；每次环境调整后应重新核验并更新本文档。

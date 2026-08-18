@@ -69,7 +69,25 @@ class LearnerMemoryCodeReviewUpdateServiceTest {
         .isInstanceOf(IllegalArgumentException.class);
   }
 
+  @Test
+  void evidenceRepairPromptRestatesTrustedEvidenceAndPatternRules() {
+    LearnerMemoryCodeReviewPromptBuilder promptBuilder = new LearnerMemoryCodeReviewPromptBuilder();
+
+    String prompt = promptBuilder.build(input(true), promptBuilder.snapshot(7L)).get(1).text();
+
+    assertThat(prompt)
+        .contains("唯一一次修复调用")
+        .contains("SAME_PROBLEM_RECOVERY")
+        .contains("CROSS_PROBLEM_LONGITUDINAL")
+        .contains("reviewId=701 problemSlug=two-sum version=1")
+        .contains("reviewId=702 problemSlug=two-sum version=2");
+  }
+
   private LearnerMemoryCodeReviewUpdateAgentInput input() {
+    return input(false);
+  }
+
+  private LearnerMemoryCodeReviewUpdateAgentInput input(boolean evidenceRepair) {
     LearnerMemoryClaimScope generalScope = new LearnerMemoryClaimScope(
         LearnerMemoryClaimContract.Kind.GENERAL_OBSERVATION,
         LearnerMemoryClaimContract.Dimension.PROBLEM_SOLVING_APPROACH,
@@ -99,7 +117,8 @@ class LearnerMemoryCodeReviewUpdateServiceTest {
         1,
         LearnerMemoryClaimContract.CapacityState.NORMAL,
         "batch",
-        null);
+        null,
+        evidenceRepair);
   }
 
   private List<LearnerMemoryCodeReviewFact> batchFacts() {

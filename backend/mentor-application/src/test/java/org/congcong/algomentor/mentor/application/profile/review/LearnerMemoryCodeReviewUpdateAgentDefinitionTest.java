@@ -84,7 +84,8 @@ class LearnerMemoryCodeReviewUpdateAgentDefinitionTest {
         0,
         LearnerMemoryClaimContract.CapacityState.NORMAL,
         idempotencyKey,
-        retryOfRunId);
+        retryOfRunId,
+        false);
   }
 
   private AgentInvocationContext context(long userId, String idempotencyKey) {
