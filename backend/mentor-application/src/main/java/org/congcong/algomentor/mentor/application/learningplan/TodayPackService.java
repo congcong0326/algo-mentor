@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.application.learningplan;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.DateTimeException;
@@ -56,13 +57,14 @@ public class TodayPackService {
     LearningPlan plan = planRepository.findPlanByIdForUser(selection.planId(), userId)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
     List<PracticeProgress> progress = progressByPlan(userId, plan.id());
-    Map<ProblemKey, PracticeProgressStatus> progressByProblem = progressByProblem(progress);
+    Map<ProblemKey, PracticeProgress> progressByProblem = progressByProblem(progress);
     LearningPlanRhythmSettings rhythm = loadService.rhythmSettings(plan.plan(), progress);
     int dailyProblemCount = Math.max(1, rhythm.dailyProblemCount());
     LocalDate activatedLocalDate = selection.activatedAt().atZone(zoneId).toLocalDate();
     LocalDate displayDate = today.plusDays(packOffset);
 
-    List<ScheduledProblem> scheduled = scheduledProblems(plan, progressByProblem, activatedLocalDate, dailyProblemCount);
+    List<ScheduledProblem> scheduled = scheduledProblems(
+        plan, progressByProblem, activatedLocalDate, selection.activatedAt(), dailyProblemCount);
     boolean planCompleted = scheduled.stream()
         .allMatch(item -> item.status() == PracticeProgressStatus.COMPLETED
             || item.status() == PracticeProgressStatus.SKIPPED);
@@ -123,28 +125,52 @@ public class TodayPackService {
 
   private List<ScheduledProblem> scheduledProblems(
       LearningPlan plan,
-      Map<ProblemKey, PracticeProgressStatus> progressByProblem,
+      Map<ProblemKey, PracticeProgress> progressByProblem,
       LocalDate activatedLocalDate,
+      Instant activatedAt,
       int dailyProblemCount) {
     List<LearningPlanPhaseDraft> phases = plan.plan().phases().stream()
         .sorted(Comparator.comparingInt(LearningPlanPhaseDraft::phaseIndex))
         .toList();
     List<ScheduledProblem> result = new ArrayList<>();
-    int originalIndex = 0;
+    int scheduledIndex = 0;
     for (LearningPlanPhaseDraft phase : phases) {
       List<LearningPlanProblemDraft> problems = phase.problems().stream()
           .sorted(Comparator.comparingInt(LearningPlanProblemDraft::sortOrder))
           .toList();
       for (LearningPlanProblemDraft problem : problems) {
-        LocalDate scheduledDate = activatedLocalDate.plusDays(originalIndex / dailyProblemCount);
-        PracticeProgressStatus status = progressByProblem.getOrDefault(
-            new ProblemKey(phase.phaseIndex(), problem.slug()),
-            PracticeProgressStatus.NOT_STARTED);
+        PracticeProgress progress = progressByProblem.get(new ProblemKey(phase.phaseIndex(), problem.slug()));
+        PracticeProgressStatus status = progress == null
+            ? PracticeProgressStatus.NOT_STARTED
+            : progress.status();
+        // 重置题包后，重置前已完成/跳过的题不应继续占用新的每日名额。
+        boolean completedBeforeActivation = terminalBeforeActivation(
+            progress, status, activatedAt, PracticeProgressStatus.COMPLETED);
+        boolean skippedBeforeActivation = terminalBeforeActivation(
+            progress, status, activatedAt, PracticeProgressStatus.SKIPPED);
+        LocalDate scheduledDate = activatedLocalDate.plusDays(scheduledIndex / dailyProblemCount);
         result.add(new ScheduledProblem(phase.phaseIndex(), problem, status, scheduledDate));
-        originalIndex++;
+        if (!completedBeforeActivation && !skippedBeforeActivation) {
+          scheduledIndex++;
+        }
       }
     }
     return result;
+  }
+
+  private boolean terminalBeforeActivation(
+      PracticeProgress progress,
+      PracticeProgressStatus status,
+      Instant activatedAt,
+      PracticeProgressStatus terminalStatus) {
+    if (progress == null || status != terminalStatus) {
+      return false;
+    }
+    Instant terminalAt = terminalStatus == PracticeProgressStatus.COMPLETED
+        ? progress.completedAt()
+        : progress.skippedAt();
+    Instant effectiveAt = terminalAt == null ? progress.updatedAt() : terminalAt;
+    return effectiveAt != null && effectiveAt.isBefore(activatedAt);
   }
 
   private List<TodayPackSection> sections(
@@ -220,13 +246,13 @@ public class TodayPackService {
     }
   }
 
-  private Map<ProblemKey, PracticeProgressStatus> progressByProblem(List<PracticeProgress> progress) {
-    Map<ProblemKey, PracticeProgressStatus> result = new HashMap<>();
+  private Map<ProblemKey, PracticeProgress> progressByProblem(List<PracticeProgress> progress) {
+    Map<ProblemKey, PracticeProgress> result = new HashMap<>();
     if (progress == null) {
       return result;
     }
     for (PracticeProgress item : progress) {
-      result.put(new ProblemKey(item.phaseIndex(), item.problemSlug()), item.status());
+      result.put(new ProblemKey(item.phaseIndex(), item.problemSlug()), item);
     }
     return result;
   }
