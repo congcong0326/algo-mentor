@@ -16,6 +16,7 @@ import {
 import LearningPlanCreatePage from './learning-plans/LearningPlanCreatePage';
 import LearningPlanDetail from './learning-plans/LearningPlanDetail';
 import LearningPlanListCard from './learning-plans/LearningPlanListCard';
+import { PracticeSubmissionHistoryPage } from './learning-plans/practiceSubmissionHistoryLazy';
 import { TodayPackPanel } from './TodayPackPage';
 import { useI18n } from './i18n/I18nProvider';
 import {
@@ -50,7 +51,6 @@ const DISABLED_AI_REVISION_CAPABILITIES: LearningPlanAiRevisionCapabilities = {
 };
 
 const PracticeChatWorkbench = lazy(() => import('./learning-plans/PracticeChatWorkbench'));
-const PracticeSubmissionHistoryPage = lazy(() => import('./learning-plans/PracticeSubmissionHistoryPage'));
 
 export default function LearningPlans({ pathname, search, onNavigate }: LearningPlansProps) {
   const { resources } = useI18n();

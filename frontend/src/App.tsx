@@ -785,6 +785,7 @@ export default function App() {
     : activeView === 'my'
     ? (
       <MyPage
+        onNavigate={navigateToPath}
         onProfileAnchorHandled={() => navigateToPath(APP_ROUTES.my, { replace: true })}
         profileAnchor={learnerProfileAnchorFromSearch(search)}
       />

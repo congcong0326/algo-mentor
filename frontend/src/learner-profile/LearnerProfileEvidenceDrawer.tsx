@@ -14,6 +14,7 @@ import { learnerProfileEvidenceKey } from './profilePresentation';
 interface LearnerProfileEvidenceDrawerProps {
   citation?: LearnerProfileCitation;
   onClose: () => void;
+  onNavigate?: (pathname: string) => void;
   open: boolean;
 }
 
@@ -26,6 +27,7 @@ const FOCUSABLE_SELECTOR = [
 export default function LearnerProfileEvidenceDrawer({
   citation,
   onClose,
+  onNavigate,
   open,
 }: LearnerProfileEvidenceDrawerProps) {
   const { resources } = useI18n();
@@ -262,6 +264,7 @@ export default function LearnerProfileEvidenceDrawer({
           {visibleItems.length > 0 ? (
             <LearnerProfileEvidenceTimeline
               items={visibleItems}
+              onNavigate={onNavigate}
               profileAnchor={learnerProfileStatementAnchorId(citation.claimRevisionId)}
             />
           ) : null}

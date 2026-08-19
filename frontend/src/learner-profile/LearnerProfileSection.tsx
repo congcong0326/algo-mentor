@@ -12,9 +12,11 @@ import LearnerProfileEvidenceDrawer from './LearnerProfileEvidenceDrawer';
 import { formatLearnerProfileDateTime } from './profilePresentation';
 
 export default function LearnerProfileSection({
+  onNavigate,
   onProfileAnchorHandled,
   profileAnchor,
 }: {
+  onNavigate?: (pathname: string) => void;
   onProfileAnchorHandled?: () => void;
   profileAnchor?: string;
 } = {}) {
@@ -138,6 +140,7 @@ export default function LearnerProfileSection({
       <LearnerProfileEvidenceDrawer
         citation={selectedCitation}
         onClose={() => setDrawerOpen(false)}
+        onNavigate={onNavigate}
         open={drawerOpen}
       />
     </section>

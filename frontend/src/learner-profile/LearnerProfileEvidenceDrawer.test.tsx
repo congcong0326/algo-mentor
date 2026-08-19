@@ -109,6 +109,25 @@ describe('LearnerProfileEvidenceDrawer', () => {
       '/learning-plans/31/phases/2/problems/two-sum/submissions?review=12&from=learner-profile&profileAnchor=learner-profile-statement-101',
     );
   });
+
+  it('uses in-app navigation for a normal click while keeping the deep link', async () => {
+    vi.mocked(getLearnerProfileStatementEvidence).mockResolvedValue(apiResponse({ items: [codeReviewEvidence(12)] }));
+    const onNavigate = vi.fn();
+    render(
+      <I18nProvider>
+        <LearnerProfileEvidenceDrawer citation={citation(1)} onClose={vi.fn()} onNavigate={onNavigate} open />
+      </I18nProvider>,
+    );
+
+    const reviewLink = await screen.findByRole('link', { name: '查看本次提交' });
+    fireEvent.click(reviewLink);
+
+    expect(onNavigate).toHaveBeenCalledWith(
+      '/learning-plans/31/phases/2/problems/two-sum/submissions?review=12&from=learner-profile&profileAnchor=learner-profile-statement-101',
+    );
+    expect(reviewLink).toHaveAttribute('href',
+      '/learning-plans/31/phases/2/problems/two-sum/submissions?review=12&from=learner-profile&profileAnchor=learner-profile-statement-101');
+  });
 });
 
 function renderDrawer(value: LearnerProfileCitation) {

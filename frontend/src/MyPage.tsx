@@ -27,9 +27,11 @@ import type {
 
 const maxAbilityBubbleCount = 12;
 export default function MyPage({
+  onNavigate,
   onProfileAnchorHandled,
   profileAnchor,
 }: {
+  onNavigate?: (pathname: string) => void;
   onProfileAnchorHandled?: () => void;
   profileAnchor?: string;
 } = {}) {
@@ -210,6 +212,7 @@ export default function MyPage({
       </div>
 
       <LearnerProfileSection
+        onNavigate={onNavigate}
         onProfileAnchorHandled={onProfileAnchorHandled}
         profileAnchor={profileAnchor}
       />
