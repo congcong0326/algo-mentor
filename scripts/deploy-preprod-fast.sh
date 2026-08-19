@@ -39,7 +39,11 @@ validate_deployment_parameters() {
 }
 
 remote_command() {
-  ssh -tt "${PREPROD_HOST}" "$@"
+  if [[ "${PREPROD_SSH_TTY:-false}" == true ]]; then
+    ssh -tt "${PREPROD_HOST}" "$@"
+  else
+    ssh "${PREPROD_HOST}" "$@"
+  fi
 }
 
 validate_worktree() {
