@@ -368,7 +368,7 @@ main() {
   release_commit="$(git -C "${REPOSITORY_ROOT}" rev-parse "${release_ref}")"
   release_id="$(git -C "${REPOSITORY_ROOT}" rev-parse --short=12 "${release_ref}")-$(date -u +%Y%m%dT%H%M%SZ)"
   stage_dir="$(mktemp -d)"
-  trap 'rm -rf "${stage_dir}"' EXIT
+  trap 'rm -rf "${stage_dir:-}"' EXIT
 
   stage_release "${release_ref}" "${release_id}" "${stage_dir}"
   if [[ "${preflight_only}" == true ]]; then
