@@ -74,6 +74,7 @@ public final class LearnerReviewFactSnapshotBuilder {
         .map(this::attempt).toList();
     return new ProblemReviewTrajectory(
         orderedAttempts.get(0).problemSlug(),
+        orderedAttempts.get(0).problemTitle(),
         tagIds,
         orderedAttempts.size(),
         orderedAttempts.size() - failed,

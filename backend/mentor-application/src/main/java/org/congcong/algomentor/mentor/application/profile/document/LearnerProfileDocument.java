@@ -130,6 +130,7 @@ public record LearnerProfileDocument(
       long planId,
       int phaseIndex,
       String problemSlug,
+      String problemTitle,
       int versionNo,
       BigDecimal totalScore,
       boolean passed
@@ -140,6 +141,7 @@ public record LearnerProfileDocument(
         throw new IllegalArgumentException("code review source is invalid");
       }
       problemSlug = requireText(problemSlug, "problem slug");
+      problemTitle = requireText(problemTitle, "problem title");
     }
   }
 

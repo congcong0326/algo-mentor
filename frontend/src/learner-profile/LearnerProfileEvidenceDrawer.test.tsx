@@ -37,11 +37,12 @@ describe('LearnerProfileEvidenceDrawer', () => {
 
     renderDrawer(citation(1));
 
-    expect(await screen.findByText('two-sum')).toBeInTheDocument();
+    expect(await screen.findByText('两数之和')).toBeInTheDocument();
+    expect(screen.queryByText('two-sum')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '加载更多' }));
 
     await waitFor(() => expect(getLearnerProfileStatementEvidence).toHaveBeenCalledTimes(2));
-    expect(screen.getAllByText('two-sum')).toHaveLength(1);
+    expect(screen.getAllByText('两数之和')).toHaveLength(1);
     expect(screen.getAllByText('来自你在题目聊天中的陈述')).toHaveLength(2);
     expect(screen.getByText('已显示全部依据。')).toBeInTheDocument();
   });

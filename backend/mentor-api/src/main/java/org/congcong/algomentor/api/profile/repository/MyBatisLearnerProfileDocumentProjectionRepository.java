@@ -37,7 +37,7 @@ public final class MyBatisLearnerProfileDocumentProjectionRepository
   }
 
   @Override
-  public LearnerProfileProjectionSnapshot loadSnapshot(long userId) {
+  public LearnerProfileProjectionSnapshot loadSnapshot(long userId, String locale) {
     requirePositive(userId, "user id");
     List<LearnerProfileProjectionSnapshot.Claim> claims = mapper.findActiveDocumentClaims(userId).stream()
         .map(this::toClaim)
@@ -47,7 +47,7 @@ public final class MyBatisLearnerProfileDocumentProjectionRepository
     }
     List<Long> revisionIds = claims.stream().map(claim -> claim.revision().id()).toList();
     Map<Long, List<LearnerProfileDocument.EvidenceItem>> evidenceByRevision = new LinkedHashMap<>();
-    mapper.findDocumentEvidenceByRevisionIds(userId, revisionIds, null).stream()
+    mapper.findDocumentEvidenceByRevisionIds(userId, revisionIds, null, locale).stream()
         .map(this::toEvidence)
         .forEach(evidence -> evidenceByRevision.computeIfAbsent(evidence.claimRevisionId(), unused -> new ArrayList<>())
             .add(evidence.item()));
@@ -67,7 +67,8 @@ public final class MyBatisLearnerProfileDocumentProjectionRepository
       long userId,
       long claimRevisionId,
       EvidenceCursor cursor,
-      int limitPlusOne) {
+      int limitPlusOne,
+      String locale) {
     requirePositive(userId, "user id");
     requirePositive(claimRevisionId, "claim revision id");
     if (limitPlusOne <= 0) {
@@ -80,7 +81,8 @@ public final class MyBatisLearnerProfileDocumentProjectionRepository
         cursor == null ? null : cursor.occurredAt(),
         cursor == null ? null : cursor.type().name(),
         cursor == null ? null : cursor.sourceId(),
-        limitPlusOne).stream().map(row -> toEvidence(row).item()).toList();
+        limitPlusOne,
+        locale).stream().map(row -> toEvidence(row).item()).toList();
   }
 
   private LearnerProfileProjectionSnapshot.Claim toClaim(LearnerProfileDocumentClaimRow row) {
@@ -124,6 +126,7 @@ public final class MyBatisLearnerProfileDocumentProjectionRepository
               requireValue(row.planId(), "plan id"),
               requireValue(row.phaseIndex(), "phase index"),
               row.problemSlug(),
+              problemTitle(row),
               requireValue(row.versionNo(), "version no"),
               row.totalScore(),
               Boolean.TRUE.equals(row.passed())),
@@ -156,6 +159,10 @@ public final class MyBatisLearnerProfileDocumentProjectionRepository
       throw new IllegalStateException(name + " is missing from learner profile evidence");
     }
     return value;
+  }
+
+  private static String problemTitle(LearnerProfileDocumentEvidenceRow row) {
+    return row.problemTitle() == null || row.problemTitle().isBlank() ? row.problemSlug() : row.problemTitle();
   }
 
   private static void requirePositive(long value, String name) {

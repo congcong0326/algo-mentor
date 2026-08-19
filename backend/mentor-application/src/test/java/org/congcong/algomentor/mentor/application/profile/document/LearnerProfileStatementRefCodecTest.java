@@ -49,7 +49,7 @@ class LearnerProfileStatementRefCodecTest {
     }
     LearnerProfileDocumentProjectionRepository repository = new LearnerProfileDocumentProjectionRepository() {
       @Override
-      public LearnerProfileProjectionSnapshot loadSnapshot(long userId) {
+      public LearnerProfileProjectionSnapshot loadSnapshot(long userId, String locale) {
         return new LearnerProfileProjectionSnapshot(List.of(), Map.of());
       }
 
@@ -63,7 +63,8 @@ class LearnerProfileStatementRefCodecTest {
           long userId,
           long claimRevisionId,
           LearnerProfileStatementReferenceCodec.EvidenceCursor cursor,
-          int limitPlusOne) {
+          int limitPlusOne,
+          String locale) {
         return evidence.stream()
             .filter(item -> cursor == null || item.sourceId() > cursor.sourceId())
             .limit(limitPlusOne)
@@ -77,8 +78,8 @@ class LearnerProfileStatementRefCodecTest {
         codec);
     String ref = codec.encodeStatementRef(42L, 7L);
 
-    LearnerProfileDocument.EvidencePage first = service.getEvidence(42L, ref, null, 20);
-    LearnerProfileDocument.EvidencePage second = service.getEvidence(42L, ref, first.nextCursor(), 20);
+    LearnerProfileDocument.EvidencePage first = service.getEvidence(42L, ref, null, 20, "zh-CN");
+    LearnerProfileDocument.EvidencePage second = service.getEvidence(42L, ref, first.nextCursor(), 20, "zh-CN");
 
     assertThat(first.items()).hasSize(20);
     assertThat(first.nextCursor()).isNotBlank();

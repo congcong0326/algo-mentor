@@ -77,7 +77,7 @@ class ManagedSystemPromptDefinitionRegistryTest {
         .orElseThrow()
         .defaultText();
 
-    assertThat(definition.sourceRevision()).isEqualTo("2026-07-30.1");
+    assertThat(definition.sourceRevision()).isEqualTo("2026-08-18.1");
     assertThat(prompt)
         .contains("Leet Mentor 中负责从正式 Code Review 事实归纳学习者长期画像")
         .contains("保留能够唤起学习经历的具体锚点")

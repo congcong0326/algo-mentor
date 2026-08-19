@@ -7,6 +7,7 @@ import java.time.Instant;
 public record LearnerMemoryCodeReviewFactRow(
     long reviewId,
     String problemSlug,
+    String problemTitle,
     int versionNo,
     BigDecimal totalScore,
     BigDecimal correctnessScore,

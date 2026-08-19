@@ -90,28 +90,30 @@ class LearnerProfileControllerTest {
   @Test
   void evidenceUsesCurrentUserAndOpaqueStatementRef() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(profileService.getEvidence(42L, "opaque-statement-ref", "opaque-cursor", 20))
+    when(profileService.getEvidence(42L, "opaque-statement-ref", "opaque-cursor", 20, "zh-CN"))
         .thenReturn(new LearnerProfileDocument.EvidencePage(List.of(), null));
 
     mockMvc.perform(get("/api/me/learner-profile/statements/opaque-statement-ref/evidence")
-            .queryParam("cursor", "opaque-cursor"))
+            .queryParam("cursor", "opaque-cursor")
+            .header("Accept-Language", "zh-CN"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.items").isArray())
         .andExpect(jsonPath("$.data.nextCursor").doesNotExist());
 
-    verify(profileService).getEvidence(42L, "opaque-statement-ref", "opaque-cursor", 20);
+    verify(profileService).getEvidence(42L, "opaque-statement-ref", "opaque-cursor", 20, "zh-CN");
   }
 
   @Test
   void evidenceReturnsValidationFailureForAnInvalidLimit() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(profileService.getEvidence(42L, "opaque-statement-ref", null, 21))
+    when(profileService.getEvidence(42L, "opaque-statement-ref", null, 21, "zh-CN"))
         .thenThrow(new LearnerProfileDocumentService.InvalidLearnerProfileDocumentRequestException(
             "evidence limit must be between 1 and 20"));
 
     mockMvc.perform(get("/api/me/learner-profile/statements/opaque-statement-ref/evidence")
-            .queryParam("limit", "21"))
+            .queryParam("limit", "21")
+            .header("Accept-Language", "zh-CN"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value("VALIDATION_FAILED"));
   }
@@ -119,10 +121,11 @@ class LearnerProfileControllerTest {
   @Test
   void evidenceReturnsNotFoundForAForgedOrMismatchedReference() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(profileService.getEvidence(42L, "forged-statement-ref", null, 20))
+    when(profileService.getEvidence(42L, "forged-statement-ref", null, 20, "zh-CN"))
         .thenThrow(new LearnerProfileDocumentService.LearnerProfileStatementNotFoundException());
 
-    mockMvc.perform(get("/api/me/learner-profile/statements/forged-statement-ref/evidence"))
+    mockMvc.perform(get("/api/me/learner-profile/statements/forged-statement-ref/evidence")
+            .header("Accept-Language", "zh-CN"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error.code").value("LEARNER_PROFILE_STATEMENT_NOT_FOUND"));
   }

@@ -66,7 +66,7 @@
 
 证据摘要使用封闭联合类型：
 
-- `CODE_REVIEW`：只返回 review/session/plan/phase/problem/version、总分、是否通过、role 和时间等定位/摘要字段。
+- `CODE_REVIEW`：只返回 review/session/plan/phase/problem/version、总分、是否通过、role 和时间等定位/摘要字段；其中 `problemSlug` 仅用于稳定定位和跳转，`problemTitle` 必须按请求语言返回题库本地化题名并用于展示。
 - `USER_MESSAGE`：只返回 message role、时间和受限摘录；不返回完整消息，也不提供任意消息深链。
 
 不得返回 raw/normalized/submitted code、完整 Review Markdown、context 全文、完整消息或模型 Prompt。来源摘要由确定性模板和计数生成，不调用模型。

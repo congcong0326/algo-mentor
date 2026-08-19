@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.profile.document;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.profile.observability.LearnerMemoryMetrics;
 
@@ -35,7 +36,8 @@ public class LearnerProfileDocumentService {
 
   public LearnerProfileDocument getDocument(long userId, String locale) {
     try {
-      LearnerProfileDocument document = projector.project(repository.loadSnapshot(userId), locale);
+      String normalizedLocale = normalizeLocale(locale);
+      LearnerProfileDocument document = projector.project(repository.loadSnapshot(userId, normalizedLocale), normalizedLocale);
       Map<Integer, LearnerProfileDocument.Citation> citations = new LinkedHashMap<>();
       document.citationMap().forEach((number, citation) -> citations.put(number,
           citation.withStatementRef(referenceCodec.encodeStatementRef(userId, citation.claimRevisionId()))));
@@ -52,7 +54,8 @@ public class LearnerProfileDocumentService {
       long userId,
       String statementRef,
       String cursorValue,
-      int limit) {
+      int limit,
+      String locale) {
     if (limit <= 0 || limit > EVIDENCE_PAGE_MAX_SIZE) {
       throw new InvalidLearnerProfileDocumentRequestException("evidence limit must be between 1 and 20");
     }
@@ -67,7 +70,7 @@ public class LearnerProfileDocumentService {
         : referenceCodec.decodeCursor(userId, reference.claimRevisionId(), limit, cursorValue)
             .orElseThrow(LearnerProfileStatementNotFoundException::new);
     List<LearnerProfileDocument.EvidenceItem> values = repository.findActiveEvidence(
-        userId, reference.claimRevisionId(), cursor, limit + 1);
+        userId, reference.claimRevisionId(), cursor, limit + 1, normalizeLocale(locale));
     if (values.isEmpty()) {
       return new LearnerProfileDocument.EvidencePage(List.of(), null);
     }
@@ -80,6 +83,10 @@ public class LearnerProfileDocumentService {
           new LearnerProfileStatementReferenceCodec.EvidenceCursor(last.occurredAt(), last.type(), last.sourceId()));
     }
     return new LearnerProfileDocument.EvidencePage(items, nextCursor);
+  }
+
+  private static String normalizeLocale(String locale) {
+    return locale != null && locale.toLowerCase(Locale.ROOT).startsWith("en") ? "en-US" : "zh-CN";
   }
 
   public static class LearnerProfileStatementNotFoundException extends RuntimeException {

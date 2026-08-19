@@ -6,6 +6,7 @@ import java.util.Objects;
 /** 单题全量 Review 的压缩轨迹；保留最近版本详情，早期版本以计数参与聚合。 */
 public record ProblemReviewTrajectory(
     String problemSlug,
+    String problemTitle,
     List<Long> tagIds,
     int attemptCount,
     int passedAttemptCount,
@@ -18,8 +19,28 @@ public record ProblemReviewTrajectory(
     CurrentStatus currentStatus
 ) {
 
+  public ProblemReviewTrajectory(
+      String problemSlug,
+      List<Long> tagIds,
+      int attemptCount,
+      int passedAttemptCount,
+      int failedAttemptCount,
+      int functionalFailureCount,
+      int recoveredFailureCount,
+      int unresolvedFailureCount,
+      int compressedEarlierAttemptCount,
+      List<ReviewFactSnapshotAttempt> attempts,
+      CurrentStatus currentStatus
+  ) {
+    this(
+        problemSlug, problemSlug, tagIds, attemptCount, passedAttemptCount, failedAttemptCount,
+        functionalFailureCount, recoveredFailureCount, unresolvedFailureCount, compressedEarlierAttemptCount,
+        attempts, currentStatus);
+  }
+
   public ProblemReviewTrajectory {
-    if (problemSlug == null || problemSlug.isBlank() || attemptCount < 1 || passedAttemptCount < 0
+    if (problemSlug == null || problemSlug.isBlank() || problemTitle == null || problemTitle.isBlank() || attemptCount < 1
+        || passedAttemptCount < 0
         || failedAttemptCount < 0 || attemptCount != passedAttemptCount + failedAttemptCount
         || functionalFailureCount != failedAttemptCount || recoveredFailureCount < 0 || unresolvedFailureCount < 0
         || functionalFailureCount != recoveredFailureCount + unresolvedFailureCount || compressedEarlierAttemptCount < 0
@@ -27,6 +48,7 @@ public record ProblemReviewTrajectory(
       throw new IllegalArgumentException("Problem review trajectory is invalid");
     }
     problemSlug = problemSlug.trim();
+    problemTitle = problemTitle.trim();
     tagIds = normalizedTagIds(tagIds);
     if (attempts == null || attempts.isEmpty() || attempts.stream().anyMatch(Objects::isNull)
         || attempts.size() + compressedEarlierAttemptCount != attemptCount) {

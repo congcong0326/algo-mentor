@@ -312,6 +312,7 @@
   <sql id="LearnerMemoryCodeReviewFactColumns">
     review.id AS review_id,
     review.problem_slug,
+    COALESCE(NULLIF(problem.title_zh, ''), NULLIF(problem.title_en, ''), review.problem_slug) AS problem_title,
     review.version_no,
     review.total_score,
     review.correctness_score,
@@ -333,6 +334,7 @@
   <select id="findAllProfileFactsForUser" resultType="org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow">
     SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
+    LEFT JOIN problem ON problem.slug = review.problem_slug
     WHERE review.user_id = #{userId}
     ORDER BY review.created_at ASC, review.version_no ASC, review.id ASC
   </select>
@@ -340,6 +342,7 @@
   <select id="findProfileFactsByReviewIds" resultType="org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow">
     SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
+    LEFT JOIN problem ON problem.slug = review.problem_slug
     WHERE review.user_id = #{userId}
       AND review.id IN
       <foreach collection="reviewIds" item="reviewId" open="(" separator="," close=")">#{reviewId}</foreach>
@@ -358,6 +361,7 @@
     SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
     JOIN latest ON latest.id = review.id
+    LEFT JOIN problem ON problem.slug = review.problem_slug
     ORDER BY review.created_at DESC, review.id DESC
   </select>
 
@@ -375,6 +379,7 @@
     SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
     JOIN latest ON latest.id = review.id
+    LEFT JOIN problem ON problem.slug = review.problem_slug
     ORDER BY review.created_at DESC, review.id DESC
     LIMIT #{limit}
   </select>

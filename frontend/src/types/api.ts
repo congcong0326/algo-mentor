@@ -1032,6 +1032,7 @@ export interface LearnerProfileCodeReviewSource {
   planId: number;
   phaseIndex: number;
   problemSlug: string;
+  problemTitle: string;
   versionNo: number;
   totalScore: number;
   passed: boolean;

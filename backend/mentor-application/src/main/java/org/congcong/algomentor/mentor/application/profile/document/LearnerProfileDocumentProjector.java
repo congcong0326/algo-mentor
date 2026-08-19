@@ -15,6 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract.Kind;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemorySectionCatalog;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemorySectionCatalog.SectionDefinition;
@@ -57,9 +59,10 @@ public final class LearnerProfileDocumentProjector {
         }
         long revisionId = claim.revision().id();
         int displayNumber = nextCitation++;
-        spans.add(new LearnerProfileDocument.Span(SUPPORTED_TEXT, claim.revision().claimText(), displayNumber));
         List<LearnerProfileDocument.EvidenceItem> evidence = snapshot.evidenceByRevision()
             .getOrDefault(revisionId, List.of()).stream().sorted(evidenceComparator()).toList();
+        spans.add(new LearnerProfileDocument.Span(
+            SUPPORTED_TEXT, displayClaimText(claim.revision().claimText(), evidence), displayNumber));
         citations.put(displayNumber, new LearnerProfileDocument.Citation(
             displayNumber,
             null,
@@ -79,7 +82,7 @@ public final class LearnerProfileDocumentProjector {
         LearnerProfileDocument.FORMAT,
         LearnerProfileDocument.PROJECTOR_VERSION,
         normalizedLocale,
-        documentRevision(normalizedLocale, snapshot.claims()),
+        documentRevision(normalizedLocale, snapshot),
         documentTitle(normalizedLocale),
         blocks,
         citations,
@@ -102,6 +105,22 @@ public final class LearnerProfileDocumentProjector {
     return Comparator.comparing(LearnerProfileDocument.EvidenceItem::occurredAt)
         .thenComparing(item -> item.type().name())
         .thenComparingLong(LearnerProfileDocument.EvidenceItem::sourceId);
+  }
+
+  private String displayClaimText(String claimText, List<LearnerProfileDocument.EvidenceItem> evidence) {
+    Map<String, String> titlesBySlug = new LinkedHashMap<>();
+    evidence.stream()
+        .filter(item -> item.type() == LearnerProfileDocument.EvidenceType.CODE_REVIEW)
+        .map(LearnerProfileDocument.EvidenceItem::codeReview)
+        .forEach(review -> titlesBySlug.putIfAbsent(review.problemSlug(), review.problemTitle()));
+    String displayText = claimText;
+    for (Map.Entry<String, String> entry : titlesBySlug.entrySet().stream()
+        .sorted(Map.Entry.<String, String>comparingByKey(Comparator.comparingInt(String::length).reversed()))
+        .toList()) {
+      Pattern slug = Pattern.compile("(?<![A-Za-z0-9-])" + Pattern.quote(entry.getKey()) + "(?![A-Za-z0-9-])");
+      displayText = slug.matcher(displayText).replaceAll(Matcher.quoteReplacement(entry.getValue()));
+    }
+    return displayText;
   }
 
   private String sourceSummary(List<LearnerProfileDocument.EvidenceItem> evidence, String locale) {
@@ -142,9 +161,15 @@ public final class LearnerProfileDocumentProjector {
     return LearnerProfilePlainTextPolicy.normalize(label) + ("en-US".equals(locale) ? ": " : "：");
   }
 
-  private String documentRevision(String locale, List<LearnerProfileProjectionSnapshot.Claim> claims) {
+  private String documentRevision(String locale, LearnerProfileProjectionSnapshot snapshot) {
     StringBuilder source = new StringBuilder(LearnerProfileDocument.PROJECTOR_VERSION).append('|').append(locale);
-    claims.stream().map(claim -> claim.revision().id()).sorted().forEach(id -> source.append('|').append(id));
+    snapshot.claims().stream().map(claim -> claim.revision().id()).sorted().forEach(id -> source.append('|').append(id));
+    snapshot.evidenceByRevision().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry ->
+        entry.getValue().stream()
+            .filter(item -> item.type() == LearnerProfileDocument.EvidenceType.CODE_REVIEW)
+            .sorted(evidenceComparator())
+            .forEach(item -> source.append('|').append(entry.getKey()).append(':')
+                .append(item.sourceId()).append(':').append(item.codeReview().problemTitle())));
     try {
       byte[] digest = MessageDigest.getInstance("SHA-256").digest(source.toString().getBytes(StandardCharsets.UTF_8));
       StringBuilder hex = new StringBuilder(digest.length * 2);

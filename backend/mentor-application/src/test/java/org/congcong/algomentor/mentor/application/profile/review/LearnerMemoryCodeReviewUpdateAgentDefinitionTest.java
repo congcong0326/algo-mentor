@@ -42,6 +42,9 @@ class LearnerMemoryCodeReviewUpdateAgentDefinitionTest {
         .containsKey(LearnerMemoryAgentToolContracts.METADATA_SCOPE_REF)
         .containsEntry(LearnerMemoryAgentToolContracts.METADATA_TOOL_CALL_COUNT, 0);
     assertThat(prepared.retryOfRunId()).isNull();
+    assertThat(prepared.messages().get(1).text())
+        .contains("problemTitle=两数之和")
+        .contains("claimText 中提及题目时必须使用 problemTitle");
 
     prepared.runResource().release();
     assertThat(registry.reserveEvidence(
@@ -66,7 +69,7 @@ class LearnerMemoryCodeReviewUpdateAgentDefinitionTest {
 
   private LearnerMemoryCodeReviewUpdateAgentInput input(String idempotencyKey, Long retryOfRunId) {
     LearnerMemoryCodeReviewFact fact = new LearnerMemoryCodeReviewFact(
-        701L, "two-sum", 1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+        701L, "two-sum", "两数之和", 1, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
         BigDecimal.ONE, BigDecimal.ONE, false, List.of("boundary"), List.of("check edges"), List.of(), Instant.EPOCH);
     CodeReviewVerification verification = new CodeReviewVerification(701L, "two-sum", 1, List.of(), Instant.EPOCH);
     LearnerMemoryClaimScope scope = new LearnerMemoryClaimScope(

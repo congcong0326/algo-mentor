@@ -34,7 +34,7 @@ export default function LearnerProfileEvidenceTimeline({
           </div>
           {item.type === 'CODE_REVIEW' ? (
             <>
-              <strong>{item.codeReview.problemSlug}</strong>
+              <strong>{item.codeReview.problemTitle}</strong>
               <p>
                 {resources.myPage.reviewEvidenceSummary(
                   item.codeReview.versionNo,

@@ -15,6 +15,7 @@ public record LearnerProfileDocumentEvidenceRow(
     Long planId,
     Integer phaseIndex,
     String problemSlug,
+    String problemTitle,
     Integer versionNo,
     BigDecimal totalScore,
     Boolean passed,

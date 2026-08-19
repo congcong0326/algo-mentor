@@ -8,6 +8,7 @@ import java.util.List;
 public record LearnerMemoryCodeReviewFact(
     long reviewId,
     String problemSlug,
+    String problemTitle,
     int versionNo,
     BigDecimal totalScore,
     BigDecimal correctnessScore,
@@ -21,13 +22,38 @@ public record LearnerMemoryCodeReviewFact(
     List<Long> affectedTagIds,
     Instant createdAt
 ) {
+
+  public LearnerMemoryCodeReviewFact(
+      long reviewId,
+      String problemSlug,
+      int versionNo,
+      BigDecimal totalScore,
+      BigDecimal correctnessScore,
+      BigDecimal complexityScore,
+      BigDecimal edgeCaseScore,
+      BigDecimal codeQualityScore,
+      BigDecimal problemFitScore,
+      boolean passed,
+      List<String> deductionReasons,
+      List<String> improvementSuggestions,
+      List<Long> affectedTagIds,
+      Instant createdAt
+  ) {
+    this(
+        reviewId, problemSlug, problemSlug, versionNo, totalScore, correctnessScore, complexityScore,
+        edgeCaseScore, codeQualityScore, problemFitScore, passed, deductionReasons, improvementSuggestions,
+        affectedTagIds, createdAt);
+  }
+
   public LearnerMemoryCodeReviewFact {
-    if (reviewId < 1 || problemSlug == null || problemSlug.isBlank() || versionNo < 1
+    if (reviewId < 1 || problemSlug == null || problemSlug.isBlank() || problemTitle == null || problemTitle.isBlank()
+        || versionNo < 1
         || totalScore == null || correctnessScore == null || complexityScore == null || edgeCaseScore == null
         || codeQualityScore == null || problemFitScore == null || createdAt == null) {
       throw new IllegalArgumentException("Invalid code review profile fact");
     }
     problemSlug = problemSlug.trim();
+    problemTitle = problemTitle.trim();
     deductionReasons = normalizedStrings(deductionReasons);
     improvementSuggestions = normalizedStrings(improvementSuggestions);
     affectedTagIds = affectedTagIds == null ? List.of() : affectedTagIds.stream()

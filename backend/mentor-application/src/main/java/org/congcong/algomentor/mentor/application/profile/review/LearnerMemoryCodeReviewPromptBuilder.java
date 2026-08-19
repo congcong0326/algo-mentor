@@ -51,6 +51,8 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
     StringBuilder output = new StringBuilder();
     output.append("只输出 operations。证据不足时返回空数组。不得创建 declared claim 或 "
             + "LEARNING_INTERACTION_AND_INDEPENDENCE claim。\n")
+        .append("题目引用规范：claimText 中提及题目时必须使用 problemTitle，不得输出 problemSlug；"
+            + "problemSlug 仅用于机器定位和工具参数。\n")
         .append("general claim 必须有跨题或纵向 Review 证据；SINGLE_REVIEW 只允许 TAG_MASTERY。"
             + "同题修正应优先体现成长，不得把已解决问题写成稳定弱点。"
             + "同题多版不等于跨题复现；一个题目的多版不能增加 tag breadth。"
@@ -65,6 +67,7 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
     output.append("\n当前横向窗口的最新正式 Review：\n");
     for (LearnerMemoryCodeReviewFact fact : input.windowFacts()) {
       output.append("\nreviewId=").append(fact.reviewId())
+          .append(" problemTitle=").append(fact.problemTitle())
           .append(" problemSlug=").append(fact.problemSlug())
           .append(" version=").append(fact.versionNo())
           .append(" score=").append(fact.totalScore())
@@ -122,7 +125,8 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
         .append(" omitted=").append(snapshot.problemTrajectories().size() - trajectories.size())
         .append(" (omitted trajectories remain included in coverage, overall, and tag facts):\n");
     for (ProblemReviewTrajectory trajectory : trajectories) {
-      output.append("problemSlug=").append(trajectory.problemSlug())
+      output.append("problemTitle=").append(trajectory.problemTitle())
+          .append(" problemSlug=").append(trajectory.problemSlug())
           .append(" tags=").append(trajectory.tagIds())
           .append(" attempts=").append(trajectory.attemptCount())
           .append(" passed=").append(trajectory.passedAttemptCount())
@@ -220,8 +224,10 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
         .append("若快照 historyDepth=EARLY_SAMPLE，claimText 禁止使用长期、一贯、持续、通常、稳定、快速识别等强措辞；"
             + "请改用“当前已覆盖题目”或“本窗口”。\n")
         .append("本次修复可用的有界 Review 事实：\n");
+    Map<String, String> problemTitles = problemTitles(input.reviewFactSnapshot());
     for (CodeReviewVerification review : repairEvidenceReviews(input)) {
       output.append("reviewId=").append(review.reviewId())
+          .append(" problemTitle=").append(problemTitles.getOrDefault(review.problemSlug(), review.problemSlug()))
           .append(" problemSlug=").append(review.problemSlug())
           .append(" version=").append(review.versionNo())
           .append(" tags=").append(review.affectedTagIds())
@@ -242,6 +248,13 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
     return input.evidenceReviews().stream()
         .filter(review -> visibleReviewIds.contains(review.reviewId()))
         .toList();
+  }
+
+  private Map<String, String> problemTitles(LearnerReviewFactSnapshot snapshot) {
+    Map<String, String> titles = new LinkedHashMap<>();
+    snapshot.problemTrajectories().forEach(trajectory ->
+        titles.putIfAbsent(trajectory.problemSlug(), trajectory.problemTitle()));
+    return titles;
   }
 
   private String scope(org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope value) {

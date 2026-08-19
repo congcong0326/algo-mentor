@@ -3,6 +3,7 @@ package org.congcong.algomentor.mentor.application.profile.document;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -92,6 +93,37 @@ class LearnerProfileDocumentProjectorTest {
     assertThat(document.updatedAt()).isNull();
   }
 
+  @Test
+  void replacesCitedProblemSlugsWithLocalizedProblemTitles() {
+    LearnerProfileProjectionSnapshot.Claim growth = claim(
+        31L,
+        LearnerMemoryClaimContract.Dimension.REVIEW_AND_GROWTH_PERFORMANCE,
+        "本窗口中，用户在 merge-sorted-array、remove-element 和 remove-duplicates-from-sorted-array 中完成后续修正并通过。",
+        "2026-07-20T12:00:00Z");
+    LearnerProfileDocument document = projector.project(new LearnerProfileProjectionSnapshot(
+        List.of(growth),
+        Map.of(31L, List.of(
+            reviewEvidence(1L, "merge-sorted-array", "合并两个有序数组"),
+            reviewEvidence(2L, "remove-element", "移除元素"),
+            reviewEvidence(3L, "remove-duplicates-from-sorted-array", "删除有序数组中的重复项")))), "zh-CN");
+
+    String text = document.blocks().get(1).spans().get(0).text();
+    assertThat(text).contains("合并两个有序数组、移除元素 和 删除有序数组中的重复项")
+        .doesNotContain("merge-sorted-array", "remove-element", "remove-duplicates-from-sorted-array");
+  }
+
+  private LearnerProfileDocument.EvidenceItem reviewEvidence(long reviewId, String slug, String title) {
+    return new LearnerProfileDocument.EvidenceItem(
+        LearnerProfileDocument.EvidenceType.CODE_REVIEW,
+        reviewId,
+        Instant.parse("2026-07-20T12:00:00Z").plusSeconds(reviewId),
+        LearnerMemoryEvidenceContract.ReviewRole.RESOLVED,
+        null,
+        new LearnerProfileDocument.CodeReviewSource(
+            reviewId, 1L, 1L, 0, slug, title, 1, BigDecimal.TEN, true),
+        null);
+  }
+
   private LearnerProfileProjectionSnapshot.Claim claim(
       long id,
       LearnerMemoryClaimContract.Dimension dimension,
@@ -102,7 +134,12 @@ class LearnerProfileDocumentProjectorTest {
         id,
         UUID.nameUUIDFromBytes(("claim-" + id).getBytes()),
         42L,
-        new LearnerMemoryClaimScope(LearnerMemoryClaimContract.Kind.DECLARED_FACT, dimension, null),
+        new LearnerMemoryClaimScope(
+            dimension == LearnerMemoryClaimContract.Dimension.REVIEW_AND_GROWTH_PERFORMANCE
+                ? LearnerMemoryClaimContract.Kind.GENERAL_OBSERVATION
+                : LearnerMemoryClaimContract.Kind.DECLARED_FACT,
+            dimension,
+            null),
         1,
         LearnerMemoryClaimContract.RevisionStatus.ACTIVE,
         text,

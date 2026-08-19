@@ -25,6 +25,7 @@ class LearnerMemoryDocumentEndToEndIT extends PostgresIntegrationTestSupport {
     long userId = insertUser();
     long otherUserId = insertUser();
     insertProblem("two-sum", 1, List.of(), List.of(), List.of());
+    execute("UPDATE problem SET title_en = ?, title_zh = ? WHERE slug = ?", "Two Sum", "两数之和", "two-sum");
     long runId = insertUpdateRun(userId, "DECLARED_FACT");
     long otherRunId = insertUpdateRun(otherUserId, "DECLARED_FACT");
     long messageId = insertUserMessage(userId);
@@ -60,21 +61,33 @@ class LearnerMemoryDocumentEndToEndIT extends PostgresIntegrationTestSupport {
     assertThat(observationCitation.previewEvidence()).extracting(LearnerProfileDocument.EvidenceItem::type)
         .containsExactly(LearnerProfileDocument.EvidenceType.CODE_REVIEW);
     assertThat(observationCitation.previewEvidence().get(0).codeReview().problemSlug()).isEqualTo("two-sum");
+    assertThat(observationCitation.previewEvidence().get(0).codeReview().problemTitle()).isEqualTo("两数之和");
     assertThat(observationCitation.previewEvidence().get(0).codeReview()).hasNoNullFieldsOrProperties();
     assertThat(observationCitation.previewEvidence().get(0).codeReview().getClass().getRecordComponents())
         .extracting(component -> component.getName())
         .doesNotContain("rawCode", "normalizedCode", "reviewMarkdown");
 
     LearnerProfileDocument.EvidencePage page = service.getEvidence(
-        userId, declaredCitation.statementRef(), null, 20);
+        userId, declaredCitation.statementRef(), null, 20, "zh-CN");
     assertThat(page.items()).extracting(LearnerProfileDocument.EvidenceItem::type)
         .containsExactly(LearnerProfileDocument.EvidenceType.USER_MESSAGE);
     assertThat(page.items().get(0).userMessage().excerpt()).isEqualTo("我希望在三个月内完成后端面试准备。");
-    assertThatThrownBy(() -> service.getEvidence(otherUserId, declaredCitation.statementRef(), null, 20))
+    LearnerProfileDocument.EvidencePage reviewPage = service.getEvidence(
+        userId, observationCitation.statementRef(), null, 20, "zh-CN");
+    assertThat(reviewPage.items().get(0).codeReview().problemTitle()).isEqualTo("两数之和");
+
+    LearnerProfileDocument englishDocument = service.getDocument(userId, "en-US");
+    assertThat(englishDocument.citationMap().get(2).previewEvidence().get(0).codeReview().problemTitle())
+        .isEqualTo("Two Sum");
+    LearnerProfileDocument.EvidencePage englishReviewPage = service.getEvidence(
+        userId, englishDocument.citationMap().get(2).statementRef(), null, 20, "en-US");
+    assertThat(englishReviewPage.items().get(0).codeReview().problemTitle()).isEqualTo("Two Sum");
+
+    assertThatThrownBy(() -> service.getEvidence(otherUserId, declaredCitation.statementRef(), null, 20, "zh-CN"))
         .isInstanceOf(LearnerProfileDocumentService.LearnerProfileStatementNotFoundException.class);
 
     execute("UPDATE learner_memory_claim_revision SET status = 'RETIRED' WHERE id = ?", declaredRevisionId);
-    assertThatThrownBy(() -> service.getEvidence(userId, declaredCitation.statementRef(), null, 20))
+    assertThatThrownBy(() -> service.getEvidence(userId, declaredCitation.statementRef(), null, 20, "zh-CN"))
         .isInstanceOf(LearnerProfileDocumentService.LearnerProfileStatementNotFoundException.class);
   }
 

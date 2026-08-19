@@ -56,7 +56,7 @@ public class MyBatisLearnerMemoryCodeReviewFactRepository implements LearnerMemo
 
   private LearnerMemoryCodeReviewFact fact(LearnerMemoryCodeReviewFactRow row) {
     return new LearnerMemoryCodeReviewFact(
-        row.reviewId(), row.problemSlug(), row.versionNo(), row.totalScore(), row.correctnessScore(),
+        row.reviewId(), row.problemSlug(), row.problemTitle(), row.versionNo(), row.totalScore(), row.correctnessScore(),
         row.complexityScore(), row.edgeCaseScore(), row.codeQualityScore(), row.problemFitScore(), row.passed(),
         read(row.deductionReasonsJson()), read(row.improvementSuggestionsJson()),
         readTagIds(row.affectedTagIdsJson()), row.createdAt());

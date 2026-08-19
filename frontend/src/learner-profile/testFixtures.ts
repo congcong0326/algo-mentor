@@ -27,6 +27,7 @@ export function codeReviewEvidence(sourceId = 12): LearnerProfileEvidenceItem {
       planId: 31,
       phaseIndex: 2,
       problemSlug: 'two-sum',
+      problemTitle: '两数之和',
       versionNo: 3,
       totalScore: 8.5,
       passed: true,

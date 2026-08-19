@@ -33,7 +33,8 @@ public interface LearnerMemoryMapper {
   List<LearnerProfileDocumentEvidenceRow> findDocumentEvidenceByRevisionIds(
       @Param("userId") long userId,
       @Param("revisionIds") List<Long> revisionIds,
-      @Param("claimRevisionId") Long claimRevisionId);
+      @Param("claimRevisionId") Long claimRevisionId,
+      @Param("locale") String locale);
 
   List<LearnerProfileDocumentEvidenceRow> findActiveDocumentEvidencePage(
       @Param("userId") long userId,
@@ -42,7 +43,8 @@ public interface LearnerMemoryMapper {
       @Param("cursorOccurredAt") Instant cursorOccurredAt,
       @Param("cursorSourceType") String cursorSourceType,
       @Param("cursorSourceId") Long cursorSourceId,
-      @Param("limit") int limit);
+      @Param("limit") int limit,
+      @Param("locale") String locale);
 
   List<LearnerMemoryClaimRevisionRow> findActiveByScopes(
       @Param("userId") long userId,

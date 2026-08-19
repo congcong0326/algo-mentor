@@ -29,7 +29,7 @@
       <arg column="claim_revision_id" javaType="_long"/><arg column="source_type" javaType="string"/><arg column="source_id" javaType="_long"/>
       <arg column="occurred_at" javaType="java.time.Instant"/><arg column="review_role" javaType="string"/><arg column="message_role" javaType="string"/>
       <arg column="review_session_id" javaType="java.lang.Long"/><arg column="plan_id" javaType="java.lang.Long"/><arg column="phase_index" javaType="java.lang.Integer"/>
-      <arg column="problem_slug" javaType="string"/><arg column="version_no" javaType="java.lang.Integer"/><arg column="total_score" javaType="java.math.BigDecimal"/>
+      <arg column="problem_slug" javaType="string"/><arg column="problem_title" javaType="string"/><arg column="version_no" javaType="java.lang.Integer"/><arg column="total_score" javaType="java.math.BigDecimal"/>
       <arg column="passed" javaType="java.lang.Boolean"/><arg column="message_excerpt" javaType="string"/>
     </constructor>
   </resultMap>
@@ -86,6 +86,11 @@
            review.plan_id,
            review.phase_index,
            review.problem_slug,
+           COALESCE(
+             CASE WHEN #{locale} = 'en-US' THEN NULLIF(problem.title_en, '') ELSE NULLIF(problem.title_zh, '') END,
+             CASE WHEN #{locale} = 'en-US' THEN NULLIF(problem.title_zh, '') ELSE NULLIF(problem.title_en, '') END,
+             review.problem_slug
+           ) AS problem_title,
            review.version_no,
            review.total_score,
            review.passed,
@@ -93,6 +98,7 @@
     FROM learner_memory_claim_review_evidence review_evidence
     JOIN learner_memory_claim_revision claim ON claim.id = review_evidence.claim_revision_id
     JOIN practice_code_review review ON review.id = review_evidence.review_id AND review.user_id = claim.user_id
+    LEFT JOIN problem ON problem.slug = review.problem_slug
     WHERE claim.user_id = #{userId} AND claim.status = 'ACTIVE'
     <if test="revisionIds != null">AND claim.id IN
       <foreach collection="revisionIds" item="revisionId" open="(" separator="," close=")">#{revisionId}</foreach>
@@ -109,6 +115,7 @@
            NULL::BIGINT AS plan_id,
            NULL::INTEGER AS phase_index,
            NULL::VARCHAR AS problem_slug,
+           NULL::VARCHAR AS problem_title,
            NULL::INTEGER AS version_no,
            NULL::NUMERIC AS total_score,
            NULL::BOOLEAN AS passed,

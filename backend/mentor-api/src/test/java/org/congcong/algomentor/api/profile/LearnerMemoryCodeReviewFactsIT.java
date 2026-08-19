@@ -73,6 +73,20 @@ class LearnerMemoryCodeReviewFactsIT extends PostgresIntegrationTestSupport {
         .containsExactly(versionTwo);
   }
 
+  @Test
+  void resolvesTheChineseProblemTitleForTheProfileUpdatePrompt() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    long tagId = insertCatalog("array", "Array", "数组", true);
+    insertProblem("two-sum", 1, List.of(), List.of(), List.of());
+    execute("UPDATE problem SET title_en = ?, title_zh = ? WHERE slug = ?", "Two Sum", "两数之和", "two-sum");
+    long reviewId = insertReview(userId, "two-sum", 1, Instant.parse("2026-01-01T00:00:00Z"), tagId);
+
+    assertThat(repository().findByReviewIds(userId, List.of(reviewId)))
+        .extracting(LearnerMemoryCodeReviewFact::problemTitle)
+        .containsExactly("两数之和");
+  }
+
   private LearnerMemoryCodeReviewFactRepository repository() throws Exception {
     return new MyBatisLearnerMemoryCodeReviewFactRepository(
         sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),

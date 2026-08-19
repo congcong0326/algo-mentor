@@ -46,8 +46,10 @@ public class LearnerProfileController {
   public ApiResponse<LearnerProfileDocument.EvidencePage> evidence(
       @PathVariable String statementRef,
       @RequestParam(name = ApiContractConstants.LEARNER_PROFILE_EVIDENCE_CURSOR_PARAM, required = false) String cursor,
-      @RequestParam(name = ApiContractConstants.LEARNER_PROFILE_EVIDENCE_LIMIT_PARAM, defaultValue = "20") int limit) {
-    return ApiResponse.success(profileService.getEvidence(requireCurrentUserId(), statementRef, cursor, limit));
+      @RequestParam(name = ApiContractConstants.LEARNER_PROFILE_EVIDENCE_LIMIT_PARAM, defaultValue = "20") int limit,
+      Locale locale) {
+    return ApiResponse.success(profileService.getEvidence(
+        requireCurrentUserId(), statementRef, cursor, limit, localeValue(locale)));
   }
 
   private long requireCurrentUserId() {

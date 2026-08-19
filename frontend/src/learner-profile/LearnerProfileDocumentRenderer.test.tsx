@@ -49,7 +49,7 @@ describe('LearnerProfileDocumentRenderer', () => {
     fireEvent.focus(trigger);
 
     expect(screen.getByRole('tooltip')).toHaveTextContent('用户消息依据 1 条，正式代码复盘依据 1 条');
-    expect(screen.getByRole('tooltip')).toHaveTextContent('two-sum');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('两数之和');
     expect(trigger).toHaveAttribute('aria-describedby');
   });
 
