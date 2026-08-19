@@ -1,0 +1,107 @@
+groups:
+  - name: algo-mentor-preprod
+    rules:
+      - alert: AlgoMentorPreprodApiDown
+        expr: up{job="java",environment="preprod",service="algo-mentor-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Algo Mentor preprod API is down
+          description: Prometheus cannot scrape the preprod Actuator endpoint.
+
+      - alert: AlgoMentorPreprodHighHttp5xxRate
+        expr: |
+          (
+            sum(rate(http_server_requests_seconds_count{job="java",environment="preprod",service="algo-mentor-api",status=~"5.."}[5m]))
+            /
+            clamp_min(sum(rate(http_server_requests_seconds_count{job="java",environment="preprod",service="algo-mentor-api"}[5m])), 0.001)
+          ) > 0.05
+          and
+          sum(increase(http_server_requests_seconds_count{job="java",environment="preprod",service="algo-mentor-api"}[5m])) > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod HTTP 5xx rate is high
+          description: HTTP 5xx rate exceeded 5% with more than 20 requests in 5 minutes.
+
+      - alert: AlgoMentorPreprodHighHttpP95
+        expr: histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job="java",environment="preprod",service="algo-mentor-api"}[5m]))) > 2
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod HTTP P95 latency is high
+          description: Aggregated HTTP P95 latency exceeded 2 seconds for 10 minutes.
+
+      - alert: AlgoMentorPreprodSseFailures
+        expr: |
+          sum(increase(algo_mentor_sse_connections_failed_total{job="java",environment="preprod",service="algo-mentor-api"}[10m]))
+          + sum(increase(algo_mentor_sse_connections_timeout_total{job="java",environment="preprod",service="algo-mentor-api"}[10m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod SSE failures are elevated
+          description: SSE failures or timeouts exceeded 5 in 10 minutes.
+
+      - alert: AlgoMentorPreprodAgentExecutorSaturated
+        expr: algo_mentor_agent_executor_queue_size{job="java",environment="preprod",service="algo-mentor-api"} > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod Agent executor queue is growing
+          description: Agent executor queue size remained above 10 for 5 minutes.
+
+      - alert: AlgoMentorPreprodProviderFailures
+        expr: |
+          (
+            sum(rate(ai_provider_calls_total{job="java",environment="preprod",service="algo-mentor-api",status="failure"}[10m]))
+            /
+            clamp_min(sum(rate(ai_provider_calls_total{job="java",environment="preprod",service="algo-mentor-api"}[10m])), 0.001)
+          ) > 0.10
+          and sum(increase(ai_provider_calls_total{job="java",environment="preprod",service="algo-mentor-api"}[10m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod AI provider failure rate is high
+          description: AI provider failure rate exceeded 10% with more than 5 calls in 10 minutes.
+
+      - alert: AlgoMentorPreprodDatabasePoolPressure
+        expr: hikaricp_connections_pending{job="java",environment="preprod",service="algo-mentor-api"} > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod database pool has pending waiters
+          description: Hikari reported pending connection waiters for 5 minutes.
+
+      - alert: AlgoMentorPreprodCacheCoherenceStale
+        expr: algo_mentor_cache_coherence_last_success_age_seconds{job="java",environment="preprod",service="algo-mentor-api"} > 60
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod cache coherence is stale
+          description: Cache coherence has not reported a successful poll for more than 60 seconds.
+
+      - alert: AlgoMentorPreprodLearnerQueueStale
+        expr: learner_profile_queue_oldest_pending_age{job="java",environment="preprod",service="algo-mentor-api"} > 300
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod learner queue is stale
+          description: The oldest learner-memory message has been pending for more than 5 minutes.
+
+      - alert: AlgoMentorPreprodRealtimeRedisFailures
+        expr: sum(increase(algo_mentor_practice_realtime_redis_operations_total{job="java",environment="preprod",service="algo-mentor-api",outcome!="success"}[10m])) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod realtime Redis operations failed
+          description: Practice realtime Redis reported a non-success operation in the last 10 minutes.

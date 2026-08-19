@@ -66,6 +66,9 @@ import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration(
     after = {CacheAutoConfiguration.class, IdentityAutoConfiguration.class},
+    afterName = {
+        "org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration"
+    },
     before = GenericPolicyAutoConfiguration.class)
 @EnableConfigurationProperties({AiGovernanceProperties.class, AiRuntimeCacheProperties.class})
 public class AiGovernanceAutoConfiguration {

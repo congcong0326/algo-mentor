@@ -1,0 +1,229 @@
+{
+  "uid": "algo-mentor-preprod",
+  "title": "Algo Mentor - Preprod",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "30s",
+  "tags": ["algo-mentor", "preprod"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "应用状态",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [{"expr": "up{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "refId": "A"}]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "进程运行时长",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [{"expr": "time() - process_start_time_seconds{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "refId": "A"}]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "HTTP 请求速率",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(http_server_requests_seconds_count{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "全部", "refId": "A"},
+        {"expr": "sum(rate(http_server_requests_seconds_count{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\",status=~\"5..\"}[5m]))", "legendFormat": "5xx", "refId": "B"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "HTTP 5xx 比率",
+      "gridPos": {"x": 0, "y": 6, "w": 8, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [{"expr": "100 * sum(rate(http_server_requests_seconds_count{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\",status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])), 0.001)", "legendFormat": "5xx %", "refId": "A"}]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "HTTP P95 延迟",
+      "gridPos": {"x": 8, "y": 6, "w": 16, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])))", "legendFormat": "P95", "refId": "A"}]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "JVM 与进程资源",
+      "gridPos": {"x": 0, "y": 12, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(jvm_memory_used_bytes{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}) by (area)", "legendFormat": "JVM {{area}}", "refId": "A"},
+        {"expr": "process_resident_memory_bytes{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "RSS", "refId": "B"},
+        {"expr": "process_cpu_usage{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "进程 CPU", "refId": "C"}
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "线程、GC 与数据库连接池",
+      "gridPos": {"x": 12, "y": 12, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "jvm_threads_live_threads{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "JVM 线程", "refId": "A"},
+        {"expr": "hikaricp_connections_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "DB active", "refId": "B"},
+        {"expr": "hikaricp_connections_pending{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "DB pending", "refId": "C"},
+        {"expr": "rate(hikaricp_connections_timeout_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])", "legendFormat": "DB timeout", "refId": "D"}
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Agent executor 饱和度",
+      "gridPos": {"x": 0, "y": 19, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "algo_mentor_agent_executor_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "active", "refId": "A"},
+        {"expr": "algo_mentor_agent_executor_queue_size{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "queue", "refId": "B"},
+        {"expr": "rate(algo_mentor_agent_executor_rejected_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])", "legendFormat": "rejected/s", "refId": "C"},
+        {"expr": "sum by (group) (algo_mentor_agent_executor_group_available{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"})", "legendFormat": "available {{group}}", "refId": "D"}
+      ]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Agent runs 与工具执行",
+      "gridPos": {"x": 12, "y": 19, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(increase(algo_mentor_agent_runs_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (source, status)", "legendFormat": "run {{source}}/{{status}}", "refId": "A"},
+        {"expr": "sum(increase(algo_mentor_agent_tool_executions_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "tool {{status}}", "refId": "B"},
+        {"expr": "sum(increase(agent_tool_permission_hook_decisions_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (behavior)", "legendFormat": "permission {{behavior}}", "refId": "C"}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "SSE 连接",
+      "gridPos": {"x": 0, "y": 26, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "algo_mentor_sse_connections_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "active {{stream_type}}", "refId": "A"},
+        {"expr": "sum(increase(algo_mentor_sse_connections_opened_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (stream_type)", "legendFormat": "opened {{stream_type}}", "refId": "B"},
+        {"expr": "sum(increase(algo_mentor_sse_connections_failed_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (stream_type, failure_type)", "legendFormat": "failed {{stream_type}}/{{failure_type}}", "refId": "C"},
+        {"expr": "sum(increase(algo_mentor_sse_connections_timeout_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (stream_type)", "legendFormat": "timeout {{stream_type}}", "refId": "D"}
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "AI provider 与模型路由",
+      "gridPos": {"x": 12, "y": 26, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(ai_provider_calls_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (provider_type, status)", "legendFormat": "provider {{provider_type}}/{{status}}", "refId": "A"},
+        {"expr": "sum(ai_provider_calls_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}) by (provider_type)", "legendFormat": "active {{provider_type}}", "refId": "B"},
+        {"expr": "sum(rate(ai_model_route_resolutions_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (scenario, result)", "legendFormat": "route {{scenario}}/{{result}}", "refId": "C"}
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "AI run、Token 与错误",
+      "gridPos": {"x": 0, "y": 33, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(ai_run_requests_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (purpose, status)", "legendFormat": "run {{purpose}}/{{status}}", "refId": "A"},
+        {"expr": "sum(rate(ai_run_errors_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (purpose, error_code)", "legendFormat": "error {{purpose}}/{{error_code}}", "refId": "B"},
+        {"expr": "sum(rate(ai_run_tokens_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (type)", "legendFormat": "tokens {{type}}", "refId": "C"},
+        {"expr": "ai_run_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "active", "refId": "D"}
+      ]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Cache 命中与 Redis 失败",
+      "gridPos": {"x": 12, "y": 33, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "100 * sum(rate(algo_mentor_cache_requests_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\",result=\"hit\"}[5m])) by (cache) / clamp_min(sum(rate(algo_mentor_cache_requests_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (cache), 0.001)", "legendFormat": "hit {{cache}}", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_cache_redis_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (cache, operation, reason)", "legendFormat": "redis failure {{cache}}/{{operation}}", "refId": "B"},
+        {"expr": "histogram_quantile(0.95, sum by (le, cache) (rate(algo_mentor_cache_load_duration_seconds_bucket{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])))", "legendFormat": "load P95 {{cache}}", "refId": "C"}
+      ]
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Cache 一致性",
+      "gridPos": {"x": 0, "y": 40, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "algo_mentor_cache_coherence_last_success_age_seconds{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "last success age", "refId": "A"},
+        {"expr": "algo_mentor_cache_coherence_poll_lag_seconds{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "poll lag", "refId": "B"},
+        {"expr": "sum(rate(algo_mentor_cache_coherence_gap_recoveries_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "gap recoveries/s", "refId": "C"}
+      ]
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "Learner Memory 队列",
+      "gridPos": {"x": 12, "y": 40, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "learner_profile_queue_pending{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "pending {{topic}}", "refId": "A"},
+        {"expr": "learner_profile_queue_oldest_pending_age{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "oldest age {{topic}}", "refId": "B"},
+        {"expr": "sum(rate(learner_profile_queue_worker_failure_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (topic)", "legendFormat": "worker failure {{topic}}", "refId": "C"},
+        {"expr": "learner_profile_queue_worker_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "worker active {{topic}}", "refId": "D"}
+      ]
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "Practice Realtime Redis Stream",
+      "gridPos": {"x": 0, "y": 46, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_practice_realtime_redis_operations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (operation, outcome)", "legendFormat": "{{operation}}/{{outcome}}", "refId": "A"},
+        {"expr": "histogram_quantile(0.95, sum by (le, operation) (rate(algo_mentor_practice_realtime_redis_operation_duration_seconds_bucket{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])))", "legendFormat": "P95 {{operation}}", "refId": "B"},
+        {"expr": "sum(rate(algo_mentor_practice_realtime_public_event_appends_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (event_name, outcome)", "legendFormat": "event {{event_name}}/{{outcome}}", "refId": "C"}
+      ]
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "Learner Memory 处理结果",
+      "gridPos": {"x": 12, "y": 46, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(learner_memory_update_run_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (trigger, status)", "legendFormat": "update {{trigger}}/{{status}}", "refId": "A"},
+        {"expr": "sum(rate(learner_memory_profile_projection_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "projection {{status}}", "refId": "B"},
+        {"expr": "sum(rate(learner_memory_invalid_output_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (reason)", "legendFormat": "invalid {{reason}}", "refId": "C"},
+        {"expr": "sum(rate(learner_memory_tool_call_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (purpose, status)", "legendFormat": "tool {{purpose}}/{{status}}", "refId": "D"}
+      ]
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "学习计划与 Practice 业务结果",
+      "gridPos": {"x": 0, "y": 52, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_learning_plan_draft_generations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "draft {{status}}", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_learning_plan_ai_revision_access_checks_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (action, outcome)", "legendFormat": "revision {{action}}/{{outcome}}", "refId": "B"},
+        {"expr": "sum(rate(practice_completion_gate_evaluations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (reason)", "legendFormat": "gate {{reason}}", "refId": "C"},
+        {"expr": "sum(rate(practice_code_review_results_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "review {{status}}", "refId": "D"}
+      ]
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "认证与反馈异常",
+      "gridPos": {"x": 12, "y": 52, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_auth_session_policy_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (operation)", "legendFormat": "session policy {{operation}}", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_auth_session_revocation_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "session revoke failure", "refId": "B"},
+        {"expr": "sum(rate(feedback_thread_status_changed_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "feedback {{status}}", "refId": "C"}
+      ]
+    }
+  ]
+}

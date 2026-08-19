@@ -40,10 +40,10 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-PREPROD_HOST ?= leetmentor-dev
+PREPROD_HOST ?= leetmentor-root
 PREPROD_CONTAINER_NAME ?= algo-mentor
 PREPROD_BASE_REF ?=
-PREPROD_BOOTSTRAP_BASE_REF ?= ab91550
+PREPROD_BOOTSTRAP_BASE_REF ?=
 
 .PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev deploy-preprod-fast deploy-preprod-fast-preflight test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
 

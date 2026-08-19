@@ -2,11 +2,11 @@
 
 ## 目标与边界
 
-`make deploy-preprod-fast` 用于将**已提交且不包含 Flyway 迁移**的应用版本发布到 `leetmentor-dev` 预发布环境。它适用于前端界面修改和不改变数据库 schema 或数据的后端代码修改。
+`make deploy-preprod-fast` 用于将**已提交且不包含 Flyway 迁移**的应用版本发布到 `leetmentor-root` 预发布环境。预发布部署、预检、健康检查和容器操作统一通过该 SSH 别名执行；`leetmentor-dev` 普通账号不作为发布入口。它适用于前端界面修改和不改变数据库 schema 或数据的后端代码修改。
 
-该命令不发布到生产环境，也不会修改 PostgreSQL、Redis、目标机运行时配置、密钥或网络设施。发现任一 Flyway 迁移文件有变化时会拒绝执行；这类版本必须走数据库感知的完整发布流程。
+该命令不发布到生产环境，也不会修改 PostgreSQL、Redis、目标机运行时配置、密钥或网络设施。快速发布本身不执行数据库迁移；发现任一 Flyway 迁移文件有新增、删除或修改时会拒绝执行，这类版本必须走数据库感知的完整发布流程。
 
-应用容器在 `preprod` profile 下启动时仍会运行 Flyway 校验。快速发布只是确认本次版本没有新的迁移需要执行，并不关闭 schema 校验。
+应用容器在 `preprod` profile 下启动时仍会运行 Flyway 校验。快速发布只是确认本次版本没有新的迁移需要执行，并不关闭对既有 Flyway 迁移的 schema 校验。
 
 ## 配置分层
 
@@ -43,7 +43,7 @@ PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED=true
 
 ## 使用方式
 
-先执行只读预检。它会检查后端、前端、预发布 Dockerfile 与环境变量契约的发布状态、Flyway 迁移、关联测试、本地打包、SSH 访问和目标机的运行时变量契约，但绝不上传制品、构建远端镜像或替换容器。预检允许当前 Makefile、发布脚本和说明文档未提交，便于先验证发布工具本身：
+先执行只读预检。默认目标是 `leetmentor-root`；预检会检查后端、前端、预发布 Dockerfile 与环境变量契约的发布状态、Flyway 迁移、关联测试、本地打包、SSH 访问和目标机的运行时变量契约，但绝不上传制品、构建远端镜像或替换容器。预检允许当前 Makefile、发布脚本和说明文档未提交，便于先验证发布工具本身：
 
 ```bash
 make deploy-preprod-fast-preflight
@@ -55,12 +55,12 @@ make deploy-preprod-fast-preflight
 make deploy-preprod-fast
 ```
 
-当前旧容器没有提交标签，Makefile 已记录其已验证的首次比较基线 `ab91550`。首次成功后，新容器会带有提交标签，后续脚本自动从运行中容器读取基线，不再使用该值。只有部署到非标准目标或需要纠正历史状态时，才传入 `PREPROD_BASE_REF=<已部署提交>`。
+脚本优先使用显式 `PREPROD_BASE_REF`，否则读取运行中 `algo-mentor` 容器的 `org.congcong.algomentor.commit` 标签；没有标签时，首次部署必须显式设置 `PREPROD_BASE_REF=<已部署提交>` 或 `PREPROD_BOOTSTRAP_BASE_REF=<首次比较基线>`。两者都未设置会直接失败，绝不会静默回退到过期提交。默认 `PREPROD_BOOTSTRAP_BASE_REF` 为空。
 
-可通过 `PREPROD_HOST` 和 `PREPROD_CONTAINER_NAME` 覆盖默认目标，但只能用于具有相同目录、受保护环境文件与 Docker 运行约定的预发布主机。
+可通过 `PREPROD_HOST` 和 `PREPROD_CONTAINER_NAME` 覆盖默认目标，但只能用于具有相同目录、受保护环境文件与 Docker 运行约定的预发布主机；标准预发布入口仍固定为 `leetmentor-root`，不要使用 `leetmentor-dev` 普通账号发布。
 
 ## 发布行为与回滚
 
-命令要求应用发布输入（后端、前端、构建文件、预发布 Dockerfile 和发布脚本）没有未提交变更，且发布 ref 已提交；无关的本地文档或运维记录不阻塞发布。根据变更范围运行前端或后端测试，再构建包含前端静态文件的应用 JAR。制品带 SHA-256 上传到目标机的独立 release 目录，目标机构建新的运行镜像。
+命令要求应用发布输入（后端、前端、构建文件、预发布 Dockerfile 和发布脚本）没有未提交变更，且发布 ref 已提交；无关的本地文档或运维记录不阻塞发布。根据变更范围运行相关前端或后端测试，再打包包含前端静态文件的应用 JAR，并在远端构建新的运行镜像；快速发布仍会测试、打包和构建远端镜像，不是增量编译。
 
-旧容器被停止并按带 release ID 的名称保留。新容器通过 readiness 健康检查后才视为成功；若启动、运行或健康检查在 60 秒内失败，脚本会移除新容器并恢复旧容器。快速发布不含数据库迁移，故容器级回滚不需要回退 schema。
+旧容器被停止并按带 release ID 的名称保留。新容器通过 readiness 健康检查后才视为成功；若启动、运行或健康检查在 60 秒内失败，脚本会移除新容器并恢复旧容器。快速发布不执行数据库迁移，故容器级回滚不需要回退 schema，但应用启动仍会校验既有 Flyway 迁移。

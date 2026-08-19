@@ -5,7 +5,7 @@ set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly REPOSITORY_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-readonly PREPROD_HOST="${PREPROD_HOST:-leetmentor-dev}"
+readonly PREPROD_HOST="${PREPROD_HOST:-leetmentor-root}"
 readonly PREPROD_CONTAINER_NAME="${PREPROD_CONTAINER_NAME:-algo-mentor}"
 readonly PREPROD_BOOTSTRAP_BASE_REF="${PREPROD_BOOTSTRAP_BASE_REF:-}"
 readonly PREPROD_RUNTIME_DIR="${PREPROD_RUNTIME_DIR:-/etc/algo-mentor}"
@@ -99,7 +99,7 @@ resolve_base_ref() {
   fi
 
   [[ -n "${PREPROD_BOOTSTRAP_BASE_REF}" ]] || {
-    fail "the running container has no release label or bootstrap base ref."
+    fail "the running container has no commit label; set PREPROD_BASE_REF or PREPROD_BOOTSTRAP_BASE_REF. Refusing to fall back to a legacy commit."
   }
   printf '%s\n' "${PREPROD_BOOTSTRAP_BASE_REF}"
 }
@@ -137,11 +137,12 @@ validate_no_migrations() {
   local migration_files
   migration_files="$(git -C "${REPOSITORY_ROOT}" diff --name-only "${base_ref}" "${release_ref}" -- \
     ':(glob)backend/**/src/main/resources/db/migration/**')"
-  [[ -z "${migration_files}" ]] || {
+  if [[ -n "${migration_files}" ]]; then
     echo "The following Flyway migration files changed:" >&2
     printf '%s\n' "${migration_files}" >&2
     fail "use the full database-aware deployment process for schema or data migrations."
-  }
+  fi
+  echo "No Flyway migration files changed between ${base_ref} and ${release_ref}; continuing fast deployment."
 }
 
 run_relevant_tests() {

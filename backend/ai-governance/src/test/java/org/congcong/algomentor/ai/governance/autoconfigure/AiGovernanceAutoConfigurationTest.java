@@ -71,6 +71,8 @@ class AiGovernanceAutoConfigurationTest {
           assertThat(context).hasSingleBean(AiRunGovernanceService.class);
           assertThat(context).hasSingleBean(AiRunGovernanceObserver.class);
           assertThat(context).hasSingleBean(AiRunMetricsObserver.class);
+          assertThat(context.getBean(MeterRegistry.class).find("ai.run.active").gauge())
+              .isNotNull();
         });
   }
 

@@ -11,6 +11,7 @@
 - `scripts/deploy-preprod-fast.sh`：预发布无迁移快速发布脚本；构建并校验应用制品、检查目标机运行时变量、替换容器并在健康检查失败时回滚。
 - `deploy/docker/preprod-runtime-env.required`：预发布受保护环境文件的必需变量键名契约，不包含任何真实配置值或密钥。
 - `docs/preprod-fast-deployment.md`：预发布快速发布的配置分层、变量登记规则、使用方式和回滚边界。
+- `docs/preprod-observability-runbook.md`：预发布外置 Prometheus/Grafana 的抓取目标、标签契约、dashboard provisioning、新增指标接入、验证与回滚手册。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
 - `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，固定移除 common pool、Agent 工作线程同步投递 SSE 和无队列执行池；执行组舱壁另见执行组设计。
 - `docs/agent-execution-group-bulkhead-design.md`：Agent 执行组舱壁隔离研发设计，定义 Definition 代码声明执行组、`27/2/1` 严格容量、按组信号量、容量总和推导物理线程池上限、CHILD 内联继承和组级指标。
