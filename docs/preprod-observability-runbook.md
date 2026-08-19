@@ -242,3 +242,4 @@ ssh prometheus-root 'cd /root/docker-nas/prometheus && docker exec prometheus pr
 - 新增 `preprod-alert-rules.yml`，覆盖 API、HTTP、SSE、Agent、AI provider、连接池、缓存一致性、Learner Memory 和 realtime Redis。
 - `AiRunMetricsObserver` 的 `ai.run.active` 在应用启动阶段可能早于 Prometheus MeterRegistry 初始化，导致 `ai_run_active` 未注册；`AiGovernanceAutoConfiguration` 已声明在 Prometheus metrics 自动配置之后运行，并增加回归测试。
 - 发布后必须验证 `ai_run_active{job="java",environment="preprod",service="algo-mentor-api"}` 存在；没有运行中的 AI 请求时值为 `0` 仍属于正常结果。
+- 2026-08-19 11:20 UTC 已将 dashboard 和告警规则同步到观测主机；Prometheus readiness 正常、target `up=1`、告警组 10 条规则 health 为 `ok`，Grafana API 返回 `Algo Mentor - Preprod`。
