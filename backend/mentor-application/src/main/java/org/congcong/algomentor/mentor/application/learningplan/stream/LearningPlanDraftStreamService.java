@@ -20,6 +20,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
@@ -28,6 +29,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanClarificationMessages;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanSafeFailureReasonResolver;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
@@ -162,7 +164,7 @@ public class LearningPlanDraftStreamService {
       LearningPlanDraft draft = createInitialDraft(userId, brief).withState(
           LearningPlanDraftStatus.COLLECTING,
           missingFields,
-          clarificationFor(missingFields.get(0)),
+          LearningPlanClarificationMessages.forField(missingFields.get(0), LearningPlanContentLocale.ZH_CN),
           null,
           clock.instant());
       LearningPlanDraft saved = draftRepository.save(draft);
@@ -230,16 +232,6 @@ public class LearningPlanDraftStreamService {
         24,
         Duration.ofMillis(500),
         true);
-  }
-
-  private String clarificationFor(String field) {
-    return switch (field) {
-      case "intent" -> "你想创建哪类学习计划？例如面试冲刺、专题突破或长期学习。";
-      case "objective" -> "请补充这份计划的具体目标，例如准备 Java 后端算法面试。";
-      case "targetProblemCount" -> "请选择计划题目规模：5、10、15、20、25 或 30 题。";
-      case "level" -> "你当前算法水平更接近入门、中级还是高级？";
-      default -> "请补充一个最关键的信息，方便继续生成计划。";
-    };
   }
 
   private int requestSize(LearningPlanBrief brief) {

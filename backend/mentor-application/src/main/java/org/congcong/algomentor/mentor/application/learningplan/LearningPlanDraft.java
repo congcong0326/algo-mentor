@@ -16,7 +16,14 @@ public record LearningPlanDraft(
     Long confirmedPlanId,
     Instant expiresAt,
     Instant createdAt,
-    Instant updatedAt
+    Instant updatedAt,
+    String generationRequestKey,
+    String generationRequestFingerprint,
+    String generationRunId,
+    String generationErrorCode,
+    String generationErrorMessage,
+    Instant generationStartedAt,
+    Instant generationCompletedAt
 ) {
 
   public LearningPlanDraft(
@@ -25,7 +32,17 @@ public record LearningPlanDraft(
       LearningPlanDraftPlan draftPlan, Long confirmedPlanId, Instant expiresAt,
       Instant createdAt, Instant updatedAt) {
     this(id, userId, LearningPlanDraftSource.AI_PERSONALIZED, status, brief, messages,
-        missingFields, assistantMessage, draftPlan, confirmedPlanId, expiresAt, createdAt, updatedAt);
+        missingFields, assistantMessage, draftPlan, confirmedPlanId, expiresAt, createdAt, updatedAt,
+        null, null, null, null, null, null, null);
+  }
+
+  public LearningPlanDraft(
+      Long id, long userId, LearningPlanDraftSource source, LearningPlanDraftStatus status,
+      LearningPlanBrief brief, List<String> messages, List<String> missingFields,
+      String assistantMessage, LearningPlanDraftPlan draftPlan, Long confirmedPlanId,
+      Instant expiresAt, Instant createdAt, Instant updatedAt) {
+    this(id, userId, source, status, brief, messages, missingFields, assistantMessage, draftPlan,
+        confirmedPlanId, expiresAt, createdAt, updatedAt, null, null, null, null, null, null, null);
   }
 
   public LearningPlanDraft {
@@ -47,7 +64,14 @@ public record LearningPlanDraft(
         confirmedPlanId,
         expiresAt,
         createdAt,
-        updatedAt);
+        updatedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationErrorCode,
+        generationErrorMessage,
+        generationStartedAt,
+        generationCompletedAt);
   }
 
   public LearningPlanDraft withState(
@@ -69,7 +93,14 @@ public record LearningPlanDraft(
         confirmedPlanId,
         expiresAt,
         createdAt,
-        updatedAt);
+        updatedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationErrorCode,
+        generationErrorMessage,
+        generationStartedAt,
+        generationCompletedAt);
   }
 
   LearningPlanDraft withBriefAndMessages(LearningPlanBrief nextBrief, List<String> nextMessages, Instant updatedAt) {
@@ -86,7 +117,14 @@ public record LearningPlanDraft(
         confirmedPlanId,
         expiresAt,
         createdAt,
-        updatedAt);
+        updatedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationErrorCode,
+        generationErrorMessage,
+        generationStartedAt,
+        generationCompletedAt);
   }
 
   public LearningPlanDraft withGeneratedRevision(
@@ -108,7 +146,14 @@ public record LearningPlanDraft(
         confirmedPlanId,
         expiresAt,
         createdAt,
-        updatedAt);
+        updatedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationErrorCode,
+        generationErrorMessage,
+        generationStartedAt,
+        generationCompletedAt);
   }
 
   LearningPlanDraft withConfirmedPlanId(long planId, Instant updatedAt) {
@@ -125,6 +170,114 @@ public record LearningPlanDraft(
         planId,
         expiresAt,
         createdAt,
-        updatedAt);
+        updatedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationErrorCode,
+        generationErrorMessage,
+        generationStartedAt,
+        generationCompletedAt);
+  }
+
+  public LearningPlanDraft withGenerationStarted(
+      String requestKey,
+      String requestFingerprint,
+      String runId,
+      Instant startedAt
+  ) {
+    return new LearningPlanDraft(
+        id,
+        userId,
+        source,
+        LearningPlanDraftStatus.GENERATING,
+        brief,
+        messages,
+        List.of(),
+        "正在生成学习计划草案。",
+        null,
+        confirmedPlanId,
+        expiresAt,
+        createdAt,
+        startedAt,
+        requestKey,
+        requestFingerprint,
+        runId,
+        null,
+        null,
+        startedAt,
+        null);
+  }
+
+  public LearningPlanDraft withGenerationRequest(String requestKey, String requestFingerprint) {
+    return new LearningPlanDraft(
+        id,
+        userId,
+        source,
+        status,
+        brief,
+        messages,
+        missingFields,
+        assistantMessage,
+        draftPlan,
+        confirmedPlanId,
+        expiresAt,
+        createdAt,
+        updatedAt,
+        requestKey,
+        requestFingerprint,
+        null,
+        null,
+        null,
+        null,
+        null);
+  }
+
+  public LearningPlanDraft withGenerationSucceeded(LearningPlanDraftPlan plan, Instant completedAt) {
+    return new LearningPlanDraft(
+        id,
+        userId,
+        source,
+        LearningPlanDraftStatus.GENERATED,
+        brief,
+        messages,
+        List.of(),
+        "已生成学习计划草案。",
+        plan,
+        confirmedPlanId,
+        expiresAt,
+        createdAt,
+        completedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        null,
+        null,
+        generationStartedAt,
+        completedAt);
+  }
+
+  public LearningPlanDraft withGenerationFailed(String code, String message, Instant completedAt) {
+    return new LearningPlanDraft(
+        id,
+        userId,
+        source,
+        LearningPlanDraftStatus.GENERATION_FAILED,
+        brief,
+        messages,
+        List.of(),
+        message,
+        null,
+        confirmedPlanId,
+        expiresAt,
+        createdAt,
+        completedAt,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        code,
+        message,
+        generationStartedAt,
+        completedAt);
   }
 }

@@ -64,6 +64,7 @@ import type {
   LearningPlanCreateDraftRequest,
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
+  LearningPlanDraftGenerationStartResponse,
   LearningPlanAiRevisionCapabilities,
   LearningPlanExtensionApplyResponse,
   LearningPlanListQuery,
@@ -1992,6 +1993,72 @@ export async function streamLearningPlanDraft(
 
   options.onOpen?.();
   await readEventStream(response.body, options.onEvent);
+}
+
+export interface StartLearningPlanDraftGenerationOptions {
+  idempotencyKey: string;
+  signal?: AbortSignal;
+}
+
+export async function startLearningPlanDraftGeneration(
+  request: LearningPlanCreateDraftRequest,
+  options: StartLearningPlanDraftGenerationOptions,
+): Promise<LearningPlanDraftGenerationStartResponse> {
+  const response = await apiFetch('/api/learning-plans/drafts/generations', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': options.idempotencyKey,
+    },
+    body: JSON.stringify(request),
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft generation start failed');
+  }
+  return requireApiData(
+    await response.json() as ApiResponse<LearningPlanDraftGenerationStartResponse>,
+    'Learning plan draft generation start failed',
+  );
+}
+
+export async function getLearningPlanDraft(
+  draftId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanDraftResponse>> {
+  const response = await apiFetch(`/api/learning-plans/drafts/${draftId}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft query failed');
+  }
+  return response.json();
+}
+
+export interface ReadLearningPlanDraftGenerationEventsOptions {
+  after?: string;
+  signal?: AbortSignal;
+  onEvent: (event: SseStreamEvent) => void;
+}
+
+export async function readLearningPlanDraftGenerationEvents(
+  eventsUrl: string,
+  options: ReadLearningPlanDraftGenerationEventsOptions,
+): Promise<void> {
+  const after = options.after ? `?after=${encodeURIComponent(options.after)}` : '';
+  const response = await apiFetch(`${eventsUrl}${after}`, {
+    headers: { Accept: 'text/event-stream, application/json' },
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft generation event subscription failed');
+  }
+  if (!response.body) {
+    throw new Error('Learning plan draft generation event response does not include a readable body');
+  }
+  await readEventStream(response.body, options.onEvent, true);
 }
 
 export async function streamLearningPlanDraftRevision(

@@ -10,6 +10,19 @@ public record LearningPlanDraftResponse(
     LearningPlanDraftStatus status,
     String assistantMessage,
     List<String> missingFields,
-    LearningPlanDraftPlanResponse draftPlan
+    LearningPlanDraftPlanResponse draftPlan,
+    String generationErrorCode,
+    String generationErrorMessage
 ) {
+
+  public LearningPlanDraftResponse(
+      long draftId,
+      LearningPlanDraftSource source,
+      LearningPlanDraftStatus status,
+      String assistantMessage,
+      List<String> missingFields,
+      LearningPlanDraftPlanResponse draftPlan
+  ) {
+    this(draftId, source, status, assistantMessage, missingFields, draftPlan, null, null);
+  }
 }

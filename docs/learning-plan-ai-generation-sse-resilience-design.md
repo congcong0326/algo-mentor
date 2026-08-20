@@ -1,21 +1,21 @@
-# 学习计划 AI 生成结果恢复、启动观察分离与显式取消研发设计
+# 学习计划 AI 生成 Redis Stream 回放、启动观察分离与显式取消研发设计
 
 ## 1. 文档信息
 
-- 设计日期：2026-08-04
-- 拆分日期：2026-08-05
-- 状态：设计完成，待实施
-- 首期适用范围：学习计划 AI 草案首次生成
+- 原始设计日期：2026-08-04
+- Redis Stream 方案更新：2026-08-20
+- 状态：设计更新完成，第一阶段待实施
+- 当前实施范围：学习计划 AI 草案首次生成；草案 AI 修订列为第二阶段
 - 关联接口：`/api/learning-plans/drafts/*`
 - 关联线程模型：`docs/agent-thread-model-refactoring-design.md`
 - 关联 SSE 基础设施设计：`docs/sse-managed-connection-heartbeat-design.md`
 - 当前部署边界：单实例 `mentor-api`
 
-本设计只包含三个连续任务：
+本设计的 Redis Stream 改造按以下顺序推进：
 
-1. 补齐稳定领域 ID、幂等启动、状态查询和断线结果恢复。
-2. 将 AI 任务启动与 SSE 观察拆分为两个独立请求。
-3. 增加基于领域 ID 的显式取消，并正确处理取消与完成竞争。
+1. 第一阶段：首次 AI 草案创建改为启动、Redis Stream 回放、数据库查询三段式链路。
+2. 第二阶段：草案 AI 修订以 revisionId 复用同一链路。
+3. 后续阶段：增加基于领域 ID 的显式取消，并正确处理取消与完成竞争。
 
 `ManagedSseConnection`、连接写锁、连接注册表和 heartbeat 调度器已经拆分到独立设计，不是本设计的发布前置条件。
 
@@ -68,7 +68,7 @@ TCP 断开可能来自移动网络切换、代理超时、浏览器暂时失联�
 
 ### 3.3 草案生成状态不完整
 
-当前 `LearningPlanDraftStatus` 没有 `GENERATING` 和生成取消状态。有效请求在 Agent 准入成功后创建的初始草案暂时使用 `COLLECTING`，无法准确表达“输入完整，正在生成”。
+当前 `LearningPlanDraftStatus` 已有 `GENERATION_FAILED`，但没有 `GENERATING` 和生成取消状态。有效请求在 Agent 准入成功后创建的初始草案暂时使用 `COLLECTING`，无法准确表达“输入完整，正在生成”。
 
 ### 3.4 取消链路没有成为正式契约
 
@@ -95,12 +95,12 @@ TCP 断开可能来自移动网络切换、代理超时、浏览器暂时失联�
 
 1. 本设计不建设通用 AI 任务中心，不引入公共 `operationId`。
 2. 本设计不建设持久化 Workflow、DAG、任务队列或跨节点调度器。
-3. 本设计不保存和回放全部 SSE 历史事件。
+3. 本设计不保存原始 Agent 事件、完整草案或完整错误信息到 Redis；仅保存版本化、低敏、白名单的短期回放事件。
 4. 本设计不实现 `ManagedSseConnection`、heartbeat、连接写锁或通用连接注册表。
 5. 本设计不改变 Practice Chat、通用 Agent 会话等其他 SSE 场景的取消语义。
 6. 本设计不解决应用进程重启后继续执行尚未完成的 Agent 任务；重启恢复只负责识别并收敛遗留状态。
 7. 本设计不支持多实例之间共享 Agent cancellation handle 或实时 SSE 事件。
-8. 草案修订、正式计划扩展和扩展修订暂不在本次实施范围；后续复用本设计验证完成的领域 ID、查询、观察和取消模式。
+8. 第一阶段不迁移草案修订、正式计划扩展和扩展修订；草案修订在第二阶段以 revisionId 复用本设计验证完成的查询与 Redis Stream 观察模式，正式计划扩展继续后置。
 
 ## 6. 核心设计决策
 
@@ -128,7 +128,13 @@ AI 生成的最终结构化结果必须先提交数据库，再尝试发送 SSE 
 
 SSE 发送失败不能回滚已经提交的业务结果，也不能把成功生成重新标记为失败。
 
-### 6.3 SSE 是可选观察通道
+### 6.3 Redis Stream 是可选、可回放的观察通道
+
+2026-08-20 更新：业务 Agent Subscriber 依次将公开事件写入每个 draft 独立的 Redis Stream；SSE GET 接口只负责按 after 游标执行回放。Redis Stream 是短期、尽力而为的实时日志，不是任务队列、业务事实来源或跨节点协调机制。
+
+公开事件只包含白名单工作状态和终态资源引用。完成事件只携带 draftId；失败事件只携带 draftId 和稳定错误码。完整草案、原始模型输出、工具原始结果、完整用户输入、metadata、路由与准入信息均不得写入 Redis 或 SSE。前端收到终态后必须通过普通 JSON 接口获取权威草案或受控错误。
+
+Redis 写入、过期设置或读取失败只记录低敏日志和指标，绝不能取消 Agent、改变草案业务终态或阻塞后续 Agent 事件。浏览器可用 SSE id 记录最后成功处理的 Redis entry，并在断线后按 after 游标补发。
 
 SSE 只发送工作状态、Tool 开始和结束、完成、失败或取消通知。SSE 终态只携带 `draftId` 和必要的低敏状态，前端收到终态后通过普通 JSON 接口获取权威草案。
 
@@ -161,6 +167,8 @@ Flow.Subscription.cancel()
 取消成功后不得再提交 `GENERATED`、调用下一轮 LLM 或启动新的 Tool。已经执行的 Tool 外部副作用不由取消自动回滚。
 
 ### 6.6 兼容改造先于最终接口切换
+
+2026-08-20 更新：旧的 POST /drafts/stream 只作为短期兼容入口保留，不能承载新功能。第一阶段以前端和后端同次切换为目标，直接落地“启动 -> Redis Stream 观察 -> 数据库查询”；旧接口在切换后标记为待删除。
 
 第一阶段先在现有 `/drafts/stream` 上补 `draftId`、幂等键和查询恢复，避免一次性同时改动数据库、后端执行模型和前端交互协议。恢复闭环稳定后，再切换为“启动 -> 观察 -> 查询”。
 
@@ -320,6 +328,10 @@ GET /api/learning-plans/drafts/{draftId}
 生成完成后返回完整 `draftPlan`。失败或取消时返回受控错误对象，不返回原始 provider 错误和用户隐私内容。查询必须按当前受信用户过滤，禁止只按 `draftId` 查询。
 
 ### 8.5 观察 AI 草案生成
+
+2026-08-20 更新：接口改为 GET /api/learning-plans/drafts/{draftId}/events?after={cursor}。after 缺失时等同 0-0；服务端以 XREAD 先回放已有 entry，再以有界 XREAD BLOCK 等待新 entry。每个 Redis entry ID 原样写入 SSE id，客户端只能在成功处理该事件后推进本地 cursor。
+
+本节中“注册当前观察者”的旧表述不再适用。业务执行层不持有浏览器连接；若 Redis Stream 不可用、保留期已过或 SSE 正常关闭前未取得终态，前端必须读取草案查询接口。若数据库仍为 GENERATING，则使用最近 cursor 重新订阅，或在 Redis 持续不可用时有限退避轮询。
 
 ```http
 GET /api/learning-plans/drafts/{draftId}/events
@@ -484,6 +496,8 @@ TERMINATED
 
 ### 9.5 业务观察者边界
 
+2026-08-20 更新：本节改为 Redis Stream 读取模型。业务执行层不感知浏览器或 SseEmitter，只通过 run 级唯一事件出口追加公开进度或终态事件。SSE Controller 在鉴权后按 after 回放，读到终态或数据库已终态时关闭连接；连接读写失败只结束当前观察，绝不取消业务订阅。
+
 业务执行层只感知“是否存在可接收事件的观察者”，不直接依赖 heartbeat 或连接写锁。观察适配器至少支持：
 
 - 按 `draftId` 注册和移除观察者。
@@ -518,6 +532,8 @@ TERMINATED
 如果连接在客户端取得 `draftId` 前中断，使用原 `Idempotency-Key` 重试兼容接口。后端必须返回同一草案，不能再次调用模型。
 
 ### 10.3 最终正常路径
+
+2026-08-20 更新：事件订阅必须显式带 after=0-0，短暂断线使用最后成功处理的 cursor 重连。只有 Redis 持续不可用或 Stream 已过期时才进入数据库退避轮询。
 
 ```text
 生成 Idempotency-Key
@@ -613,6 +629,8 @@ Agent run、治理租约和 provider stream 可以在响应返回后短暂继续
 
 ### 11.3 SSE 注册与业务完成竞争
 
+2026-08-20 更新：SSE 请求不再注册内存观察者，而是以 after 游标回放 Redis Stream。每次 XREAD BLOCK 超时后读取一次数据库状态；数据库已终态但 Redis 中缺少终态 entry 时，服务端发送仅含 draftId 的合成终态并关闭，前端仍必须回读数据库。
+
 观察连接注册与业务完成可能并发：
 
 1. 注册前读取一次数据库状态。
@@ -659,7 +677,25 @@ SSE 断开不能直接记录 `learning_plan_generation_failed`。只有草案记
 
 ## 13. 实施阶段
 
-### 阶段一：结果恢复兼容闭环
+以下阶段划分替代本节此前的兼容接口优先顺序。
+
+### 当前阶段一：首次草案 Redis Stream 解耦
+
+1. 为首次 AI 草案补齐 GENERATING、生成元数据、幂等键和按用户查询。
+2. 新增启动、草案查询与带 after 游标的事件读取接口。
+3. 将 Agent 业务 Subscriber 从 SseEmitter Subscriber 分离，改为独立持久化草案并写入 Redis Stream。
+4. 为首次草案新增低敏事件投影、Redis key/envelope/cursor、TTL、独立配置和指标。
+5. 前端切换到“启动 -> 游标订阅 -> 数据库查询”，终态 SSE 不再传输结构化草案。
+
+### 后续阶段二：草案 AI 修订 Redis Stream 解耦
+
+1. 草案修订启动返回既有持久化 revisionId，而不是 SSE 正文。
+2. 新增 revision 状态读取与 revisionId 级 Redis Stream 事件接口。
+3. 修订完成事件只携带 draftId 和 revisionId；前端重新读取 draftId 获取已提交草案。
+4. 为重复提交补齐幂等键、请求指纹和 revision 终态竞争测试。
+5. 不在本阶段迁移正式计划扩展提案。
+
+### 原阶段一：结果恢复兼容闭环（已废止）
 
 1. 增加 `GENERATING`、`GENERATION_FAILED`、`GENERATION_CANCELLED` 状态和生成元数据字段。
 2. 增加 `GET /drafts/{draftId}`。
@@ -669,7 +705,7 @@ SSE 断开不能直接记录 `learning_plan_generation_failed`。只有草案记
 6. 最终事件暂时保留完整草案，兼容旧前端。
 7. 前端增加业务终态校验；EOF 或异常时按 `draftId` 查询。
 
-### 阶段二：拆分启动与观察
+### 原阶段二：拆分启动与观察（已废止）
 
 1. 新增 `POST /drafts/generations`。
 2. 新增 `GET /drafts/{draftId}/events`。
@@ -678,7 +714,7 @@ SSE 断开不能直接记录 `learning_plan_generation_failed`。只有草案记
 5. 前端切换到“启动 -> 观察 -> 查询”的状态机。
 6. 标记 `/drafts/stream` 为待删除兼容接口。
 
-### 阶段三：显式取消
+### 后续阶段：显式取消
 
 1. 增加带 `STARTING/RUNNING/CANCEL_REQUESTED/TERMINATED` 槽位的 `draftId -> cancellation handle` 业务任务控制注册表。
 2. 新增 `POST /drafts/{draftId}/generation/cancel`。
@@ -767,9 +803,11 @@ cancellation handle 只存在当前实例内存中。当前单实例部署可接
 
 只有 SSE 异常和页面恢复进入轮询，正常路径收到终态后只查询一次。通过 2 秒到 5 秒退避、页面不可见降频和终态停止控制压力。
 
-### 15.5 观察事件不回放
+### 15.5 Redis Stream 回放与保留
 
-重新连接后不回放已经发送的 `work_*` 事件。工作进度属于辅助信息，业务正确性由草案当前状态和最终查询保证。
+每个 draft 的公开事件写入独立 Redis Stream。浏览器使用 after cursor 获取严格之后的事件，刷新后可从 0-0 回放尚在 TTL 内的同次生成。回放只改善实时进度体验，业务正确性仍由草案当前状态和最终查询保证。
+
+Redis 过期、重启、写失败、读取失败和 cursor 无法继续回放都统一视为实时日志不可用；前端回读数据库，不新增 Redis 级业务错误或补偿队列。
 
 ### 15.6 协作式取消不能强制终止任意 Tool
 

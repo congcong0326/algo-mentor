@@ -24,6 +24,13 @@
       <arg column="expires_at" javaType="java.time.Instant"/>
       <arg column="created_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
+      <arg column="generation_request_key" javaType="string"/>
+      <arg column="generation_request_fingerprint" javaType="string"/>
+      <arg column="generation_run_id" javaType="string"/>
+      <arg column="generation_error_code" javaType="string"/>
+      <arg column="generation_error_message" javaType="string"/>
+      <arg column="generation_started_at" javaType="java.time.Instant"/>
+      <arg column="generation_completed_at" javaType="java.time.Instant"/>
     </constructor>
   </resultMap>
 
@@ -168,7 +175,14 @@
       confirmed_plan_id,
       expires_at,
       created_at,
-      updated_at
+      updated_at,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_error_code,
+      generation_error_message,
+      generation_started_at,
+      generation_completed_at
     )
     VALUES (
       #{userId},
@@ -188,7 +202,14 @@
       #{confirmedPlanId},
       #{expiresAt},
       #{createdAt},
-      #{updatedAt}
+      #{updatedAt},
+      #{generationRequestKey},
+      #{generationRequestFingerprint},
+      #{generationRunId},
+      #{generationErrorCode},
+      #{generationErrorMessage},
+      #{generationStartedAt},
+      #{generationCompletedAt}
     )
     RETURNING id
   </select>
@@ -239,7 +260,14 @@
             #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}),
         confirmed_plan_id = #{confirmedPlanId},
         expires_at = #{expiresAt},
-        updated_at = #{updatedAt}
+        updated_at = #{updatedAt},
+        generation_request_key = #{generationRequestKey},
+        generation_request_fingerprint = #{generationRequestFingerprint},
+        generation_run_id = #{generationRunId},
+        generation_error_code = #{generationErrorCode},
+        generation_error_message = #{generationErrorMessage},
+        generation_started_at = #{generationStartedAt},
+        generation_completed_at = #{generationCompletedAt}
     WHERE id = #{id}
       AND user_id = #{userId}
   </update>
@@ -258,10 +286,93 @@
       confirmed_plan_id,
       expires_at,
       created_at,
-      updated_at
+      updated_at,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_error_code,
+      generation_error_message,
+      generation_started_at,
+      generation_completed_at
     FROM learning_plan_draft
     WHERE id = #{id}
       AND user_id = #{userId}
+  </select>
+
+  <select id="findDraftByGenerationRequestKey" resultMap="LearningPlanDraftRowMap">
+    SELECT
+      id,
+      user_id,
+      draft_source,
+      status,
+      command_json,
+      messages_json,
+      missing_fields_json,
+      assistant_message,
+      draft_plan_json,
+      confirmed_plan_id,
+      expires_at,
+      created_at,
+      updated_at,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_error_code,
+      generation_error_message,
+      generation_started_at,
+      generation_completed_at
+    FROM learning_plan_draft
+    WHERE user_id = #{userId}
+      AND generation_request_key = #{requestKey}
+  </select>
+
+  <select id="lockGenerationRequest" resultType="int">
+    SELECT 1
+    FROM (SELECT pg_advisory_xact_lock(hashtextextended(#{requestKey}, #{userId})) AS lock_acquired) AS locked
+  </select>
+
+  <update id="completeGeneratingDraft">
+    UPDATE learning_plan_draft
+    SET status = #{status},
+        assistant_message = #{assistantMessage},
+        draft_plan_json = #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        origin_brief_json = COALESCE(origin_brief_json, #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}),
+        origin_plan_json = COALESCE(origin_plan_json, #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}),
+        generation_error_code = NULL,
+        generation_error_message = NULL,
+        generation_completed_at = #{generationCompletedAt},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+      AND status = 'GENERATING'
+  </update>
+
+  <update id="failGeneratingDraft">
+    UPDATE learning_plan_draft
+    SET status = #{status},
+        assistant_message = #{assistantMessage},
+        draft_plan_json = NULL,
+        generation_error_code = #{generationErrorCode},
+        generation_error_message = #{generationErrorMessage},
+        generation_completed_at = #{generationCompletedAt},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+      AND status = 'GENERATING'
+  </update>
+
+  <select id="failInterruptedGeneratingDrafts" resultType="java.lang.Long" affectData="true">
+    UPDATE learning_plan_draft
+    SET status = 'GENERATION_FAILED',
+        assistant_message = #{errorMessage},
+        draft_plan_json = NULL,
+        generation_error_code = #{errorCode},
+        generation_error_message = #{errorMessage},
+        generation_completed_at = #{completedAt},
+        updated_at = #{completedAt}
+    WHERE status = 'GENERATING'
+      AND generation_started_at &lt;= #{startedBefore}
+    RETURNING id
   </select>
 
   <select id="findDraftOriginForUser" resultMap="LearningPlanDraftOriginRowMap">
@@ -289,7 +400,14 @@
       confirmed_plan_id,
       expires_at,
       created_at,
-      updated_at
+      updated_at,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_error_code,
+      generation_error_message,
+      generation_started_at,
+      generation_completed_at
     FROM learning_plan_draft
     WHERE id = #{id}
       AND user_id = #{userId}

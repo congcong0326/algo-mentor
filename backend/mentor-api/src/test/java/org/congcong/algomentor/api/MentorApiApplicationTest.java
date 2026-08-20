@@ -54,7 +54,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
     "algo-mentor.practice.code-review.enabled=true",
     "algo-mentor.learner-memory.declared-update.enabled=true",
     "algo-mentor.learner-memory.code-review-consumer.enabled=true",
-    "algo-mentor.learner-memory.recall.practice-chat.enabled=true"
+    "algo-mentor.learner-memory.recall.practice-chat.enabled=true",
+    MentorConfigurationKeys.LEARNING_PLAN_GENERATION_RECOVERY_ENABLED + "=false"
 })
 class MentorApiApplicationTest {
 

@@ -1,11 +1,13 @@
 import { ArrowLeft, LayoutTemplate, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   createLearningPlanDraftFromTemplate,
   confirmLearningPlanDraft,
+  getLearningPlanDraft,
+  readLearningPlanDraftGenerationEvents,
   requireApiData,
   sendLearningPlanDraftMessage,
-  streamLearningPlanDraft,
+  startLearningPlanDraftGeneration,
   streamLearningPlanDraftRevision,
 } from '../services/api';
 import type {
@@ -13,6 +15,9 @@ import type {
   LearningPlanConfirmResponse,
   LearningPlanCreateDraftRequest,
   LearningPlanDraftErrorEvent,
+  LearningPlanDraftGenerationEventData,
+  LearningPlanDraftGenerationResponse,
+  LearningPlanDraftGenerationStartResponse,
   LearningPlanDraftRevisionReadyEvent,
   LearningPlanDraftResponse,
   LearningPlanTemplateDraftRequest,
@@ -31,9 +36,42 @@ import LearningPlanTemplateCreatePanel from './LearningPlanTemplateCreatePanel';
 type LearningPlanCreateState = 'editing' | 'generating' | 'collecting' | 'previewing' | 'confirming';
 type LearningPlanCreateMode = 'ai' | 'template';
 
+const pendingGenerationStorageKey = 'learning-plan.pending-generation';
+const initialGenerationAfter = '0-0';
+const generationEventNames = new Set(['work_start', 'work_progress', 'work_tool_start', 'work_tool_end', 'draft_completed', 'draft_failed']);
+
+interface PendingGeneration {
+  draftId: number;
+  idempotencyKey: string;
+  lastEventId: string;
+}
+
 interface AiOperationError {
   message: string;
   reason?: string;
+}
+
+function isGenerationSubscription(
+  response: LearningPlanDraftGenerationStartResponse,
+): response is LearningPlanDraftGenerationResponse {
+  return response.status === 'GENERATING' && 'eventsUrl' in response;
+}
+
+function isContinuousCursor(value: unknown): value is string {
+  return typeof value === 'string' && /^(?:0|[1-9][0-9]*)-0$/.test(value);
+}
+
+function hasCursorGap(previous: string, next: string): boolean {
+  return Number(next.slice(0, -2)) > Number(previous.slice(0, -2)) + 1;
+}
+
+function generationEventsUrl(draftId: number): string {
+  return `/api/learning-plans/drafts/${draftId}/events`;
+}
+
+function newIdempotencyKey(): string {
+  return globalThis.crypto?.randomUUID?.()
+    ?? `learning-plan-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 interface LearningPlanCreatePageProps {
@@ -52,6 +90,11 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   const [error, setError] = useState('');
   const [capacityUnavailable, setCapacityUnavailable] = useState(false);
   const [operationError, setOperationError] = useState<AiOperationError>();
+  const observerAbortRef = useRef<AbortController | undefined>(undefined);
+  const observerRetryRef = useRef<number | undefined>(undefined);
+  const observerVersionRef = useRef(0);
+  const lastEventIdRef = useRef(initialGenerationAfter);
+  const activeIdempotencyKeyRef = useRef<string | undefined>(undefined);
 
   function showCapacityUnavailable() {
     setError('');
@@ -71,16 +114,171 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     });
   }
 
+  function clearObserver() {
+    observerVersionRef.current += 1;
+    observerAbortRef.current?.abort();
+    observerAbortRef.current = undefined;
+    if (observerRetryRef.current !== undefined) {
+      window.clearTimeout(observerRetryRef.current);
+      observerRetryRef.current = undefined;
+    }
+  }
+
+  function pendingGeneration(): PendingGeneration | undefined {
+    try {
+      const raw = window.sessionStorage.getItem(pendingGenerationStorageKey);
+      if (!raw) {
+        return undefined;
+      }
+      const value = JSON.parse(raw) as Partial<PendingGeneration>;
+      if (typeof value.draftId !== 'number' || value.draftId < 1
+          || typeof value.idempotencyKey !== 'string' || !value.idempotencyKey
+          || !isContinuousCursor(value.lastEventId)) {
+        window.sessionStorage.removeItem(pendingGenerationStorageKey);
+        return undefined;
+      }
+      return value as PendingGeneration;
+    } catch {
+      return undefined;
+    }
+  }
+
+  function savePendingGeneration(draftId: number, idempotencyKey: string, lastEventId: string) {
+    window.sessionStorage.setItem(pendingGenerationStorageKey, JSON.stringify({ draftId, idempotencyKey, lastEventId }));
+  }
+
+  function clearPendingGeneration() {
+    activeIdempotencyKeyRef.current = undefined;
+    window.sessionStorage.removeItem(pendingGenerationStorageKey);
+  }
+
+  function updateCursor(draftId: number, idempotencyKey: string, nextCursor: string) {
+    lastEventIdRef.current = nextCursor;
+    savePendingGeneration(draftId, idempotencyKey, nextCursor);
+  }
+
+  function completeFromDraft(nextDraft: LearningPlanDraftResponse) {
+    clearObserver();
+    clearPendingGeneration();
+    setWorkEvent(undefined);
+    if (nextDraft.status === 'GENERATED') {
+      setDraft(nextDraft);
+      setFlowState('previewing');
+      return;
+    }
+    if (nextDraft.status === 'COLLECTING') {
+      setDraft(nextDraft);
+      setFlowState('collecting');
+      return;
+    }
+    setDraft(undefined);
+    setFlowState('editing');
+    showAiOperationError({
+      code: nextDraft.generationErrorCode,
+      message: nextDraft.generationErrorMessage ?? nextDraft.assistantMessage,
+    }, resources.learningPlans.generateFailed);
+  }
+
+  async function recoverGeneration(draftId: number, eventsUrl: string, observerVersion: number) {
+    try {
+      const nextDraft = requireApiData(
+        await getLearningPlanDraft(draftId),
+        resources.learningPlans.generateFailed,
+      );
+      if (observerVersion !== observerVersionRef.current) {
+        return;
+      }
+      if (nextDraft.status !== 'GENERATING') {
+        completeFromDraft(nextDraft);
+        return;
+      }
+    } catch {
+      if (observerVersion !== observerVersionRef.current) {
+        return;
+      }
+    }
+    if (observerVersion !== observerVersionRef.current) {
+      return;
+    }
+    observerRetryRef.current = window.setTimeout(() => {
+      observeGeneration(draftId, eventsUrl, lastEventIdRef.current);
+    }, 1000);
+  }
+
+  function observeGeneration(draftId: number, eventsUrl: string, after: string) {
+    clearObserver();
+    const observerVersion = ++observerVersionRef.current;
+    const controller = new AbortController();
+    observerAbortRef.current = controller;
+    let recoveryRequested = false;
+    void readLearningPlanDraftGenerationEvents(eventsUrl, {
+      after,
+      signal: controller.signal,
+      onEvent: (event) => {
+        if (observerVersion !== observerVersionRef.current) {
+          return;
+        }
+        const pending = pendingGeneration();
+        const data = event.data as Partial<LearningPlanDraftGenerationEventData>;
+        if (!pending || pending.draftId !== draftId || !generationEventNames.has(event.eventName)
+            || !event.id || !isContinuousCursor(event.id) || data.draftId !== draftId
+            || hasCursorGap(lastEventIdRef.current, event.id)) {
+          recoveryRequested = true;
+          controller.abort();
+          void recoverGeneration(draftId, eventsUrl, observerVersion);
+          return;
+        }
+        updateCursor(draftId, pending.idempotencyKey, event.id);
+        if (event.eventName.startsWith('work_')) {
+          setWorkEvent(data);
+          return;
+        }
+        recoveryRequested = true;
+        void recoverGeneration(draftId, eventsUrl, observerVersion);
+      },
+    }).then(
+      () => {
+        if (!recoveryRequested) {
+          void recoverGeneration(draftId, eventsUrl, observerVersion);
+        }
+      },
+      () => {
+        if (!recoveryRequested) {
+          void recoverGeneration(draftId, eventsUrl, observerVersion);
+        }
+      },
+    );
+  }
+
+  useEffect(() => {
+    const pending = pendingGeneration();
+    if (pending) {
+      lastEventIdRef.current = pending.lastEventId;
+      activeIdempotencyKeyRef.current = pending.idempotencyKey;
+      setFlowState('generating');
+      setWorkEvent({ message: resources.learningPlans.generateStart });
+      observeGeneration(pending.draftId, generationEventsUrl(pending.draftId), pending.lastEventId);
+    }
+    return clearObserver;
+  }, []);
+
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
     setFlowState('generating');
     setError('');
     setOperationError(undefined);
     setDraft(undefined);
     setWorkEvent({ message: resources.learningPlans.generateStart });
+    const idempotencyKey = activeIdempotencyKeyRef.current ?? newIdempotencyKey();
+    activeIdempotencyKeyRef.current = idempotencyKey;
     try {
-      await streamLearningPlanDraft(request, {
-        onEvent: handleDraftStreamEvent,
-      });
+      const result = await startLearningPlanDraftGeneration(request, { idempotencyKey });
+      if (isGenerationSubscription(result)) {
+        lastEventIdRef.current = result.initialAfter;
+        savePendingGeneration(result.draftId, idempotencyKey, result.initialAfter);
+        observeGeneration(result.draftId, result.eventsUrl, result.initialAfter);
+        return;
+      }
+      completeFromDraft(result);
     } catch (nextError) {
       showAiOperationError(nextError, resources.learningPlans.generateFailed);
       setFlowState('editing');

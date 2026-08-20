@@ -91,6 +91,54 @@ public class MyBatisLearningPlanRepository
   }
 
   @Override
+  public Optional<LearningPlanDraft> findDraftByGenerationRequestKey(long userId, String requestKey) {
+    return Optional.ofNullable(mapper.findDraftByGenerationRequestKey(userId, requestKey)).map(this::toDraft);
+  }
+
+  @Override
+  public void lockGenerationRequest(long userId, String requestKey) {
+    mapper.lockGenerationRequest(userId, requestKey);
+  }
+
+  @Override
+  @Transactional
+  public Optional<LearningPlanDraft> completeGeneration(
+      LearningPlanDraft draft,
+      LearningPlanDraftPlan plan,
+      Instant completedAt
+  ) {
+    LearningPlanDraft next = draft.withGenerationSucceeded(plan, completedAt);
+    return mapper.completeGeneratingDraft(toDraftRow(next)) == 1
+        ? Optional.of(next)
+        : Optional.empty();
+  }
+
+  @Override
+  @Transactional
+  public Optional<LearningPlanDraft> failGeneration(
+      LearningPlanDraft draft,
+      String code,
+      String message,
+      Instant completedAt
+  ) {
+    LearningPlanDraft next = draft.withGenerationFailed(code, message, completedAt);
+    return mapper.failGeneratingDraft(toDraftRow(next)) == 1
+        ? Optional.of(next)
+        : Optional.empty();
+  }
+
+  @Override
+  @Transactional
+  public List<Long> failInterruptedGenerations(
+      Instant startedBefore,
+      String code,
+      String message,
+      Instant completedAt
+  ) {
+    return mapper.failInterruptedGeneratingDrafts(startedBefore, code, message, completedAt);
+  }
+
+  @Override
   public Optional<LearningPlanDraft> findDraftByIdForUserForUpdate(long draftId, long userId) {
     return Optional.ofNullable(mapper.findDraftByIdForUserForUpdate(draftId, userId)).map(this::toDraft);
   }
@@ -331,7 +379,14 @@ public class MyBatisLearningPlanRepository
         draft.confirmedPlanId(),
         draft.expiresAt(),
         draft.createdAt(),
-        draft.updatedAt());
+        draft.updatedAt(),
+        draft.generationRequestKey(),
+        draft.generationRequestFingerprint(),
+        draft.generationRunId(),
+        draft.generationErrorCode(),
+        draft.generationErrorMessage(),
+        draft.generationStartedAt(),
+        draft.generationCompletedAt());
   }
 
   private LearningPlanRow toPlanRow(LearningPlan plan) {
@@ -359,7 +414,14 @@ public class MyBatisLearningPlanRepository
         row.confirmedPlanId(),
         row.expiresAt(),
         row.createdAt(),
-        row.updatedAt());
+        row.updatedAt(),
+        row.generationRequestKey(),
+        row.generationRequestFingerprint(),
+        row.generationRunId(),
+        row.generationErrorCode(),
+        row.generationErrorMessage(),
+        row.generationStartedAt(),
+        row.generationCompletedAt());
   }
 
   private LearningPlan toPlan(LearningPlanRow row) {

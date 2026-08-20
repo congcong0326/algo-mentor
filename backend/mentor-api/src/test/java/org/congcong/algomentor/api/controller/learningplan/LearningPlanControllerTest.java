@@ -45,6 +45,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftSource;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.policy.LearningPlanAiRevisionAccessService;
@@ -72,6 +74,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationStart;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
@@ -116,6 +120,9 @@ class LearningPlanControllerTest {
 
   @MockBean
   private LearningPlanDraftStreamService draftStreamService;
+
+  @MockBean
+  private LearningPlanDraftGenerationService draftGenerationService;
 
   @MockBean
   private LearningPlanDraftRevisionStreamService draftRevisionStreamService;
@@ -163,6 +170,47 @@ class LearningPlanControllerTest {
         .andExpect(status().isMethodNotAllowed());
 
     verifyNoInteractions(draftService, admissionService, lifecycleService);
+  }
+
+  @Test
+  void startsCompleteAiDraftGenerationWithStableDraftSubscription() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(draftGenerationService.start(eq(42L), any(), eq("generation-key")))
+        .thenReturn(new LearningPlanDraftGenerationStart(generatingDraft(), true));
+
+    mockMvc.perform(post("/api/learning-plans/drafts/generations")
+            .header("Idempotency-Key", "generation-key")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "intent": "INTERVIEW_SPRINT",
+                  "objective": "准备 Java 后端算法面试",
+                  "targetProblemCount": 15,
+                  "level": "INTERMEDIATE",
+                  "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
+                  "topicPreferences": ["Array"]
+                }
+                """))
+        .andExpect(status().isAccepted())
+        .andExpect(header().string("Location", "/api/learning-plans/drafts/102"))
+        .andExpect(jsonPath("$.data.draftId").value(102))
+        .andExpect(jsonPath("$.data.status").value("GENERATING"))
+        .andExpect(jsonPath("$.data.eventsUrl").value("/api/learning-plans/drafts/102/events"))
+        .andExpect(jsonPath("$.data.initialAfter").value("0-0"))
+        .andExpect(jsonPath("$.data.realtimeProtocolVersion").value(1));
+  }
+
+  @Test
+  void readsGeneratingDraftWithoutPlanPayload() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(draftService.findDraft(42L, 102L)).thenReturn(generatingDraft());
+
+    mockMvc.perform(get("/api/learning-plans/drafts/102"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.draftId").value(102))
+        .andExpect(jsonPath("$.data.status").value("GENERATING"))
+        .andExpect(jsonPath("$.data.draftPlan").doesNotExist())
+        .andExpect(jsonPath("$.data.generationErrorCode").doesNotExist());
   }
 
   @Test
@@ -697,6 +745,43 @@ class LearningPlanControllerTest {
             LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true,
             "template", Map.of("templateId", "internal-template", "matchedProblemCount", 1),
             "internalOnly", "internal-value"));
+  }
+
+  private LearningPlanDraft generatingDraft() {
+    Instant startedAt = Instant.parse("2026-08-20T08:00:00Z");
+    return new LearningPlanDraft(
+        102L,
+        42L,
+        LearningPlanDraftSource.AI_PERSONALIZED,
+        LearningPlanDraftStatus.GENERATING,
+        new LearningPlanBrief(
+            LearningPlanIntent.INTERVIEW_SPRINT,
+            "准备 Java 后端算法面试",
+            15,
+            3,
+            LearningPlanLevel.INTERMEDIATE,
+            5,
+            "Java",
+            new org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution(35, 55, 10),
+            List.of("Array"),
+            null,
+            true,
+            LearningPlanContentLocale.ZH_CN),
+        List.of(),
+        List.of(),
+        "正在生成学习计划草案。",
+        null,
+        null,
+        startedAt.plusSeconds(3600),
+        startedAt,
+        startedAt,
+        "generation-key",
+        "a".repeat(64),
+        "run-102",
+        null,
+        null,
+        startedAt,
+        null);
   }
 
   private LearningPlanDraftPlan draftPlanWithMultipleProblems() {

@@ -8,6 +8,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfi
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
@@ -28,6 +29,18 @@ public final class LearningPlanResponseMapper {
         result.assistantMessage(),
         result.missingFields(),
         toDraftPlanResponse(result.draftPlan()));
+  }
+
+  public static LearningPlanDraftResponse toDraftResponse(LearningPlanDraft draft) {
+    return new LearningPlanDraftResponse(
+        draft.id(),
+        draft.source(),
+        draft.status(),
+        draft.assistantMessage(),
+        draft.missingFields(),
+        toDraftPlanResponse(draft.draftPlan()),
+        draft.generationErrorCode(),
+        draft.generationErrorMessage());
   }
 
   public static LearningPlanConfirmResponse toConfirmResponse(LearningPlanConfirmResult result) {

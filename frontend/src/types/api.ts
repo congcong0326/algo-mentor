@@ -1387,7 +1387,7 @@ export interface LearningPlanDifficultyDistribution {
   mediumPercent: number;
   hardPercent: number;
 }
-export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
+export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
 export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
 export type LearningPlanCoveragePolicy =
   | 'FULL_ROUTE'
@@ -1616,6 +1616,27 @@ export interface LearningPlanDraftResponse {
   assistantMessage?: string;
   missingFields: string[];
   draftPlan?: LearningPlanDraftPlan | null;
+  generationErrorCode?: string;
+  generationErrorMessage?: string;
+}
+
+export interface LearningPlanDraftGenerationResponse {
+  draftId: number;
+  status: 'GENERATING';
+  eventsUrl: string;
+  initialAfter: string;
+  realtimeProtocolVersion: 1;
+}
+
+export type LearningPlanDraftGenerationStartResponse =
+  | LearningPlanDraftGenerationResponse
+  | LearningPlanDraftResponse;
+
+export interface LearningPlanDraftGenerationEventData {
+  draftId: number;
+  message?: string;
+  toolName?: string;
+  code?: string;
 }
 
 export interface LearningPlanAiRevisionCapabilities {
@@ -1849,6 +1870,8 @@ export type SseEventName =
   | 'work_error'
   | 'draft_ready'
   | 'draft_error'
+  | 'draft_completed'
+  | 'draft_failed'
   | 'draft_revision_ready'
   | 'draft_revision_error'
   | 'plan_extension_ready'

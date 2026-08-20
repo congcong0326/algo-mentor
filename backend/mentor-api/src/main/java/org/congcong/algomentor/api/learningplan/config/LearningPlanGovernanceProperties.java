@@ -2,14 +2,16 @@ package org.congcong.algomentor.api.learningplan.config;
 
 import java.time.Duration;
 import java.time.ZoneId;
+import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** 学习计划配额日期边界和过期数据清理的节点级运维参数。 */
-@ConfigurationProperties(prefix = "algo-mentor.learning-plan.governance")
+@ConfigurationProperties(prefix = MentorConfigurationKeys.LEARNING_PLAN_GOVERNANCE_PREFIX)
 public class LearningPlanGovernanceProperties {
 
   private String quotaZone = "UTC";
   private Cleanup cleanup = new Cleanup();
+  private GenerationRecovery generationRecovery = new GenerationRecovery();
 
   public String getQuotaZone() {
     return quotaZone;
@@ -30,6 +32,14 @@ public class LearningPlanGovernanceProperties {
 
   public void setCleanup(Cleanup cleanup) {
     this.cleanup = cleanup == null ? new Cleanup() : cleanup;
+  }
+
+  public GenerationRecovery getGenerationRecovery() {
+    return generationRecovery;
+  }
+
+  public void setGenerationRecovery(GenerationRecovery generationRecovery) {
+    this.generationRecovery = generationRecovery == null ? new GenerationRecovery() : generationRecovery;
   }
 
   public static class Cleanup {
@@ -80,6 +90,32 @@ public class LearningPlanGovernanceProperties {
             "learning plan daily usage retention days must be between 1 and 3650");
       }
       this.dailyUsageRetentionDays = dailyUsageRetentionDays;
+    }
+  }
+
+  /** 进程重启后收敛无法续跑的首次草案生成。 */
+  public static class GenerationRecovery {
+
+    private boolean enabled = true;
+    private Duration minimumAge = Duration.ofMinutes(1);
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    public Duration getMinimumAge() {
+      return minimumAge;
+    }
+
+    public void setMinimumAge(Duration minimumAge) {
+      if (minimumAge == null || minimumAge.isNegative()) {
+        throw new IllegalArgumentException("learning plan generation recovery minimum age must not be negative");
+      }
+      this.minimumAge = minimumAge;
     }
   }
 }

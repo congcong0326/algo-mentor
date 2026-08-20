@@ -83,7 +83,8 @@
 - `docs/learning-plan-revision-plan-compiler-design.md`：学习计划草案修订 Plan Compiler 研发设计，定义候选蓝图、确定性编译、单次 Child Review、协议预算、canonical artifact 和未来 Workflow 迁移边界。
 - `docs/learning-plan-ai-revision-access-design.md`：学习计划三条 AI 修订链路的用户/用户组灰度设计，定义 `learning-plan.ai-revision-access.v1`、草案来源持久化、前后端双重门禁、管理页和发布回滚边界。
 - `docs/learning-plan-data-model-simplification-design.md`：学习计划业务数据模型精简研发设计，固定阶段、模板、metadata 废弃字段删除范围，定义 JSONB 与模板表迁移、Seed v3 兼容、派生展示替代和验收门禁。
-- `docs/learning-plan-ai-generation-sse-resilience-design.md`：学习计划 AI 首次草案生成研发设计，聚焦结果恢复兼容闭环、启动与观察分离、幂等和显式业务取消；修订与扩展后续复用同一模式。
+- `docs/learning-plan-ai-generation-sse-resilience-design.md`：学习计划 AI 生成 Redis Stream 总体设计，规定启动、游标回放、数据库查询和后续取消边界；首次创建与草案修订分阶段实施。
+- `docs/learning-plan-ai-generation-redis-stream-phase-one-implementation.md`：学习计划 AI 首次草案 Redis Stream 解耦第一阶段研发文档，冻结 API、数据迁移、公开事件、前端恢复、测试和发布门禁。
 - `docs/learning-plan-creation-governance-design.md`：学习计划创建治理设计，定义正式计划总量、每日草案次数、草案过期清理和 `learning-plan.creation.v1` 通用策略契约。
 - `docs/sse-managed-connection-heartbeat-design.md`：SSE 连接管理与 heartbeat 独立研发设计，定义 `ManagedSseConnection`、连接注册表、写锁、幂等关闭、共享调度器、配置和连接指标，不拥有业务任务取消语义。
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。

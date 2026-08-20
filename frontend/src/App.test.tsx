@@ -1142,14 +1142,14 @@ describe('App', () => {
 
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/learning-plans/drafts/stream',
+      '/api/learning-plans/drafts/generations',
       expect.objectContaining({
         method: 'POST',
         credentials: 'same-origin',
         headers: expect.any(Headers),
       }),
     );
-    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/stream');
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/generations');
 
     fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
       target: { value: '数组和哈希表' },
@@ -2883,8 +2883,8 @@ function mockLearningPlanFetch(options: {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts/stream') {
-      return Promise.resolve(learningPlanDraftStreamResponse(collectingLearningPlanDraft()));
+    if (url === '/api/learning-plans/drafts/generations') {
+      return Promise.resolve(learningPlanDraftGenerationResponse(collectingLearningPlanDraft()));
     }
 
     if (url === '/api/learning-plans/drafts/100/messages') {
@@ -2966,8 +2966,8 @@ function mockLearningPlanFollowUpFailureFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts/stream') {
-      return Promise.resolve(learningPlanDraftStreamResponse(collectingLearningPlanDraft()));
+    if (url === '/api/learning-plans/drafts/generations') {
+      return Promise.resolve(learningPlanDraftGenerationResponse(collectingLearningPlanDraft()));
     }
 
     if (url === '/api/learning-plans/drafts/100/messages') {
@@ -3004,7 +3004,7 @@ function mockExpiredLearningPlanDraftFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts/stream') {
+    if (url === '/api/learning-plans/drafts/generations') {
       return Promise.resolve(jsonResponse({
         success: false,
         error: { code: 'DRAFT_EXPIRED', message: '草案已过期，请调整问卷后重试。' },
@@ -3166,8 +3166,8 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts/stream') {
-      return Promise.resolve(learningPlanDraftStreamResponse(collectingLearningPlanDraft()));
+    if (url === '/api/learning-plans/drafts/generations') {
+      return Promise.resolve(learningPlanDraftGenerationResponse(collectingLearningPlanDraft()));
     }
 
     if (url === '/api/learning-plans/drafts/100/messages') {
@@ -3407,10 +3407,14 @@ function generatedLearningPlanDraft() {
   };
 }
 
-function learningPlanDraftStreamResponse(draft: ReturnType<typeof collectingLearningPlanDraft> | ReturnType<typeof generatedLearningPlanDraft>) {
-  return new Response(sseStream([
-    sseEvent('draft_ready', draft),
-  ]), { status: 200 });
+function learningPlanDraftGenerationResponse(
+  draft: ReturnType<typeof collectingLearningPlanDraft> | ReturnType<typeof generatedLearningPlanDraft>,
+) {
+  return jsonResponse({
+    success: true,
+    data: draft,
+    timestamp: '2026-06-22T00:00:00Z',
+  }, 201);
 }
 
 function learningPlanSummary(overrides: Partial<ReturnType<typeof baseLearningPlanSummary>> = {}) {

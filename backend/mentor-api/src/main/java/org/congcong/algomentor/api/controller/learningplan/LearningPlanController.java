@@ -1,11 +1,14 @@
 package org.congcong.algomentor.api.controller.learningplan;
 
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Flow;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
@@ -16,6 +19,7 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanActivationResp
 import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDetailResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftResponse;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftGenerationResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanExtensionApplyResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanPageResponse;
@@ -27,6 +31,12 @@ import org.congcong.algomentor.api.learningplan.service.LearningPlanDraftStreamS
 import org.congcong.algomentor.api.learningplan.service.LearningPlanProposalStreamSseMapper;
 import org.congcong.algomentor.api.learningplan.service.SseLearningPlanDraftStreamSubscriber;
 import org.congcong.algomentor.api.learningplan.service.SseLearningPlanProposalStreamSubscriber;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeCursor;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeCursorInvalidException;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeEvent;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeEventStore;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeProtocol;
+import org.congcong.algomentor.api.learningplan.realtime.UnavailableLearningPlanGenerationRealtimeEventStore;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
@@ -50,6 +60,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationStart;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -62,6 +74,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,6 +95,8 @@ public class LearningPlanController {
   private final LearningPlanService planService;
   private final CurrentUserIdProvider currentUserIdProvider;
   private final ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider;
+  private final ObjectProvider<LearningPlanDraftGenerationService> draftGenerationServiceProvider;
+  private final ObjectProvider<LearningPlanGenerationRealtimeEventStore> generationRealtimeEventStoreProvider;
   private final ObjectProvider<LearningPlanDraftRevisionStreamService> draftRevisionStreamServiceProvider;
   private final ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider;
   private final ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider;
@@ -105,6 +120,8 @@ public class LearningPlanController {
       LearningPlanService planService,
       CurrentUserIdProvider currentUserIdProvider,
       ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider,
+      ObjectProvider<LearningPlanDraftGenerationService> draftGenerationServiceProvider,
+      ObjectProvider<LearningPlanGenerationRealtimeEventStore> generationRealtimeEventStoreProvider,
       ObjectProvider<LearningPlanDraftRevisionStreamService> draftRevisionStreamServiceProvider,
       ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider,
       ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider,
@@ -123,6 +140,8 @@ public class LearningPlanController {
     this.planService = planService;
     this.currentUserIdProvider = currentUserIdProvider;
     this.draftStreamServiceProvider = draftStreamServiceProvider;
+    this.draftGenerationServiceProvider = draftGenerationServiceProvider;
+    this.generationRealtimeEventStoreProvider = generationRealtimeEventStoreProvider;
     this.draftRevisionStreamServiceProvider = draftRevisionStreamServiceProvider;
     this.extensionProposalStreamServiceProvider = extensionProposalStreamServiceProvider;
     this.extensionApplyServiceProvider = extensionApplyServiceProvider;
@@ -142,6 +161,74 @@ public class LearningPlanController {
     this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
     this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
     this.opsLogger = new StructuredOpsLogger();
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_GENERATIONS_PATH)
+  public ResponseEntity<?> startDraftGeneration(
+      @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
+      @RequestBody LearningPlanCreateDraftRequest request,
+      HttpServletResponse response
+  ) {
+    addLanguageVaryHeader(response);
+    long userId = requireCurrentUserId();
+    LearningPlanDraftGenerationStart start = requiredDraftGenerationService().start(
+        userId,
+        request.toBrief(LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage)),
+        idempotencyKey);
+    LearningPlanDraft generated = start.draft();
+    if (generated.status() == org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus.GENERATING) {
+      return ResponseEntity.status(HttpStatus.ACCEPTED)
+          .location(URI.create(draftUrl(generated.id())))
+          .body(ApiResponse.success(new LearningPlanDraftGenerationResponse(
+              generated.id(),
+              generated.status(),
+              draftEventsUrl(generated.id()),
+              LearningPlanGenerationRealtimeProtocol.INITIAL_AFTER,
+              LearningPlanGenerationRealtimeProtocol.REALTIME_PROTOCOL_VERSION)));
+    }
+    return ResponseEntity.status(start.newlyStarted() ? HttpStatus.CREATED : HttpStatus.OK)
+        .location(URI.create(draftUrl(generated.id())))
+        .body(ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(generated)));
+  }
+
+  @GetMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH + "/{draftId}")
+  public ApiResponse<LearningPlanDraftResponse> getDraft(@PathVariable long draftId) {
+    return ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(
+        draftService.findDraft(requireCurrentUserId(), draftId)));
+  }
+
+  @GetMapping(value = ApiContractConstants.LEARNING_PLAN_DRAFT_GENERATION_EVENTS_PATH,
+      produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter draftGenerationEvents(
+      @PathVariable long draftId,
+      @RequestParam(name = ApiContractConstants.LEARNING_PLAN_DRAFT_GENERATION_AFTER_PARAM, required = false) String after
+  ) {
+    long userId = requireCurrentUserId();
+    draftService.findDraft(userId, draftId);
+    String cursor;
+    try {
+      cursor = LearningPlanGenerationRealtimeCursor.normalizeAfter(after);
+    } catch (LearningPlanGenerationRealtimeCursorInvalidException exception) {
+      throw new LearningPlanException(
+          LearningPlanGenerationRealtimeProtocol.CURSOR_INVALID_CODE, "学习计划生成事件游标无效。");
+    }
+    if (!requiredGenerationRealtimeEventStore().available()) {
+      throw new LearningPlanException(
+          LearningPlanGenerationRealtimeProtocol.REALTIME_UNAVAILABLE_CODE,
+          "学习计划实时进度暂不可用，请查询草案状态。");
+    }
+    SseEmitter emitter = new SseEmitter(sseProperties.learningPlanDraftTimeoutMillis());
+    AtomicBoolean connectionOpen = new AtomicBoolean(true);
+    emitter.onCompletion(() -> connectionOpen.set(false));
+    emitter.onTimeout(() -> connectionOpen.set(false));
+    emitter.onError(ignored -> connectionOpen.set(false));
+    Thread reader = new Thread(
+        () -> replayDraftGenerationEvents(emitter, userId, draftId, cursor, connectionOpen),
+        "learning-plan-draft-events");
+    reader.setDaemon(true);
+    reader.start();
+    return emitter;
   }
 
   @PostMapping(value = ApiContractConstants.LEARNING_PLAN_DRAFTS_STREAM_PATH,
@@ -359,6 +446,59 @@ public class LearningPlanController {
         .orElseThrow(() -> new LearningPlanUnauthenticatedException("当前请求未登录或无法解析当前用户。"));
   }
 
+  private void replayDraftGenerationEvents(
+      SseEmitter emitter,
+      long userId,
+      long draftId,
+      String initialCursor,
+      AtomicBoolean connectionOpen
+  ) {
+    String cursor = initialCursor;
+    boolean replay = true;
+    try {
+      while (connectionOpen.get()) {
+        List<LearningPlanGenerationRealtimeEvent> events = requiredGenerationRealtimeEventStore()
+            .readAfter(draftId, cursor, !replay);
+        replay = false;
+        for (LearningPlanGenerationRealtimeEvent event : events) {
+          if (!connectionOpen.get()) {
+            return;
+          }
+          emitter.send(SseEmitter.event().id(event.cursor()).name(event.eventName()).data(event.data()));
+          cursor = event.cursor();
+          if (isDraftGenerationTerminalEvent(event.eventName())) {
+            emitter.complete();
+            return;
+          }
+        }
+        LearningPlanDraft current = draftService.findDraft(userId, draftId);
+        if (current.status() != org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus.GENERATING) {
+          // Stream 过期、Redis 故障恢复后的 entry 缺失都由前端 EOF 后回读 PostgreSQL 收束。
+          emitter.complete();
+          return;
+        }
+      }
+    } catch (IOException | RuntimeException exception) {
+      if (connectionOpen.get()) {
+        emitter.completeWithError(exception);
+      }
+    }
+  }
+
+  private boolean isDraftGenerationTerminalEvent(String eventName) {
+    return LearningPlanGenerationRealtimeProtocol.DRAFT_COMPLETED.equals(eventName)
+        || LearningPlanGenerationRealtimeProtocol.DRAFT_FAILED.equals(eventName);
+  }
+
+  private String draftUrl(long draftId) {
+    return ApiContractConstants.LEARNING_PLANS_BASE_PATH
+        + ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH + "/" + draftId;
+  }
+
+  private String draftEventsUrl(long draftId) {
+    return ApiContractConstants.LEARNING_PLANS_BASE_PATH + "/drafts/" + draftId + "/events";
+  }
+
   private List<PracticeProgress> progressByPlan(long userId, long planId) {
     PracticeSessionRepository repository = practiceSessionRepositoryProvider.getIfAvailable();
     if (repository == null) {
@@ -438,6 +578,16 @@ public class LearningPlanController {
     return draftStreamServiceProvider.getIfAvailable(() -> {
       throw unavailableGovernance();
     });
+  }
+
+  private LearningPlanDraftGenerationService requiredDraftGenerationService() {
+    return draftGenerationServiceProvider.getIfAvailable(() -> {
+      throw unavailableGovernance();
+    });
+  }
+
+  private LearningPlanGenerationRealtimeEventStore requiredGenerationRealtimeEventStore() {
+    return generationRealtimeEventStoreProvider.getIfAvailable(UnavailableLearningPlanGenerationRealtimeEventStore::new);
   }
 
   private LearningPlanDraftRevisionStreamService requiredDraftRevisionStreamService() {

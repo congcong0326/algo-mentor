@@ -64,6 +64,47 @@ ssh prometheus-root
 
 不要将用户 ID、会话 ID、run ID、题目内容、Prompt、响应正文、异常消息或其他高基数字段加入 Prometheus 标签。
 
+### Redis Exporter
+
+预发布 Redis 运行在 PaaS 主机 `192.168.10.121`，缓存与 Streams 为独立 Redis 7.4.10
+实例。PaaS 主机通过两个 systemd 服务运行固定版本的 `redis_exporter`，而不是由应用容器或
+Prometheus 主机代理采集：
+
+| Redis 用途 | Redis 端口 | Exporter 服务 | Exporter 端口 | 关键配置 |
+| --- | ---: | --- | ---: | --- |
+| Shared TTL 缓存 | `6379` | `redis-exporter-cache.service` | `9121` | `384 MiB`、`allkeys-lfu`、无 RDB/AOF |
+| Practice realtime Streams | `6380` | `redis-exporter-stream.service` | `9122` | `768 MiB`、`noeviction`、RDB+AOF |
+
+两个 Redis ACL 文件各自定义同名 `prometheus_exporter` 用户，但使用独立随机密码。该用户只拥有
+`PING` 与 `INFO`；exporter 固定启用 `--config-command=-`、`--set-client-name=false` 与
+`--disable-scrape-endpoint`，因此不需要 `CONFIG`、`CLIENT`、`SCAN`、`KEYS` 或读写业务 key 的权限。
+密钥仅保存在 PaaS 主机 `/etc/redis-exporter/*.env`，权限为 `root:redis-exporter 0640`，不得复制到
+仓库、应用环境文件或 Prometheus 配置。
+
+`config/prometheus.yml` 另有 `job_name: redis`，通过
+`/etc/prometheus/file_sd/redis/*.yml` 加载以下两个 target；不得将它们加入 Java job：
+
+```yaml
+- targets:
+    - 192.168.10.121:9121
+  labels:
+    environment: preprod
+    service: redis-cache
+    redis_purpose: cache
+- targets:
+    - 192.168.10.121:9122
+  labels:
+    environment: preprod
+    service: redis-stream
+    redis_purpose: stream
+```
+
+所有 Redis 查询必须至少包含 `job="redis"`、`environment="preprod"` 与
+`redis_purpose`。标准采集保留可用性、内存、连接、命中/淘汰、RDB/AOF 与复制状态；禁止启用
+`--check-keys`、`--check-streams` 或 `--export-client-list`，以避免 key、会话 Stream 或客户端信息造成
+高基数与隐私暴露。Streams 使用会话级 Stream，积压和消费者语义应由应用侧聚合指标表达，不按 Stream
+名称导出 Prometheus 标签。
+
 ## 新增或修改抓取目标
 
 在监控主机使用受控运维访问进入 `/root/docker-nas/prometheus`。真实凭据不进入仓库、shell 历史、配置文件或本文档。
@@ -147,6 +188,12 @@ http://192.168.10.85:3001/d/algo-mentor-preprod
 
 最近窗口内没有 5xx 时，5xx 面板无时间序列是正常现象，不代表 scrape 失败。判断采集状态应使用 `up` 面板。
 
+Redis 使用 provisioned dashboard `Algo Mentor - Redis Preprod`，UID 为
+`algo-mentor-redis-preprod`。它基于 Grafana 社区 Dashboard `763`（Redis Dashboard for Prometheus
+Redis Exporter 1.x），已将原 Kubernetes `namespace` 变量替换为 `redis_purpose`，并固定查询范围为
+预发布 `redis` job；JSON 源文件为
+`deploy/docker/observability/grafana/dashboards/redis-preprod.json`。
+
 ### 新增或调整面板
 
 Dashboard 必须通过 provisioning 文件维护，不只在 Grafana UI 中保存。操作顺序：
@@ -191,6 +238,7 @@ Dashboard 必须通过 provisioning 文件维护，不只在 Grafana UI 中保�
 - cache coherence 长时间未成功轮询；
 - Learner Memory 最老消息积压；
 - Practice realtime Redis 非成功操作。
+- Redis exporter / Redis 不可用、缓存内存与淘汰、Streams 内存、AOF 写入和 RDB 保存失败。
 
 规则只负责 Prometheus 侧判断，通知路由仍由监控主机现有 Alertmanager/Grafana 配置管理。
 加载前备份并执行：
@@ -244,3 +292,14 @@ ssh prometheus-root 'cd /root/docker-nas/prometheus && docker exec prometheus pr
 - 发布后必须验证 `ai_run_active{job="java",environment="preprod",service="algo-mentor-api"}` 存在；没有运行中的 AI 请求时值为 `0` 仍属于正常结果。
 - 2026-08-19 11:20 UTC 已将 dashboard 和告警规则同步到观测主机；Prometheus readiness 正常、target `up=1`、告警组 10 条规则 health 为 `ok`，Grafana API 返回 `Algo Mentor - Preprod`。
 - 验收时 `AlgoMentorPreprodLearnerQueueStale` 为 `pending/warning`：`learner_profile_queue_oldest_pending_age` 约 5,250 秒、pending 2 条；这是当前预发布队列积压，需业务侧处理，不属于本次指标接入失败。
+
+## 2026-08-20 Redis 接入记录
+
+- PaaS 主机已安装经上游 `sha256sums.txt` 校验的 `redis_exporter v1.89.0`，并启用
+  `redis-exporter-cache.service` 与 `redis-exporter-stream.service`。
+- 缓存与 Streams Redis 均使用专属 `prometheus_exporter` ACL，业务账号保持原有权限；两个 exporter
+  本地与 Prometheus 抓取均返回 `redis_up=1`。
+- Prometheus 新增 `redis` file-SD job，两个 target 的 `up=1`；
+  `preprod-alert-rules.yml` 已扩展为 18 条规则并通过 `promtool` 校验。
+- Grafana 已 provision `Algo Mentor - Redis Preprod`；模板不依赖 Kubernetes 标签，支持按缓存/Streams
+  用途与 exporter instance 筛选。

@@ -7,6 +7,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
 import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanupMetrics;
 import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanupScheduler;
+import org.congcong.algomentor.api.learningplan.recovery.LearningPlanDraftGenerationStartupRecovery;
 import org.congcong.algomentor.api.learningplan.personalization.ApiLearningPlanPersonalizationDataProvider;
 import org.congcong.algomentor.api.learningplan.policy.LearningPlanCreationPolicyContentValidator;
 import org.congcong.algomentor.api.learningplan.policy.PolicyBackedLearningPlanCreationPolicyResolver;
@@ -58,6 +59,8 @@ import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPl
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationEventPublisher;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationService;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
@@ -70,6 +73,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.support.TransactionOperations;
 import org.congcong.algomentor.policy.service.GenericPolicyQueryService;
@@ -347,6 +351,49 @@ public class LearningPlanConfiguration {
         learningPlanClock,
         personalizationContextService,
         creationPolicyService);
+  }
+
+  @Bean
+  @ConditionalOnBean(AgentRuntime.class)
+  @ConditionalOnMissingBean
+  public LearningPlanDraftGenerationService learningPlanDraftGenerationService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanDraftValidator validator,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
+      Clock learningPlanClock,
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanCreationPolicyService creationPolicyService,
+      ObjectProvider<LearningPlanDraftGenerationEventPublisher> eventPublisherProvider
+  ) {
+    return new LearningPlanDraftGenerationService(
+        draftRepository,
+        validator,
+        agentRuntime,
+        objectMapper,
+        problemCatalog,
+        loadService,
+        learningPlanClock,
+        personalizationContextService,
+        creationPolicyService,
+        eventPublisherProvider.getIfAvailable(() -> (draftId, event) -> { }));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearningPlanDraftGenerationStartupRecovery.class)
+  public ApplicationRunner learningPlanDraftGenerationStartupRecovery(
+      LearningPlanDraftRepository draftRepository,
+      Clock learningPlanClock,
+      LearningPlanGovernanceProperties properties,
+      ObjectProvider<LearningPlanDraftGenerationEventPublisher> eventPublisherProvider
+  ) {
+    return new LearningPlanDraftGenerationStartupRecovery(
+        draftRepository,
+        eventPublisherProvider.getIfAvailable(() -> (draftId, event) -> { }),
+        learningPlanClock,
+        properties.getGenerationRecovery());
   }
 
   @Bean

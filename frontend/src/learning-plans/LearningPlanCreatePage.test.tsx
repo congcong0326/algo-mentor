@@ -8,9 +8,11 @@ import {
   createLearningPlanDraftFromTemplate,
   getLearningPlanTemplate,
   getLearningPlanTemplates,
+  getLearningPlanDraft,
+  readLearningPlanDraftGenerationEvents,
   sendLearningPlanDraftMessage,
   setApiLocale,
-  streamLearningPlanDraft,
+  startLearningPlanDraftGeneration,
   streamLearningPlanDraftRevision,
 } from '../services/api';
 import type {
@@ -25,6 +27,8 @@ vi.mock('../services/api', () => ({
   createLearningPlanDraftFromTemplate: vi.fn(),
   getLearningPlanTemplate: vi.fn(),
   getLearningPlanTemplates: vi.fn(),
+  getLearningPlanDraft: vi.fn(),
+  readLearningPlanDraftGenerationEvents: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, fallbackMessage: string): T => {
     if (response.success && response.data !== undefined) {
       return response.data;
@@ -33,14 +37,16 @@ vi.mock('../services/api', () => ({
   },
   setApiLocale: vi.fn(),
   sendLearningPlanDraftMessage: vi.fn(),
-  streamLearningPlanDraft: vi.fn(),
+  startLearningPlanDraftGeneration: vi.fn(),
   streamLearningPlanDraftRevision: vi.fn(),
 }));
 
 const getLearningPlanTemplatesMock = vi.mocked(getLearningPlanTemplates);
 const getLearningPlanTemplateMock = vi.mocked(getLearningPlanTemplate);
 const createLearningPlanDraftFromTemplateMock = vi.mocked(createLearningPlanDraftFromTemplate);
-const streamLearningPlanDraftMock = vi.mocked(streamLearningPlanDraft);
+const startLearningPlanDraftGenerationMock = vi.mocked(startLearningPlanDraftGeneration);
+const getLearningPlanDraftMock = vi.mocked(getLearningPlanDraft);
+const readLearningPlanDraftGenerationEventsMock = vi.mocked(readLearningPlanDraftGenerationEvents);
 const streamLearningPlanDraftRevisionMock = vi.mocked(streamLearningPlanDraftRevision);
 const sendLearningPlanDraftMessageMock = vi.mocked(sendLearningPlanDraftMessage);
 const confirmLearningPlanDraftMock = vi.mocked(confirmLearningPlanDraft);
@@ -50,18 +56,15 @@ beforeEach(() => {
   getLearningPlanTemplatesMock.mockResolvedValue(apiResponse(templateSummaries()));
   getLearningPlanTemplateMock.mockResolvedValue(apiResponse(templateDetail()));
   createLearningPlanDraftFromTemplateMock.mockResolvedValue(apiResponse(generatedDraft()));
-  streamLearningPlanDraftMock.mockImplementation(async (_request, options) => {
-    options.onEvent({
-      eventName: 'draft_ready',
-      data: {
-        draftId: 100,
-        status: 'COLLECTING',
-        assistantMessage: '请补充目标主题。',
-        missingFields: ['topicPreferences'],
-        draftPlan: null,
-      },
-    });
+  startLearningPlanDraftGenerationMock.mockResolvedValue({
+    draftId: 100,
+    status: 'COLLECTING',
+    assistantMessage: '请补充目标主题。',
+    missingFields: ['topicPreferences'],
+    draftPlan: null,
   });
+  getLearningPlanDraftMock.mockResolvedValue(apiResponse(generatedDraft()));
+  readLearningPlanDraftGenerationEventsMock.mockResolvedValue(undefined);
   streamLearningPlanDraftRevisionMock.mockImplementation(async (_draftId, _request, options) => {
     options.onEvent({
       eventName: 'draft_revision_ready',
@@ -113,6 +116,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  window.sessionStorage.clear();
   vi.clearAllMocks();
 });
 
@@ -139,7 +143,7 @@ describe('LearningPlanCreatePage', () => {
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
     await screen.findByText('请补充目标主题。');
-    expect(streamLearningPlanDraftMock).toHaveBeenCalledWith(
+    expect(startLearningPlanDraftGenerationMock).toHaveBeenCalledWith(
       {
         intent: 'INTERVIEW_SPRINT',
         objective: undefined,
@@ -155,7 +159,7 @@ describe('LearningPlanCreatePage', () => {
         additionalConstraints: undefined,
         personalizationEnabled: true,
       },
-      expect.objectContaining({ onEvent: expect.any(Function) }),
+      expect.objectContaining({ idempotencyKey: expect.any(String) }),
     );
   });
 
@@ -174,14 +178,77 @@ describe('LearningPlanCreatePage', () => {
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
     await screen.findByText('请补充目标主题。');
-    expect(streamLearningPlanDraftMock).toHaveBeenCalledWith(
+    expect(startLearningPlanDraftGenerationMock).toHaveBeenCalledWith(
       expect.objectContaining({
         objective: '准备 Java 后端算法面试',
         additionalConstraints: '每周留一天复盘',
         personalizationEnabled: false,
       }),
-      expect.any(Object),
+      expect.objectContaining({ idempotencyKey: expect.any(String) }),
     );
+  });
+
+  it('reads the authoritative draft after a completed realtime event instead of accepting a draft from SSE', async () => {
+    const completedDraft = generatedDraft({ draftId: 102 });
+    startLearningPlanDraftGenerationMock.mockResolvedValue({
+      draftId: 102,
+      status: 'GENERATING',
+      eventsUrl: '/api/learning-plans/drafts/102/events',
+      initialAfter: '0-0',
+      realtimeProtocolVersion: 1,
+    });
+    getLearningPlanDraftMock.mockResolvedValue(apiResponse(completedDraft));
+    readLearningPlanDraftGenerationEventsMock.mockImplementation(async (_url, options) => {
+      options.onEvent({ eventName: 'draft_completed', id: '1-0', data: { draftId: 102 } });
+    });
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'AI 个性化生成' }));
+    fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
+
+    expect(await screen.findByRole('heading', { name: '训练方案' })).toBeInTheDocument();
+    expect(getLearningPlanDraftMock).toHaveBeenCalledWith(102);
+    expect(readLearningPlanDraftGenerationEventsMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/102/events',
+      expect.objectContaining({ after: '0-0' }),
+    );
+  });
+
+  it('restores a pending generation from session storage and resolves it through draft query', async () => {
+    window.sessionStorage.setItem('learning-plan.pending-generation', JSON.stringify({
+      draftId: 103,
+      idempotencyKey: 'pending-generation-key',
+      lastEventId: '2-0',
+    }));
+    getLearningPlanDraftMock.mockResolvedValue(apiResponse(generatedDraft({ draftId: 103 })));
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    expect(await screen.findByRole('heading', { name: '训练方案' })).toBeInTheDocument();
+    expect(getLearningPlanDraftMock).toHaveBeenCalledWith(103);
+  });
+
+  it('queries the draft when Stream IDs have a gap', async () => {
+    startLearningPlanDraftGenerationMock.mockResolvedValue({
+      draftId: 104,
+      status: 'GENERATING',
+      eventsUrl: '/api/learning-plans/drafts/104/events',
+      initialAfter: '0-0',
+      realtimeProtocolVersion: 1,
+    });
+    getLearningPlanDraftMock.mockResolvedValue(apiResponse(generatedDraft({ draftId: 104 })));
+    readLearningPlanDraftGenerationEventsMock.mockImplementation(async (_url, options) => {
+      options.onEvent({ eventName: 'work_progress', id: '1-0', data: { draftId: 104, message: '正在规划学习计划' } });
+      options.onEvent({ eventName: 'work_progress', id: '3-0', data: { draftId: 104, message: '正在规划学习计划' } });
+    });
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'AI 个性化生成' }));
+    fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
+
+    expect(await screen.findByRole('heading', { name: '训练方案' })).toBeInTheDocument();
+    expect(getLearningPlanDraftMock).toHaveBeenCalledWith(104);
   });
 
   it('returns from a generated draft to the new-plan wizard instead of the plan list', async () => {
@@ -334,12 +401,7 @@ describe('LearningPlanCreatePage', () => {
   });
 
   it('shows a dialog when learning plan generation reports exhausted agent capacity', async () => {
-    streamLearningPlanDraftMock.mockImplementation(async (_request, options) => {
-      options.onEvent({
-        eventName: 'draft_error',
-        data: { code: 'AGENT_EXECUTOR_OVERLOADED' },
-      });
-    });
+    startLearningPlanDraftGenerationMock.mockRejectedValue({ code: 'AGENT_EXECUTOR_OVERLOADED' });
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
     fireEvent.click(await screen.findByRole('button', { name: 'AI 个性化生成' }));
@@ -350,15 +412,10 @@ describe('LearningPlanCreatePage', () => {
   });
 
   it('shows the generation failure and safe reason in a dialog', async () => {
-    streamLearningPlanDraftMock.mockImplementation(async (_request, options) => {
-      options.onEvent({
-        eventName: 'draft_error',
-        data: {
-          code: 'LEARNING_PLAN_STREAM_FAILED',
-          message: '学习计划生成失败，请稍后重试。',
-          reason: '已有一个 AI 任务正在运行，请等待完成后再试。',
-        },
-      });
+    startLearningPlanDraftGenerationMock.mockRejectedValue({
+      code: 'LEARNING_PLAN_STREAM_FAILED',
+      message: '学习计划生成失败，请稍后重试。',
+      reason: '已有一个 AI 任务正在运行，请等待完成后再试。',
     });
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 

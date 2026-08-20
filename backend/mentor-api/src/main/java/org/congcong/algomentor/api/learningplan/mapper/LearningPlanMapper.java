@@ -31,6 +31,22 @@ public interface LearningPlanMapper {
 
   LearningPlanDraftRow findDraftByIdForUser(@Param("id") long id, @Param("userId") long userId);
 
+  LearningPlanDraftRow findDraftByGenerationRequestKey(
+      @Param("userId") long userId,
+      @Param("requestKey") String requestKey);
+
+  int lockGenerationRequest(@Param("userId") long userId, @Param("requestKey") String requestKey);
+
+  int completeGeneratingDraft(LearningPlanDraftRow row);
+
+  int failGeneratingDraft(LearningPlanDraftRow row);
+
+  List<Long> failInterruptedGeneratingDrafts(
+      @Param("startedBefore") Instant startedBefore,
+      @Param("errorCode") String errorCode,
+      @Param("errorMessage") String errorMessage,
+      @Param("completedAt") Instant completedAt);
+
   LearningPlanDraftRow findDraftByIdForUserForUpdate(@Param("id") long id, @Param("userId") long userId);
 
   LearningPlanDraftOriginRow findDraftOriginForUser(@Param("id") long id, @Param("userId") long userId);

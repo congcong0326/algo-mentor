@@ -130,6 +130,15 @@ public final class ApiContractConstants {
    */
   public static final String LEARNING_PLAN_DRAFTS_STREAM_PATH = "/drafts/stream";
 
+  /** 首次 AI 草案创建控制面路径。 */
+  public static final String LEARNING_PLAN_DRAFT_GENERATIONS_PATH = "/drafts/generations";
+
+  /** 首次 AI 草案公开事件回放路径。 */
+  public static final String LEARNING_PLAN_DRAFT_GENERATION_EVENTS_PATH = "/drafts/{draftId}/events";
+
+  /** 首次 AI 草案公开事件的严格 after 游标参数。 */
+  public static final String LEARNING_PLAN_DRAFT_GENERATION_AFTER_PARAM = "after";
+
   /**
    * 学习计划草案修订流式创建路径。
    */

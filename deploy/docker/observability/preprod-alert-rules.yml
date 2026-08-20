@@ -105,3 +105,83 @@ groups:
         annotations:
           summary: Algo Mentor preprod realtime Redis operations failed
           description: Practice realtime Redis reported a non-success operation in the last 10 minutes.
+
+      - alert: AlgoMentorPreprodRedisExporterDown
+        expr: up{job="redis",environment="preprod"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod Redis exporter is down
+          description: Prometheus cannot scrape the Redis exporter for {{ $labels.redis_purpose }}.
+
+      - alert: AlgoMentorPreprodRedisCacheUnavailable
+        expr: redis_up{job="redis",environment="preprod",redis_purpose="cache"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod cache Redis is unavailable
+          description: The cache Redis exporter cannot authenticate to or query Redis.
+
+      - alert: AlgoMentorPreprodRedisStreamUnavailable
+        expr: redis_up{job="redis",environment="preprod",redis_purpose="stream"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Algo Mentor preprod Streams Redis is unavailable
+          description: The Streams Redis exporter cannot authenticate to or query Redis.
+
+      - alert: AlgoMentorPreprodRedisCacheMemoryHigh
+        expr: |
+          redis_memory_used_bytes{job="redis",environment="preprod",redis_purpose="cache"}
+          /
+          clamp_min(redis_memory_max_bytes{job="redis",environment="preprod",redis_purpose="cache"}, 1) > 0.80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod cache Redis memory is high
+          description: Cache Redis memory usage exceeded 80% for 10 minutes.
+
+      - alert: AlgoMentorPreprodRedisCacheEvictions
+        expr: increase(redis_evicted_keys_total{job="redis",environment="preprod",redis_purpose="cache"}[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod cache Redis is evicting keys
+          description: Cache Redis evicted one or more keys in the last five minutes.
+
+      - alert: AlgoMentorPreprodRedisStreamMemoryHigh
+        expr: |
+          redis_memory_used_bytes{job="redis",environment="preprod",redis_purpose="stream"}
+          /
+          clamp_min(redis_memory_max_bytes{job="redis",environment="preprod",redis_purpose="stream"}, 1) > 0.80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod Streams Redis memory is high
+          description: Streams Redis memory usage exceeded 80% for 10 minutes.
+
+      - alert: AlgoMentorPreprodRedisStreamAofWriteFailed
+        expr: |
+          redis_aof_enabled{job="redis",environment="preprod",redis_purpose="stream"} == 1
+          and redis_aof_last_write_status{job="redis",environment="preprod",redis_purpose="stream"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Algo Mentor preprod Streams Redis AOF write failed
+          description: The Streams Redis AOF last write status is not healthy.
+
+      - alert: AlgoMentorPreprodRedisStreamRdbSaveFailed
+        expr: redis_rdb_last_bgsave_status{job="redis",environment="preprod",redis_purpose="stream"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Algo Mentor preprod Streams Redis RDB save failed
+          description: The Streams Redis last background RDB save is not healthy.

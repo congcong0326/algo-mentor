@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.api.MentorApiApplication;
+import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.congcong.algomentor.api.controller.admin.ai.AdminAiApiContractConstants;
 import org.congcong.algomentor.api.controller.admin.feedback.AdminFeedbackApiContractConstants;
 import org.congcong.algomentor.api.controller.admin.overview.AdminOverviewApiContractConstants;
@@ -46,7 +47,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @SpringBootTest(
     classes = {MentorApiApplication.class, AdminUserEndpointSecurityTest.TestConfig.class},
-    properties = "spring.datasource.url=jdbc:postgresql://localhost/algo_mentor_test")
+    properties = {
+        "spring.datasource.url=jdbc:postgresql://localhost/algo_mentor_test",
+        MentorConfigurationKeys.LEARNING_PLAN_GENERATION_RECOVERY_ENABLED + "=false"
+    })
 @AutoConfigureMockMvc
 class AdminUserEndpointSecurityTest {
 

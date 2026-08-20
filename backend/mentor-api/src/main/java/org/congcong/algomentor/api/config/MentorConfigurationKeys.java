@@ -29,6 +29,17 @@ public final class MentorConfigurationKeys {
   /** Practice Chat 独立 Redis Stream 通道配置前缀。 */
   public static final String PRACTICE_REALTIME_STREAM_PREFIX = "algo-mentor.practice-chat.realtime-stream";
 
+  /** 学习计划首次草案生成独立 Redis Stream 通道配置前缀。 */
+  public static final String LEARNING_PLAN_GENERATION_REALTIME_STREAM_PREFIX =
+      "algo-mentor.learning-plan.generation.realtime-stream";
+
+  /** 学习计划创建治理配置前缀。 */
+  public static final String LEARNING_PLAN_GOVERNANCE_PREFIX = "algo-mentor.learning-plan.governance";
+
+  /** 首次草案生成启动恢复配置前缀。 */
+  public static final String LEARNING_PLAN_GENERATION_RECOVERY_PREFIX =
+      LEARNING_PLAN_GOVERNANCE_PREFIX + ".generation-recovery";
+
   /** 学习画像文档与 statement ref 的配置前缀。 */
   public static final String LEARNER_PROFILE_DOCUMENT_PREFIX = "algo-mentor.learner-memory.profile-document";
 
@@ -87,6 +98,10 @@ public final class MentorConfigurationKeys {
 
   /** 统一 Agent Runtime 装配开关 key。 */
   public static final String AGENT_RUNTIME_ENABLED = AGENT_RUNTIME_PREFIX + "." + ENABLED;
+
+  /** 首次草案生成启动恢复开关 key。 */
+  public static final String LEARNING_PLAN_GENERATION_RECOVERY_ENABLED =
+      LEARNING_PLAN_GENERATION_RECOVERY_PREFIX + "." + ENABLED;
 
   /**
    * 开关型配置启用值。
