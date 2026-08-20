@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
+import org.congcong.algomentor.api.activity.mapper.ActivityContributionMapper;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
@@ -220,6 +221,12 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean
   public AbilityProfileMapper abilityProfileMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(AbilityProfileMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ActivityContributionMapper activityContributionMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ActivityContributionMapper.class);
   }
 
   @Bean

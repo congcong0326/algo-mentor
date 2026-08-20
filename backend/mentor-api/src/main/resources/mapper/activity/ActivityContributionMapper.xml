@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.activity.mapper.ActivityContributionMapper">
+
+  <resultMap id="ActivityContributionRowMap"
+      type="org.congcong.algomentor.api.activity.mapper.model.ActivityContributionRow">
+    <constructor>
+      <arg column="activity_date" javaType="java.time.LocalDate"/>
+      <arg column="activity_count" javaType="_int"/>
+    </constructor>
+  </resultMap>
+
+  <select id="findDailyCounts" resultMap="ActivityContributionRowMap">
+    SELECT
+      (created_at AT TIME ZONE #{timezone})::date AS activity_date,
+      COUNT(*)::int AS activity_count
+    FROM practice_code_review
+    WHERE user_id = #{userId}
+      AND created_at &gt;= #{fromInclusive}
+      AND created_at &lt; #{toExclusive}
+    GROUP BY activity_date
+    ORDER BY activity_date
+  </select>
+</mapper>

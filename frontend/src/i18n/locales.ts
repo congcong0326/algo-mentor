@@ -1159,6 +1159,20 @@ export interface LocaleResources {
     reviewEntryAriaLabel: string;
     reviewCenter: string;
     reviewDescription: string;
+    activityAriaLabel: string;
+    activityEyebrow: string;
+    activityTitle: string;
+    activityDescription: string;
+    activitySubmissions: string;
+    activityActiveDays: string;
+    activityCurrentStreak: string;
+    activityLongestStreak: string;
+    activityWeekdays: string[];
+    activityLegendLow: string;
+    activityLegendHigh: string;
+    activityTooltip: (date: string, count: number) => string;
+    activityLoading: string;
+    activityUnavailable: string;
     diagnosisTitle: string;
     diagnosisDescription: string;
     viewFullProfile: string;
@@ -2786,6 +2800,20 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewEntryAriaLabel: '复习中心入口',
       reviewCenter: '复习中心',
       reviewDescription: '先复述、再评级，让错题按遗忘风险回到今天，而不是堆成一份静态清单。',
+      activityAriaLabel: '学习活动热力图',
+      activityEyebrow: 'LEARNING RHYTHM',
+      activityTitle: '学习节奏',
+      activityDescription: '过去一年正式代码 Review 提交的活跃记录。',
+      activitySubmissions: '提交次数',
+      activityActiveDays: '活跃日',
+      activityCurrentStreak: '连续天数',
+      activityLongestStreak: '最长连续',
+      activityWeekdays: ['', '一', '', '三', '', '五', ''],
+      activityLegendLow: '少',
+      activityLegendHigh: '多',
+      activityTooltip: (date, count) => `${date} · ${count} 次提交`,
+      activityLoading: '正在加载学习活动。',
+      activityUnavailable: '学习活动暂时不可用。',
       diagnosisTitle: '学习诊断',
       diagnosisDescription: '由练习与复盘持续更新。',
       viewFullProfile: '查看完整画像',
@@ -4531,6 +4559,20 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewEntryAriaLabel: 'Review center entry',
       reviewCenter: 'Review Center',
       reviewDescription: 'Recall first, then rate your memory so missed problems return when they matter instead of becoming a static list.',
+      activityAriaLabel: 'Learning activity heatmap',
+      activityEyebrow: 'LEARNING RHYTHM',
+      activityTitle: 'Learning Rhythm',
+      activityDescription: 'Formal code review submissions over the past year.',
+      activitySubmissions: 'Submissions',
+      activityActiveDays: 'Active days',
+      activityCurrentStreak: 'Current streak',
+      activityLongestStreak: 'Longest streak',
+      activityWeekdays: ['', 'Mon', '', 'Wed', '', 'Fri', ''],
+      activityLegendLow: 'Less',
+      activityLegendHigh: 'More',
+      activityTooltip: (date, count) => `${date} · ${count} ${count === 1 ? 'submission' : 'submissions'}`,
+      activityLoading: 'Loading learning activity.',
+      activityUnavailable: 'Learning activity is temporarily unavailable.',
       diagnosisTitle: 'Learning Diagnosis',
       diagnosisDescription: 'Continuously updated from practice and review.',
       viewFullProfile: 'View Full Profile',

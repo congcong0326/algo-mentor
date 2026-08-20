@@ -18,6 +18,8 @@ import {
   formatAbilityScore,
   summarizeAbilityProfile,
 } from './ability/abilityProfile';
+import ActivityHeatmap from './activity/ActivityHeatmap';
+import { toActivityCalendarData, type ActivityCalendarData } from './activity/activityHeatmap';
 import { APP_ROUTES, learningPlanPracticeChatPath, learningPlanTodayPackPath } from './app/navigation';
 import { formatDate, formatDifficulty, formatProblemTitle } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
@@ -29,6 +31,7 @@ import {
 } from './learning-plans/learningPlanRhythm';
 import {
   getTodayPack,
+  getActivityContributions,
   getAbilityProfile,
   getReviewSummary,
   requireApiData,
@@ -70,6 +73,9 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const [abilityProfile, setAbilityProfile] = useState<AbilityProfileResponse>();
   const [abilityLoading, setAbilityLoading] = useState(true);
   const [abilityUnavailable, setAbilityUnavailable] = useState(false);
+  const [activity, setActivity] = useState<ActivityCalendarData>();
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [activityUnavailable, setActivityUnavailable] = useState(false);
   const totalProblems = useMemo(
     () => pack?.sections.reduce((total, section) => total + section.problems.length, 0) ?? 0,
     [pack],
@@ -165,6 +171,28 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
       });
     return () => controller.abort();
   }, [resources.home.abilityLoadFailed]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setActivityLoading(true);
+    setActivityUnavailable(false);
+    void getActivityContributions(timezone, controller.signal)
+      .then((response) => {
+        setActivity(toActivityCalendarData(requireApiData(response, resources.todayPack.activityUnavailable)));
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setActivity(undefined);
+          setActivityUnavailable(true);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setActivityLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, [resources.todayPack.activityUnavailable, timezone]);
 
   const activePlan = pack?.activePlan;
   const statusText = pack
@@ -278,6 +306,8 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
           </button>
         </section>
       </div>
+
+      <ActivityHeatmap data={activity} loading={activityLoading} unavailable={activityUnavailable} />
 
       <div className="home-dashboard-grid">
         <section className="home-ability-panel" aria-labelledby="home-ability-title">

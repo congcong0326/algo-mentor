@@ -1730,6 +1730,23 @@ export interface TodayPackResponse {
   nextPackDate?: string | null;
 }
 
+export interface ActivityContributionDay {
+  date: string;
+  count: number;
+  level: number;
+}
+
+export interface ActivityContributionResponse {
+  timezone: string;
+  from: string;
+  to: string;
+  totalCount: number;
+  activeDays: number;
+  currentStreak: number;
+  longestStreak: number;
+  days: ActivityContributionDay[];
+}
+
 export interface LearningPlanExtensionDraft {
   summary: string;
   newPhases: LearningPlanPhaseDraft[];

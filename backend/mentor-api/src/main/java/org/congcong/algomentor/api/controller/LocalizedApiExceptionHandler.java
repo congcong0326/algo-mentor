@@ -5,7 +5,9 @@ import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.ai.governance.routing.AiModelRouteException;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
+import org.congcong.algomentor.api.activity.service.ActivityContributionService;
 import org.congcong.algomentor.api.controller.ability.AbilityProfileUnauthenticatedException;
+import org.congcong.algomentor.api.controller.activity.ActivityContributionUnauthenticatedException;
 import org.congcong.algomentor.api.controller.learningplan.LearningPlanUnauthenticatedException;
 import org.congcong.algomentor.api.controller.preference.UserAiPreferenceUnauthenticatedException;
 import org.congcong.algomentor.api.controller.practice.PracticeProgressStatusInvalidException;
@@ -51,6 +53,8 @@ public class LocalizedApiExceptionHandler {
   public static final String UNSUPPORTED_PROBLEM_LOCALE_CODE = "UNSUPPORTED_PROBLEM_LOCALE";
   public static final String PROBLEM_REPOSITORY_UNAVAILABLE_CODE = "PROBLEM_REPOSITORY_UNAVAILABLE";
   public static final String ABILITY_PROFILE_UNAVAILABLE_CODE = "ABILITY_PROFILE_UNAVAILABLE";
+  public static final String ACTIVITY_CONTRIBUTIONS_UNAVAILABLE_CODE = "ACTIVITY_CONTRIBUTIONS_UNAVAILABLE";
+  public static final String ACTIVITY_TIMEZONE_INVALID_CODE = "ACTIVITY_TIMEZONE_INVALID";
   public static final String LEARNER_PROFILE_STATEMENT_NOT_FOUND_CODE = "LEARNER_PROFILE_STATEMENT_NOT_FOUND";
   public static final String PRACTICE_MESSAGE_INVALID_CODE = "PRACTICE_MESSAGE_INVALID";
   public static final String PRACTICE_PROGRESS_STATUS_INVALID_CODE = "PRACTICE_PROGRESS_STATUS_INVALID";
@@ -88,6 +92,16 @@ public class LocalizedApiExceptionHandler {
     return failure(HttpStatus.SERVICE_UNAVAILABLE, ABILITY_PROFILE_UNAVAILABLE_CODE, exception.getMessage());
   }
 
+  @ExceptionHandler(ActivityContributionService.ActivityContributionMapperUnavailableException.class)
+  public ResponseEntity<ApiResponse<Void>> activityContributionsUnavailable(RuntimeException exception) {
+    return failure(HttpStatus.SERVICE_UNAVAILABLE, ACTIVITY_CONTRIBUTIONS_UNAVAILABLE_CODE, exception.getMessage());
+  }
+
+  @ExceptionHandler(ActivityContributionService.ActivityTimezoneInvalidException.class)
+  public ResponseEntity<ApiResponse<Void>> activityTimezoneInvalid(RuntimeException exception) {
+    return failure(HttpStatus.BAD_REQUEST, ACTIVITY_TIMEZONE_INVALID_CODE, exception.getMessage());
+  }
+
   @ExceptionHandler(LearnerProfileStatementNotFoundException.class)
   public ResponseEntity<ApiResponse<Void>> learnerProfileStatementNotFound(RuntimeException exception) {
     return failure(HttpStatus.NOT_FOUND, LEARNER_PROFILE_STATEMENT_NOT_FOUND_CODE, exception.getMessage());
@@ -109,7 +123,8 @@ public class LocalizedApiExceptionHandler {
       AbilityProfileUnauthenticatedException.class,
       LearnerProfileUnauthenticatedException.class,
       UserAiPreferenceUnauthenticatedException.class,
-      ReviewUnauthenticatedException.class
+      ReviewUnauthenticatedException.class,
+      ActivityContributionUnauthenticatedException.class
   })
   public ResponseEntity<ApiResponse<Void>> unauthenticated(RuntimeException exception) {
     return failure(HttpStatus.UNAUTHORIZED, AUTH_UNAUTHENTICATED_CODE, exception.getMessage());

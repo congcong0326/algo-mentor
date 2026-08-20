@@ -77,6 +77,7 @@ import type {
   LearnerProfileEvidencePage,
   LearnerProfileEvidenceQuery,
   TodayPackResponse,
+  ActivityContributionResponse,
   PracticeMessageRequest,
   PracticeMessage,
   CoachSummaryProposalAction,
@@ -1748,6 +1749,22 @@ export async function getTodayPack(
   return response.json();
 }
 
+export async function getActivityContributions(
+  timezone = browserTimezone(),
+  signal?: AbortSignal,
+): Promise<ApiResponse<ActivityContributionResponse>> {
+  const response = await apiFetch(`/api/activity/contributions${toQueryString({ timezone })}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Activity contributions request failed');
+  }
+
+  return response.json();
+}
+
 export async function activateRecommendedTodayPack(
   timezone?: string,
 ): Promise<ApiResponse<TodayPackResponse>> {
@@ -2068,6 +2085,10 @@ interface TodayPackQuery {
   packOffset?: number;
 }
 
+interface ActivityContributionQuery {
+  timezone?: string;
+}
+
 interface AdminAiAuditStepQuery {
   raw?: boolean;
 }
@@ -2087,6 +2108,7 @@ type QueryParams =
   | LearnerProfileEvidenceQuery
   | ReviewCardListQuery
   | TodayPackQuery
+  | ActivityContributionQuery
   | FeedbackListQuery
   | AdminFeedbackListQuery;
 

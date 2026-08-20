@@ -29,6 +29,12 @@ public final class ApiContractConstants {
    */
   public static final String ABILITIES_PROFILE_PATH = "/api/abilities/profile";
 
+  /** 当前用户学习活动统计路径。 */
+  public static final String ACTIVITY_CONTRIBUTIONS_PATH = "/api/activity/contributions";
+
+  /** 学习活动统计使用的用户时区参数名。 */
+  public static final String ACTIVITY_TIMEZONE_PARAM = "timezone";
+
   /**
    * 当前用户学习记忆路径。
    */

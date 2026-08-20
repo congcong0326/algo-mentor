@@ -7,6 +7,7 @@ import {
   deleteAdminUser,
   discardLearningPlanExtensionProposal,
   getAbilityProfile,
+  getActivityContributions,
   getAdminUserDetail,
   getAdminUsers,
   getAdminAuthSessions,
@@ -124,6 +125,21 @@ describe('api service', () => {
     const url = new URL(String(calledUrl), 'http://localhost');
     expect(url.pathname).toBe('/api/review-sessions/summary');
     expect(url.searchParams.get('timezone')).toBeTruthy();
+  });
+
+  it('requests activity contributions in the selected timezone', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: { days: [] },
+      timestamp: '2026-08-19T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getActivityContributions('Asia/Shanghai');
+
+    const url = new URL(String(fetchMock.mock.calls[0][0]), 'http://localhost');
+    expect(url.pathname).toBe('/api/activity/contributions');
+    expect(url.searchParams.get('timezone')).toBe('Asia/Shanghai');
   });
 
   it('uses the browser timezone for review previews and submissions', async () => {
