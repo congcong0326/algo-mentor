@@ -1,5 +1,5 @@
-import { Archive, ArchiveRestore, BookOpenCheck, Eye, RefreshCw, Search, X } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Archive, ArchiveRestore, BookOpenCheck, ChevronLeft, ChevronRight, Eye, RefreshCw, Search, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import {
   APP_ROUTES,
   REVIEW_CENTER_REVIEW_ORIGIN,
@@ -22,6 +22,7 @@ import type {
   ReviewCard,
   ReviewCardContext,
   ReviewCardOverview,
+  ReviewCardOverviewPage,
   ReviewSummaryResponse,
 } from '../types/api';
 import { formatUpcomingReviewTime } from '../utils/time';
@@ -38,11 +39,12 @@ const dayMs = 24 * 60 * 60 * 1000;
 export default function MistakeNotebookPage({ onNavigate, search = '' }: MistakeNotebookPageProps) {
   const { locale, resources } = useI18n();
   const initialFilters = reviewCenterSearchOptionsFromSearch(search);
-  const [items, setItems] = useState<ReviewCardOverview[]>([]);
+  const [reviewCardsPage, setReviewCardsPage] = useState<ReviewCardOverviewPage>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [keyword, setKeyword] = useState(initialFilters.keyword ?? '');
   const [mistakeOnly, setMistakeOnly] = useState(initialFilters.mistakeOnly ?? false);
+  const [page, setPage] = useState(initialFilters.page ?? 1);
   const [actionError, setActionError] = useState('');
   const [detailCard, setDetailCard] = useState<ReviewCard>();
   const [context, setContext] = useState<ReviewCardContext>();
@@ -54,14 +56,16 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
   const detailCloseButtonRef = useRef<HTMLButtonElement>(null);
   const cardRefs = useRef(new Map<number, HTMLElement>());
 
-  const stats = useMemo(() => {
-    const cards = items.map((item) => item.card);
-    const active = cards.filter((item) => !item.archived);
-    const due = active.filter((item) => new Date(item.dueAt).getTime() <= Date.now());
-    const mistakes = active.filter((item) => item.source === 'REVIEW_FAILED' || item.lapses > 0);
-    return { active: active.length, due: due.length, mistakes: mistakes.length };
-  }, [items]);
-  const currentDueCount = reviewSummary?.dueCount ?? stats.due;
+  const items = reviewCardsPage?.items ?? [];
+  const fallbackDueCount = items.filter((item) => (
+    !item.card.archived && new Date(item.card.dueAt).getTime() <= Date.now()
+  )).length;
+  const activeCount = reviewCardsPage?.activeCount ?? items.filter((item) => !item.card.archived).length;
+  const mistakeCount = reviewCardsPage?.mistakeCount ?? items.filter((item) => (
+    !item.card.archived && (item.card.source === 'REVIEW_FAILED' || item.card.lapses > 0)
+  )).length;
+  const totalPages = Math.max(1, Math.ceil((reviewCardsPage?.total ?? 0) / (reviewCardsPage?.pageSize ?? 10)));
+  const currentDueCount = reviewSummary?.dueCount ?? fallbackDueCount;
   const remainingTodayCount = reviewSummary?.remainingTodayCount ?? currentDueCount;
   const reviewActionLabel = reviewSummary === undefined && loading
     ? resources.reviewCenter.loadTodayReview
@@ -75,12 +79,13 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
     const controller = new AbortController();
     void load(controller.signal);
     return () => controller.abort();
-  }, [keyword, locale, mistakeOnly]);
+  }, [keyword, locale, mistakeOnly, page]);
 
   useEffect(() => {
     const filters = reviewCenterSearchOptionsFromSearch(search);
     setKeyword(filters.keyword ?? '');
     setMistakeOnly(filters.mistakeOnly ?? false);
+    setPage(filters.page ?? 1);
   }, [search]);
 
   useEffect(() => {
@@ -91,6 +96,7 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
       || loading
       || keyword !== (filters.keyword ?? '')
       || mistakeOnly !== (filters.mistakeOnly ?? false)
+      || page !== (filters.page ?? 1)
     ) {
       return;
     }
@@ -99,8 +105,8 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
       card.scrollIntoView({ block: 'center' });
       card.focus();
     }
-    onNavigate(reviewCenterPath({ keyword, mistakeOnly }), { replace: true });
-  }, [items, keyword, loading, mistakeOnly, onNavigate, search]);
+    onNavigate(reviewCenterPath({ keyword, mistakeOnly, page }), { replace: true });
+  }, [items, keyword, loading, mistakeOnly, onNavigate, page, search]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -118,10 +124,14 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
     setLoading(true);
     setError('');
     try {
-      const response = await listReviewCards({ keyword, mistakeOnly, limit: 80 }, signal);
-      const cards = requireApiData(response, resources.reviewCenter.cardLoadFailed);
-      setItems(cards);
-      if (detailCard && !cards.some((item) => item.card.id === detailCard.id)) {
+      const response = await listReviewCards({ keyword, mistakeOnly, page }, signal);
+      const nextPage = requireApiData(response, resources.reviewCenter.cardLoadFailed);
+      setReviewCardsPage(nextPage);
+      if (nextPage.page !== page) {
+        setPage(nextPage.page);
+        onNavigate(reviewCenterPath({ keyword, mistakeOnly, page: nextPage.page }), { replace: true });
+      }
+      if (detailCard && !nextPage.items.some((item) => item.card.id === detailCard.id)) {
         closeDetail();
       }
     } catch (loadError) {
@@ -150,11 +160,8 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
     setActionError('');
     try {
       const response = await archiveReviewCard(card.id, !card.archived);
-      const updated = requireApiData(response, resources.reviewCenter.archiveUpdateFailed);
-      setItems((current) => current.map((item) => (
-        item.card.id === updated.id ? { ...item, card: updated } : item
-      )));
-      void loadSummary();
+      requireApiData(response, resources.reviewCenter.archiveUpdateFailed);
+      await Promise.all([load(), loadSummary()]);
     } catch (archiveError) {
       setActionError(archiveError instanceof Error ? archiveError.message : resources.reviewCenter.archiveUpdateFailed);
     }
@@ -199,7 +206,13 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
   function updateFilters(nextKeyword: string, nextMistakeOnly: boolean) {
     setKeyword(nextKeyword);
     setMistakeOnly(nextMistakeOnly);
+    setPage(1);
     onNavigate(reviewCenterPath({ keyword: nextKeyword, mistakeOnly: nextMistakeOnly }), { replace: true });
+  }
+
+  function updatePage(nextPage: number) {
+    setPage(nextPage);
+    onNavigate(reviewCenterPath({ keyword, mistakeOnly, page: nextPage }), { replace: true });
   }
 
   function openReview(card: ReviewCard, review: ReviewCardOverview['recentCodeReviews'][number]) {
@@ -210,7 +223,7 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
       {
         reviewId: review.reviewId,
         from: REVIEW_CENTER_REVIEW_ORIGIN,
-        returnTo: reviewCenterPath({ keyword, mistakeOnly, focusCard: card.id }),
+        returnTo: reviewCenterPath({ keyword, mistakeOnly, page, focusCard: card.id }),
       },
     ));
   }
@@ -232,8 +245,8 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
 
       <dl className="mistake-stat-grid" aria-label={resources.reviewCenter.overviewAriaLabel}>
         <div><dt>{resources.reviewCenter.remainingToday}</dt><dd>{remainingTodayCount}</dd></div>
-        <div><dt>{resources.reviewCenter.reviewProblems}</dt><dd>{stats.active}</dd></div>
-        <div><dt>{resources.reviewCenter.mistakes}</dt><dd>{stats.mistakes}</dd></div>
+        <div><dt>{resources.reviewCenter.reviewProblems}</dt><dd>{activeCount}</dd></div>
+        <div><dt>{resources.reviewCenter.mistakes}</dt><dd>{mistakeCount}</dd></div>
       </dl>
 
       <section className="mistake-toolbar" aria-label={resources.reviewCenter.filtersAriaLabel}>
@@ -323,6 +336,30 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
           );
         })}
       </div>
+
+      {!loading && items.length > 0 && (
+        <nav aria-label={resources.common.pageStatus(page, totalPages)} className="pagination-row mistake-pagination">
+          <button
+            aria-label={resources.common.previousPage}
+            className="icon-button"
+            disabled={page <= 1}
+            onClick={() => updatePage(page - 1)}
+            type="button"
+          >
+            <ChevronLeft aria-hidden="true" />
+          </button>
+          <span>{resources.common.pageStatus(page, totalPages)}</span>
+          <button
+            aria-label={resources.common.nextPage}
+            className="icon-button"
+            disabled={page >= totalPages}
+            onClick={() => updatePage(page + 1)}
+            type="button"
+          >
+            <ChevronRight aria-hidden="true" />
+          </button>
+        </nav>
+      )}
 
       {detailCard && (
         <div className="modal-backdrop">

@@ -30,6 +30,7 @@ import org.congcong.algomentor.mentor.application.review.card.ProblemReviewCard;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardContext;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverview;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverviewPage;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardOverviewService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
@@ -63,20 +64,23 @@ class ReviewCardControllerTest {
 
   @Test
   void listsCardsWithRecentCodeReviewIndexEntries() throws Exception {
-    when(cardOverviewService.list(42L, null, true, "two", 80, 2)).thenReturn(List.of(overview()));
+    when(cardOverviewService.list(42L, null, true, "two", 2)).thenReturn(new ReviewCardOverviewPage(
+        List.of(overview()), 21, 20, 4, 2, 10));
 
     mockMvc.perform(get("/api/review-cards")
             .queryParam("mistakeOnly", "true")
             .queryParam("keyword", "two")
-            .queryParam("limit", "80")
-            .queryParam("offset", "2"))
+            .queryParam("page", "2"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data[0].card.id").value(88))
-        .andExpect(jsonPath("$.data[0].recentCodeReviews[0].reviewId").value(301))
-        .andExpect(jsonPath("$.data[0].recentCodeReviews[0].planId").value(12))
-        .andExpect(jsonPath("$.data[0].recentCodeReviews[0].primaryFeedback").value("边界条件处理不完整"));
+        .andExpect(jsonPath("$.data.items[0].card.id").value(88))
+        .andExpect(jsonPath("$.data.items[0].recentCodeReviews[0].reviewId").value(301))
+        .andExpect(jsonPath("$.data.items[0].recentCodeReviews[0].planId").value(12))
+        .andExpect(jsonPath("$.data.items[0].recentCodeReviews[0].primaryFeedback").value("边界条件处理不完整"))
+        .andExpect(jsonPath("$.data.total").value(21))
+        .andExpect(jsonPath("$.data.page").value(2))
+        .andExpect(jsonPath("$.data.pageSize").value(10));
 
-    verify(cardOverviewService).list(42L, null, true, "two", 80, 2);
+    verify(cardOverviewService).list(42L, null, true, "two", 2);
   }
 
   @Test

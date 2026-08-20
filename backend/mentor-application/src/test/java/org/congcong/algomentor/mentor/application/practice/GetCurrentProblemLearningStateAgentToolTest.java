@@ -21,6 +21,7 @@ import org.congcong.algomentor.mentor.application.profile.review.history.CodeRev
 import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewVerification;
 import org.congcong.algomentor.mentor.application.review.card.ProblemReviewCard;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardListCounts;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.note.ProblemAlgorithmKey;
 import org.congcong.algomentor.mentor.application.review.note.ProblemComplexityKey;
@@ -283,6 +284,8 @@ class GetCurrentProblemLearningStateAgentToolTest {
     @Override public List<ProblemReviewCard> findDue(long userId, Instant now, int limit) { return List.of(); }
     @Override public List<ProblemReviewCard> list(long userId, ReviewCardSource source, boolean mistakeOnly,
         String keyword, int limit, int offset) { return List.of(); }
+    @Override public ReviewCardListCounts countList(long userId, ReviewCardSource source, boolean mistakeOnly,
+        String keyword) { return new ReviewCardListCounts(0, 0, 0); }
     @Override public int countDue(long userId, Instant now) { return 0; }
     @Override public int countScheduledBefore(long userId, Instant exclusiveEnd) { return 0; }
     @Override public Optional<Instant> findNextDueAt(long userId, Instant after, Instant exclusiveEnd) {

@@ -203,8 +203,7 @@
     LIMIT #{limit}
   </select>
 
-  <select id="list" resultMap="ProblemReviewCardRowMap">
-    SELECT prc.*
+  <sql id="ReviewCardListFilters">
     FROM problem_review_card prc
     LEFT JOIN user_problem_note upn
       ON upn.user_id = prc.user_id AND upn.problem_slug = prc.problem_slug
@@ -224,13 +223,28 @@
           OR COALESCE(upn.note_markdown, '') ILIKE CONCAT('%', #{keyword}, '%')
         )
       </if>
+  </sql>
+
+  <select id="list" resultMap="ProblemReviewCardRowMap">
+    SELECT prc.*
+    <include refid="ReviewCardListFilters"/>
     ORDER BY
       prc.archived ASC,
-      (prc.source = 'REVIEW_FAILED' OR prc.lapses &gt; 0) DESC,
       prc.due_at ASC,
-      prc.updated_at DESC
+      prc.id ASC
     LIMIT #{limit}
     OFFSET #{offset}
+  </select>
+
+  <select id="countList" resultType="org.congcong.algomentor.api.review.mapper.model.ReviewCardListCountsRow">
+    SELECT
+      COUNT(*) AS total,
+      COUNT(*) FILTER (WHERE prc.archived = FALSE) AS active_count,
+      COUNT(*) FILTER (
+        WHERE prc.archived = FALSE
+          AND (prc.source = 'REVIEW_FAILED' OR prc.lapses &gt; 0)
+      ) AS mistake_count
+    <include refid="ReviewCardListFilters"/>
   </select>
 
   <select id="countDue" resultType="_int">

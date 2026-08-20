@@ -218,6 +218,7 @@ class ReviewQueueServiceTest {
     @Override public Optional<ProblemReviewCard> findForUpdate(long userId, long cardId) { return Optional.empty(); }
     @Override public List<ProblemReviewCard> findDue(long userId, Instant now, int limit) { return List.of(); }
     @Override public List<ProblemReviewCard> list(long userId, ReviewCardSource source, boolean mistakeOnly, String keyword, int limit, int offset) { return List.of(); }
+    @Override public ReviewCardListCounts countList(long userId, ReviewCardSource source, boolean mistakeOnly, String keyword) { return new ReviewCardListCounts(0, 0, 0); }
     @Override public ProblemReviewCard updateArchived(long userId, long cardId, boolean archived, Instant now) { throw new UnsupportedOperationException(); }
     @Override public ProblemReviewCard updateScheduling(long userId, long cardId, SchedulingState state, Instant dueAt, ReviewRating rating, Instant reviewedAt) { throw new UnsupportedOperationException(); }
   }

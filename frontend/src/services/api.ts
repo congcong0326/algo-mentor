@@ -92,7 +92,7 @@ import type {
   PracticeSessionResponse,
   ReviewAttempt,
   ReviewCard,
-  ReviewCardOverview,
+  ReviewCardOverviewPage,
   ReviewCardContext,
   ReviewCardSource,
   PasswordLoginRequest,
@@ -359,11 +359,10 @@ export async function listReviewCards(
     source?: ReviewCardSource | '';
     mistakeOnly?: boolean;
     keyword?: string;
-    limit?: number;
-    offset?: number;
+    page?: number;
   } = {},
   signal?: AbortSignal,
-): Promise<ApiResponse<ReviewCardOverview[]>> {
+): Promise<ApiResponse<ReviewCardOverviewPage>> {
   const response = await apiFetch(`/api/review-cards${toQueryString(query)}`, {
     headers: jsonHeaders,
     signal,

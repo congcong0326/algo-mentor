@@ -36,9 +36,14 @@ class ReviewCardOverviewServiceTest {
     ReviewCardOverviewService service = new ReviewCardOverviewService(
         cardService(cardRepository), indexRepository, metrics);
 
-    List<ReviewCardOverview> overviews = service.list(42L, null, false, null, 80, 0);
+    ReviewCardOverviewPage page = service.list(42L, null, false, null, 1);
+    List<ReviewCardOverview> overviews = page.items();
 
     assertThat(overviews).extracting(overview -> overview.card().id()).containsExactly(88L, 89L);
+    assertThat(page).extracting(ReviewCardOverviewPage::total, ReviewCardOverviewPage::page,
+        ReviewCardOverviewPage::pageSize).containsExactly(2L, 1, 10);
+    assertThat(cardRepository.limit).isEqualTo(10);
+    assertThat(cardRepository.offset).isZero();
     assertThat(overviews.get(0).recentCodeReviews()).extracting(PracticeCodeReviewIndexEntry::reviewId)
         .containsExactly(100L, 101L);
     assertThat(overviews.get(1).recentCodeReviews()).isEmpty();
@@ -47,6 +52,22 @@ class ReviewCardOverviewServiceTest {
     assertThat(indexRepository.perProblemLimit).isEqualTo(10);
     assertThat(metrics.cardCount).isEqualTo(2);
     assertThat(metrics.reviewCount).isEqualTo(2);
+  }
+
+  @Test
+  void usesTenCardsAndTheMatchingOffsetForLaterPages() {
+    ListingCardRepository cardRepository = new ListingCardRepository(List.of(
+        card(88L, "two-sum", ReviewCardSource.REVIEW_FAILED)));
+    cardRepository.total = 41;
+    ReviewCardOverviewService service = new ReviewCardOverviewService(
+        cardService(cardRepository), new RecordingIndexRepository(List.of()), ReviewMetrics.NOOP);
+
+    ReviewCardOverviewPage page = service.list(42L, null, false, null, 2);
+
+    assertThat(page).extracting(ReviewCardOverviewPage::page, ReviewCardOverviewPage::pageSize)
+        .containsExactly(2, 10);
+    assertThat(cardRepository.limit).isEqualTo(10);
+    assertThat(cardRepository.offset).isEqualTo(10);
   }
 
   private ReviewCardService cardService(ReviewCardRepository repository) {
@@ -132,9 +153,13 @@ class ReviewCardOverviewServiceTest {
 
   private static final class ListingCardRepository implements ReviewCardRepository {
     private final List<ProblemReviewCard> cards;
+    private int limit;
+    private int offset;
+    private long total;
 
     private ListingCardRepository(List<ProblemReviewCard> cards) {
       this.cards = cards;
+      this.total = cards.size();
     }
 
     @Override public ProblemReviewCard upsertForReview(long userId, String problemSlug, ReviewCardSource source, JsonNode sourceDetail, ReviewSeed seed) { throw unsupported(); }
@@ -143,7 +168,22 @@ class ReviewCardOverviewServiceTest {
     @Override public Optional<ProblemReviewCard> findForUser(long userId, long cardId) { return Optional.empty(); }
     @Override public Optional<ProblemReviewCard> findForUpdate(long userId, long cardId) { return Optional.empty(); }
     @Override public List<ProblemReviewCard> findDue(long userId, Instant now, int limit) { return List.of(); }
-    @Override public List<ProblemReviewCard> list(long userId, ReviewCardSource source, boolean mistakeOnly, String keyword, int limit, int offset) { return cards; }
+    @Override
+    public List<ProblemReviewCard> list(
+        long userId,
+        ReviewCardSource source,
+        boolean mistakeOnly,
+        String keyword,
+        int limit,
+        int offset
+    ) {
+      this.limit = limit;
+      this.offset = offset;
+      return cards;
+    }
+    @Override public ReviewCardListCounts countList(long userId, ReviewCardSource source, boolean mistakeOnly, String keyword) {
+      return new ReviewCardListCounts(total, total, 1);
+    }
     @Override public int countDue(long userId, Instant now) { return 0; }
     @Override public int countScheduledBefore(long userId, Instant exclusiveEnd) { return 0; }
     @Override public Optional<Instant> findNextDueAt(long userId, Instant after, Instant exclusiveEnd) { return Optional.empty(); }

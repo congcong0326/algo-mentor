@@ -54,6 +54,7 @@ export const LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS = {
 export const REVIEW_CENTER_QUERY_KEYS = {
   focusCard: 'focusCard',
   mistakeOnly: 'mistakeOnly',
+  page: 'page',
   query: 'q',
 } as const;
 
@@ -91,6 +92,7 @@ export interface ReviewCenterSearchOptions {
   focusCard?: number;
   keyword?: string;
   mistakeOnly?: boolean;
+  page?: number;
 }
 
 export type AppView =
@@ -421,6 +423,7 @@ export function reviewCenterSearchOptionsFromSearch(search: string): ReviewCente
     focusCard: positiveSafeInteger(params.get(REVIEW_CENTER_QUERY_KEYS.focusCard)),
     keyword: params.get(REVIEW_CENTER_QUERY_KEYS.query) ?? undefined,
     mistakeOnly: params.get(REVIEW_CENTER_QUERY_KEYS.mistakeOnly) === 'true',
+    page: positiveSafeInteger(params.get(REVIEW_CENTER_QUERY_KEYS.page)),
   });
 }
 
@@ -432,6 +435,9 @@ export function reviewCenterPath(options: ReviewCenterSearchOptions = {}): strin
   }
   if (normalized.mistakeOnly) {
     query.set(REVIEW_CENTER_QUERY_KEYS.mistakeOnly, 'true');
+  }
+  if (normalized.page && normalized.page > 1) {
+    query.set(REVIEW_CENTER_QUERY_KEYS.page, String(normalized.page));
   }
   if (normalized.focusCard) {
     query.set(REVIEW_CENTER_QUERY_KEYS.focusCard, String(normalized.focusCard));
@@ -489,6 +495,7 @@ function normalizeReviewCenterSearchOptions(options: ReviewCenterSearchOptions):
     focusCard: positiveSafeInteger(options.focusCard),
     keyword: keyword && keyword.length <= MAX_REVIEW_CENTER_QUERY_LENGTH ? keyword : undefined,
     mistakeOnly: options.mistakeOnly === true,
+    page: positiveSafeInteger(options.page),
   };
 }
 

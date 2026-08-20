@@ -10,9 +10,11 @@ import java.util.Optional;
 import org.congcong.algomentor.api.review.mapper.ProblemReviewCardMapper;
 import org.congcong.algomentor.api.review.mapper.model.ProblemReviewCardRow;
 import org.congcong.algomentor.api.review.mapper.model.ProblemReviewCardUpsertRow;
+import org.congcong.algomentor.api.review.mapper.model.ReviewCardListCountsRow;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
 import org.congcong.algomentor.mentor.application.review.card.ProblemReviewCard;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardListCounts;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.schedule.FsrsState;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewRating;
@@ -104,6 +106,21 @@ public class MyBatisReviewCardRepository implements ReviewCardRepository {
         keyword,
         limit,
         offset).stream().map(this::toCard).toList();
+  }
+
+  @Override
+  public ReviewCardListCounts countList(
+      long userId,
+      ReviewCardSource source,
+      boolean mistakeOnly,
+      String keyword
+  ) {
+    ReviewCardListCountsRow counts = mapper.countList(
+        userId,
+        source == null ? null : source.name(),
+        mistakeOnly,
+        keyword);
+    return new ReviewCardListCounts(counts.total(), counts.activeCount(), counts.mistakeCount());
   }
 
   @Override

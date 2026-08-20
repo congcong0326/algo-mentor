@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.review.mapper.model.ProblemReviewCardRow;
 import org.congcong.algomentor.api.review.mapper.model.ProblemReviewCardUpsertRow;
+import org.congcong.algomentor.api.review.mapper.model.ReviewCardListCountsRow;
 
 @Mapper
 public interface ProblemReviewCardMapper {
@@ -44,6 +45,13 @@ public interface ProblemReviewCardMapper {
       @Param("keyword") String keyword,
       @Param("limit") int limit,
       @Param("offset") int offset
+  );
+
+  ReviewCardListCountsRow countList(
+      @Param("userId") long userId,
+      @Param("source") String source,
+      @Param("mistakeOnly") boolean mistakeOnly,
+      @Param("keyword") String keyword
   );
 
   int countDue(@Param("userId") long userId, @Param("now") Instant now);

@@ -61,7 +61,7 @@ describe('learning plan practice submissions navigation', () => {
   });
 
   it('keeps review-center return paths internal and restores its filters', () => {
-    const returnTo = reviewCenterPath({ keyword: 'two-sum', mistakeOnly: true, focusCard: 88 });
+    const returnTo = reviewCenterPath({ keyword: 'two-sum', mistakeOnly: true, page: 2, focusCard: 88 });
     const path = learningPlanPracticeSubmissionsPath(900, 1, 'two-sum', {
       reviewId: 42,
       from: REVIEW_CENTER_REVIEW_ORIGIN,
@@ -73,7 +73,7 @@ describe('learning plan practice submissions navigation', () => {
       reviewId: 42,
       from: REVIEW_CENTER_REVIEW_ORIGIN,
       profileAnchor: undefined,
-      returnTo: '/mistakes?q=two-sum&mistakeOnly=true&focusCard=88',
+      returnTo: '/mistakes?q=two-sum&mistakeOnly=true&page=2&focusCard=88',
     });
     expect(reviewCenterReturnTo('https://example.test/mistakes')).toBeUndefined();
     expect(reviewCenterReturnTo('//example.test/mistakes')).toBeUndefined();

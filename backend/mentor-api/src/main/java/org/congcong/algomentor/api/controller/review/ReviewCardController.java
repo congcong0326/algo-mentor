@@ -9,7 +9,7 @@ import org.congcong.algomentor.api.review.model.ArchiveReviewCardRequest;
 import org.congcong.algomentor.api.review.model.CreateReviewCardRequest;
 import org.congcong.algomentor.api.review.model.ReviewAttemptResponse;
 import org.congcong.algomentor.api.review.model.ReviewCardContextResponse;
-import org.congcong.algomentor.api.review.model.ReviewCardOverviewResponse;
+import org.congcong.algomentor.api.review.model.ReviewCardOverviewPageResponse;
 import org.congcong.algomentor.api.review.model.ReviewCardResponse;
 import org.congcong.algomentor.api.review.model.ReviewResponseMapper;
 import org.congcong.algomentor.api.review.model.SubmitReviewAttemptRequest;
@@ -60,20 +60,18 @@ public class ReviewCardController {
   }
 
   @GetMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH)
-  public ApiResponse<List<ReviewCardOverviewResponse>> list(
+  public ApiResponse<ReviewCardOverviewPageResponse> list(
       @RequestParam(required = false) String source,
       @RequestParam(defaultValue = "false") boolean mistakeOnly,
       @RequestParam(required = false) String keyword,
-      @RequestParam(defaultValue = "50") int limit,
-      @RequestParam(defaultValue = "0") int offset
+      @RequestParam(defaultValue = "1") int page
   ) {
-    return ApiResponse.success(requiredCardOverviewService().list(
+    return ApiResponse.success(ReviewResponseMapper.toCardOverviewPageResponse(requiredCardOverviewService().list(
         requireCurrentUserId(),
         parseSource(source),
         mistakeOnly,
         keyword,
-        limit,
-        offset).stream().map(ReviewResponseMapper::toCardOverviewResponse).toList());
+        page)));
   }
 
   @PostMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH)

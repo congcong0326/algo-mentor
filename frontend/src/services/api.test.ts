@@ -535,10 +535,10 @@ describe('api service', () => {
     })));
     vi.stubGlobal('fetch', fetchMock);
 
-    await listReviewCards({ keyword: 'two-sum', mistakeOnly: true, limit: 80 });
+    await listReviewCards({ keyword: 'two-sum', mistakeOnly: true, page: 2 });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/review-cards?keyword=two-sum&mistakeOnly=true&limit=80',
+      '/api/review-cards?keyword=two-sum&mistakeOnly=true&page=2',
       expect.objectContaining({
         credentials: 'same-origin',
         headers: expect.any(Headers),

@@ -43,6 +43,13 @@ public interface ReviewCardRepository {
       int offset
   );
 
+  ReviewCardListCounts countList(
+      long userId,
+      ReviewCardSource source,
+      boolean mistakeOnly,
+      String keyword
+  );
+
   int countDue(long userId, Instant now);
 
   int countScheduledBefore(long userId, Instant exclusiveEnd);

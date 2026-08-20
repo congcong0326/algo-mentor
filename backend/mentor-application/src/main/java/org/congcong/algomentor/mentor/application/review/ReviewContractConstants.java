@@ -7,6 +7,8 @@ public final class ReviewContractConstants {
   public static final String NOTE_MARKDOWN_APPEND_SEPARATOR = "\n\n";
   public static final int STATEMENT_SUMMARY_MAX_CHARS = 200;
   public static final int RECENT_ATTEMPT_LIMIT = 10;
+  /** 复习中心复习卡列表固定每页展示数量。 */
+  public static final int REVIEW_CARD_LIST_PAGE_SIZE = 10;
   /** 复习中心每题最多展示的正式代码 Review 索引条数。 */
   public static final int RECENT_CODE_REVIEW_INDEX_LIMIT = 10;
 

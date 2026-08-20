@@ -1073,6 +1073,10 @@ a {
   gap: 6px;
 }
 
+.mistake-pagination {
+  justify-content: flex-end;
+}
+
 .mistake-content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

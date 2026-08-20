@@ -7,7 +7,14 @@ import {
   getReviewSummary,
   listReviewCards,
 } from '../services/api';
-import type { ApiResponse, ReviewCard, ReviewCardContext, ReviewCardOverview, UserProblemNote } from '../types/api';
+import type {
+  ApiResponse,
+  ReviewCard,
+  ReviewCardContext,
+  ReviewCardOverview,
+  ReviewCardOverviewPage,
+  UserProblemNote,
+} from '../types/api';
 import { emptyProblemSolutionOutline } from '../problem-notes/problemNoteOptions';
 import MistakeNotebookPage from './MistakeNotebookPage';
 
@@ -29,7 +36,7 @@ beforeEach(() => {
     remainingTodayCount: 1,
     nextDueAt: null,
   }));
-  vi.mocked(listReviewCards).mockResolvedValue(apiResponse([reviewCardOverview()]));
+  vi.mocked(listReviewCards).mockResolvedValue(apiResponse(reviewCardPage()));
   vi.mocked(getReviewCardContext).mockResolvedValue(apiResponse(reviewContext()));
   vi.mocked(getProblemNote).mockResolvedValue(apiResponse(problemNote()));
   vi.mocked(archiveReviewCard).mockResolvedValue(apiResponse(reviewCard({ archived: true })));
@@ -58,6 +65,14 @@ describe('MistakeNotebookPage', () => {
     expect(screen.queryByText('详情关闭前不应泄露的笔记内容。')).not.toBeInTheDocument();
   });
 
+  it('shows disabled pagination controls when all cards fit on one page', async () => {
+    render(<MistakeNotebookPage onNavigate={vi.fn()} />);
+
+    expect(await screen.findByText('第 1 / 1 页')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '上一页' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '下一页' })).toBeDisabled();
+  });
+
   it('opens complete card context with a collapsed problem note and attempt history', async () => {
     render(<MistakeNotebookPage onNavigate={vi.fn()} />);
 
@@ -74,6 +89,13 @@ describe('MistakeNotebookPage', () => {
   });
 
   it('archives a review card without deleting its problem note', async () => {
+    vi.mocked(listReviewCards)
+      .mockResolvedValueOnce(apiResponse(reviewCardPage()))
+      .mockResolvedValueOnce(apiResponse(reviewCardPage({
+        items: [reviewCardOverview({ card: reviewCard({ archived: true }) })],
+        activeCount: 0,
+        mistakeCount: 0,
+      })));
     render(<MistakeNotebookPage onNavigate={vi.fn()} />);
 
     fireEvent.click(await screen.findByRole('button', { name: '移出复习' }));
@@ -91,7 +113,22 @@ describe('MistakeNotebookPage', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: '仅看错题' }));
 
     await waitFor(() => expect(listReviewCards).toHaveBeenLastCalledWith(
-      { keyword: 'two-sum', mistakeOnly: true, limit: 80 },
+      { keyword: 'two-sum', mistakeOnly: true, page: 1 },
+      expect.any(AbortSignal),
+    ));
+  });
+
+  it('loads 10-card pages and moves to the next page', async () => {
+    vi.mocked(listReviewCards).mockImplementation(async (query) => apiResponse(reviewCardPage({
+      page: query?.page ?? 1,
+      total: 21,
+    })));
+    render(<MistakeNotebookPage onNavigate={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '下一页' }));
+
+    await waitFor(() => expect(listReviewCards).toHaveBeenLastCalledWith(
+      { keyword: '', mistakeOnly: false, page: 2 },
       expect.any(AbortSignal),
     ));
   });
@@ -128,6 +165,18 @@ function reviewCardOverview(overrides: Partial<ReviewCardOverview> = {}): Review
   return {
     card: reviewCard(),
     recentCodeReviews: [],
+    ...overrides,
+  };
+}
+
+function reviewCardPage(overrides: Partial<ReviewCardOverviewPage> = {}): ReviewCardOverviewPage {
+  return {
+    items: [reviewCardOverview()],
+    total: 1,
+    activeCount: 1,
+    mistakeCount: 1,
+    page: 1,
+    pageSize: 10,
     ...overrides,
   };
 }

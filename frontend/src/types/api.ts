@@ -2033,6 +2033,15 @@ export interface ReviewCardOverview {
   recentCodeReviews: ReviewCardCodeReviewIndexEntry[];
 }
 
+export interface ReviewCardOverviewPage {
+  items: ReviewCardOverview[];
+  total: number;
+  activeCount: number;
+  mistakeCount: number;
+  page: number;
+  pageSize: number;
+}
+
 export interface ReviewProblem {
   slug: string;
   title: string;

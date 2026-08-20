@@ -93,6 +93,15 @@ public class ReviewCardService {
     return repository.list(userId, source, mistakeOnly, keyword, clampLimit(limit), Math.max(0, offset));
   }
 
+  public ReviewCardListCounts countList(
+      long userId,
+      ReviewCardSource source,
+      boolean mistakeOnly,
+      String keyword
+  ) {
+    return repository.countList(userId, source, mistakeOnly, keyword);
+  }
+
   public ProblemReviewCard archive(long userId, long cardId, boolean archived) {
     return repository.updateArchived(userId, cardId, archived, Instant.now(clock));
   }
@@ -171,6 +180,8 @@ public class ReviewCardService {
   }
 
   private int clampLimit(int limit) {
-    return limit <= 0 ? 20 : Math.min(limit, 80);
+    return limit <= 0
+        ? ReviewContractConstants.REVIEW_CARD_LIST_PAGE_SIZE
+        : Math.min(limit, 80);
   }
 }

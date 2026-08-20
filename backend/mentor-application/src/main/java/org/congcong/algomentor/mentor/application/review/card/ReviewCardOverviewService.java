@@ -29,19 +29,34 @@ public class ReviewCardOverviewService {
     this.metrics = metrics == null ? ReviewMetrics.NOOP : metrics;
   }
 
-  public List<ReviewCardOverview> list(
+  public ReviewCardOverviewPage list(
       long userId,
       ReviewCardSource source,
       boolean mistakeOnly,
       String keyword,
-      int limit,
-      int offset
+      int page
   ) {
-    List<ProblemReviewCard> cards = cardService.list(userId, source, mistakeOnly, keyword, limit, offset);
+    ReviewCardListCounts counts = cardService.countList(userId, source, mistakeOnly, keyword);
+    int pageSize = ReviewContractConstants.REVIEW_CARD_LIST_PAGE_SIZE;
+    int totalPages = Math.max(1, (int) Math.ceil((double) counts.total() / pageSize));
+    int normalizedPage = Math.min(Math.max(1, page), totalPages);
+    List<ProblemReviewCard> cards = cardService.list(
+        userId,
+        source,
+        mistakeOnly,
+        keyword,
+        pageSize,
+        (normalizedPage - 1) * pageSize);
     long indexQueryStartedAtNanos = System.nanoTime();
     if (cards.isEmpty()) {
       metrics.recordCodeReviewIndexQuery(0, 0, System.nanoTime() - indexQueryStartedAtNanos);
-      return List.of();
+      return new ReviewCardOverviewPage(
+          List.of(),
+          counts.total(),
+          counts.activeCount(),
+          counts.mistakeCount(),
+          normalizedPage,
+          pageSize);
     }
 
     List<String> problemSlugs = cards.stream()
@@ -76,6 +91,12 @@ public class ReviewCardOverviewService {
       log.info("Review card code review index completed with missing histories. cardCount={} reviewCount={} missingHistoryCount={}",
           cards.size(), entries.size(), missingReviewHistory);
     }
-    return overviews;
+    return new ReviewCardOverviewPage(
+        overviews,
+        counts.total(),
+        counts.activeCount(),
+        counts.mistakeCount(),
+        normalizedPage,
+        pageSize);
   }
 }
