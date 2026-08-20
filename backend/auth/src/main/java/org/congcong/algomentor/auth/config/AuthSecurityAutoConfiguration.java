@@ -52,6 +52,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -72,6 +75,10 @@ public class AuthSecurityAutoConfiguration {
   private static final Logger log = LoggerFactory.getLogger(AuthSecurityAutoConfiguration.class);
   private static final String GOOGLE_TOKEN_URI = "https://oauth2.googleapis.com/token";
   private static final String GOOGLE_USER_INFO_URI = "https://openidconnect.googleapis.com/v1/userinfo";
+  /** Spring Security 在授权请求 attributes 中保存 OAuth client registration ID 的固定键。 */
+  private static final String OAUTH2_REGISTRATION_ID_ATTRIBUTE = "registration_id";
+  private static final String GOOGLE_PROMPT_PARAMETER = "prompt";
+  private static final String GOOGLE_ACCOUNT_SELECTION_PROMPT = "select_account";
 
   @Bean
   public DefaultCookieSerializerCustomizer authSessionCookieSerializerCustomizer(
@@ -200,6 +207,8 @@ public class AuthSecurityAutoConfiguration {
     if (registrations != null) {
       http.oauth2Login(oauth2 -> oauth2
           .loginPage("/login")
+          .authorizationEndpoint(authorization -> authorization
+              .authorizationRequestResolver(googleAccountSelectionAuthorizationRequestResolver(registrations)))
           .userInfoEndpoint(userInfo -> {
             authenticatedOAuth2UserService.ifAvailable(userInfo::userService);
             authenticatedOidcUserService.ifAvailable(userInfo::oidcUserService);
@@ -244,6 +253,42 @@ public class AuthSecurityAutoConfiguration {
         SecurityContextHolderFilter.class);
 
     return http.build();
+  }
+
+  private static OAuth2AuthorizationRequestResolver googleAccountSelectionAuthorizationRequestResolver(
+      ClientRegistrationRepository registrations
+  ) {
+    DefaultOAuth2AuthorizationRequestResolver delegate =
+        new DefaultOAuth2AuthorizationRequestResolver(
+            registrations, AuthSecurityPaths.OAUTH2_AUTHORIZATION_BASE_URI);
+    return new OAuth2AuthorizationRequestResolver() {
+      @Override
+      public OAuth2AuthorizationRequest resolve(jakarta.servlet.http.HttpServletRequest request) {
+        return withGoogleAccountSelection(delegate.resolve(request));
+      }
+
+      @Override
+      public OAuth2AuthorizationRequest resolve(
+          jakarta.servlet.http.HttpServletRequest request,
+          String clientRegistrationId
+      ) {
+        return withGoogleAccountSelection(delegate.resolve(request, clientRegistrationId));
+      }
+    };
+  }
+
+  private static OAuth2AuthorizationRequest withGoogleAccountSelection(
+      OAuth2AuthorizationRequest authorizationRequest
+  ) {
+    if (authorizationRequest == null
+        || !OAuthProvider.GOOGLE.value().equals(
+            authorizationRequest.getAttribute(OAUTH2_REGISTRATION_ID_ATTRIBUTE))) {
+      return authorizationRequest;
+    }
+    return OAuth2AuthorizationRequest.from(authorizationRequest)
+        .additionalParameters(parameters ->
+            parameters.put(GOOGLE_PROMPT_PARAMETER, GOOGLE_ACCOUNT_SELECTION_PROMPT))
+        .build();
   }
 
   private static void logOAuth2Registrations(ClientRegistrationRepository registrations) {

@@ -1,6 +1,6 @@
 # 预发布环境
 
-本文记录当前预发布环境、已核验的部署状态及后续发布约定。基础设施最后核验时间：2026-08-13（UTC）；应用、容器与 SSH 最后核验时间：2026-08-19（UTC）。
+本文记录当前预发布环境、已核验的部署状态及后续发布约定。基础设施最后核验时间：2026-08-13（UTC）；应用、容器与 SSH 最后核验时间：2026-08-20（UTC）。
 
 ## 环境概览
 
@@ -30,11 +30,11 @@ PASS 与 leetmentor 主机均已通过 SSH 登录账号 `congcong` 验证成功�
 ### leetmentor 预发布业务主机
 
 - 已安装并启用 Ubuntu `docker.io` `29.1.3`，`docker.service` 为 enabled 和 active。
-- `algo-mentor` 容器正在运行，使用非 root 容器用户 `algo-mentor`，镜像为 `algo-mentor-api:preprod-2d4545c42a18-20260819T111815Z`，重启策略为 `unless-stopped`。该版本对应提交 `2d4545c42a1827420cd8202347d607207049d99c`，发布制品 SHA-256 为 `77df7de3817f419794a150a4fe65490c506ad2710fcf24d9cfbb9f4a1cd49ace`。
+- `algo-mentor` 容器正在运行，使用非 root 容器用户 `algo-mentor`，镜像为 `algo-mentor-api:preprod-50006e40d88f-20260820T044531Z`，重启策略为 `unless-stopped`。该版本对应提交 `50006e40d88f50ea8da60f7df73018576f213ae5`，发布制品 SHA-256 为 `c2b292e6e2a90a95f5f4beb9f89588af83a997488bd585faedeba38b65177d13`。
 - 容器将 Spring Boot HTTP 端口直接映射为 `0.0.0.0:18080` 与 `[::]:18080`；前置代理可按现有约定将流量转发至该端口。
 - 运行时配置位于 `/etc/algo-mentor/`：`database.env`、`redis.env` 和由当前工作机 `.env` 迁移而来的 `runtime.env`。目录权限为 `0750 root:algo-mentor`，每个文件权限为 `0640 root:algo-mentor`；2026-08-15 已校验 `runtime.env` 与本机 `.env` 完全一致。2026-08-16 已显式加入并验证 `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED=true` 与 `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED=true`，发布前配置备份为 `/etc/algo-mentor/runtime.env.bak.20260816T080926Z`。密码登录已禁用（`AUTH_PASSWORD_LOGIN_ENABLED=false`），真实值不进入仓库。
 - 已安装 `postgresql-client-16` 用于连通性验证，应用容器已连接 PASS PostgreSQL 并完成 Flyway。缓存 Redis（6379）与 Streams Redis（6380）的连接配置继续使用既有受保护文件。
-- 发布制品和 Dockerfile 位于 `/opt/algo-mentor/releases/2d4545c42a18-20260819T111815Z/`；前一版本容器以 `algo-mentor-previous-2d4545c42a18-20260819T111815Z` 停止保留，可用于容器级回滚。本次基础数据 seed 及其校验输入位于 `/opt/algo-mentor/releases/20260815T134000Z/seed/`，由 root 管理。启动前与导入前逻辑备份位于 `/var/backups/algo-mentor/`，权限为 `0600 root:root`。
+- 发布制品和 Dockerfile 位于 `/opt/algo-mentor/releases/50006e40d88f-20260820T044531Z/`；前一版本容器以 `algo-mentor-previous-50006e40d88f-20260820T044531Z` 停止保留，可用于容器级回滚。本次基础数据 seed 及其校验输入位于 `/opt/algo-mentor/releases/20260815T134000Z/seed/`，由 root 管理。启动前与导入前逻辑备份位于 `/var/backups/algo-mentor/`，权限为 `0600 root:root`。
 
 实际部署、健康检查、日志和回滚边界详见 `预发布应用升级结果-2026-08-17.md`；今后这些操作统一使用 `ssh leetmentor-root`。
 
@@ -74,4 +74,4 @@ ssh prometheus-root           # Prometheus/Grafana 配置、验证和回滚
 
 ## 核验范围
 
-2026-08-11 已通过 SSH/root 完成 PostgreSQL 首次部署与核验：安装 PostgreSQL 16、创建 `/data/postgresql/16/main` 集群、配置监听/HBA/SCRAM/资源参数和持久化 5432 防火墙规则，并创建 `algo_mentor` 数据库、最小权限角色及受保护的应用主机连接配置。2026-08-13 已在同一基础设施主机完成 Redis 7.4.10 双实例部署：缓存与 Streams 服务启动、ACL/网络限制、AOF/RDB、首个 Streams 归档及隔离恢复、应用主机认证读写和 `XADD → XGROUP → XREADGROUP → XACK` 均已验证。2026-08-15 完成当前工作机 SSH 专用密钥、严格主机键校验和两台目标机的公钥授权；同时完成 Docker 安装、`algo-mentor` 容器部署、Flyway 迁移、基础数据 seed 导入、容器重启和 HTTP 健康检查。2026-08-19 已完成提交 `a6ce4dd` 的预发布发布和单用户画像清理重放；随后完成提交 `2d4545c` 的无迁移快速发布、容器替换、readiness 健康检查和外置 Prometheus/Grafana 指标配置同步。状态会随部署变更；每次环境调整后应重新核验并更新本文档。
+2026-08-11 已通过 SSH/root 完成 PostgreSQL 首次部署与核验：安装 PostgreSQL 16、创建 `/data/postgresql/16/main` 集群、配置监听/HBA/SCRAM/资源参数和持久化 5432 防火墙规则，并创建 `algo_mentor` 数据库、最小权限角色及受保护的应用主机连接配置。2026-08-13 已在同一基础设施主机完成 Redis 7.4.10 双实例部署：缓存与 Streams 服务启动、ACL/网络限制、AOF/RDB、首个 Streams 归档及隔离恢复、应用主机认证读写和 `XADD → XGROUP → XREADGROUP → XACK` 均已验证。2026-08-15 完成当前工作机 SSH 专用密钥、严格主机键校验和两台目标机的公钥授权；同时完成 Docker 安装、`algo-mentor` 容器部署、Flyway 迁移、基础数据 seed 导入、容器重启和 HTTP 健康检查。2026-08-19 已完成提交 `a6ce4dd` 的预发布发布和单用户画像清理重放；随后完成提交 `2d4545c` 的无迁移快速发布、容器替换、readiness 健康检查和外置 Prometheus/Grafana 指标配置同步。2026-08-20 已完成提交 `50006e4` 的无迁移快速发布；本地前后端测试、运行时配置契约、容器 readiness/liveness 和外置 Prometheus 抓取均已验证。状态会随部署变更；每次环境调整后应重新核验并更新本文档。

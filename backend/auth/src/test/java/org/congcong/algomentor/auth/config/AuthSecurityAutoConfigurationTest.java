@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -170,7 +171,8 @@ class AuthSecurityAutoConfigurationTest {
   void oauth2AuthorizationEndpointRedirectsToProvider() throws Exception {
     mockMvc.perform(get("/oauth2/authorization/google"))
         .andExpect(status().is3xxRedirection())
-        .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/v2/auth")));
+        .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/v2/auth")))
+        .andExpect(header().string("Location", containsString("prompt=select_account")));
   }
 
   @Test

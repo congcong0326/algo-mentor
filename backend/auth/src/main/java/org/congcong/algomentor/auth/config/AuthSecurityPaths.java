@@ -9,7 +9,8 @@ public final class AuthSecurityPaths {
 
   public static final String API_PATTERN = "/api/**";
   public static final String HEALTH_PATH = "/api/health";
-  public static final String OAUTH2_AUTHORIZATION_PATTERN = "/oauth2/authorization/**";
+  public static final String OAUTH2_AUTHORIZATION_BASE_URI = "/oauth2/authorization";
+  public static final String OAUTH2_AUTHORIZATION_PATTERN = OAUTH2_AUTHORIZATION_BASE_URI + "/**";
   public static final String OAUTH2_CALLBACK_PATTERN = "/login/oauth2/code/**";
   public static final String OAUTH2_SESSION_POLICY_FAILURE_URL = "/login?auth=session-policy-unavailable";
   public static final String AUTH_REGISTER_PATH = "/api/auth/register";
