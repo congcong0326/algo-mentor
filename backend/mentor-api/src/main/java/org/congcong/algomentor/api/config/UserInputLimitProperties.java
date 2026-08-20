@@ -188,14 +188,6 @@ public class UserInputLimitProperties {
     @Max(ABSOLUTE_TEXT_MAX_CHARS)
     private int additionalConstraintsMaxChars = 1_000;
 
-    @Min(1)
-    @Max(520)
-    private int durationWeeksMax = 52;
-
-    @Min(1)
-    @Max(168)
-    private int weeklyHoursMax = 80;
-
     @NotNull
     private DataSize requestMaxBytes = DataSize.ofKilobytes(8);
 
@@ -213,22 +205,6 @@ public class UserInputLimitProperties {
 
     public void setAdditionalConstraintsMaxChars(int additionalConstraintsMaxChars) {
       this.additionalConstraintsMaxChars = additionalConstraintsMaxChars;
-    }
-
-    public int getDurationWeeksMax() {
-      return durationWeeksMax;
-    }
-
-    public void setDurationWeeksMax(int durationWeeksMax) {
-      this.durationWeeksMax = durationWeeksMax;
-    }
-
-    public int getWeeklyHoursMax() {
-      return weeklyHoursMax;
-    }
-
-    public void setWeeklyHoursMax(int weeklyHoursMax) {
-      this.weeklyHoursMax = weeklyHoursMax;
     }
 
     public DataSize getRequestMaxBytes() {

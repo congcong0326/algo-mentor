@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import org.congcong.algomentor.api.config.UserInputLimitProperties;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftRequest;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanTargetSize;
 import org.congcong.algomentor.api.practice.model.PracticeMessageRequest;
 import org.congcong.algomentor.api.review.model.UpsertUserProblemNoteRequest;
 
@@ -131,16 +132,16 @@ public class UserInputValidator {
   }
 
   private void validateLearningPlanRequest(LearningPlanCreateDraftRequest request) {
-    UserInputLimitProperties.LearningPlanCreate plan = limits.getLearningPlanCreate();
-    validateRange("durationWeeks", request.durationWeeks(), plan.getDurationWeeksMax());
-    validateRange("weeklyHours", request.weeklyHours(), plan.getWeeklyHoursMax());
+    validateTargetProblemCount(request.targetProblemCount());
     validateProgrammingLanguage(request.programmingLanguage());
     validateTopics(request.topicPreferences());
   }
 
-  private void validateRange(String field, Integer value, int max) {
-    if (value != null && (value < 1 || value > max)) {
-      throw UserInputValidationException.invalid(field, "must be between 1 and " + max);
+  private void validateTargetProblemCount(Integer value) {
+    if (!LearningPlanTargetSize.isSupported(value)) {
+      throw UserInputValidationException.invalid(
+          "targetProblemCount",
+          "must be one of 5, 10, 15, 20, 25, 30");
     }
   }
 

@@ -213,6 +213,7 @@ public record LearningPlanDraftRevision(
     return new LearningPlanBrief(
         plan.intent(),
         plan.objective(),
+        targetProblemCount(metadata),
         plan.durationWeeks(),
         plan.level(),
         plan.weeklyHours(),
@@ -222,5 +223,10 @@ public record LearningPlanDraftRevision(
         plan.additionalConstraints(),
         personalizationEnabled,
         LearningPlanContentLocale.fromMetadata(metadata));
+  }
+
+  private static Integer targetProblemCount(Map<String, Object> metadata) {
+    Object value = metadata.get(LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT);
+    return value instanceof Number number ? number.intValue() : null;
   }
 }

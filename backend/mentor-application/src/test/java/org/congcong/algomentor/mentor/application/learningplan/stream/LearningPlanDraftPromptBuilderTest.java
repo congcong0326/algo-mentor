@@ -21,11 +21,12 @@ import org.junit.jupiter.api.Test;
 class LearningPlanDraftPromptBuilderTest {
 
   @Test
-  void endsWithTheCompleteBriefAsAUserMessage() throws Exception {
+  void endsWithTheModelPlanningInputAsAUserMessage() throws Exception {
     LearningPlanDraftPromptBuilder builder = new LearningPlanDraftPromptBuilder(new LearningPlanLoadService());
     LearningPlanBrief brief = new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备 Java 后端算法面试",
+        15,
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
@@ -43,8 +44,12 @@ class LearningPlanDraftPromptBuilderTest {
 
     assertThat(messages).extracting(LlmMessage::role)
         .containsExactly(LlmMessage.Role.SYSTEM, LlmMessage.Role.USER);
-    assertThat(new ObjectMapper().readValue(messages.get(1).text(), LearningPlanBrief.class))
-        .isEqualTo(brief);
+    var input = new ObjectMapper().readTree(messages.get(1).text());
+    assertThat(input.path("targetProblemCount").asInt()).isEqualTo(15);
+    assertThat(input.path("objective").asText()).isEqualTo(brief.objective());
+    assertThat(input.has("durationWeeks")).isFalse();
+    assertThat(input.has("weeklyHours")).isFalse();
+    assertThat(input.has("personalizationEnabled")).isFalse();
   }
 
   @Test
@@ -53,6 +58,7 @@ class LearningPlanDraftPromptBuilderTest {
     LearningPlanBrief brief = new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "本次目标必须覆盖历史参考",
+        15,
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,
@@ -80,7 +86,9 @@ class LearningPlanDraftPromptBuilderTest {
     assertThat(messages).extracting(LlmMessage::role)
         .containsExactly(LlmMessage.Role.SYSTEM, LlmMessage.Role.SYSTEM, LlmMessage.Role.USER);
     assertThat(messages.get(1).text()).isEqualTo("untrusted personalization reference");
-    assertThat(new ObjectMapper().readValue(messages.get(2).text(), LearningPlanBrief.class))
-        .isEqualTo(brief);
+    var input = new ObjectMapper().readTree(messages.get(2).text());
+    assertThat(input.path("targetProblemCount").asInt()).isEqualTo(15);
+    assertThat(input.has("durationWeeks")).isFalse();
+    assertThat(input.has("weeklyHours")).isFalse();
   }
 }

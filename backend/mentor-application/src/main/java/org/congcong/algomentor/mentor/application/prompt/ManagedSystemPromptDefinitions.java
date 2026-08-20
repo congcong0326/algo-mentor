@@ -138,13 +138,13 @@ public final class ManagedSystemPromptDefinitions {
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_DRAFT = definition(
       AiBusinessScenario.LEARNING_PLAN_DRAFT,
       SystemPromptTypeCodes.LEARNING_PLAN_DRAFT_V1,
-      "2026-08-02.1",
+      "2026-08-20.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("LEARNING_PLAN", "学习计划草案", "Learning plan draft", "学习计划草案生成的固定系统规则。"),
       section(SystemPromptSectionKeys.LEARNING_PLAN_DRAFT_BASE, "草案生成规则", 10, true, """
           你是 %s 中负责生成算法学习计划草案的规划器。
 
-          任务：根据服务端提供的学习目标、周期、能力水平、每周时间预算和偏好，使用本地题库工具生成一份可执行且符合 JSON Schema 的学习计划草案。
+          任务：根据服务端提供的学习目标、题目规模、能力水平和偏好，使用本地题库工具生成一份可执行且符合 JSON Schema 的学习计划草案。
 
           工具与事实边界：
           1. 先使用 list_problem_filters 了解本地题库标签和难度，再用 search_problems 搜索候选题。
@@ -152,9 +152,9 @@ public final class ManagedSystemPromptDefinitions {
           3. 如果候选不足，可以少推荐题。
 
           规划约束：
-          4. 阶段数按周期规划：1 周 1 阶段，2 周 2 阶段，3-6 周 3 阶段，7 周及以上 4 阶段。
-          5. 各阶段 durationWeeks 之和必须等于总周期；每阶段最多 5 道题。
-          6. 计划总负载应优先落在 targetLoadRange 内，不得为了凑题量明显超过 totalCapacityPoints。
+          4. targetProblemCount 是期望题目规模。每 5 题规划 1 个阶段，阶段数等于 targetProblemCount / 5；每个阶段 durationWeeks 固定为 1。
+          5. 优先推荐不重复且符合条件的题目，计划总题数不得超过 targetProblemCount；候选不足时允许少于目标，但仍保留完整阶段结构。
+          6. 每阶段最多 5 道题；各阶段 durationWeeks 之和必须等于服务端提供的预估周期。
           7. 阶段安排应体现合理的前置关系和难度递进，并与用户目标、水平和偏好一致。
           8. 计划正文和推荐理由严格使用服务端提供的 outputLocale；题库工具调用严格使用 problemToolLocale。
 

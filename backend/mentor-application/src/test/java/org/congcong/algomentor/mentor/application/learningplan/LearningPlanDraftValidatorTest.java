@@ -22,6 +22,26 @@ class LearningPlanDraftValidatorTest {
   }
 
   @Test
+  void generatedPlanAllowsSixStagesForTheThirtyProblemTarget() {
+    validator.validateGeneratedPlan(planWithPhases(
+        List.of(5, 5, 5, 5, 5, 5),
+        6,
+        Map.of(LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT, 30)));
+  }
+
+  @Test
+  void generatedPlanRejectsProblemCountAboveTheTarget() {
+    LearningPlanDraftPlan plan = planWithPhases(
+        List.of(5, 5, 1),
+        3,
+        Map.of(LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT, 10));
+
+    assertThatThrownBy(() -> validator.validateGeneratedPlan(plan))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("学习计划推荐题数不能超过目标规模。");
+  }
+
+  @Test
   void templatePlanAllowsMoreThanFiveProblemsPerPhaseWhenAllMatchedProblemsArePresent() {
     validator.validateTemplatePlan(plan(1, 6, templateMetadata(6)));
   }
@@ -70,6 +90,30 @@ class LearningPlanDraftValidatorTest {
         List.of("Array"),
         null,
         List.of(phase(1, phaseCount, problemsPerPhase)),
+        metadata);
+  }
+
+  private LearningPlanDraftPlan planWithPhases(
+      List<Integer> problemCounts,
+      int durationWeeks,
+      Map<String, Object> metadata
+  ) {
+    List<LearningPlanPhaseDraft> phases = java.util.stream.IntStream.range(0, problemCounts.size())
+        .mapToObj(index -> phase(index + 1, 1, problemCounts.get(index)))
+        .toList();
+    return new LearningPlanDraftPlan(
+        "AI 计划",
+        "summary",
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        "准备算法面试",
+        durationWeeks,
+        LearningPlanLevel.INTERMEDIATE,
+        5,
+        "Java",
+        new LearningPlanDifficultyDistribution(35, 55, 10),
+        List.of("Array"),
+        null,
+        phases,
         metadata);
   }
 

@@ -65,8 +65,6 @@ algo-mentor:
     learning-plan-create:
       objective-max-chars: ${USER_INPUT_PLAN_OBJECTIVE_MAX_CHARS:300}
       additional-constraints-max-chars: ${USER_INPUT_PLAN_ADDITIONAL_CONSTRAINTS_MAX_CHARS:1000}
-      duration-weeks-max: ${USER_INPUT_PLAN_DURATION_WEEKS_MAX:52}
-      weekly-hours-max: ${USER_INPUT_PLAN_WEEKLY_HOURS_MAX:80}
       request-max-bytes: ${USER_INPUT_PLAN_REQUEST_MAX_BYTES:8KB}
     practice-message:
       message-max-bytes: ${USER_INPUT_PRACTICE_MESSAGE_MAX_BYTES:8KB}

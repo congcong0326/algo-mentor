@@ -16,8 +16,6 @@ export const DEFAULT_USER_INPUT_LIMITS: UserInputLimits = {
   learningPlanCreate: {
     objectiveMaxChars: 300,
     additionalConstraintsMaxChars: 1_000,
-    durationWeeksMax: 52,
-    weeklyHoursMax: 80,
     requestMaxBytes: 8 * 1_024,
   },
   practiceMessage: {

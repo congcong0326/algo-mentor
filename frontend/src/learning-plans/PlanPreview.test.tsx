@@ -27,7 +27,7 @@ describe('PlanPreview', () => {
     render(<PlanPreview plan={draftPlan} />);
 
     expect(screen.getByText('每天 1 题 · 每周 5 天')).toBeInTheDocument();
-    expect(screen.getByText('共 1 题')).toBeInTheDocument();
+    expect(screen.getByText('目标 10 题 · 已生成 1 题')).toBeInTheDocument();
     expect(screen.getAllByText('还需约 1 周').length).toBeGreaterThan(0);
     expect(screen.queryByText('强度评估')).not.toBeInTheDocument();
     expect(screen.queryByText('1 题 · 2 周 · 每周 5h · 强度舒缓')).not.toBeInTheDocument();
@@ -105,6 +105,7 @@ const draftPlan: LearningPlanDraftPlan = {
   topicPreferences: ['Array'],
   additionalConstraints: '每周留一天复盘。',
   metadata: {
+    targetProblemCount: 10,
     loadSummary: {
       durationWeeks: 2,
       weeklyHours: 5,

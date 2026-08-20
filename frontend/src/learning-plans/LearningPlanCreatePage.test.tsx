@@ -143,9 +143,8 @@ describe('LearningPlanCreatePage', () => {
       {
         intent: 'INTERVIEW_SPRINT',
         objective: undefined,
-        durationWeeks: 4,
+        targetProblemCount: 15,
         level: 'INTERMEDIATE',
-        weeklyHours: 6,
         programmingLanguage: 'Java',
         difficultyDistribution: {
           easyPercent: 25,

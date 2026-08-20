@@ -26,7 +26,7 @@ public final class LearningPlanGeneratedContentJsonSchema {
     ObjectNode schema = JsonNodeFactory.instance.objectNode();
     schema.put("type", "array");
     schema.put("minItems", 1);
-    schema.put("maxItems", 5);
+    schema.put("maxItems", 6);
     schema.set("items", phase());
     return schema;
   }
@@ -35,7 +35,7 @@ public final class LearningPlanGeneratedContentJsonSchema {
     ObjectNode root = object();
     root.put("additionalProperties", false);
     ObjectNode properties = root.putObject("properties");
-    properties.set("phaseIndex", integer(1, 10));
+    properties.set("phaseIndex", integer(1, 6));
     properties.set("title", string());
     properties.set("durationWeeks", integer(1, 52));
     properties.set("focus", string());

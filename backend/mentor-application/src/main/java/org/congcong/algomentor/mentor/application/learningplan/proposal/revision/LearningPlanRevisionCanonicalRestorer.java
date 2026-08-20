@@ -129,6 +129,7 @@ public final class LearningPlanRevisionCanonicalRestorer {
     LearningPlanBrief resolved = new LearningPlanBrief(
         intent,
         objective,
+        base.targetProblemCount(),
         durationWeeks,
         level,
         weeklyHours,

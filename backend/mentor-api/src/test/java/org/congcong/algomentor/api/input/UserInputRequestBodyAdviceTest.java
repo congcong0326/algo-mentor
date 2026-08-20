@@ -92,9 +92,8 @@ class UserInputRequestBodyAdviceTest {
                 {
                   "intent": "INTERVIEW_SPRINT",
                   "objective": "目标过长",
-                  "durationWeeks": 4,
+                  "targetProblemCount": 15,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6,
                   "programmingLanguage": "Java",
                   "difficultyDistribution": {
                     "easyPercent": 25,
@@ -114,33 +113,32 @@ class UserInputRequestBodyAdviceTest {
   void rejectsLearningPlanRangeAndAllowlistViolations() throws Exception {
     mockMvc.perform(post("/test/learning-plan")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(validPlanJson(53, "Java", "Array")))
+            .content(validPlanJson(12, "Java", "Array")))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value(UserInputValidationException.INVALID_CODE))
-        .andExpect(jsonPath("$.error.metadata.field").value("durationWeeks"));
+        .andExpect(jsonPath("$.error.metadata.field").value("targetProblemCount"));
 
     mockMvc.perform(post("/test/learning-plan")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(validPlanJson(4, "Brainfuck", "Array")))
+            .content(validPlanJson(10, "Brainfuck", "Array")))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value(UserInputValidationException.INVALID_CODE))
         .andExpect(jsonPath("$.error.metadata.field").value("programmingLanguage"));
 
     mockMvc.perform(post("/test/learning-plan")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(validPlanJson(4, "Java", "Unknown Topic")))
+            .content(validPlanJson(10, "Java", "Unknown Topic")))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value(UserInputValidationException.INVALID_CODE))
         .andExpect(jsonPath("$.error.metadata.field").value("topicPreferences"));
   }
 
-  private String validPlanJson(int durationWeeks, String language, String topic) {
+  private String validPlanJson(int targetProblemCount, String language, String topic) {
     return """
         {
           "intent": "INTERVIEW_SPRINT",
-          "durationWeeks": %d,
+          "targetProblemCount": %d,
           "level": "INTERMEDIATE",
-          "weeklyHours": 6,
           "programmingLanguage": "%s",
           "difficultyDistribution": {
             "easyPercent": 25,
@@ -149,7 +147,7 @@ class UserInputRequestBodyAdviceTest {
           },
           "topicPreferences": ["%s"]
         }
-        """.formatted(durationWeeks, language, topic);
+        """.formatted(targetProblemCount, language, topic);
   }
 
   @RestController

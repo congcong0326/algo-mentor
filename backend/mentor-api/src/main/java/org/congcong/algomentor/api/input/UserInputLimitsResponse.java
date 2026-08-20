@@ -26,8 +26,6 @@ public record UserInputLimitsResponse(
         new LearningPlanCreateLimits(
             plan.getObjectiveMaxChars(),
             plan.getAdditionalConstraintsMaxChars(),
-            plan.getDurationWeeksMax(),
-            plan.getWeeklyHoursMax(),
             plan.getRequestMaxBytes().toBytes()),
         new PracticeMessageLimits(
             practice.getMessageMaxBytes().toBytes(),
@@ -49,8 +47,6 @@ public record UserInputLimitsResponse(
   public record LearningPlanCreateLimits(
       int objectiveMaxChars,
       int additionalConstraintsMaxChars,
-      int durationWeeksMax,
-      int weeklyHoursMax,
       long requestMaxBytes
   ) {
   }

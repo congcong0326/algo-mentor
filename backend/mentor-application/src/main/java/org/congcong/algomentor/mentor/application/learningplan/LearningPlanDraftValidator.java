@@ -16,13 +16,17 @@ public class LearningPlanDraftValidator {
     if (brief == null || brief.objective() == null) {
       invalidFields.add("objective");
     }
-    if (brief == null || brief.durationWeeks() == null || brief.durationWeeks() < 1) {
+    boolean targetSizeBasedPlan = brief != null && brief.targetProblemCount() != null;
+    if (targetSizeBasedPlan && !LearningPlanTargetSize.isSupported(brief.targetProblemCount())) {
+      invalidFields.add("targetProblemCount");
+    }
+    if (!targetSizeBasedPlan && (brief == null || brief.durationWeeks() == null || brief.durationWeeks() < 1)) {
       invalidFields.add("durationWeeks");
     }
     if (brief == null || brief.level() == null) {
       invalidFields.add("level");
     }
-    if (brief == null || brief.weeklyHours() == null || brief.weeklyHours() < 1) {
+    if (!targetSizeBasedPlan && (brief == null || brief.weeklyHours() == null || brief.weeklyHours() < 1)) {
       invalidFields.add("weeklyHours");
     }
     if (brief == null || brief.difficultyDistribution() == null) {
@@ -39,6 +43,7 @@ public class LearningPlanDraftValidator {
     validateCommonPlanShape(plan);
     validateExpectedAiPhaseCount(plan);
     validateAiProblemLimit(plan);
+    validateTargetProblemCount(plan);
   }
 
   public void validateConfirmablePlan(LearningPlanDraftPlan plan) {
@@ -106,7 +111,9 @@ public class LearningPlanDraftValidator {
   }
 
   private void validateExpectedAiPhaseCount(LearningPlanDraftPlan plan) {
-    int expectedPhaseCount = expectedPhaseCount(plan.durationWeeks());
+    int expectedPhaseCount = targetProblemCount(plan) == null
+        ? expectedPhaseCount(plan.durationWeeks())
+        : LearningPlanTargetSize.expectedPhaseCount(targetProblemCount(plan));
     int actualPhaseCount = plan.phases().size();
     if (Math.abs(expectedPhaseCount - actualPhaseCount) > 1) {
       throw new LearningPlanException(
@@ -125,6 +132,43 @@ public class LearningPlanDraftValidator {
             "每个阶段最多推荐 5 道题。");
       }
     }
+  }
+
+  private void validateTargetProblemCount(LearningPlanDraftPlan plan) {
+    Integer targetProblemCount = targetProblemCount(plan);
+    if (targetProblemCount == null) {
+      return;
+    }
+    if (!LearningPlanTargetSize.isSupported(targetProblemCount)) {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_DRAFT_INVALID",
+          "api.error.LEARNING_PLAN_DRAFT_INVALID.target_problem_count",
+          "学习计划题目规模无效。");
+    }
+    if (actualProblemCount(plan) > targetProblemCount) {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_DRAFT_INVALID",
+          "api.error.LEARNING_PLAN_DRAFT_INVALID.target_problem_count",
+          "学习计划推荐题数不能超过目标规模。");
+    }
+  }
+
+  private Integer targetProblemCount(LearningPlanDraftPlan plan) {
+    if (plan == null || plan.metadata() == null) {
+      return null;
+    }
+    Object value = plan.metadata().get(LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT);
+    if (value instanceof Number number) {
+      return number.intValue();
+    }
+    if (value instanceof String text && !text.isBlank()) {
+      try {
+        return Integer.parseInt(text);
+      } catch (NumberFormatException ignored) {
+        return null;
+      }
+    }
+    return null;
   }
 
   private int actualProblemCount(LearningPlanDraftPlan plan) {

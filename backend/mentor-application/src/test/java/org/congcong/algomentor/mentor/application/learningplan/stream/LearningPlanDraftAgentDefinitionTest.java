@@ -101,8 +101,11 @@ class LearningPlanDraftAgentDefinitionTest {
 
     assertThat(prepared.messages()).extracting(LlmMessage::role)
         .containsExactly(LlmMessage.Role.SYSTEM, LlmMessage.Role.SYSTEM, LlmMessage.Role.USER);
-    assertThat(new com.fasterxml.jackson.databind.ObjectMapper().readValue(
-        prepared.messages().get(2).text(), LearningPlanBrief.class)).isEqualTo(brief());
+    var briefInput = new com.fasterxml.jackson.databind.ObjectMapper().readTree(
+        prepared.messages().get(2).text());
+    assertThat(briefInput.path("targetProblemCount").asInt()).isEqualTo(15);
+    assertThat(briefInput.has("durationWeeks")).isFalse();
+    assertThat(briefInput.has("weeklyHours")).isFalse();
     assertThat(prepared.metadata())
         .containsEntry(LearningPlanPersonalizationMetadataKeys.ENABLED, true)
         .containsEntry(LearningPlanPersonalizationMetadataKeys.ENTRY_COUNT, 3)
@@ -133,6 +136,7 @@ class LearningPlanDraftAgentDefinitionTest {
     return new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备 Java 后端算法面试",
+        15,
         4,
         LearningPlanLevel.INTERMEDIATE,
         6,

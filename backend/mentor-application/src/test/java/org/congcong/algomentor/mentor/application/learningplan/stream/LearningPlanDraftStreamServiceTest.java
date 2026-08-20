@@ -79,6 +79,7 @@ class LearningPlanDraftStreamServiceTest {
         .containsOnlyKeys(
             "contentLocale",
             "personalizationEnabled",
+            "targetProblemCount",
             "dailyProblemCount",
             "trainingDaysPerWeek",
             "coveragePolicy",
@@ -270,9 +271,10 @@ class LearningPlanDraftStreamServiceTest {
     return new LearningPlanBrief(
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备 Java 后端算法面试",
-        4,
+        15,
+        3,
         LearningPlanLevel.INTERMEDIATE,
-        6,
+        5,
         "Java",
         new LearningPlanDifficultyDistribution(35, 55, 10),
         List.of("Array"),
@@ -299,13 +301,13 @@ class LearningPlanDraftStreamServiceTest {
         .orElse("");
     return """
         {
-          "title": "四周 Java 算法面试冲刺计划",
+          "title": "三周 Java 算法面试冲刺计划",
           "summary": "围绕数组和哈希表建立高频题能力。",
           "phases": [
             {
               "phaseIndex": 1,
               "title": "数组与哈希表基础",
-              "durationWeeks": 2,
+              "durationWeeks": 1,
               "focus": "Array",
               "problems": [%s]
             },

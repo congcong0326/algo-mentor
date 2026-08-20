@@ -44,6 +44,11 @@ export function getPlanRhythmSettings(plan: LearningPlanDraftPlan): LearningPlan
   };
 }
 
+export function getPlanTargetProblemCount(plan: LearningPlanDraftPlan): number | undefined {
+  const value = plan.metadata?.targetProblemCount;
+  return typeof value === 'number' && Number.isInteger(value) && value > 0 ? value : undefined;
+}
+
 function isLoadSummary(value: unknown): value is LearningPlanLoadSummary {
   if (!value || typeof value !== 'object') {
     return false;

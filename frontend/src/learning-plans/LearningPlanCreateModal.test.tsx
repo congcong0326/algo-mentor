@@ -18,8 +18,7 @@ describe('LearningPlanCreateModal', () => {
     expect(screen.getByText('0 / 300 字')).toBeInTheDocument();
     expect(screen.getByText('0 / 1000 字')).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: '参考我的学习数据' })).toBeChecked();
-    fireEvent.change(screen.getByRole('spinbutton', { name: '训练周期' }), { target: { value: '6' } });
-    fireEvent.change(screen.getByRole('spinbutton', { name: '每周投入' }), { target: { value: '8' } });
+    fireEvent.click(screen.getByRole('button', { name: '30 题' }));
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
     expect(screen.getByRole('button', { name: '动态规划' })).toHaveAttribute('aria-pressed', 'true');
@@ -34,9 +33,8 @@ describe('LearningPlanCreateModal', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       intent: 'INTERVIEW_SPRINT',
       objective: '六周内建立动态规划面试题的稳定解题思路。',
-      durationWeeks: 6,
+      targetProblemCount: 30,
       level: 'INTERMEDIATE',
-      weeklyHours: 8,
       programmingLanguage: 'Python3',
       difficultyDistribution: {
         easyPercent: 25,

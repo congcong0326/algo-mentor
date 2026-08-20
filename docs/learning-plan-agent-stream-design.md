@@ -191,7 +191,9 @@ Accept: text/event-stream
 Content-Type: application/json
 ```
 
-请求体复用 `LearningPlanCreateDraftRequest`。
+请求体复用 `LearningPlanCreateDraftRequest`。AI 个性化创建只提交
+`targetProblemCount`（`5/10/15/20/25/30`）作为计划规模；服务端按默认的每天 1 题、
+每周 5 天推导预估周期和内部兼容节奏，模型 Prompt 不接收周期或每周投入。
 
 响应事件包含两类：
 

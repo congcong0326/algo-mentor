@@ -26,8 +26,8 @@ interface LearningPlanCreateFormProps {
 }
 
 const DEFAULT_INTENT: LearningPlanIntent = 'INTERVIEW_SPRINT';
-const DEFAULT_DURATION_WEEKS = 4;
-const DEFAULT_WEEKLY_HOURS = 6;
+const PLAN_SIZE_OPTIONS = [5, 10, 15, 20, 25, 30] as const;
+const DEFAULT_TARGET_PROBLEM_COUNT = 15;
 const DEFAULT_LEVEL: LearningPlanLevel = 'INTERMEDIATE';
 const DEFAULT_PROGRAMMING_LANGUAGE = 'Java';
 const DEFAULT_DIFFICULTY_VALUE = 50;
@@ -44,8 +44,7 @@ export default function LearningPlanCreateForm({
   const { resources } = useI18n();
   const inputLimits = useUserInputLimits();
   const [intent, setIntent] = useState<LearningPlanIntent>(DEFAULT_INTENT);
-  const [durationWeeks, setDurationWeeks] = useState(DEFAULT_DURATION_WEEKS);
-  const [weeklyHours, setWeeklyHours] = useState(DEFAULT_WEEKLY_HOURS);
+  const [targetProblemCount, setTargetProblemCount] = useState(DEFAULT_TARGET_PROBLEM_COUNT);
   const [level, setLevel] = useState<LearningPlanLevel>(DEFAULT_LEVEL);
   const [programmingLanguage, setProgrammingLanguage] = useState(DEFAULT_PROGRAMMING_LANGUAGE);
   const [difficultyValue, setDifficultyValue] = useState(DEFAULT_DIFFICULTY_VALUE);
@@ -61,18 +60,12 @@ export default function LearningPlanCreateForm({
   const additionalConstraintsLength = unicodeCodePointLength(additionalConstraints);
   const textLimitExceeded = objectiveLength > inputLimits.learningPlanCreate.objectiveMaxChars
     || additionalConstraintsLength > inputLimits.learningPlanCreate.additionalConstraintsMaxChars;
-  const numericPositive = Number.isInteger(durationWeeks) && durationWeeks > 0
-    && Number.isInteger(weeklyHours) && weeklyHours > 0;
-  const numericWithinLimit = durationWeeks <= inputLimits.learningPlanCreate.durationWeeksMax
-    && weeklyHours <= inputLimits.learningPlanCreate.weeklyHoursMax;
   const selectedDifficulty = getDifficultyDistribution(difficultyValue);
   const effectiveSubmitLabel = submitLabel ?? resources.learningPlans.generateDraft;
-  const totalCapacityPoints = durationWeeks > 0 && weeklyHours > 0 ? durationWeeks * weeklyHours : 0;
 
   const hasUnsavedInput = useMemo(
     () => intent !== DEFAULT_INTENT
-      || durationWeeks !== DEFAULT_DURATION_WEEKS
-      || weeklyHours !== DEFAULT_WEEKLY_HOURS
+      || targetProblemCount !== DEFAULT_TARGET_PROBLEM_COUNT
       || level !== DEFAULT_LEVEL
       || programmingLanguage !== DEFAULT_PROGRAMMING_LANGUAGE
       || difficultyValue !== DEFAULT_DIFFICULTY_VALUE
@@ -83,14 +76,13 @@ export default function LearningPlanCreateForm({
     [
       additionalConstraints,
       difficultyValue,
-      durationWeeks,
       intent,
       level,
       objective,
       personalizationEnabled,
       programmingLanguage,
       topicPreferences.length,
-      weeklyHours,
+      targetProblemCount,
     ],
   );
 
@@ -115,17 +107,6 @@ export default function LearningPlanCreateForm({
   }
 
   function submit() {
-    if (!numericPositive) {
-      setValidationError(resources.learningPlans.validationPositiveIntegers);
-      return;
-    }
-    if (!numericWithinLimit) {
-      setValidationError(resources.learningPlans.validationNumericRange(
-        inputLimits.learningPlanCreate.durationWeeksMax,
-        inputLimits.learningPlanCreate.weeklyHoursMax,
-      ));
-      return;
-    }
     if (textLimitExceeded) {
       setValidationError(resources.learningPlans.validationInputLimit);
       return;
@@ -139,9 +120,8 @@ export default function LearningPlanCreateForm({
     onSubmit({
       intent,
       objective: objective || undefined,
-      durationWeeks,
+      targetProblemCount,
       level,
-      weeklyHours,
       programmingLanguage,
       difficultyDistribution: {
         easyPercent: selectedDifficulty.easyPercent,
@@ -177,36 +157,24 @@ export default function LearningPlanCreateForm({
           </div>
         </section>
 
-        <div className="mini-grid">
-          <label className="topic-field">
-            <span>{resources.learningPlans.duration}</span>
-            <input
-              aria-label={resources.learningPlans.durationInput}
-              disabled={loading}
-              max={inputLimits.learningPlanCreate.durationWeeksMax}
-              min={1}
-              onChange={(event) => setDurationWeeks(Number(event.target.value))}
-              type="number"
-              value={durationWeeks}
-            />
-          </label>
-          <label className="topic-field">
-            <span>{resources.learningPlans.weeklyHours}</span>
-            <input
-              aria-label={resources.learningPlans.weeklyHours}
-              disabled={loading}
-              max={inputLimits.learningPlanCreate.weeklyHoursMax}
-              min={1}
-              onChange={(event) => setWeeklyHours(Number(event.target.value))}
-              type="number"
-              value={weeklyHours}
-            />
-          </label>
-        </div>
-
-        <p className="load-summary-line">
-          {resources.learningPlans.aiBudgetHint(durationWeeks, weeklyHours, totalCapacityPoints)}
-        </p>
+        <section className="question-block">
+          <strong>{resources.learningPlans.targetProblemCount}</strong>
+          <div className="segmented-grid">
+            {PLAN_SIZE_OPTIONS.map((option) => (
+              <button
+                aria-pressed={targetProblemCount === option}
+                className={targetProblemCount === option ? 'selected' : ''}
+                disabled={loading}
+                key={option}
+                onClick={() => setTargetProblemCount(option)}
+                type="button"
+              >
+                {resources.learningPlans.problemCount(option)}
+              </button>
+            ))}
+          </div>
+          <p className="load-summary-line">{resources.learningPlans.targetProblemCountHint}</p>
+        </section>
 
         <div className="mini-grid">
           <label className="topic-field">

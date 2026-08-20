@@ -155,9 +155,8 @@ class LearningPlanControllerTest {
                 {
                   "intent": "INTERVIEW_SPRINT",
                   "objective": "准备 Java 后端算法面试",
-                  "durationWeeks": 4,
+                  "targetProblemCount": 15,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6,
                   "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10}
                 }
                 """))
@@ -205,9 +204,8 @@ class LearningPlanControllerTest {
                 {
                   "intent": "INTERVIEW_SPRINT",
                   "objective": "  ",
-                  "durationWeeks": 4,
+                  "targetProblemCount": 15,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6,
                   "programmingLanguage": "Java",
                   "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
                   "topicPreferences": ["Array", "Hash Table"]
@@ -227,6 +225,9 @@ class LearningPlanControllerTest {
         .isEqualTo(LearningPlanContentLocale.EN_US);
     org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().objective())
         .isEqualTo("Improve problem-solving consistency for coding interviews");
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().targetProblemCount()).isEqualTo(15);
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().durationWeeks()).isEqualTo(3);
+    org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().weeklyHours()).isEqualTo(5);
     org.assertj.core.api.Assertions.assertThat(briefCaptor.getValue().personalizationEnabled()).isTrue();
     verifyNoInteractions(admissionService, lifecycleService);
     verify(sseProperties).learningPlanDraftTimeoutMillis();
@@ -251,9 +252,8 @@ class LearningPlanControllerTest {
                 {
                   "intent": "INTERVIEW_SPRINT",
                   "objective": "为 Java 面试集中练习动态规划",
-                  "durationWeeks": 4,
+                  "targetProblemCount": 15,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6,
                   "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10},
                   "topicPreferences": ["Dynamic Programming"],
                   "additionalConstraints": "每周复盘一次",
@@ -283,9 +283,8 @@ class LearningPlanControllerTest {
                   "intent": "INTERVIEW_SPRINT",
                   "objective": "准备 Java 后端算法面试",
                   "unexpectedInput": "不支持的字段",
-                  "durationWeeks": 4,
+                  "targetProblemCount": 15,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6,
                   "difficultyDistribution": {"easyPercent": 35, "mediumPercent": 55, "hardPercent": 10}
                 }
                 """))
@@ -518,6 +517,7 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.rhythmSettings.dailyProblemCount").value(1))
         .andExpect(jsonPath("$.data.rhythmSettings.trainingDaysPerWeek").value(5))
         .andExpect(jsonPath("$.data.metadata.dailyProblemCount").value(1))
+        .andExpect(jsonPath("$.data.metadata.targetProblemCount").value(15))
         .andExpect(jsonPath("$.data.metadata.personalizationEnabled").doesNotExist())
         .andExpect(jsonPath("$.data.metadata.template").doesNotExist())
         .andExpect(jsonPath("$.data.metadata.internalOnly").doesNotExist())
@@ -692,6 +692,7 @@ class LearningPlanControllerTest {
                 1)))),
         Map.of(
             "dailyProblemCount", 1,
+            LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT, 15,
             LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US",
             LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, true,
             "template", Map.of("templateId", "internal-template", "matchedProblemCount", 1),

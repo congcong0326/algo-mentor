@@ -10,6 +10,8 @@ public final class LearningPlanDraftMetadataKeys {
   public static final String CONTENT_LOCALE = "contentLocale";
   /** Whether this AI plan may read aggregated learner data in later runs. */
   public static final String PERSONALIZATION_ENABLED = "personalizationEnabled";
+  /** 用户选择的 AI 计划题目规模，用于展示目标数并校验生成上限。 */
+  public static final String TARGET_PROBLEM_COUNT = "targetProblemCount";
   public static final String DAILY_PROBLEM_COUNT = "dailyProblemCount";
   public static final String TRAINING_DAYS_PER_WEEK = "trainingDaysPerWeek";
   public static final String COVERAGE_POLICY = "coveragePolicy";

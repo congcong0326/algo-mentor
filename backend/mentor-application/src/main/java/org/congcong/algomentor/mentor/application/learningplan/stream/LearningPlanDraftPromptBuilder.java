@@ -89,9 +89,32 @@ public class LearningPlanDraftPromptBuilder {
 
   private String toJson(LearningPlanBrief brief) {
     try {
-      return objectMapper.writeValueAsString(brief);
+      return objectMapper.writeValueAsString(new PromptBrief(
+          brief.intent(),
+          brief.objective(),
+          brief.targetProblemCount(),
+          brief.level(),
+          brief.programmingLanguage(),
+          brief.difficultyDistribution(),
+          brief.topicPreferences(),
+          brief.additionalConstraints(),
+          brief.contentLocale()));
     } catch (JsonProcessingException exception) {
       throw new LearningPlanException("LEARNING_PLAN_BRIEF_INVALID", "学习计划输入无法序列化。");
     }
+  }
+
+  /** 仅向模型暴露选题所需的规划字段，节奏和负载由服务端处理。 */
+  private record PromptBrief(
+      org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent intent,
+      String objective,
+      Integer targetProblemCount,
+      org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel level,
+      String programmingLanguage,
+      org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution difficultyDistribution,
+      List<String> topicPreferences,
+      String additionalConstraints,
+      org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale contentLocale
+  ) {
   }
 }

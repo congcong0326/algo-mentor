@@ -22,7 +22,7 @@ class UserInputLimitControllerTest {
     mockMvc.perform(get(ApiContractConstants.USER_INPUT_LIMITS_PATH))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.reviewNote.coreIdeaMaxChars").value(2_000))
-        .andExpect(jsonPath("$.data.learningPlanCreate.durationWeeksMax").value(52))
+        .andExpect(jsonPath("$.data.learningPlanCreate.objectiveMaxChars").value(300))
         .andExpect(jsonPath("$.data.practiceMessage.messageMaxBytes").value(8_192));
   }
 }

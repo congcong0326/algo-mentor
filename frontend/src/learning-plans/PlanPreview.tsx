@@ -13,6 +13,7 @@ import type {
 import {
   getPlanNextTrainingPackage,
   getPlanRhythmSettings,
+  getPlanTargetProblemCount,
 } from './load';
 import { getPhaseDisplayTags } from './phaseTags';
 
@@ -153,6 +154,7 @@ export function PlanPackageOverview({
   const { resources } = useI18n();
   const nextTrainingPackage = getPlanNextTrainingPackage(plan);
   const rhythmSettings = getPlanRhythmSettings(plan);
+  const targetProblemCount = getPlanTargetProblemCount(plan);
   const problemIndex = buildProblemIndex(plan);
 
   return (
@@ -164,7 +166,13 @@ export function PlanPackageOverview({
             rhythmSettings.trainingDaysPerWeek,
           )}
         </strong>
-        <span>{resources.learningPlans.totalProblemCountLine(rhythmSettings.totalProblemCount)}</span>
+        <span>{targetProblemCount === undefined
+          ? resources.learningPlans.totalProblemCountLine(rhythmSettings.totalProblemCount)
+          : resources.learningPlans.targetProblemCountLine(
+            targetProblemCount,
+            rhythmSettings.totalProblemCount,
+          )}
+        </span>
         <span>{resources.learningPlans.remainingWeeksLine(rhythmSettings.estimatedRemainingWeeks)}</span>
       </section>
       {nextTrainingPackage && (

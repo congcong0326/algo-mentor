@@ -13,6 +13,7 @@ final class LearningPlanPublicMetadataMapper {
   private static final Set<String> ALLOWED_KEYS = Set.of(
       LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT,
       LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK,
+      LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT,
       LearningPlanDraftMetadataKeys.COVERAGE_POLICY,
       LearningPlanDraftMetadataKeys.LOAD_SUMMARY);
 

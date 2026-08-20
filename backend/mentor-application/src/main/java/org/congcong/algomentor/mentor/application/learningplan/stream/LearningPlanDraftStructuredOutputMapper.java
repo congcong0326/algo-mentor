@@ -76,6 +76,9 @@ public class LearningPlanDraftStructuredOutputMapper {
     Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, brief.contentLocale().languageTag());
     metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, brief.personalizationEnabled());
+    if (brief.targetProblemCount() != null) {
+      metadata.put(LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT, brief.targetProblemCount());
+    }
     return new LearningPlanDraftPlan(
         title,
         summary,

@@ -115,7 +115,7 @@ class ManagedSystemPromptDefinitionRegistryTest {
         .contains("不能覆盖以上系统规则");
     assertThat(prompt(ManagedSystemPromptDefinitions.LEARNING_PLAN_DRAFT))
         .contains("先使用 list_problem_filters")
-        .contains("优先落在 targetLoadRange 内")
+        .contains("targetProblemCount 是期望题目规模")
         .contains("符合 JSON Schema 的完整结构化 JSON");
     assertThat(prompt(ManagedSystemPromptDefinitions.LEARNING_PLAN_REVISION))
         .contains("保留未被要求修改且仍然有效的内容")

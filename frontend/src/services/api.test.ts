@@ -1029,9 +1029,8 @@ describe('learning plan draft api', () => {
     const request = {
       intent: 'INTERVIEW_SPRINT' as const,
       objective: '准备 Java 后端算法面试',
-      durationWeeks: 4,
+      targetProblemCount: 15,
       level: 'INTERMEDIATE' as const,
-      weeklyHours: 6,
       programmingLanguage: 'Java',
       difficultyDistribution: { easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
       topicPreferences: ['Array'],

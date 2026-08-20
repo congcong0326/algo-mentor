@@ -30,8 +30,6 @@ export interface UserInputLimits {
   learningPlanCreate: {
     objectiveMaxChars: number;
     additionalConstraintsMaxChars: number;
-    durationWeeksMax: number;
-    weeklyHoursMax: number;
     requestMaxBytes: number;
   };
   practiceMessage: {
@@ -1410,9 +1408,8 @@ export type LearningPlanProposalRevisionStatus =
 export interface LearningPlanCreateDraftRequest {
   intent?: LearningPlanIntent;
   objective?: string;
-  durationWeeks?: number;
+  targetProblemCount: number;
   level?: LearningPlanLevel;
-  weeklyHours?: number;
   programmingLanguage?: string;
   difficultyDistribution: LearningPlanDifficultyDistribution;
   topicPreferences: string[];

@@ -236,9 +236,8 @@ public class LearningPlanDraftStreamService {
     return switch (field) {
       case "intent" -> "你想创建哪类学习计划？例如面试冲刺、专题突破或长期学习。";
       case "objective" -> "请补充这份计划的具体目标，例如准备 Java 后端算法面试。";
-      case "durationWeeks" -> "你希望计划持续几周？";
+      case "targetProblemCount" -> "请选择计划题目规模：5、10、15、20、25 或 30 题。";
       case "level" -> "你当前算法水平更接近入门、中级还是高级？";
-      case "weeklyHours" -> "你每周大约可以投入几小时学习算法？";
       default -> "请补充一个最关键的信息，方便继续生成计划。";
     };
   }

@@ -322,6 +322,7 @@ class LearningPlanPersonalizedGenerationIT extends PostgresIntegrationTestSuppor
     assertThat(fieldNames(objectMapper.readTree(json))).containsExactlyInAnyOrder(
         "intent",
         "objective",
+        "targetProblemCount",
         "durationWeeks",
         "level",
         "weeklyHours",

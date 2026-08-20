@@ -7,13 +7,13 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanBrief
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyDistribution;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanTargetSize;
 
 public record LearningPlanCreateDraftRequest(
     LearningPlanIntent intent,
     String objective,
-    Integer durationWeeks,
+    Integer targetProblemCount,
     LearningPlanLevel level,
-    Integer weeklyHours,
     String programmingLanguage,
     LearningPlanDifficultyDistribution difficultyDistribution,
     List<String> topicPreferences,
@@ -29,9 +29,10 @@ public record LearningPlanCreateDraftRequest(
     return new LearningPlanBrief(
         intent,
         objective,
-        durationWeeks,
+        targetProblemCount,
+        LearningPlanTargetSize.durationWeeksFor(targetProblemCount),
         level,
-        weeklyHours,
+        LearningPlanTargetSize.LEGACY_WEEKLY_HOURS,
         programmingLanguage,
         difficultyDistribution,
         topicPreferences,

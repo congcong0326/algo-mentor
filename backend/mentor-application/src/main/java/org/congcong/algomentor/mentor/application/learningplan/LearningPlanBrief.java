@@ -8,6 +8,7 @@ import java.util.List;
 public record LearningPlanBrief(
     LearningPlanIntent intent,
     String objective,
+    Integer targetProblemCount,
     Integer durationWeeks,
     LearningPlanLevel level,
     Integer weeklyHours,
@@ -18,6 +19,35 @@ public record LearningPlanBrief(
     boolean personalizationEnabled,
     LearningPlanContentLocale contentLocale
 ) {
+
+  /** 兼容模板和既有内部调用；AI 创建入口必须提供 targetProblemCount。 */
+  public LearningPlanBrief(
+      LearningPlanIntent intent,
+      String objective,
+      Integer durationWeeks,
+      LearningPlanLevel level,
+      Integer weeklyHours,
+      String programmingLanguage,
+      LearningPlanDifficultyDistribution difficultyDistribution,
+      List<String> topicPreferences,
+      String additionalConstraints,
+      boolean personalizationEnabled,
+      LearningPlanContentLocale contentLocale
+  ) {
+    this(
+        intent,
+        objective,
+        null,
+        durationWeeks,
+        level,
+        weeklyHours,
+        programmingLanguage,
+        difficultyDistribution,
+        topicPreferences,
+        additionalConstraints,
+        personalizationEnabled,
+        contentLocale);
+  }
 
   public LearningPlanBrief {
     contentLocale = contentLocale == null ? LearningPlanContentLocale.ZH_CN : contentLocale;

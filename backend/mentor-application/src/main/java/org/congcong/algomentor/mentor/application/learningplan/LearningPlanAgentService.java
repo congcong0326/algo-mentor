@@ -31,7 +31,9 @@ public class LearningPlanAgentService {
 
   private LearningPlanDraftPlan generateDraftPlan(LearningPlanBrief brief) {
     int durationWeeks = brief.durationWeeks();
-    int phaseCount = validator.expectedPhaseCount(durationWeeks);
+    int phaseCount = brief.targetProblemCount() == null
+        ? validator.expectedPhaseCount(durationWeeks)
+        : LearningPlanTargetSize.expectedPhaseCount(brief.targetProblemCount());
     List<Integer> phaseWeeks = splitWeeks(durationWeeks, phaseCount);
     List<String> preferredTags = brief.topicPreferences().isEmpty()
         ? List.of("Array", "Hash Table", "Two Pointers", "Dynamic Programming")
@@ -63,6 +65,9 @@ public class LearningPlanAgentService {
     Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, brief.contentLocale().languageTag());
     metadata.put(LearningPlanDraftMetadataKeys.PERSONALIZATION_ENABLED, brief.personalizationEnabled());
+    if (brief.targetProblemCount() != null) {
+      metadata.put(LearningPlanDraftMetadataKeys.TARGET_PROBLEM_COUNT, brief.targetProblemCount());
+    }
 
     return new LearningPlanDraftPlan(
         titleFor(brief),
@@ -192,18 +197,16 @@ public class LearningPlanAgentService {
       return switch (field) {
         case "intent" -> "What kind of learning plan do you want, such as an interview sprint, topic breakthrough, or long-term learning plan?";
         case "objective" -> "What is the concrete objective for this plan?";
-        case "durationWeeks" -> "How many weeks should the plan cover?";
+        case "targetProblemCount" -> "How many problems should this plan target: 5, 10, 15, 20, 25, or 30?";
         case "level" -> "Is your current algorithm level closer to beginner, intermediate, or advanced?";
-        case "weeklyHours" -> "About how many hours per week can you spend studying algorithms?";
         default -> "Please provide the most important missing detail so the plan can be generated.";
       };
     }
     return switch (field) {
       case "intent" -> "你想创建哪类学习计划？例如面试冲刺、专题突破或长期学习。";
       case "objective" -> "请补充这份计划的具体目标，例如准备 Java 后端算法面试。";
-      case "durationWeeks" -> "你希望计划持续几周？";
+      case "targetProblemCount" -> "请选择计划题目规模：5、10、15、20、25 或 30 题。";
       case "level" -> "你当前算法水平更接近入门、中级还是高级？";
-      case "weeklyHours" -> "你每周大约可以投入几小时学习算法？";
       default -> "请补充一个最关键的信息，方便继续生成计划。";
     };
   }

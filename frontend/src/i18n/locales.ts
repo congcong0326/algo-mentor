@@ -1511,6 +1511,9 @@ export interface LocaleResources {
     templateTargetAudience: string;
     templateExpectedOutcome: string;
     scenario: string;
+    targetProblemCount: string;
+    targetProblemCountHint: string;
+    targetProblemCountLine: (target: number, actual: number) => string;
     duration: string;
     durationInput: string;
     weeklyHours: string;
@@ -3186,6 +3189,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateTargetAudience: '适合人群',
       templateExpectedOutcome: '完成目标',
       scenario: '训练场景',
+      targetProblemCount: '计划规模',
+      targetProblemCountHint: '默认每周训练 5 天、每天 1 题；模型会尽量交付目标数量，实际题数以草案为准。',
+      targetProblemCountLine: (target, actual) => `目标 ${target} 题 · 已生成 ${actual} 题`,
       duration: '周期',
       durationInput: '训练周期',
       weeklyHours: '每周投入',
@@ -4951,6 +4957,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateTargetAudience: 'Audience',
       templateExpectedOutcome: 'Outcome',
       scenario: 'Scenario',
+      targetProblemCount: 'Plan Size',
+      targetProblemCountHint: 'The default rhythm is 1 problem per day, 5 days per week. The model will aim for this size; the draft shows the actual count.',
+      targetProblemCountLine: (target, actual) => `Target ${target} problems · Generated ${actual}`,
       duration: 'Duration',
       durationInput: 'Training Duration',
       weeklyHours: 'Weekly Hours',

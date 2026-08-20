@@ -156,6 +156,7 @@ public class LearningPlanDraftService {
     return new LearningPlanBrief(
         brief.intent(),
         objective,
+        brief.targetProblemCount(),
         brief.durationWeeks(),
         brief.level(),
         brief.weeklyHours(),

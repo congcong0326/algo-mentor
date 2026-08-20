@@ -33,9 +33,10 @@ class LearningPlanGeneratedContentJsonSchemaTest {
 
   @Test
   void phaseSchemaOnlyAcceptsFieldsNeededToExecuteThePlan() {
-    JsonNode phaseProperties = LearningPlanGeneratedContentJsonSchema.schema()
+    JsonNode phases = LearningPlanGeneratedContentJsonSchema.schema()
         .path("properties")
-        .path("phases")
+        .path("phases");
+    JsonNode phaseProperties = phases
         .path("items")
         .path("properties");
     List<String> phaseFields = new ArrayList<>();
@@ -43,5 +44,7 @@ class LearningPlanGeneratedContentJsonSchemaTest {
 
     assertThat(phaseFields)
         .containsExactlyInAnyOrder("phaseIndex", "title", "durationWeeks", "focus", "problems");
+    assertThat(phases.path("maxItems").asInt()).isEqualTo(6);
+    assertThat(phaseProperties.path("phaseIndex").path("maximum").asInt()).isEqualTo(6);
   }
 }
