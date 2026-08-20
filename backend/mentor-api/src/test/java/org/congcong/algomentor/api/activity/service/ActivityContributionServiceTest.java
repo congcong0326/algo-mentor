@@ -37,18 +37,16 @@ class ActivityContributionServiceTest {
     assertThat(response.timezone()).isEqualTo("Asia/Shanghai");
     assertThat(response.from()).isEqualTo(LocalDate.of(2025, 8, 20));
     assertThat(response.to()).isEqualTo(LocalDate.of(2026, 8, 19));
-    assertThat(response.days()).hasSize(371);
-    assertThat(response.days().get(0).date()).isEqualTo(LocalDate.of(2025, 8, 17));
-    assertThat(response.days().get(370).date()).isEqualTo(LocalDate.of(2026, 8, 22));
+    assertThat(response.dailyCounts())
+        .extracting(entry -> List.of(entry.offset(), entry.count()))
+        .containsExactly(
+            List.of(362, 1),
+            List.of(363, 2),
+            List.of(364, 5));
     assertThat(response.totalCount()).isEqualTo(8);
     assertThat(response.activeDays()).isEqualTo(3);
     assertThat(response.currentStreak()).isEqualTo(3);
     assertThat(response.longestStreak()).isEqualTo(3);
-    assertThat(response.days().stream()
-        .filter(day -> day.date().equals(LocalDate.of(2026, 8, 19)))
-        .findFirst()
-        .orElseThrow()
-        .level()).isEqualTo(3);
 
     verify(mapper).findDailyCounts(
         eq(42L),
@@ -66,7 +64,7 @@ class ActivityContributionServiceTest {
         .getContributions(42L, " ");
 
     assertThat(response.timezone()).isEqualTo("UTC");
-    assertThat(response.days()).hasSize(371);
+    assertThat(response.dailyCounts()).isEmpty();
   }
 
   @Test
@@ -84,11 +82,16 @@ class ActivityContributionServiceTest {
     ActivityContributionResponse response = new ActivityContributionService(mapper, CLOCK)
         .getContributions(42L, "Asia/Shanghai");
 
-    assertThat(response.days())
-        .filteredOn(day -> !day.date().isBefore(LocalDate.of(2026, 8, 13))
-            && !day.date().isAfter(LocalDate.of(2026, 8, 19)))
-        .extracting(day -> day.level())
-        .containsExactly(1, 1, 2, 2, 3, 3, 4);
+    assertThat(response.dailyCounts())
+        .extracting(entry -> List.of(entry.offset(), entry.count()))
+        .containsExactly(
+            List.of(358, 1),
+            List.of(359, 2),
+            List.of(360, 3),
+            List.of(361, 4),
+            List.of(362, 5),
+            List.of(363, 6),
+            List.of(364, 7));
   }
 
   @Test

@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
 import org.congcong.algomentor.api.ability.mapper.model.AbilityTagScoreRow;
+import org.congcong.algomentor.api.ability.model.AbilityHomeSummaryResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.junit.jupiter.api.Test;
 
 class AbilityProfileServiceTest {
@@ -71,6 +73,31 @@ class AbilityProfileServiceTest {
   }
 
   @Test
+  void returnsOnlyHomeDiagnosticFieldsUsingTheExistingTagOrderingRules() {
+    AbilityProfileService service = serviceFor(
+        row("array", "数组", 120L, 0L, null),
+        row("dynamic-programming", "动态规划", 100L, 3L, new BigDecimal("8.0")),
+        row("tree", "树", 80L, 8L, new BigDecimal("8.0")));
+
+    AbilityHomeSummaryResponse response = service.getHomeSummary(42L, ProblemLocale.ZH_CN);
+
+    assertThat(response.averageAbilityScore()).isEqualByComparingTo("2.9");
+    assertThat(response.currentStrength().label()).isEqualTo("树");
+    assertThat(response.currentStrength().reviewedProblemCount()).isEqualTo(8L);
+    assertThat(response.nextBreakthrough().label()).isEqualTo("数组");
+    assertThat(response.nextBreakthrough().reviewedProblemCount()).isZero();
+  }
+
+  @Test
+  void returnsAnEmptyHomeSummaryWhenNoCommonTagsExist() {
+    AbilityHomeSummaryResponse response = serviceFor().getHomeSummary(42L, ProblemLocale.ZH_CN);
+
+    assertThat(response.averageAbilityScore()).isEqualByComparingTo("0.0");
+    assertThat(response.currentStrength()).isNull();
+    assertThat(response.nextBreakthrough()).isNull();
+  }
+
+  @Test
   void reportsUnavailableMapperWhenDatasourceIsDisabled() {
     AbilityProfileService service = new AbilityProfileService((AbilityProfileMapper) null);
 
@@ -80,9 +107,13 @@ class AbilityProfileServiceTest {
   }
 
   private AbilityProfileResponse profileFor(AbilityTagScoreRow row) {
+    return serviceFor(row).getProfile(42L);
+  }
+
+  private AbilityProfileService serviceFor(AbilityTagScoreRow... rows) {
     AbilityProfileMapper mapper = mock(AbilityProfileMapper.class);
-    when(mapper.findCommonTagScores(42L, 20, "zh-CN")).thenReturn(List.of(row));
-    return new AbilityProfileService(mapper).getProfile(42L);
+    when(mapper.findCommonTagScores(42L, 20, "zh-CN")).thenReturn(List.of(rows));
+    return new AbilityProfileService(mapper);
   }
 
   private AbilityTagScoreRow row(

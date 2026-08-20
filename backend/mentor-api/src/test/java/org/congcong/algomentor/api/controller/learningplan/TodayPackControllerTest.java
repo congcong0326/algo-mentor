@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.controller.learningplan;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -14,11 +15,15 @@ import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.api.learningplan.model.RecommendedTodayPackActivationRequest;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.TodayPack;
+import org.congcong.algomentor.mentor.application.learningplan.TodayPackHomeActivePlan;
+import org.congcong.algomentor.mentor.application.learningplan.TodayPackHomeSummary;
 import org.congcong.algomentor.mentor.application.learningplan.TodayPackService;
 import org.congcong.algomentor.mentor.application.learningplan.TodayPackState;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftCommand;
@@ -28,6 +33,49 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 
 class TodayPackControllerTest {
+
+  @Test
+  void planTodayPackRejectsAPlanThatIsNoLongerActive() {
+    TodayPackService todayPackService = mock(TodayPackService.class);
+    when(todayPackService.getPlanWorkspace(42L, 900L, "Asia/Shanghai", 0)).thenReturn(Optional.empty());
+    TodayPackController controller = controller(
+        todayPackService,
+        mock(LearningPlanActivationService.class),
+        mock(LearningPlanDraftService.class),
+        mock(LearningPlanTemplateDraftService.class));
+
+    assertThatThrownBy(() -> controller.getPlanTodayPack(900L, "Asia/Shanghai", 0))
+        .isInstanceOfSatisfying(LearningPlanException.class, exception ->
+            assertThat(exception.code()).isEqualTo(TodayPackService.ACTIVE_SELECTION_MISMATCH_CODE));
+    verify(todayPackService).getPlanWorkspace(42L, 900L, "Asia/Shanghai", 0);
+  }
+
+  @Test
+  void homeSummaryReturnsOnlyTheHomepageFields() {
+    TodayPackService todayPackService = mock(TodayPackService.class);
+    when(todayPackService.getHomeSummary(42L, "Asia/Shanghai")).thenReturn(new TodayPackHomeSummary(
+        TodayPackState.READY,
+        LocalDate.of(2026, 7, 11),
+        new TodayPackHomeActivePlan(900L, "训练计划", 2, 5, 12),
+        3,
+        null,
+        LocalDate.of(2026, 7, 12)));
+    TodayPackController controller = controller(
+        todayPackService,
+        mock(LearningPlanActivationService.class),
+        mock(LearningPlanDraftService.class),
+        mock(LearningPlanTemplateDraftService.class));
+
+    var response = controller.getHomeSummary("Asia/Shanghai");
+
+    assertThat(response.data()).satisfies(summary -> {
+      assertThat(summary.localDate()).isEqualTo(LocalDate.of(2026, 7, 11));
+      assertThat(summary.dueProblemCount()).isEqualTo(3);
+      assertThat(summary.activePlan()).extracting(plan -> plan.planId()).isEqualTo(900L);
+      assertThat(summary.nextPackDate()).isEqualTo(LocalDate.of(2026, 7, 12));
+    });
+    verify(todayPackService).getHomeSummary(42L, "Asia/Shanghai");
+  }
 
   @Test
   void activateRecommendedPlanPassesAcceptLanguageToTemplateDraft() {
@@ -91,6 +139,10 @@ class TodayPackControllerTest {
         beanFactory.getBeanProvider(LearningPlanActivationService.class),
         beanFactory.getBeanProvider(LearningPlanDraftService.class),
         beanFactory.getBeanProvider(LearningPlanTemplateDraftService.class),
+        beanFactory.getBeanProvider(LearningPlanService.class),
+        beanFactory.getBeanProvider(org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository.class),
+        beanFactory.getBeanProvider(org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService.class),
+        beanFactory.getBeanProvider(org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService.class),
         currentUserIdProvider);
   }
 }

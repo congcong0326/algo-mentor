@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,26 @@ class SpaWebMvcConfigurationTest {
     mockMvc.perform(get("/assets/missing.js"))
         .andExpect(status().isNotFound())
         .andExpect(content().string(not(containsString("<div id=\"root\"></div>"))));
+  }
+
+  @Test
+  void cachesHashedViteAssetsForOneYear() throws Exception {
+    mockMvc.perform(get("/assets/application-4fd2a8b9.js"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", containsString("max-age=31536000")))
+        .andExpect(header().string("Cache-Control", containsString("public")))
+        .andExpect(header().string("Cache-Control", containsString("immutable")));
+  }
+
+  @Test
+  void requiresRevalidationForFixedUrlStaticResources() throws Exception {
+    mockMvc.perform(get("/index.html"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", containsString("no-cache")));
+
+    mockMvc.perform(get("/favicon.svg"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", containsString("no-cache")));
   }
 
   @SpringBootConfiguration

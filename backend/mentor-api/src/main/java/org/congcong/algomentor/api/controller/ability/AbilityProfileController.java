@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.controller.ability;
 
+import org.congcong.algomentor.api.ability.model.AbilityHomeSummaryResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.api.config.ApiContractConstants;
@@ -29,6 +30,12 @@ public class AbilityProfileController {
   public ApiResponse<AbilityProfileResponse> profile() {
     long userId = requireCurrentUserId();
     return ApiResponse.success(abilityProfileService.getProfile(userId, requestLocale()));
+  }
+
+  @GetMapping(ApiContractConstants.ABILITIES_SUMMARY_PATH)
+  public ApiResponse<AbilityHomeSummaryResponse> homeSummary() {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(abilityProfileService.getHomeSummary(userId, requestLocale()));
   }
 
   private ProblemLocale requestLocale() {

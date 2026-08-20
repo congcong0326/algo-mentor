@@ -49,6 +49,48 @@ class TodayPackServiceTest {
         .allMatch(problem -> problem.scheduledDate().equals(pack.localDate()));
   }
 
+  @Test
+  void homeSummaryCountsDueProblemsWithoutBuildingProblemSections() {
+    LearningPlanActivation selection = new LearningPlanActivation(
+        USER_ID, PLAN_ID, ACTIVATED_AT, ACTIVATED_AT, ACTIVATED_AT);
+    TodayPackService service = new TodayPackService(
+        activationService(selection),
+        new StubPlanRepository(plan()),
+        new StubPracticeSessionRepository(List.of(
+            progress("first", PracticeProgressStatus.COMPLETED, ACTIVATED_AT.plusSeconds(600)))),
+        new LearningPlanLoadService(CLOCK),
+        CLOCK);
+
+    TodayPackHomeSummary summary = service.getHomeSummary(USER_ID, "UTC");
+
+    assertThat(summary.state()).isEqualTo(TodayPackState.READY);
+    assertThat(summary.dueProblemCount()).isEqualTo(1);
+    assertThat(summary.activePlan()).extracting(TodayPackHomeActivePlan::planId).isEqualTo(PLAN_ID);
+    assertThat(summary.nextPackDate()).isEqualTo(ACTIVATED_AT.atZone(ZoneOffset.UTC).toLocalDate().plusDays(1));
+  }
+
+  @Test
+  void planWorkspaceReusesTheActivePlanSnapshotForPackAndProgressContext() {
+    LearningPlan plan = plan();
+    LearningPlanActivation selection = new LearningPlanActivation(
+        USER_ID, PLAN_ID, ACTIVATED_AT, ACTIVATED_AT, ACTIVATED_AT);
+    List<PracticeProgress> progress = List.of(
+        progress("first", PracticeProgressStatus.COMPLETED, ACTIVATED_AT.plusSeconds(600)));
+    TodayPackService service = new TodayPackService(
+        activationService(selection),
+        new StubPlanRepository(plan),
+        new StubPracticeSessionRepository(progress),
+        new LearningPlanLoadService(CLOCK),
+        CLOCK);
+
+    TodayPackWorkspace workspace = service.getPlanWorkspace(USER_ID, PLAN_ID, "UTC", 0).orElseThrow();
+
+    assertThat(workspace.plan()).isSameAs(plan);
+    assertThat(workspace.progress()).containsExactlyElementsOf(progress);
+    assertThat(workspace.pack().activePlan()).extracting(TodayPackActivePlan::planId).isEqualTo(PLAN_ID);
+    assertThat(service.getPlanWorkspace(USER_ID, PLAN_ID + 1, "UTC", 0)).isEmpty();
+  }
+
   private static LearningPlanActivationService activationService(LearningPlanActivation selection) {
     return new LearningPlanActivationService(null, null, CLOCK) {
       @Override

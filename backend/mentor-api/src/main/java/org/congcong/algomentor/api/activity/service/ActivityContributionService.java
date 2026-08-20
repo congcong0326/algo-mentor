@@ -2,18 +2,18 @@ package org.congcong.algomentor.api.activity.service;
 
 import java.time.Clock;
 import java.time.DateTimeException;
-import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.congcong.algomentor.api.activity.mapper.ActivityContributionMapper;
 import org.congcong.algomentor.api.activity.mapper.model.ActivityContributionRow;
-import org.congcong.algomentor.api.activity.model.ActivityContributionDayResponse;
+import org.congcong.algomentor.api.activity.model.ActivityContributionDailyCountResponse;
 import org.congcong.algomentor.api.activity.model.ActivityContributionResponse;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,6 @@ public class ActivityContributionService {
 
     Map<LocalDate, Integer> counts = countsByDate(
         mapper().findDailyCounts(userId, zoneId.getId(), fromInclusive, toExclusive));
-    List<ActivityContributionDayResponse> days = calendarDays(from, to, counts);
     return new ActivityContributionResponse(
         zoneId.getId(),
         from,
@@ -63,7 +62,7 @@ public class ActivityContributionService {
         activeDays(from, to, counts),
         currentStreak(from, to, counts),
         longestStreak(from, to, counts),
-        days);
+        dailyCounts(from, to, counts));
   }
 
   private Map<LocalDate, Integer> countsByDate(List<ActivityContributionRow> rows) {
@@ -79,19 +78,20 @@ public class ActivityContributionService {
     return counts;
   }
 
-  private List<ActivityContributionDayResponse> calendarDays(
+  private List<ActivityContributionDailyCountResponse> dailyCounts(
       LocalDate from,
       LocalDate to,
       Map<LocalDate, Integer> counts
   ) {
-    LocalDate gridStart = from.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-    LocalDate gridEnd = to.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-    java.util.ArrayList<ActivityContributionDayResponse> days = new java.util.ArrayList<>();
-    for (LocalDate date = gridStart; !date.isAfter(gridEnd); date = date.plusDays(1)) {
+    List<ActivityContributionDailyCountResponse> dailyCounts = new ArrayList<>();
+    for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
       int count = counts.getOrDefault(date, 0);
-      days.add(new ActivityContributionDayResponse(date, count, level(count)));
+      if (count > 0) {
+        dailyCounts.add(new ActivityContributionDailyCountResponse(
+            Math.toIntExact(ChronoUnit.DAYS.between(from, date)), count));
+      }
     }
-    return List.copyOf(days);
+    return List.copyOf(dailyCounts);
   }
 
   private long totalCount(LocalDate from, LocalDate to, Map<LocalDate, Integer> counts) {
@@ -128,22 +128,6 @@ public class ActivityContributionService {
       longest = Math.max(longest, current);
     }
     return longest;
-  }
-
-  private int level(int count) {
-    if (count <= 0) {
-      return 0;
-    }
-    if (count <= 2) {
-      return 1;
-    }
-    if (count <= 4) {
-      return 2;
-    }
-    if (count <= 6) {
-      return 3;
-    }
-    return 4;
   }
 
   private ZoneId parseTimezone(String timezone) {

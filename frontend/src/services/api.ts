@@ -1,6 +1,7 @@
 import type {
   AgentToolPermissionDecisionRequest,
   AgentToolPermissionDecisionResponse,
+  AbilityHomeSummaryResponse,
   AbilityProfileResponse,
   AdminUserDetail,
   AdminUserListQuery,
@@ -76,7 +77,9 @@ import type {
   LearnerProfileDocumentResponse,
   LearnerProfileEvidencePage,
   LearnerProfileEvidenceQuery,
+  TodayPackHomeSummaryResponse,
   TodayPackResponse,
+  TodayPackWorkspaceResponse,
   ActivityContributionResponse,
   PracticeMessageRequest,
   PracticeMessage,
@@ -138,6 +141,9 @@ const xsrfHeaderName = 'X-XSRF-TOKEN';
 const defaultLocale = 'zh-CN';
 const supportedLocales = new Set(['zh-CN', 'en-US']);
 let apiLocale = defaultLocale;
+
+/** Error code returned when a today-pack URL no longer targets the active plan. */
+export const LEARNING_PLAN_ACTIVE_SELECTION_MISMATCH_CODE = 'LEARNING_PLAN_ACTIVE_SELECTION_MISMATCH';
 
 export class ApiRequestError extends Error {
   readonly status: number;
@@ -578,6 +584,19 @@ export async function getAbilityProfile(signal?: AbortSignal): Promise<ApiRespon
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Ability profile request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAbilityHomeSummary(signal?: AbortSignal): Promise<ApiResponse<AbilityHomeSummaryResponse>> {
+  const response = await apiFetch('/api/abilities/summary', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Ability home summary request failed');
   }
 
   return response.json();
@@ -1673,6 +1692,27 @@ export async function getLearningPlanDetail(
   return response.json();
 }
 
+export async function getLearningPlanTodayPack(
+  planId: number,
+  timezone?: string,
+  packOffset = 0,
+  signal?: AbortSignal,
+): Promise<ApiResponse<TodayPackWorkspaceResponse>> {
+  const response = await apiFetch(
+    `/api/learning-plans/${planId}/today-pack${toQueryString({ timezone, packOffset })}`,
+    {
+      headers: jsonHeaders,
+      signal,
+    },
+  );
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan today pack request failed');
+  }
+
+  return response.json();
+}
+
 export async function pauseLearningPlanContract(planId: number): Promise<ApiResponse<LearningPlanDetailResponse>> {
   const response = await apiFetch(`/api/learning-plans/${planId}/contract/pause`, {
     method: 'POST',
@@ -1732,6 +1772,31 @@ export async function updateLearningPlanRhythm(
   return response.json();
 }
 
+export async function updateLearningPlanTodayPackRhythm(
+  planId: number,
+  request: LearningPlanRhythmUpdateRequest,
+  timezone?: string,
+  packOffset = 0,
+): Promise<ApiResponse<TodayPackWorkspaceResponse>> {
+  const response = await apiFetch(
+    `/api/learning-plans/${planId}/today-pack/rhythm${toQueryString({ timezone, packOffset })}`,
+    {
+      method: 'PATCH',
+      headers: {
+        ...jsonHeaders,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    },
+  );
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan today pack rhythm update request failed');
+  }
+
+  return response.json();
+}
+
 export async function getTodayPack(
   timezone?: string,
   packOffset = 0,
@@ -1744,6 +1809,22 @@ export async function getTodayPack(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Today pack request failed');
+  }
+
+  return response.json();
+}
+
+export async function getTodayPackHomeSummary(
+  timezone?: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<TodayPackHomeSummaryResponse>> {
+  const response = await apiFetch(`/api/today-pack/home-summary${toQueryString({ timezone })}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Today pack home summary request failed');
   }
 
   return response.json();

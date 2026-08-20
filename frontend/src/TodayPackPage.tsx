@@ -13,14 +13,10 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  findBreakthroughTag,
-  formatAbilityScore,
-  summarizeAbilityProfile,
-} from './ability/abilityProfile';
+import { formatAbilityScore } from './ability/abilityProfile';
 import ActivityHeatmap from './activity/ActivityHeatmap';
 import { toActivityCalendarData, type ActivityCalendarData } from './activity/activityHeatmap';
-import { APP_ROUTES, learningPlanPracticeChatPath, learningPlanTodayPackPath } from './app/navigation';
+import { APP_ROUTES, learningPlanDetailPath, learningPlanPracticeChatPath, learningPlanTodayPackPath } from './app/navigation';
 import { formatDate, formatDifficulty, formatProblemTitle } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
 import type { LocaleResources } from './i18n/locales';
@@ -30,20 +26,24 @@ import {
   estimateRhythmWeeks,
 } from './learning-plans/learningPlanRhythm';
 import {
-  getTodayPack,
+  getTodayPackHomeSummary,
   getActivityContributions,
-  getAbilityProfile,
+  getAbilityHomeSummary,
   getReviewSummary,
+  ApiRequestError,
+  getLearningPlanTodayPack,
+  LEARNING_PLAN_ACTIVE_SELECTION_MISMATCH_CODE,
   requireApiData,
-  updateLearningPlanRhythm,
   restartTodayPack,
+  updateLearningPlanTodayPackRhythm,
 } from './services/api';
 import type {
-  LearningPlanDetailResponse,
   LearningPlanPaceStatus,
-  AbilityProfileResponse,
+  AbilityHomeSummaryResponse,
   TodayPackProblemResponse,
+  TodayPackHomeSummaryResponse,
   TodayPackResponse,
+  TodayPackWorkspaceResponse,
   ReviewSummaryResponse,
 } from './types/api';
 import { browserTimezone, formatUpcomingReviewTime } from './utils/time';
@@ -53,16 +53,14 @@ interface TodayPackPageProps {
 }
 
 interface TodayPackPanelProps {
-  contractFeedback?: string;
-  onNavigate: (pathname: string) => void;
-  onPlanUpdated: () => Promise<void>;
-  plan: LearningPlanDetailResponse;
+  onNavigate: (pathname: string, options?: { replace?: boolean }) => void;
+  planId: number;
 }
 
 export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const { locale, resources } = useI18n();
   const [timezone] = useState(browserTimezone);
-  const [pack, setPack] = useState<TodayPackResponse>();
+  const [pack, setPack] = useState<TodayPackHomeSummaryResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reviewSummary, setReviewSummary] = useState<ReviewSummaryResponse>();
@@ -70,22 +68,17 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const [reviewClock, setReviewClock] = useState(Date.now);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [reviewUnavailable, setReviewUnavailable] = useState(false);
-  const [abilityProfile, setAbilityProfile] = useState<AbilityProfileResponse>();
+  const [abilitySummary, setAbilitySummary] = useState<AbilityHomeSummaryResponse>();
   const [abilityLoading, setAbilityLoading] = useState(true);
   const [abilityUnavailable, setAbilityUnavailable] = useState(false);
   const [activity, setActivity] = useState<ActivityCalendarData>();
   const [activityLoading, setActivityLoading] = useState(true);
   const [activityUnavailable, setActivityUnavailable] = useState(false);
-  const totalProblems = useMemo(
-    () => pack?.sections.reduce((total, section) => total + section.problems.length, 0) ?? 0,
-    [pack],
-  );
-
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setError('');
-    void getTodayPack(timezone, 0, controller.signal)
+    void getTodayPackHomeSummary(timezone, controller.signal)
       .then((response) => {
         setPack(requireApiData(response, resources.todayPack.homeLoadFailed));
       })
@@ -155,9 +148,9 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     const controller = new AbortController();
     setAbilityLoading(true);
     setAbilityUnavailable(false);
-    void getAbilityProfile(controller.signal)
+    void getAbilityHomeSummary(controller.signal)
       .then((response) => {
-        setAbilityProfile(requireApiData(response, resources.home.abilityLoadFailed));
+        setAbilitySummary(requireApiData(response, resources.home.abilityLoadFailed));
       })
       .catch(() => {
         if (!controller.signal.aborted) {
@@ -196,7 +189,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
 
   const activePlan = pack?.activePlan;
   const statusText = pack
-    ? todayPackStatusText(pack, totalProblems, resources.todayPack)
+    ? todayPackHomeStatusText(pack, resources.todayPack)
     : loading
       ? resources.todayPack.loadingStatus
       : resources.todayPack.trainingStatusUnavailable;
@@ -225,8 +218,6 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
           ? resources.todayPack.reviewSchedule
           : resources.todayPack.todayCompleted;
   const reviewActionDisabled = reviewLoading || reviewUnavailable || remainingTodayCount === 0;
-  const abilitySummary = summarizeAbilityProfile(abilityProfile);
-  const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
   const dashboardDate = new Intl.DateTimeFormat(locale, {
     month: 'long',
     day: 'numeric',
@@ -325,28 +316,29 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
             <div className="home-panel-state" role="status">{resources.home.abilityLoading}</div>
           ) : abilityUnavailable ? (
             <div className="home-panel-state">{resources.todayPack.abilityUnavailable}</div>
-          ) : abilityProfile && abilityProfile.tags.length > 0 ? (
+          ) : abilitySummary?.currentStrength ? (
             <div className="home-ability-insights">
               <div className="home-ability-stat-row">
                 <span>
                   <BrainCircuit aria-hidden="true" />
                   {resources.todayPack.averageAbility}
                 </span>
-                <strong>{formatAbilityScore(abilitySummary.averageScore, locale)} / 10</strong>
+                <strong>{formatAbilityScore(abilitySummary.averageAbilityScore, locale)} / 10</strong>
               </div>
               <div className="home-insight-block strength">
                 <span><Trophy aria-hidden="true" />{resources.todayPack.currentStrength}</span>
-                <strong>{abilitySummary.strongestTag?.label ?? resources.todayPack.none}</strong>
+                <strong>{abilitySummary.currentStrength.label}</strong>
                 <p>
-                  {abilitySummary.strongestTag
-                    ? resources.todayPack.strengthEvidence(abilitySummary.strongestTag.reviewedProblemCount)
-                    : resources.myPage.noTopAbilities}
+                  {resources.todayPack.strengthEvidence(abilitySummary.currentStrength.reviewedProblemCount)}
                 </p>
               </div>
               <div className="home-insight-block next">
                 <span><Target aria-hidden="true" />{resources.todayPack.nextBreakthrough}</span>
-                <strong>{breakthroughTag?.label ?? resources.todayPack.breakthroughFallback}</strong>
-                <p>{breakthroughTag ? resources.todayPack.breakthroughAdvice(breakthroughTag.label) : resources.myPage.noTopAbilities}</p>
+                <strong>{abilitySummary.nextBreakthrough?.label ?? resources.todayPack.breakthroughFallback}</strong>
+                <p>{abilitySummary.nextBreakthrough
+                  ? resources.todayPack.breakthroughAdvice(abilitySummary.nextBreakthrough.label)
+                  : resources.myPage.noTopAbilities}
+                </p>
               </div>
             </div>
           ) : (
@@ -397,28 +389,28 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   );
 }
 
-export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, plan }: TodayPackPanelProps) {
+export function TodayPackPanel({ onNavigate, planId }: TodayPackPanelProps) {
   const { locale, resources } = useI18n();
   const [timezone] = useState(browserTimezone);
   const [packOffset, setPackOffset] = useState(0);
-  const [pack, setPack] = useState<TodayPackResponse>();
+  const [workspace, setWorkspace] = useState<TodayPackWorkspaceResponse>();
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState('');
   const [rhythmDialogOpen, setRhythmDialogOpen] = useState(false);
-  const [rhythmDailyProblemCount, setRhythmDailyProblemCount] = useState(plan.rhythmSettings?.dailyProblemCount ?? 1);
-  const [rhythmTrainingDaysPerWeek, setRhythmTrainingDaysPerWeek] = useState(
-    plan.rhythmSettings?.trainingDaysPerWeek ?? 5,
-  );
+  const [rhythmDailyProblemCount, setRhythmDailyProblemCount] = useState(1);
+  const [rhythmTrainingDaysPerWeek, setRhythmTrainingDaysPerWeek] = useState(5);
   const [rhythmUpdating, setRhythmUpdating] = useState(false);
   const [rhythmError, setRhythmError] = useState('');
-  const pace = plan.paceSummary;
-  const contract = plan.livingContractSummary;
-  const rhythmSettings = plan.rhythmSettings;
+  const pack = workspace?.pack;
+  const plan = workspace?.plan;
+  const pace = plan?.paceSummary;
+  const contract = plan?.livingContractSummary;
+  const rhythmSettings = plan?.rhythmSettings;
   const standardRhythm = buildStandardRhythmReference({
-    recommendedWeeks: plan.durationWeeks,
-    settings: undefined,
-    totalProblemCount: rhythmSettings?.totalProblemCount ?? countPlanProblems(plan),
+    recommendedWeeks: plan?.durationWeeks ?? 1,
+    settings: rhythmSettings,
+    totalProblemCount: rhythmSettings?.totalProblemCount ?? 0,
   });
   const standardRemainingWeeks = estimateRhythmWeeks(
     rhythmSettings?.remainingProblemCount ?? 0,
@@ -440,12 +432,20 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
     const controller = new AbortController();
     setLoading(true);
     setError('');
-    void getTodayPack(timezone, packOffset, controller.signal)
+    setWorkspace(undefined);
+    void getLearningPlanTodayPack(planId, timezone, packOffset, controller.signal)
       .then((response) => {
-        setPack(requireApiData(response, resources.todayPack.packLoadFailed));
+        setWorkspace(requireApiData(response, resources.todayPack.packLoadFailed));
       })
       .catch((nextError) => {
         if (!controller.signal.aborted) {
+          if (
+            nextError instanceof ApiRequestError
+            && nextError.code === LEARNING_PLAN_ACTIVE_SELECTION_MISMATCH_CODE
+          ) {
+            onNavigate(learningPlanDetailPath(planId), { replace: true });
+            return;
+          }
           setError(nextError instanceof Error ? nextError.message : resources.todayPack.packLoadFailed);
         }
       })
@@ -453,9 +453,9 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
         if (!controller.signal.aborted) {
           setLoading(false);
         }
-      });
+    });
     return () => controller.abort();
-  }, [locale, packOffset, resources.todayPack.packLoadFailed, timezone]);
+  }, [locale, onNavigate, packOffset, planId, resources.todayPack.packLoadFailed, timezone]);
 
   async function restartActivePack() {
     if (!pack?.activePlan) {
@@ -467,10 +467,11 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
     setActionLoading(true);
     setError('');
     try {
-      setPack(requireApiData(
+      const nextPack = requireApiData(
         await restartTodayPack(pack.activePlan.planId, timezone),
         resources.todayPack.packResetFailed,
-      ));
+      );
+      setWorkspace((current) => current ? { ...current, pack: nextPack } : current);
       setPackOffset(0);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : resources.todayPack.packResetFailed);
@@ -494,14 +495,13 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
     setRhythmUpdating(true);
     setRhythmError('');
     try {
-      requireApiData(
-        await updateLearningPlanRhythm(plan.id, {
+      setWorkspace(requireApiData(
+        await updateLearningPlanTodayPackRhythm(planId, {
           dailyProblemCount: rhythmDailyProblemCount,
           trainingDaysPerWeek: rhythmTrainingDaysPerWeek,
-        }),
+        }, timezone, packOffset),
         resources.learningPlans.rhythmUpdateFailed,
-      );
-      await onPlanUpdated();
+      ));
       setRhythmDialogOpen(false);
     } catch (nextError) {
       setRhythmError(nextError instanceof Error ? nextError.message : resources.learningPlans.rhythmUpdateFailed);
@@ -593,8 +593,8 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
               <strong>{rhythmSettings ? resources.learningPlans.remainingWeeksLine(rhythmSettings.estimatedRemainingWeeks) : '-'}</strong>
             </div>
           </div>
-          {(contract.notice || contractFeedback) && (
-            <p className="living-contract-notice">{contractFeedback || contract.notice}</p>
+          {contract.notice && (
+            <p className="living-contract-notice">{contract.notice}</p>
           )}
           <button className="secondary-button compact" onClick={openRhythmDialog} type="button">
             <SlidersHorizontal aria-hidden="true" />
@@ -844,9 +844,8 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
   );
 }
 
-function todayPackStatusText(
-  pack: TodayPackResponse,
-  totalProblems: number,
+function todayPackHomeStatusText(
+  pack: TodayPackHomeSummaryResponse,
   resources: LocaleResources['todayPack'],
 ): string {
   if (pack.state === 'NO_ACTIVE_PLAN') {
@@ -858,8 +857,8 @@ function todayPackStatusText(
   if (pack.state === 'DONE_TODAY') {
     return pack.nextPackDate ? resources.statusDoneWithNext(pack.nextPackDate) : resources.statusDone;
   }
-  if (totalProblems > 0) {
-    return resources.statusDue(totalProblems);
+  if (pack.dueProblemCount > 0) {
+    return resources.statusDue(pack.dueProblemCount);
   }
   return resources.statusEmpty;
 }
@@ -869,8 +868,4 @@ function clampNumber(value: number, min: number, max: number) {
     return min;
   }
   return Math.max(min, Math.min(max, Math.trunc(value)));
-}
-
-function countPlanProblems(plan: LearningPlanDetailResponse) {
-  return plan.phases.reduce((total, phase) => total + phase.problems.length, 0);
 }

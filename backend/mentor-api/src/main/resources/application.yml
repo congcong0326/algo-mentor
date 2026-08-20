@@ -1,10 +1,19 @@
 server:
+  compression:
+    enabled: true
+    min-response-size: 1KB
   forward-headers-strategy: framework
   port: ${API_PORT:${SERVER_PORT:18080}}
 
 spring:
   application:
     name: algo-mentor-api
+  web:
+    resources:
+      cache:
+        # index.html、favicon 等固定 URL 资源可缓存，但每次使用前必须与服务端重新校验。
+        cachecontrol:
+          no-cache: true
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration

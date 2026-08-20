@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.api.ability.model.AbilityHomeSummaryResponse;
+import org.congcong.algomentor.api.ability.model.AbilityHomeSummaryTagResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileScopeResponse;
 import org.congcong.algomentor.api.ability.model.AbilityTagScoreResponse;
@@ -80,6 +82,24 @@ class AbilityProfileControllerTest {
   }
 
   @Test
+  void homeSummaryUsesCurrentUserAndReturnsOnlyDiagnosticFields() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(abilityProfileService.getHomeSummary(42L, ProblemLocale.ZH_CN)).thenReturn(homeSummary());
+
+    mockMvc.perform(get("/api/abilities/summary?userId=99").header("Accept-Language", "zh-CN"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.averageAbilityScore").value(3.4))
+        .andExpect(jsonPath("$.data.currentStrength.label").value("动态规划"))
+        .andExpect(jsonPath("$.data.currentStrength.reviewedProblemCount").value(3))
+        .andExpect(jsonPath("$.data.nextBreakthrough.label").value("图"))
+        .andExpect(jsonPath("$.data.tags").doesNotExist())
+        .andExpect(jsonPath("$.data.scope").doesNotExist());
+
+    verify(abilityProfileService).getHomeSummary(42L, ProblemLocale.ZH_CN);
+  }
+
+  @Test
   void profileRequiresAuthentication() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
 
@@ -110,6 +130,13 @@ class AbilityProfileControllerTest {
             new BigDecimal("8.0"),
             new BigDecimal("3.4"))),
         new AbilityProfileScopeResponse(20, 1, true, 4));
+  }
+
+  private AbilityHomeSummaryResponse homeSummary() {
+    return new AbilityHomeSummaryResponse(
+        new BigDecimal("3.4"),
+        new AbilityHomeSummaryTagResponse("动态规划", 3L),
+        new AbilityHomeSummaryTagResponse("图", 0L));
   }
 
   @TestConfiguration(proxyBeanMethods = false)

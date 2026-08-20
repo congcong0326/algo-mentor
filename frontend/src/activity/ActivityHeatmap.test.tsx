@@ -2,7 +2,12 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from '../i18n/I18nProvider';
 import ActivityHeatmap from './ActivityHeatmap';
-import { activityLevel, activityMonthLabels, buildActivityPreview } from './activityHeatmap';
+import {
+  activityLevel,
+  activityMonthLabels,
+  buildActivityPreview,
+  toActivityCalendarData,
+} from './activityHeatmap';
 
 afterEach(() => {
   cleanup();
@@ -19,6 +24,24 @@ describe('activity heatmap', () => {
     expect(activityLevel(5)).toBe(3);
     expect(activityLevel(6)).toBe(3);
     expect(activityLevel(7)).toBe(4);
+  });
+
+  it('expands sparse daily counts into the complete calendar grid', () => {
+    const data = toActivityCalendarData({
+      timezone: 'Asia/Shanghai',
+      from: '2025-08-20',
+      to: '2026-08-19',
+      totalCount: 8,
+      activeDays: 3,
+      currentStreak: 3,
+      longestStreak: 3,
+      dailyCounts: [[362, 1], [363, 2], [364, 5]],
+    });
+
+    expect(data.days).toHaveLength(371);
+    expect(data.days[0]).toMatchObject({ date: '2025-08-17', count: 0, level: 0 });
+    expect(data.days[367]).toMatchObject({ date: '2026-08-19', count: 5, level: 3 });
+    expect(data.days[370]).toMatchObject({ date: '2026-08-22', count: 0, level: 0 });
   });
 
   it('renders a full 53-week calendar with summary statistics', () => {

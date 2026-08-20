@@ -6,8 +6,10 @@ import {
   decideAgentToolPermission,
   deleteAdminUser,
   discardLearningPlanExtensionProposal,
+  getAbilityHomeSummary,
   getAbilityProfile,
   getActivityContributions,
+  getTodayPackHomeSummary,
   getAdminUserDetail,
   getAdminUsers,
   getAdminAuthSessions,
@@ -15,6 +17,7 @@ import {
   getHealth,
   getLearningPlanTemplate,
   getLearningPlanTemplates,
+  getLearningPlanTodayPack,
   getLearningPlans,
   readPracticeRunEvents,
   getLearnerProfile,
@@ -40,6 +43,7 @@ import {
   getAdminAiEffectiveRoute,
   getAdminAiProviderTypes,
   updateUserAiPreference,
+  updateLearningPlanTodayPackRhythm,
 } from './api';
 
 type FetchMock = ReturnType<typeof vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>>;
@@ -89,6 +93,45 @@ function createFakeStorage(initialValues: Record<string, string> = {}): Storage 
 }
 
 describe('api service', () => {
+  it('requests the lightweight today pack home summary in the browser timezone', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({ success: true, data: {} })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getTodayPackHomeSummary('Asia/Shanghai');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/today-pack/home-summary?timezone=Asia%2FShanghai',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+  });
+
+  it('requests the plan-scoped today pack workspace and its compact rhythm update', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({ success: true, data: {} })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getLearningPlanTodayPack(36, 'Asia/Shanghai');
+    await updateLearningPlanTodayPackRhythm(36, {
+      dailyProblemCount: 2,
+      trainingDaysPerWeek: 5,
+    }, 'Asia/Shanghai');
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      '/api/learning-plans/36/today-pack?timezone=Asia%2FShanghai&packOffset=0',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      '/api/learning-plans/36/today-pack/rhythm?timezone=Asia%2FShanghai&packOffset=0',
+      expect.objectContaining({
+        body: JSON.stringify({ dailyProblemCount: 2, trainingDaysPerWeek: 5 }),
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+        method: 'PATCH',
+      }),
+    );
+  });
+
   it('requests provider types and route simulation through the admin AI endpoints', async () => {
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({ success: true, data: { items: [] } })));
     vi.stubGlobal('fetch', fetchMock);
@@ -179,6 +222,34 @@ describe('api service', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/abilities/profile',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('requests the current ability home summary with json and locale headers', async () => {
+    setApiLocale('zh-CN');
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        averageAbilityScore: 3.4,
+        currentStrength: { label: '动态规划', reviewedProblemCount: 3 },
+        nextBreakthrough: { label: '图', reviewedProblemCount: 0 },
+      },
+      timestamp: '2026-06-27T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getAbilityHomeSummary();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/abilities/summary',
       expect.objectContaining({
         credentials: 'same-origin',
         headers: expect.any(Headers),

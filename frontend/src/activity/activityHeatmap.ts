@@ -21,11 +21,7 @@ export interface ActivityCalendarData {
 /** 将后端按日统计转换成热力图使用的稳定数据结构。 */
 export function toActivityCalendarData(response: ActivityContributionResponse): ActivityCalendarData {
   return {
-    days: response.days.map((day) => ({
-      date: day.date,
-      count: day.count,
-      level: responseLevel(day.level, day.count),
-    })),
+    days: calendarDays(response.from, response.to, response.dailyCounts),
     totalCount: response.totalCount,
     activeDays: response.activeDays,
     currentStreak: response.currentStreak,
@@ -33,10 +29,32 @@ export function toActivityCalendarData(response: ActivityContributionResponse): 
   };
 }
 
-function responseLevel(value: number, count: number): ActivityLevel {
-  return Number.isInteger(value) && value >= 0 && value <= 4
-    ? value as ActivityLevel
-    : activityLevel(count);
+function calendarDays(
+  from: string,
+  to: string,
+  dailyCounts: ActivityContributionResponse['dailyCounts'],
+): ActivityDay[] {
+  const fromDate = parseDateKey(from);
+  const toDate = parseDateKey(to);
+  const countByOffset = new Map<number, number>();
+  const dateRange = differenceInCalendarDays(toDate, fromDate);
+
+  dailyCounts.forEach(([offset, count]) => {
+    if (Number.isInteger(offset) && offset >= 0 && offset <= dateRange
+        && Number.isInteger(count) && count > 0) {
+      countByOffset.set(offset, count);
+    }
+  });
+
+  const gridStart = addDays(fromDate, -fromDate.getDay());
+  const gridEnd = addDays(toDate, 6 - toDate.getDay());
+  const days: ActivityDay[] = [];
+  for (let date = gridStart; date <= gridEnd; date = addDays(date, 1)) {
+    const offset = differenceInCalendarDays(date, fromDate);
+    const count = countByOffset.get(offset) ?? 0;
+    days.push({ date: toDateKey(date), count, level: activityLevel(count) });
+  }
+  return days;
 }
 
 export interface ActivityMonthLabel {
@@ -136,6 +154,13 @@ function streakEndingAt(days: ActivityDay[], endIndex: number): number {
 
 function differenceInDays(later: Date, earlier: Date): number {
   return Math.round((later.getTime() - earlier.getTime()) / DAY_IN_MILLISECONDS);
+}
+
+function differenceInCalendarDays(later: Date, earlier: Date): number {
+  return Math.round((
+    Date.UTC(later.getFullYear(), later.getMonth(), later.getDate())
+    - Date.UTC(earlier.getFullYear(), earlier.getMonth(), earlier.getDate())
+  ) / DAY_IN_MILLISECONDS);
 }
 
 function addDays(date: Date, amount: number): Date {

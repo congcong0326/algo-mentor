@@ -56,7 +56,6 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   const { resources } = useI18n();
   const [plansPage, setPlansPage] = useState<LearningPlanPageResponse>(INITIAL_PLANS_PAGE);
   const [planDetail, setPlanDetail] = useState<LearningPlanDetailResponse>();
-  const [contractFeedback, setContractFeedback] = useState('');
   const [page, setPage] = useState(1);
   const [deletingPlanId, setDeletingPlanId] = useState<number>();
   const [activatingPlanId, setActivatingPlanId] = useState<number>();
@@ -66,18 +65,23 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   const practiceSubmissionsRoute = learningPlanPracticeSubmissionsRouteFromPath(pathname);
   const practiceSubmissionsOptions = learningPlanPracticeSubmissionsOptionsFromSearch(search);
   const isTodayPackMode = new URLSearchParams(search).get('pack') === 'today';
+  const isTodayPackPage = isTodayPackMode && !practiceChatRoute && !practiceSubmissionsRoute;
   const selectedPlanId = practiceChatRoute?.planId
     ?? practiceSubmissionsRoute?.planId
     ?? learningPlanIdFromPath(pathname);
 
   useEffect(() => {
+    if (isTodayPackPage) {
+      setAiRevisionCapabilities(DISABLED_AI_REVISION_CAPABILITIES);
+      return undefined;
+    }
     const controller = new AbortController();
     getLearningPlanAiRevisionCapabilities(controller.signal)
       .then((response) => setAiRevisionCapabilities(response.success && response.data
         ? response.data : DISABLED_AI_REVISION_CAPABILITIES))
       .catch(() => setAiRevisionCapabilities(DISABLED_AI_REVISION_CAPABILITIES));
     return () => controller.abort();
-  }, [pathname, selectedPlanId]);
+  }, [isTodayPackPage, pathname, selectedPlanId]);
 
   useEffect(() => {
     if (pathname === APP_ROUTES.learningPlanNew || selectedPlanId !== undefined) {
@@ -95,8 +99,11 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   }, [pathname, selectedPlanId]);
 
   useEffect(() => {
-    if (selectedPlanId === undefined) {
+    if (selectedPlanId === undefined || isTodayPackPage) {
       setPlanDetail(undefined);
+      if (isTodayPackPage) {
+        setError('');
+      }
       return undefined;
     }
 
@@ -110,13 +117,7 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
     });
 
     return () => controller.abort();
-  }, [selectedPlanId]);
-
-  useEffect(() => {
-    if (planDetail && isTodayPackMode && !practiceChatRoute && !practiceSubmissionsRoute && !planDetail.active) {
-      onNavigate(learningPlanDetailPath(planDetail.id), { replace: true });
-    }
-  }, [isTodayPackMode, onNavigate, planDetail, practiceChatRoute, practiceSubmissionsRoute]);
+  }, [isTodayPackPage, selectedPlanId]);
 
   async function refreshPlans(nextPage = page, signal?: AbortSignal) {
     const nextPlans = requireApiData(
@@ -132,7 +133,6 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
       await getLearningPlanDetail(planId, signal),
       resources.learningPlans.detailLoadFailed,
     );
-    setContractFeedback((current) => contractEstimateFeedback(planDetail, detail, resources.learningPlans.contractDateMovedEarlier, resources.learningPlans.contractDateMovedLater) || current);
     setPlanDetail(detail);
   }
 
@@ -199,6 +199,14 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   }
 
   if (selectedPlanId !== undefined) {
+    if (isTodayPackPage) {
+      return (
+        <section className="learning-shell" aria-label={resources.learningPlans.detailAriaLabel}>
+          <TodayPackPanel onNavigate={onNavigate} planId={selectedPlanId} />
+        </section>
+      );
+    }
+
     return (
       <section className="learning-shell" aria-label={resources.learningPlans.detailAriaLabel}>
         {error && <p className="error-text">{error}</p>}
@@ -219,10 +227,12 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
             >
               <PracticeChatWorkbench
                 onBack={() => {
+                  if (isTodayPackMode) {
+                    onNavigate(learningPlanTodayPackPath(planDetail.id));
+                    return;
+                  }
                   void refreshCurrentPlanDetail(planDetail.id).finally(() => {
-                    onNavigate(isTodayPackMode
-                      ? learningPlanTodayPackPath(planDetail.id)
-                      : learningPlanDetailPath(planDetail.id));
+                    onNavigate(learningPlanDetailPath(planDetail.id));
                   });
                 }}
                 onOpenSubmissions={() => {
@@ -277,23 +287,10 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
                 returnToReviewCenter={practiceSubmissionsOptions.from === REVIEW_CENTER_REVIEW_ORIGIN}
               />
             </Suspense>
-          ) : isTodayPackMode && planDetail.active ? (
-            <TodayPackPanel
-              contractFeedback={contractFeedback}
-              onNavigate={onNavigate}
-              onPlanUpdated={() => {
-                setContractFeedback('');
-                return refreshCurrentPlanDetail(planDetail.id);
-              }}
-              plan={planDetail}
-            />
           ) : (
             <LearningPlanDetail
               onBack={() => onNavigate(APP_ROUTES.learningPlans)}
-              onPlanUpdated={() => {
-                setContractFeedback('');
-                return refreshCurrentPlanDetail(planDetail.id);
-              }}
+              onPlanUpdated={() => refreshCurrentPlanDetail(planDetail.id)}
               onProblemSelect={(phaseIndex, problemSlug) => {
                 onNavigate(learningPlanPracticeChatPath(planDetail.id, phaseIndex, problemSlug));
               }}
@@ -326,21 +323,4 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
       />
     </section>
   );
-}
-
-function contractEstimateFeedback(
-  previous: LearningPlanDetailResponse | undefined,
-  next: LearningPlanDetailResponse,
-  movedEarlier: (date: string) => string,
-  movedLater: (date: string) => string,
-) {
-  if (!previous || previous.id !== next.id) {
-    return '';
-  }
-  const previousDate = previous.livingContractSummary?.estimatedCompletionDate;
-  const nextDate = next.livingContractSummary?.estimatedCompletionDate;
-  if (!previousDate || !nextDate || previousDate === nextDate) {
-    return '';
-  }
-  return nextDate < previousDate ? movedEarlier(nextDate) : movedLater(nextDate);
 }

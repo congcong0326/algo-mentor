@@ -29,6 +29,11 @@ public final class ApiContractConstants {
    */
   public static final String ABILITIES_PROFILE_PATH = "/api/abilities/profile";
 
+  /**
+   * 当前用户首页能力诊断摘要路径。
+   */
+  public static final String ABILITIES_SUMMARY_PATH = "/api/abilities/summary";
+
   /** 当前用户学习活动统计路径。 */
   public static final String ACTIVITY_CONTRIBUTIONS_PATH = "/api/activity/contributions";
 
@@ -79,9 +84,26 @@ public final class ApiContractConstants {
       LEARNING_PLANS_BASE_PATH + "/ai-revision-capabilities";
 
   /**
+   * 指定学习计划的今日题包工作台路径。
+   */
+  public static final String LEARNING_PLAN_TODAY_PACK_PATH =
+      LEARNING_PLANS_BASE_PATH + "/{planId}/today-pack";
+
+  /**
+   * 今日题包工作台的学习节奏更新路径。
+   */
+  public static final String LEARNING_PLAN_TODAY_PACK_RHYTHM_PATH =
+      LEARNING_PLAN_TODAY_PACK_PATH + "/rhythm";
+
+  /**
    * 今日题包接口根路径。
    */
   public static final String TODAY_PACK_BASE_PATH = "/api/today-pack";
+
+  /**
+   * 首页训练入口的轻量概览路径。
+   */
+  public static final String TODAY_PACK_HOME_SUMMARY_PATH = "/home-summary";
 
   /**
    * 今日题包推荐计划一键生成并激活路径。

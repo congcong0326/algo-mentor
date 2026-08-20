@@ -1,5 +1,7 @@
 package org.congcong.algomentor.api.config;
 
+import java.time.Duration;
+
 /**
  * 前端 History API 路由和静态入口契约。
  */
@@ -14,6 +16,21 @@ public final class SpaRoutes {
    * Spring MVC 转发到 SPA 入口的视图名。
    */
   public static final String INDEX_FORWARD = "forward:/" + INDEX_HTML;
+
+  /**
+   * Vite 构建生成的内容哈希静态资源路径。
+   */
+  public static final String HASHED_ASSETS_PATH_PATTERN = "/assets/**";
+
+  /**
+   * 打包进 Spring Boot 制品的 Vite 静态资源目录。
+   */
+  public static final String HASHED_ASSETS_RESOURCE_LOCATION = "classpath:/static/assets/";
+
+  /**
+   * 内容哈希资源可被浏览器和共享缓存复用的最长时间。
+   */
+  public static final Duration HASHED_ASSETS_CACHE_MAX_AGE = Duration.ofDays(365);
 
   /**
    * 需要由后端部署态转发到 SPA 入口的前端页面路由。

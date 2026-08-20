@@ -28,6 +28,15 @@ curl http://localhost:8080/nginx-health
 
 Java API 和前端仍访问 `http://localhost:8080`。如果只运行 `make backend-dev`，需要另开一个终端运行 `make proxy-up`，或者直接访问 `http://localhost:18080`。
 
+## 浏览器静态资源缓存
+
+浏览器缓存策略由 Spring Boot 静态资源响应头统一提供，nginx 仅透传，不应覆盖：
+
+- `/assets/**`：仅放置 Vite 构建的内容哈希文件，返回 `Cache-Control: public, max-age=31536000, immutable`。内容变化会生成新 URL。
+- `index.html`、favicon 等固定 URL 静态资源：返回 `Cache-Control: no-cache`，浏览器每次使用时协商校验，未改变时复用本地响应。
+
+发布前端时必须使用 `make package`，使新的 `index.html` 与其引用的 `/assets/**` 文件一同进入后端制品。不要把可变文件直接放入 `frontend/public/assets/`，否则它会绕过 Vite 内容哈希而错误获得长期缓存。
+
 ## Prometheus
 
 nginx 预留 `/prometheus/` 到 `http://localhost:9090` 的代理：

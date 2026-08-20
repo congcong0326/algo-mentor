@@ -11,10 +11,10 @@ public record ActivityContributionResponse(
     int activeDays,
     int currentStreak,
     int longestStreak,
-    List<ActivityContributionDayResponse> days
+    List<ActivityContributionDailyCountResponse> dailyCounts
 ) {
 
   public ActivityContributionResponse {
-    days = days == null ? List.of() : List.copyOf(days);
+    dailyCounts = dailyCounts == null ? List.of() : List.copyOf(dailyCounts);
   }
 }

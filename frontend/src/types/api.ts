@@ -977,6 +977,17 @@ export interface AbilityTagScore {
   abilityScore: number;
 }
 
+export interface AbilityHomeSummaryTag {
+  label: string;
+  reviewedProblemCount: number;
+}
+
+export interface AbilityHomeSummaryResponse {
+  averageAbilityScore: number;
+  currentStrength: AbilityHomeSummaryTag | null;
+  nextBreakthrough: AbilityHomeSummaryTag | null;
+}
+
 export interface AbilityProfileScope {
   minProblemCount: number;
   scorePrecision: number;
@@ -1730,11 +1741,42 @@ export interface TodayPackResponse {
   nextPackDate?: string | null;
 }
 
-export interface ActivityContributionDay {
-  date: string;
-  count: number;
-  level: number;
+export interface TodayPackPlanContextResponse {
+  id: number;
+  durationWeeks: number;
+  rhythmSettings: LearningPlanRhythmSettings;
+  paceSummary: LearningPlanPaceSummary;
+  livingContractSummary: LearningPlanLivingContractSummary;
 }
+
+export interface TodayPackWorkspaceResponse {
+  pack: TodayPackResponse;
+  plan: TodayPackPlanContextResponse;
+}
+
+export interface TodayPackHomeActivePlanResponse {
+  planId: number;
+  title: string;
+  dailyProblemCount: number;
+  trainingDaysPerWeek: number;
+  remainingProblemCount: number;
+}
+
+export interface TodayPackHomeRecommendedPlanResponse {
+  title: string;
+  summary: string;
+}
+
+export interface TodayPackHomeSummaryResponse {
+  state: TodayPackState;
+  localDate: string;
+  activePlan?: TodayPackHomeActivePlanResponse | null;
+  dueProblemCount: number;
+  recommendedPlan?: TodayPackHomeRecommendedPlanResponse | null;
+  nextPackDate?: string | null;
+}
+
+export type ActivityContributionDailyCount = [offset: number, count: number];
 
 export interface ActivityContributionResponse {
   timezone: string;
@@ -1744,7 +1786,7 @@ export interface ActivityContributionResponse {
   activeDays: number;
   currentStreak: number;
   longestStreak: number;
-  days: ActivityContributionDay[];
+  dailyCounts: ActivityContributionDailyCount[];
 }
 
 export interface LearningPlanExtensionDraft {

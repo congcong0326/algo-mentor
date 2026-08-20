@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.congcong.algomentor.api.activity.model.ActivityContributionDayResponse;
+import org.congcong.algomentor.api.activity.model.ActivityContributionDailyCountResponse;
 import org.congcong.algomentor.api.activity.model.ActivityContributionResponse;
 import org.congcong.algomentor.api.activity.service.ActivityContributionService;
 import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
@@ -58,7 +58,9 @@ class ActivityContributionControllerTest {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.timezone").value("Asia/Shanghai"))
         .andExpect(jsonPath("$.data.totalCount").value(8))
-        .andExpect(jsonPath("$.data.days[0].count").value(5));
+        .andExpect(jsonPath("$.data.dailyCounts[0][0]").value(364))
+        .andExpect(jsonPath("$.data.dailyCounts[0][1]").value(5))
+        .andExpect(jsonPath("$.data.days").doesNotExist());
 
     verify(activityContributionService).getContributions(42L, "Asia/Shanghai");
   }
@@ -98,7 +100,7 @@ class ActivityContributionControllerTest {
         3,
         3,
         3,
-        List.of(new ActivityContributionDayResponse(LocalDate.of(2026, 8, 19), 5, 3)));
+        List.of(new ActivityContributionDailyCountResponse(364, 5)));
   }
 
   @TestConfiguration(proxyBeanMethods = false)

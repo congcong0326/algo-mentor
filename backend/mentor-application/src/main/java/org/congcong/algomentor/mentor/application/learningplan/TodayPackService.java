@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -19,6 +20,8 @@ public class TodayPackService {
 
   public static final String RECOMMENDED_TEMPLATE_ID = "neetcode_blind_75_interview_core";
   public static final int CARRYOVER_NOTICE_THRESHOLD_DAYS = 7;
+  /** API error code emitted when the route plan is not the active selection. */
+  public static final String ACTIVE_SELECTION_MISMATCH_CODE = "LEARNING_PLAN_ACTIVE_SELECTION_MISMATCH";
 
   private final LearningPlanActivationService activationService;
   private final LearningPlanRepository planRepository;
@@ -44,11 +47,38 @@ public class TodayPackService {
     int offset = Math.max(0, packOffset == null ? 0 : packOffset);
     LocalDate today = LocalDate.now(clock.withZone(zoneId));
     return activationService.findActiveSelection(userId)
-        .map(selection -> packForSelection(userId, selection, zoneId, today, offset))
+        .map(selection -> workspaceForSelection(userId, selection, zoneId, today, offset).pack())
         .orElseGet(() -> noActivePack(zoneId, today, offset));
   }
 
-  private TodayPack packForSelection(
+  /**
+   * Loads the current active plan's today-pack page data from one plan/progress snapshot.
+   */
+  public Optional<TodayPackWorkspace> getPlanWorkspace(
+      long userId,
+      long planId,
+      String timezone,
+      Integer packOffset) {
+    ZoneId zoneId = zoneId(timezone);
+    int offset = Math.max(0, packOffset == null ? 0 : packOffset);
+    LocalDate today = LocalDate.now(clock.withZone(zoneId));
+    return activationService.findActiveSelection(userId)
+        .filter(selection -> selection.planId() == planId)
+        .map(selection -> workspaceForSelection(userId, selection, zoneId, today, offset));
+  }
+
+  /**
+   * 生成首页训练入口概览，避免为首页组装题目分段和题目详情。
+   */
+  public TodayPackHomeSummary getHomeSummary(long userId, String timezone) {
+    ZoneId zoneId = zoneId(timezone);
+    LocalDate today = LocalDate.now(clock.withZone(zoneId));
+    return activationService.findActiveSelection(userId)
+        .map(selection -> homeSummaryForSelection(userId, selection, zoneId, today))
+        .orElseGet(() -> noActiveHomeSummary(today));
+  }
+
+  private TodayPackWorkspace workspaceForSelection(
       long userId,
       LearningPlanActivation selection,
       ZoneId zoneId,
@@ -89,20 +119,65 @@ public class TodayPackService {
         : null;
     TodayPackState state = state(planCompleted, sections, packOffset);
 
-    return new TodayPack(
-        state,
+    return new TodayPackWorkspace(
+        new TodayPack(
+            state,
+            today,
+            zoneId.getId(),
+            packOffset,
+            new TodayPackActivePlan(
+                plan.id(),
+                plan.plan().title(),
+                selection.activatedAt(),
+                rhythm.dailyProblemCount(),
+                rhythm.trainingDaysPerWeek(),
+                rhythm.remainingProblemCount()),
+            sections,
+            notice,
+            null,
+            nextPackDate),
+        plan,
+        progress);
+  }
+
+  private TodayPackHomeSummary homeSummaryForSelection(
+      long userId,
+      LearningPlanActivation selection,
+      ZoneId zoneId,
+      LocalDate today) {
+    LearningPlan plan = planRepository.findPlanByIdForUser(selection.planId(), userId)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
+    List<PracticeProgress> progress = progressByPlan(userId, plan.id());
+    Map<ProblemKey, PracticeProgress> progressByProblem = progressByProblem(progress);
+    LearningPlanRhythmSettings rhythm = loadService.rhythmSettings(plan.plan(), progress);
+    LocalDate activatedLocalDate = selection.activatedAt().atZone(zoneId).toLocalDate();
+    List<ScheduledProblem> scheduled = scheduledProblems(
+        plan,
+        progressByProblem,
+        activatedLocalDate,
+        selection.activatedAt(),
+        Math.max(1, rhythm.dailyProblemCount()));
+    boolean planCompleted = scheduled.stream().allMatch(this::isTerminal);
+    List<ScheduledProblem> open = scheduled.stream().filter(item -> !isTerminal(item)).toList();
+    int dueProblemCount = Math.toIntExact(open.stream()
+        .filter(item -> !item.scheduledDate().isAfter(today))
+        .count());
+    LocalDate nextPackDate = open.stream()
+        .map(ScheduledProblem::scheduledDate)
+        .filter(date -> date.isAfter(today))
+        .min(LocalDate::compareTo)
+        .orElse(null);
+
+    return new TodayPackHomeSummary(
+        state(planCompleted, dueProblemCount > 0, 0),
         today,
-        zoneId.getId(),
-        packOffset,
-        new TodayPackActivePlan(
+        new TodayPackHomeActivePlan(
             plan.id(),
             plan.plan().title(),
-            selection.activatedAt(),
             rhythm.dailyProblemCount(),
             rhythm.trainingDaysPerWeek(),
             rhythm.remainingProblemCount()),
-        sections,
-        notice,
+        dueProblemCount,
         null,
         nextPackDate);
   }
@@ -118,6 +193,18 @@ public class TodayPackService {
         null,
         new TodayPackRecommendedPlan(
             RECOMMENDED_TEMPLATE_ID,
+            "NeetCode Blind 75 面试核心题",
+            "一条覆盖常见面试主题的默认训练路线，可直接生成今日题包。"),
+        null);
+  }
+
+  private TodayPackHomeSummary noActiveHomeSummary(LocalDate today) {
+    return new TodayPackHomeSummary(
+        TodayPackState.NO_ACTIVE_PLAN,
+        today,
+        null,
+        0,
+        new TodayPackHomeRecommendedPlan(
             "NeetCode Blind 75 面试核心题",
             "一条覆盖常见面试主题的默认训练路线，可直接生成今日题包。"),
         null);
@@ -226,13 +313,22 @@ public class TodayPackService {
   }
 
   private TodayPackState state(boolean planCompleted, List<TodayPackSection> sections, int packOffset) {
+    return state(planCompleted, !sections.isEmpty(), packOffset);
+  }
+
+  private TodayPackState state(boolean planCompleted, boolean hasDueProblems, int packOffset) {
     if (planCompleted) {
       return TodayPackState.PLAN_COMPLETED;
     }
-    if (sections.isEmpty() && packOffset == 0) {
+    if (!hasDueProblems && packOffset == 0) {
       return TodayPackState.DONE_TODAY;
     }
     return TodayPackState.READY;
+  }
+
+  private boolean isTerminal(ScheduledProblem item) {
+    return item.status() == PracticeProgressStatus.COMPLETED
+        || item.status() == PracticeProgressStatus.SKIPPED;
   }
 
   private List<PracticeProgress> progressByPlan(long userId, long planId) {

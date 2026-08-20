@@ -229,7 +229,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse());
+        return Promise.resolve(todayPackApiResponseForUrl(url));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -325,7 +325,7 @@ describe('App', () => {
         }));
       }
       if (passwordChanged && isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse());
+        return Promise.resolve(todayPackApiResponseForUrl(url));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -394,7 +394,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse());
+        return Promise.resolve(todayPackApiResponseForUrl(url));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -431,7 +431,7 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: '学习诊断' })).toBeInTheDocument();
     expect(screen.getByText('平均能力')).toBeInTheDocument();
     expect(screen.queryByRole('img', { name: /能力水球图/ })).not.toBeInTheDocument();
-    expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(true);
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/summary')).toBe(true);
     expect(window.location.pathname).toBe('/');
   });
 
@@ -441,7 +441,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+        return Promise.resolve(todayPackApiResponseForUrl(url, activeTodayPack()));
       }
       if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(3));
@@ -484,7 +484,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+        return Promise.resolve(todayPackApiResponseForUrl(url, activeTodayPack()));
       }
       if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(3));
@@ -498,7 +498,7 @@ describe('App', () => {
 
     const reviewButton = await screen.findByRole('button', { name: '开始今日复习 3 题' });
     expect(screen.getByText('今日待复习 3 题')).toBeInTheDocument();
-    expect(fetchMock.mock.calls.some(([url]) => isTodayPackUrl(url))).toBe(true);
+    expect(fetchMock.mock.calls.some(([url]) => isTodayPackHomeSummaryUrl(String(url)))).toBe(true);
     expect(fetchMock.mock.calls.some(([url]) => isReviewSummaryUrl(url))).toBe(true);
 
     fireEvent.click(reviewButton);
@@ -512,7 +512,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse());
+        return Promise.resolve(todayPackApiResponseForUrl(url));
       }
       if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(0));
@@ -533,7 +533,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse());
+        return Promise.resolve(todayPackApiResponseForUrl(url));
       }
       if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(0, {
@@ -562,7 +562,7 @@ describe('App', () => {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+        return Promise.resolve(todayPackApiResponseForUrl(url, activeTodayPack()));
       }
       if (isReviewSummaryUrl(url)) {
         return Promise.reject(new Error('review summary unavailable'));
@@ -1222,6 +1222,8 @@ describe('App', () => {
     expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
     expect(screen.getByText('路线进度')).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /两数之和/ })).toHaveLength(1);
+    expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/learning-plans/900/today-pack?'))).toBe(true);
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/learning-plans/900')).toBe(false);
 
     fireEvent.click(screen.getByRole('button', { name: '方案' }));
     fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
@@ -1268,8 +1270,18 @@ describe('App', () => {
           timestamp: '2026-06-22T00:00:00Z',
         }));
       }
+      if (isLearningPlanTodayPackUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: {
+            code: 'LEARNING_PLAN_ACTIVE_SELECTION_MISMATCH',
+            message: '只能查看当前采用计划的今日题包。',
+          },
+          timestamp: '2026-06-22T00:00:00Z',
+        }, 409));
+      }
       if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+        return Promise.resolve(todayPackApiResponseForUrl(url, activeTodayPack()));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -2332,11 +2344,14 @@ function mockAuthenticatedAppFetch() {
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
+    if (url === '/api/abilities/summary') {
+      return Promise.resolve(abilityHomeSummaryResponse());
+    }
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());
     }
     if (isTodayPackUrl(url)) {
-      return Promise.resolve(todayPackApiResponse());
+      return Promise.resolve(todayPackApiResponseForUrl(url));
     }
     if (isReviewSummaryUrl(url)) {
       return Promise.resolve(reviewSummaryApiResponse(0));
@@ -2433,10 +2448,13 @@ function mockAuthenticatedUserWithoutUserManageFetch() {
       ], ['USER']));
     }
     if (isTodayPackUrl(url)) {
-      return Promise.resolve(todayPackApiResponse());
+      return Promise.resolve(todayPackApiResponseForUrl(url));
     }
     if (isReviewSummaryUrl(url)) {
       return Promise.resolve(reviewSummaryApiResponse(0));
+    }
+    if (url === '/api/abilities/summary') {
+      return Promise.resolve(abilityHomeSummaryResponse());
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
   });
@@ -2453,11 +2471,14 @@ function mockLearningPlanAndProblemFetch() {
     if (url === '/api/me/ai-preferences') {
       return Promise.resolve(userAiPreferenceResponse());
     }
+    if (url === '/api/abilities/summary') {
+      return Promise.resolve(abilityHomeSummaryResponse());
+    }
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());
     }
     if (isTodayPackUrl(url)) {
-      return Promise.resolve(todayPackApiResponse());
+      return Promise.resolve(todayPackApiResponseForUrl(url));
     }
     if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
@@ -2516,6 +2537,24 @@ function abilityProfileResponse(): Response {
         scorePrecision: 1,
         latestReviewOnly: true,
         conservativeWeight: 4,
+      },
+    },
+    timestamp: '2026-06-27T00:00:00Z',
+  });
+}
+
+function abilityHomeSummaryResponse(): Response {
+  return jsonResponse({
+    success: true,
+    data: {
+      averageAbilityScore: 3.4,
+      currentStrength: {
+        label: '动态规划',
+        reviewedProblemCount: 3,
+      },
+      nextBreakthrough: {
+        label: '图',
+        reviewedProblemCount: 0,
       },
     },
     timestamp: '2026-06-27T00:00:00Z',
@@ -2602,7 +2641,7 @@ function mockLearningPlanFetch(options: {
     }
 
     if (isTodayPackUrl(url)) {
-      return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+      return Promise.resolve(todayPackApiResponseForUrl(url, activeTodayPack()));
     }
 
     if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
@@ -3190,7 +3229,70 @@ function isLearningPlanListUrl(url: string): boolean {
 }
 
 function isTodayPackUrl(url: string): boolean {
-  return url === '/api/today-pack' || url.startsWith('/api/today-pack?');
+  return isLearningPlanTodayPackUrl(url)
+    || isTodayPackHomeSummaryUrl(url)
+    || url === '/api/today-pack'
+    || url.startsWith('/api/today-pack?');
+}
+
+function isLearningPlanTodayPackUrl(url: string): boolean {
+  return /^\/api\/learning-plans\/\d+\/today-pack(?:[/?]|$)/.test(url);
+}
+
+function isTodayPackHomeSummaryUrl(url: string): boolean {
+  return url === '/api/today-pack/home-summary' || url.startsWith('/api/today-pack/home-summary?');
+}
+
+function todayPackApiResponseForUrl(url: string, overrides: Partial<TodayPackResponse> = {}) {
+  if (isLearningPlanTodayPackUrl(url)) {
+    return todayPackWorkspaceApiResponse(overrides);
+  }
+  return isTodayPackHomeSummaryUrl(url)
+    ? todayPackHomeSummaryApiResponse(overrides)
+    : todayPackApiResponse(overrides);
+}
+
+function todayPackWorkspaceApiResponse(overrides: Partial<TodayPackResponse> = {}) {
+  const detail = learningPlanDetail();
+  return jsonResponse({
+    success: true,
+    data: {
+      pack: todayPackResponse(overrides),
+      plan: {
+        id: detail.id,
+        durationWeeks: detail.durationWeeks,
+        rhythmSettings: detail.rhythmSettings,
+        paceSummary: detail.paceSummary,
+        livingContractSummary: detail.livingContractSummary,
+      },
+    },
+    timestamp: '2026-06-22T00:00:00Z',
+  });
+}
+
+function todayPackHomeSummaryApiResponse(overrides: Partial<TodayPackResponse> = {}) {
+  const pack = todayPackResponse(overrides);
+  return jsonResponse({
+    success: true,
+    data: {
+      state: pack.state,
+      localDate: pack.localDate,
+      activePlan: pack.activePlan && {
+        planId: pack.activePlan.planId,
+        title: pack.activePlan.title,
+        dailyProblemCount: pack.activePlan.dailyProblemCount,
+        trainingDaysPerWeek: pack.activePlan.trainingDaysPerWeek,
+        remainingProblemCount: pack.activePlan.remainingProblemCount,
+      },
+      dueProblemCount: pack.sections.reduce((total, section) => total + section.problems.length, 0),
+      recommendedPlan: pack.recommendedPlan && {
+        title: pack.recommendedPlan.title,
+        summary: pack.recommendedPlan.summary,
+      },
+      nextPackDate: pack.nextPackDate,
+    },
+    timestamp: '2026-06-22T00:00:00Z',
+  });
 }
 
 function isReviewSummaryUrl(url: string): boolean {

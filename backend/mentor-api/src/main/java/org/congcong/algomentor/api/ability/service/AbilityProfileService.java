@@ -2,10 +2,13 @@ package org.congcong.algomentor.api.ability.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
 import org.congcong.algomentor.api.ability.mapper.model.AbilityTagScoreRow;
+import org.congcong.algomentor.api.ability.model.AbilityHomeSummaryResponse;
+import org.congcong.algomentor.api.ability.model.AbilityHomeSummaryTagResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileScopeResponse;
 import org.congcong.algomentor.api.ability.model.AbilityTagScoreResponse;
@@ -37,12 +40,52 @@ public class AbilityProfileService {
   }
 
   public AbilityProfileResponse getProfile(long userId, ProblemLocale locale) {
-    List<AbilityTagScoreResponse> tags = mapper()
+    List<AbilityTagScoreResponse> tags = tagScores(userId, locale);
+    return new AbilityProfileResponse(tags, scope());
+  }
+
+  public AbilityHomeSummaryResponse getHomeSummary(long userId, ProblemLocale locale) {
+    List<AbilityTagScoreResponse> tags = tagScores(userId, locale);
+    if (tags.isEmpty()) {
+      return new AbilityHomeSummaryResponse(zeroScore(), null, null);
+    }
+
+    AbilityTagScoreResponse currentStrength = tags.stream()
+        .sorted(Comparator.comparing(AbilityTagScoreResponse::abilityScore).reversed()
+            .thenComparing(AbilityTagScoreResponse::reviewedProblemCount, Comparator.reverseOrder()))
+        .findFirst()
+        .orElseThrow();
+    AbilityTagScoreResponse nextBreakthrough = tags.stream()
+        .filter(tag -> tag.reviewedProblemCount() == 0)
+        .findFirst()
+        .orElseGet(() -> tags.stream()
+            .filter(tag -> !tag.tag().equals(currentStrength.tag()))
+            .findFirst()
+            .orElse(currentStrength));
+
+    return new AbilityHomeSummaryResponse(
+        averageAbilityScore(tags),
+        toHomeSummaryTag(currentStrength),
+        toHomeSummaryTag(nextBreakthrough));
+  }
+
+  private List<AbilityTagScoreResponse> tagScores(long userId, ProblemLocale locale) {
+    return mapper()
         .findCommonTagScores(userId, AbilityProfileConstants.MIN_PROBLEM_COUNT, locale.value())
         .stream()
         .map(this::toResponse)
         .toList();
-    return new AbilityProfileResponse(tags, scope());
+  }
+
+  private BigDecimal averageAbilityScore(List<AbilityTagScoreResponse> tags) {
+    return tags.stream()
+        .map(AbilityTagScoreResponse::abilityScore)
+        .reduce(BigDecimal.ZERO, BigDecimal::add)
+        .divide(BigDecimal.valueOf(tags.size()), AbilityProfileConstants.SCORE_SCALE, RoundingMode.HALF_UP);
+  }
+
+  private AbilityHomeSummaryTagResponse toHomeSummaryTag(AbilityTagScoreResponse tag) {
+    return new AbilityHomeSummaryTagResponse(tag.label(), tag.reviewedProblemCount());
   }
 
   private AbilityTagScoreResponse toResponse(AbilityTagScoreRow row) {

@@ -3,7 +3,7 @@
   "title": "Algo Mentor - Preprod",
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 5,
   "refresh": "30s",
   "tags": ["algo-mentor", "preprod"],
   "panels": [
@@ -21,7 +21,12 @@
       "title": "进程运行时长",
       "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "time() - process_start_time_seconds{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "refId": "A"}]
+      "targets": [{"expr": "time() - process_start_time_seconds{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "refId": "A"}],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "dtdurations"
+        }
+      }
     },
     {
       "id": 3,
@@ -57,10 +62,34 @@
       "gridPos": {"x": 0, "y": 12, "w": 12, "h": 7},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "targets": [
-        {"expr": "sum(jvm_memory_used_bytes{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}) by (area)", "legendFormat": "JVM {{area}}", "refId": "A"},
-        {"expr": "process_resident_memory_bytes{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "RSS", "refId": "B"},
-        {"expr": "process_cpu_usage{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "进程 CPU", "refId": "C"}
-      ]
+        {"expr": "sum(jvm_memory_used_bytes{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}) by (area) / 1024 / 1024", "legendFormat": "JVM {{area}} (MB)", "refId": "A"},
+        {"expr": "process_resident_memory_bytes{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"} / 1024 / 1024", "legendFormat": "RSS (MB)", "refId": "B"},
+        {"expr": "100 * process_cpu_usage{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "进程 CPU (%)", "refId": "C"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "axisPlacement": "left"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byFrameRefID", "options": "A"},
+            "properties": [{"id": "unit", "value": "suffix:MB"}]
+          },
+          {
+            "matcher": {"id": "byFrameRefID", "options": "B"},
+            "properties": [{"id": "unit", "value": "suffix:MB"}]
+          },
+          {
+            "matcher": {"id": "byFrameRefID", "options": "C"},
+            "properties": [
+              {"id": "unit", "value": "percent"},
+              {"id": "custom.axisPlacement", "value": "right"}
+            ]
+          }
+        ]
+      }
     },
     {
       "id": 7,
@@ -170,10 +199,27 @@
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "targets": [
         {"expr": "learner_profile_queue_pending{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "pending {{topic}}", "refId": "A"},
-        {"expr": "learner_profile_queue_oldest_pending_age{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "oldest age {{topic}}", "refId": "B"},
+        {"expr": "learner_profile_queue_oldest_pending_age{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"} / 3600", "legendFormat": "oldest age {{topic}} (h)", "refId": "B"},
         {"expr": "sum(rate(learner_profile_queue_worker_failure_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (topic)", "legendFormat": "worker failure {{topic}}", "refId": "C"},
         {"expr": "learner_profile_queue_worker_active{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}", "legendFormat": "worker active {{topic}}", "refId": "D"}
-      ]
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "axisPlacement": "left"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byFrameRefID", "options": "B"},
+            "properties": [
+              {"id": "unit", "value": "suffix:h"},
+              {"id": "custom.axisPlacement", "value": "right"},
+              {"id": "custom.axisLabel", "value": "小时"}
+            ]
+          }
+        ]
+      }
     },
     {
       "id": 16,
