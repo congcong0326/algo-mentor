@@ -170,6 +170,23 @@ public interface LearningPlanMapper {
 
   LearningPlanDraftRevisionRow findDraftRevisionForUser(@Param("id") long id, @Param("userId") long userId);
 
+  void lockDraftRevisionGenerationRequest(
+      @Param("userId") long userId, @Param("draftId") long draftId, @Param("requestKey") String requestKey);
+
+  LearningPlanDraftRevisionRow findDraftRevisionByGenerationRequestKey(
+      @Param("userId") long userId, @Param("draftId") long draftId, @Param("requestKey") String requestKey);
+
+  LearningPlanDraftRevisionRow findDraftRevisionForUserAndDraft(
+      @Param("id") long id, @Param("userId") long userId, @Param("draftId") long draftId);
+
+  LearningPlanDraftRevisionRow lockDraftRevisionForUserAndDraftForUpdate(
+      @Param("id") long id, @Param("userId") long userId, @Param("draftId") long draftId);
+
+  int updateDraftRevisionIfGenerating(LearningPlanDraftRevisionRow row);
+
+  List<LearningPlanDraftRevisionRow> findInterruptedDraftRevisionGenerations(
+      @Param("startedBefore") Instant startedBefore, @Param("generatingStatus") String generatingStatus);
+
   LearningPlanDraftRevisionRow findPreviousDraftRevisionForUser(
       @Param("proposalGroupId") long proposalGroupId,
       @Param("beforeRevisionNo") int beforeRevisionNo,
@@ -190,6 +207,9 @@ public interface LearningPlanMapper {
   List<Long> markReadyDraftRevisionsSuperseded(
       @Param("proposalGroupId") long proposalGroupId,
       @Param("exceptRevisionId") long exceptRevisionId,
+      @Param("errorCode") String errorCode,
+      @Param("errorMessage") String errorMessage,
+      @Param("completedAt") Instant completedAt,
       @Param("updatedAt") Instant updatedAt);
 
   List<Long> markReadyExtensionRevisionsSuperseded(

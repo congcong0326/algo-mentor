@@ -31,6 +31,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaseSnapshot;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationConstants;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -190,6 +191,33 @@ class MyBatisLearningPlanProposalRepositoryTest {
 
     assertThat(revisionNo).isEqualTo(7);
     verify(mapper).lockProposalGroupByIdForUpdate(20);
+  }
+
+  @Test
+  void supersedingReadyDraftRevisionsPassesTheSafeTerminalDetailsToTheMapper() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
+    when(mapper.markReadyDraftRevisionsSuperseded(
+        org.mockito.ArgumentMatchers.eq(20L),
+        org.mockito.ArgumentMatchers.eq(101L),
+        org.mockito.ArgumentMatchers.eq(LearningPlanDraftRevisionGenerationConstants.SUPERSEDED_CODE),
+        org.mockito.ArgumentMatchers.eq(LearningPlanDraftRevisionGenerationConstants.SUPERSEDED_MESSAGE),
+        any(),
+        any())).thenReturn(List.of(100L));
+
+    List<Long> superseded = repository.markReadyDraftRevisionsSuperseded(20, 101);
+
+    assertThat(superseded).containsExactly(100L);
+    ArgumentCaptor<Instant> completedAt = ArgumentCaptor.forClass(Instant.class);
+    ArgumentCaptor<Instant> updatedAt = ArgumentCaptor.forClass(Instant.class);
+    verify(mapper).markReadyDraftRevisionsSuperseded(
+        org.mockito.ArgumentMatchers.eq(20L),
+        org.mockito.ArgumentMatchers.eq(101L),
+        org.mockito.ArgumentMatchers.eq(LearningPlanDraftRevisionGenerationConstants.SUPERSEDED_CODE),
+        org.mockito.ArgumentMatchers.eq(LearningPlanDraftRevisionGenerationConstants.SUPERSEDED_MESSAGE),
+        completedAt.capture(),
+        updatedAt.capture());
+    assertThat(completedAt.getValue()).isEqualTo(updatedAt.getValue());
   }
 
   @Test

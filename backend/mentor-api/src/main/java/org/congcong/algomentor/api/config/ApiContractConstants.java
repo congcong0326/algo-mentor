@@ -144,6 +144,18 @@ public final class ApiContractConstants {
    */
   public static final String LEARNING_PLAN_DRAFT_REVISIONS_STREAM_PATH = "/{draftId}/revisions/stream";
 
+  /** 草案修订异步生成控制面路径。 */
+  public static final String LEARNING_PLAN_DRAFT_REVISION_GENERATIONS_PATH = "/drafts/{draftId}/revisions/generations";
+
+  /** 草案修订权威状态查询路径。 */
+  public static final String LEARNING_PLAN_DRAFT_REVISION_STATUS_PATH = "/drafts/{draftId}/revisions/{revisionId}";
+
+  /** 草案修订 Redis Stream 事件回放路径。 */
+  public static final String LEARNING_PLAN_DRAFT_REVISION_EVENTS_PATH = "/drafts/{draftId}/revisions/{revisionId}/events";
+
+  /** 草案修订事件严格 after 游标参数。 */
+  public static final String LEARNING_PLAN_DRAFT_REVISION_AFTER_PARAM = "after";
+
   /**
    * 学习计划草案消息路径。
    */

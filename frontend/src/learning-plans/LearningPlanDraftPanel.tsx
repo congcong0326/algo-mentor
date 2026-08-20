@@ -1,7 +1,8 @@
 import { Check, FileText, MessageSquare, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
 import type { AgentWorkStatusEvent, LearningPlanAiRevisionCapabilities, LearningPlanDraftResponse } from '../types/api';
+import AgentWorkIndicator from './AgentWorkIndicator';
 import PlanPreview from './PlanPreview';
 
 interface LearningPlanDraftPanelProps {
@@ -13,6 +14,7 @@ interface LearningPlanDraftPanelProps {
   onReturnToWizard?: () => void;
   onSendFollowUp: (message: string) => Promise<boolean>;
   onReviseDraft: (instruction: string) => Promise<boolean>;
+  revisionCompletedVersion?: number;
   capabilities?: LearningPlanAiRevisionCapabilities;
 }
 
@@ -25,6 +27,7 @@ export default function LearningPlanDraftPanel({
   onReturnToWizard,
   onSendFollowUp,
   onReviseDraft,
+  revisionCompletedVersion,
   capabilities = { templateDraftRevisionEnabled: true, savedPlanRevisionEnabled: true, personalizedDraftRevisionEnabled: true },
 }: LearningPlanDraftPanelProps) {
   const { resources } = useI18n();
@@ -33,6 +36,12 @@ export default function LearningPlanDraftPanel({
   const followUpId = `learning-plan-draft-${draft.draftId}-follow-up`;
   const revisionInstructionId = `learning-plan-draft-${draft.draftId}-revision`;
   const retryCreate = onRetryCreate ?? onReturnToWizard;
+
+  useEffect(() => {
+    if (revisionCompletedVersion !== undefined) {
+      setRevisionInstruction('');
+    }
+  }, [revisionCompletedVersion]);
 
   if (draft.status === 'COLLECTING') {
     return (
@@ -96,8 +105,10 @@ export default function LearningPlanDraftPanel({
               value={revisionInstruction}
             />
           </label>
-          {workEvent?.message && <p className="empty-log">{workEvent.message}</p>}
-          <div className="draft-action-row">
+          {workEvent?.message && <AgentWorkIndicator active event={workEvent} />}
+        </div> : null}
+        <div className="draft-action-row draft-confirm-row">
+          {revisionEnabled ? (
             <button
               className="secondary-button"
               disabled={loading || !revisionInstruction.trim()}
@@ -115,9 +126,7 @@ export default function LearningPlanDraftPanel({
               <Send aria-hidden="true" />
               <span>{resources.learningPlans.reviseDraft}</span>
             </button>
-          </div>
-        </div> : null}
-        <div className="draft-action-row draft-confirm-row">
+          ) : null}
           <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
             <Check aria-hidden="true" />
             <span>{resources.learningPlans.savePlan}</span>

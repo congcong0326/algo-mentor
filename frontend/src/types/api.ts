@@ -1639,6 +1639,36 @@ export interface LearningPlanDraftGenerationEventData {
   code?: string;
 }
 
+export interface LearningPlanDraftRevisionGenerationResponse {
+  revisionId: number;
+  proposalGroupId: number;
+  draftId: number;
+  revisionNo: number;
+  status: 'GENERATING' | LearningPlanProposalRevisionStatus;
+  eventsUrl: string;
+  initialAfter: string;
+  realtimeProtocolVersion: 1;
+}
+
+export interface LearningPlanDraftRevisionStatusResponse {
+  revisionId: number;
+  proposalGroupId: number;
+  draftId: number;
+  revisionNo: number;
+  status: LearningPlanProposalRevisionStatus;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+}
+
+export interface LearningPlanDraftRevisionEventData {
+  draftId: number;
+  revisionId: number;
+  message?: string;
+  code?: string;
+}
+
 export interface LearningPlanAiRevisionCapabilities {
   templateDraftRevisionEnabled: boolean;
   savedPlanRevisionEnabled: boolean;
@@ -1874,6 +1904,9 @@ export type SseEventName =
   | 'draft_failed'
   | 'draft_revision_ready'
   | 'draft_revision_error'
+  | 'revision_completed'
+  | 'revision_failed'
+  | 'revision_superseded'
   | 'plan_extension_ready'
   | 'plan_extension_error';
 

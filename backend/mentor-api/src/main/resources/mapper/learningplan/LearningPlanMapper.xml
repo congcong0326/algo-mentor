@@ -128,6 +128,11 @@
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="error_code" javaType="string"/>
       <arg column="error_message" javaType="string"/>
+      <arg column="generation_request_key" javaType="string"/>
+      <arg column="generation_request_fingerprint" javaType="string"/>
+      <arg column="generation_run_id" javaType="string"/>
+      <arg column="generation_started_at" javaType="java.time.Instant"/>
+      <arg column="generation_completed_at" javaType="java.time.Instant"/>
       <arg column="created_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
@@ -970,6 +975,11 @@
       proposed_plan_json,
       error_code,
       error_message,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_started_at,
+      generation_completed_at,
       created_at,
       updated_at
     )
@@ -986,6 +996,11 @@
       #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{errorCode},
       #{errorMessage},
+      #{generationRequestKey},
+      #{generationRequestFingerprint},
+      #{generationRunId},
+      #{generationStartedAt},
+      #{generationCompletedAt},
       #{createdAt},
       #{updatedAt}
     )
@@ -1002,6 +1017,11 @@
         proposed_plan_json = #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         error_code = #{errorCode},
         error_message = #{errorMessage},
+        generation_request_key = #{generationRequestKey},
+        generation_request_fingerprint = #{generationRequestFingerprint},
+        generation_run_id = #{generationRunId},
+        generation_started_at = #{generationStartedAt},
+        generation_completed_at = #{generationCompletedAt},
         updated_at = #{updatedAt}
     WHERE id = #{id}
       AND user_id = #{userId}
@@ -1022,11 +1042,84 @@
       proposed_plan_json,
       error_code,
       error_message,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_started_at,
+      generation_completed_at,
       created_at,
       updated_at
     FROM learning_plan_draft_revision
     WHERE id = #{id}
       AND user_id = #{userId}
+  </select>
+
+  <select id="lockDraftRevisionGenerationRequest" resultType="int">
+    SELECT 1
+    FROM (
+      SELECT pg_advisory_xact_lock(hashtextextended(
+        CONCAT(#{userId}, ':', #{draftId}, ':', #{requestKey}), 0))
+    ) AS locked
+  </select>
+
+  <select id="findDraftRevisionByGenerationRequestKey" resultMap="LearningPlanDraftRevisionRowMap">
+    SELECT id, proposal_group_id, draft_id, user_id, revision_no, status, instruction,
+           base_brief_json, base_plan_json, proposed_brief_json, proposed_plan_json,
+           error_code, error_message, generation_request_key, generation_request_fingerprint,
+           generation_run_id, generation_started_at, generation_completed_at, created_at, updated_at
+    FROM learning_plan_draft_revision
+    WHERE user_id = #{userId}
+      AND draft_id = #{draftId}
+      AND generation_request_key = #{requestKey}
+  </select>
+
+  <select id="findDraftRevisionForUserAndDraft" resultMap="LearningPlanDraftRevisionRowMap">
+    SELECT id, proposal_group_id, draft_id, user_id, revision_no, status, instruction,
+           base_brief_json, base_plan_json, proposed_brief_json, proposed_plan_json,
+           error_code, error_message, generation_request_key, generation_request_fingerprint,
+           generation_run_id, generation_started_at, generation_completed_at, created_at, updated_at
+    FROM learning_plan_draft_revision
+    WHERE id = #{id}
+      AND user_id = #{userId}
+      AND draft_id = #{draftId}
+  </select>
+
+  <select id="lockDraftRevisionForUserAndDraftForUpdate" resultMap="LearningPlanDraftRevisionRowMap">
+    SELECT id, proposal_group_id, draft_id, user_id, revision_no, status, instruction,
+           base_brief_json, base_plan_json, proposed_brief_json, proposed_plan_json,
+           error_code, error_message, generation_request_key, generation_request_fingerprint,
+           generation_run_id, generation_started_at, generation_completed_at, created_at, updated_at
+    FROM learning_plan_draft_revision
+    WHERE id = #{id}
+      AND user_id = #{userId}
+      AND draft_id = #{draftId}
+    FOR UPDATE
+  </select>
+
+  <update id="updateDraftRevisionIfGenerating">
+    UPDATE learning_plan_draft_revision
+    SET status = #{status},
+        proposed_brief_json = #{proposedBriefJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        proposed_plan_json = #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        error_code = #{errorCode},
+        error_message = #{errorMessage},
+        generation_completed_at = #{generationCompletedAt},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+      AND draft_id = #{draftId}
+      AND status = 'GENERATING'
+  </update>
+
+  <select id="findInterruptedDraftRevisionGenerations" resultMap="LearningPlanDraftRevisionRowMap">
+    SELECT id, proposal_group_id, draft_id, user_id, revision_no, status, instruction,
+           base_brief_json, base_plan_json, proposed_brief_json, proposed_plan_json,
+           error_code, error_message, generation_request_key, generation_request_fingerprint,
+           generation_run_id, generation_started_at, generation_completed_at, created_at, updated_at
+    FROM learning_plan_draft_revision
+    WHERE status = #{generatingStatus}
+      AND generation_request_key IS NOT NULL
+      AND generation_started_at &lt;= #{startedBefore}
   </select>
 
   <select id="findPreviousDraftRevisionForUser" resultMap="LearningPlanDraftRevisionRowMap">
@@ -1044,6 +1137,11 @@
       proposed_plan_json,
       error_code,
       error_message,
+      generation_request_key,
+      generation_request_fingerprint,
+      generation_run_id,
+      generation_started_at,
+      generation_completed_at,
       created_at,
       updated_at
     FROM learning_plan_draft_revision
@@ -1176,6 +1274,9 @@
   <select id="markReadyDraftRevisionsSuperseded" resultType="java.lang.Long" affectData="true">
     UPDATE learning_plan_draft_revision
     SET status = 'SUPERSEDED',
+        error_code = #{errorCode},
+        error_message = #{errorMessage},
+        generation_completed_at = #{completedAt},
         updated_at = #{updatedAt}
     WHERE proposal_group_id = #{proposalGroupId}
       AND id != #{exceptRevisionId}

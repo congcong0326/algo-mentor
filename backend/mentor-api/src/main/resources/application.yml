@@ -170,22 +170,21 @@ algo-mentor:
         fixed-delay: ${LEARNING_PLAN_DRAFT_CLEANUP_FIXED_DELAY:1h}
         batch-size: ${LEARNING_PLAN_DRAFT_CLEANUP_BATCH_SIZE:1000}
         daily-usage-retention-days: ${LEARNING_PLAN_DRAFT_USAGE_RETENTION_DAYS:30}
-    generation:
-      realtime-stream:
-        enabled: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ENABLED:true}
-        host: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_HOST:localhost}
-        port: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PORT:6380}
-        database: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_DATABASE:0}
-        username: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_USERNAME:}
-        password: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PASSWORD:}
-        ssl-enabled: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SSL_ENABLED:false}
-        command-timeout: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMMAND_TIMEOUT:3s}
-        connect-timeout: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_CONNECT_TIMEOUT:2s}
-        shutdown-timeout: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SHUTDOWN_TIMEOUT:2s}
-        read-block: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_READ_BLOCK:2s}
-        max-read-connections: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_MAX_READ_CONNECTIONS:32}
-        active-retention: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ACTIVE_RETENTION:2h}
-        completed-retention: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMPLETED_RETENTION:24h}
+    realtime-stream:
+      enabled: ${LEARNING_PLAN_REALTIME_STREAM_ENABLED:${algo-mentor.learning-plan.generation.realtime-stream.enabled:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ENABLED:true}}}
+      host: ${LEARNING_PLAN_REALTIME_STREAM_HOST:${algo-mentor.learning-plan.generation.realtime-stream.host:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_HOST:localhost}}}
+      port: ${LEARNING_PLAN_REALTIME_STREAM_PORT:${algo-mentor.learning-plan.generation.realtime-stream.port:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PORT:6380}}}
+      database: ${LEARNING_PLAN_REALTIME_STREAM_DATABASE:${algo-mentor.learning-plan.generation.realtime-stream.database:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_DATABASE:0}}}
+      username: ${LEARNING_PLAN_REALTIME_STREAM_USERNAME:${algo-mentor.learning-plan.generation.realtime-stream.username:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_USERNAME:}}}
+      password: ${LEARNING_PLAN_REALTIME_STREAM_PASSWORD:${algo-mentor.learning-plan.generation.realtime-stream.password:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PASSWORD:}}}
+      ssl-enabled: ${LEARNING_PLAN_REALTIME_STREAM_SSL_ENABLED:${algo-mentor.learning-plan.generation.realtime-stream.ssl-enabled:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SSL_ENABLED:false}}}
+      command-timeout: ${LEARNING_PLAN_REALTIME_STREAM_COMMAND_TIMEOUT:${algo-mentor.learning-plan.generation.realtime-stream.command-timeout:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMMAND_TIMEOUT:3s}}}
+      connect-timeout: ${LEARNING_PLAN_REALTIME_STREAM_CONNECT_TIMEOUT:${algo-mentor.learning-plan.generation.realtime-stream.connect-timeout:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_CONNECT_TIMEOUT:2s}}}
+      shutdown-timeout: ${LEARNING_PLAN_REALTIME_STREAM_SHUTDOWN_TIMEOUT:${algo-mentor.learning-plan.generation.realtime-stream.shutdown-timeout:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SHUTDOWN_TIMEOUT:2s}}}
+      read-block: ${LEARNING_PLAN_REALTIME_STREAM_READ_BLOCK:${algo-mentor.learning-plan.generation.realtime-stream.read-block:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_READ_BLOCK:2s}}}
+      max-read-connections: ${LEARNING_PLAN_REALTIME_STREAM_MAX_READ_CONNECTIONS:${algo-mentor.learning-plan.generation.realtime-stream.max-read-connections:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_MAX_READ_CONNECTIONS:32}}}
+      active-retention: ${LEARNING_PLAN_REALTIME_STREAM_ACTIVE_RETENTION:${algo-mentor.learning-plan.generation.realtime-stream.active-retention:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ACTIVE_RETENTION:2h}}}
+      completed-retention: ${LEARNING_PLAN_REALTIME_STREAM_COMPLETED_RETENTION:${algo-mentor.learning-plan.generation.realtime-stream.completed-retention:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMPLETED_RETENTION:24h}}}
   learner-memory:
     declared-update:
       enabled: ${LEARNER_MEMORY_DECLARED_UPDATE_ENABLED:false}

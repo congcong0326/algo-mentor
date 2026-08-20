@@ -21,9 +21,36 @@ public record LearningPlanDraftRevision(
     LearningPlanDraftPlan proposedPlan,
     String errorCode,
     String errorMessage,
+    String generationRequestKey,
+    String generationRequestFingerprint,
+    String generationRunId,
+    Instant generationStartedAt,
+    Instant generationCompletedAt,
     Instant createdAt,
     Instant updatedAt
 ) {
+
+  /** 阶段二前的调用点不携带生成控制面元数据。 */
+  public LearningPlanDraftRevision(
+      Long id,
+      long proposalGroupId,
+      long draftId,
+      long userId,
+      int revisionNo,
+      LearningPlanProposalRevisionStatus status,
+      String instruction,
+      LearningPlanBrief baseBrief,
+      LearningPlanDraftPlan basePlan,
+      LearningPlanBrief proposedBrief,
+      LearningPlanDraftPlan proposedPlan,
+      String errorCode,
+      String errorMessage,
+      Instant createdAt,
+      Instant updatedAt
+  ) {
+    this(id, proposalGroupId, draftId, userId, revisionNo, status, instruction, baseBrief, basePlan,
+        proposedBrief, proposedPlan, errorCode, errorMessage, null, null, null, null, null, createdAt, updatedAt);
+  }
 
   public LearningPlanDraftRevision {
     if (id != null && id < 1) {
@@ -64,6 +91,7 @@ public record LearningPlanDraftRevision(
       throw new IllegalArgumentException("Learning plan draft revision updated time must not be null");
     }
     instruction = instruction.trim();
+    generationRequestKey = generationRequestKey == null ? null : generationRequestKey.trim();
   }
 
   /** 兼容旧调用点；新修订必须显式传入冻结的 baseBrief。 */
@@ -96,6 +124,11 @@ public record LearningPlanDraftRevision(
         proposedPlan,
         errorCode,
         errorMessage,
+        null,
+        null,
+        null,
+        null,
+        null,
         createdAt,
         updatedAt);
   }
@@ -115,6 +148,11 @@ public record LearningPlanDraftRevision(
         proposedPlan,
         errorCode,
         errorMessage,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationStartedAt,
+        generationCompletedAt,
         createdAt,
         updatedAt);
   }
@@ -134,6 +172,11 @@ public record LearningPlanDraftRevision(
         proposedPlan,
         errorCode,
         errorMessage,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationStartedAt,
+        generationCompletedAt,
         createdAt,
         updatedAt);
   }
@@ -157,6 +200,11 @@ public record LearningPlanDraftRevision(
         nextProposedPlan,
         null,
         null,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationStartedAt,
+        generationCompletedAt,
         createdAt,
         updatedAt);
   }
@@ -176,6 +224,11 @@ public record LearningPlanDraftRevision(
         proposedPlan,
         null,
         null,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationStartedAt,
+        updatedAt,
         createdAt,
         updatedAt);
   }
@@ -199,8 +252,26 @@ public record LearningPlanDraftRevision(
         proposedPlan,
         nextErrorCode,
         nextErrorMessage,
+        generationRequestKey,
+        generationRequestFingerprint,
+        generationRunId,
+        generationStartedAt,
+        updatedAt,
         createdAt,
         updatedAt);
+  }
+
+  /** 标记由第二阶段控制面成功受理的修订生成。 */
+  public LearningPlanDraftRevision withGenerationStarted(
+      String requestKey,
+      String requestFingerprint,
+      String runId,
+      Instant startedAt
+  ) {
+    return new LearningPlanDraftRevision(
+        id, proposalGroupId, draftId, userId, revisionNo, status, instruction, baseBrief, basePlan,
+        proposedBrief, proposedPlan, errorCode, errorMessage, requestKey, requestFingerprint, runId,
+        startedAt, null, createdAt, startedAt);
   }
 
   private static LearningPlanBrief briefFromPlan(LearningPlanDraftPlan plan) {

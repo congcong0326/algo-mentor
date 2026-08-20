@@ -29,7 +29,15 @@ public final class MentorConfigurationKeys {
   /** Practice Chat 独立 Redis Stream 通道配置前缀。 */
   public static final String PRACTICE_REALTIME_STREAM_PREFIX = "algo-mentor.practice-chat.realtime-stream";
 
-  /** 学习计划首次草案生成独立 Redis Stream 通道配置前缀。 */
+  /** 学习计划 generation 和 revision 共用的独立 Redis Stream 通道配置前缀。 */
+  public static final String LEARNING_PLAN_REALTIME_STREAM_PREFIX = "algo-mentor.learning-plan.realtime-stream";
+
+  /**
+   * 阶段一 Redis Stream 配置前缀，保留一个兼容发布周期。
+   *
+   * @deprecated 使用 {@link #LEARNING_PLAN_REALTIME_STREAM_PREFIX}。
+   */
+  @Deprecated
   public static final String LEARNING_PLAN_GENERATION_REALTIME_STREAM_PREFIX =
       "algo-mentor.learning-plan.generation.realtime-stream";
 

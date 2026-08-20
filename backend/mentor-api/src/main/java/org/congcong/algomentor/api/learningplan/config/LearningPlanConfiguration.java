@@ -8,6 +8,7 @@ import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPl
 import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanupMetrics;
 import org.congcong.algomentor.api.learningplan.cleanup.LearningPlanDraftCleanupScheduler;
 import org.congcong.algomentor.api.learningplan.recovery.LearningPlanDraftGenerationStartupRecovery;
+import org.congcong.algomentor.api.learningplan.recovery.LearningPlanDraftRevisionGenerationStartupRecovery;
 import org.congcong.algomentor.api.learningplan.personalization.ApiLearningPlanPersonalizationDataProvider;
 import org.congcong.algomentor.api.learningplan.policy.LearningPlanCreationPolicyContentValidator;
 import org.congcong.algomentor.api.learningplan.policy.PolicyBackedLearningPlanCreationPolicyResolver;
@@ -47,7 +48,11 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalPromptBuilder;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationEventPublisher;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationMetrics;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentDefinition;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.MicrometerLearningPlanDraftRevisionGenerationMetrics;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.CompileLearningPlanRevisionAgentTool;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaselineResolver;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionCanonicalRestorer;
@@ -149,6 +154,16 @@ public class LearningPlanConfiguration {
     return registry == null
         ? LearningPlanAiRevisionAccessMetrics.NOOP
         : new MicrometerLearningPlanAiRevisionAccessMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanDraftRevisionGenerationMetrics learningPlanDraftRevisionGenerationMetrics(
+      ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null
+        ? LearningPlanDraftRevisionGenerationMetrics.NOOP
+        : new MicrometerLearningPlanDraftRevisionGenerationMetrics(registry);
   }
 
   @Bean
@@ -398,6 +413,23 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnBean(LearningPlanProposalRepository.class)
+  @ConditionalOnMissingBean(LearningPlanDraftRevisionGenerationStartupRecovery.class)
+  public ApplicationRunner learningPlanDraftRevisionGenerationStartupRecovery(
+      LearningPlanProposalRepository proposalRepository,
+      Clock learningPlanClock,
+      LearningPlanGovernanceProperties properties,
+      ObjectProvider<LearningPlanDraftRevisionGenerationEventPublisher> eventPublisherProvider,
+      LearningPlanDraftRevisionGenerationMetrics metrics) {
+    return new LearningPlanDraftRevisionGenerationStartupRecovery(
+        proposalRepository,
+        eventPublisherProvider.getIfAvailable(() -> (draftId, revisionId, event) -> { }),
+        learningPlanClock,
+        properties.getGenerationRecovery(),
+        metrics);
+  }
+
+  @Bean
+  @ConditionalOnBean(LearningPlanProposalRepository.class)
   @ConditionalOnMissingBean
   public LearningPlanProposalGroupService learningPlanProposalGroupService(
       LearningPlanProposalRepository proposalRepository,
@@ -453,6 +485,39 @@ public class LearningPlanConfiguration {
         learningPlanClock,
         personalizationContextService,
         aiRevisionAccessService);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      LearningPlanProposalRepository.class,
+      LearningPlanProposalGroupService.class,
+      AgentRuntime.class
+  })
+  @ConditionalOnMissingBean
+  public LearningPlanDraftRevisionGenerationService learningPlanDraftRevisionGenerationService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanProposalRepository proposalRepository,
+      LearningPlanProposalGroupService groupService,
+      AgentRuntime agentRuntime,
+      ObjectMapper objectMapper,
+      TransactionOperations transactionOperations,
+      Clock learningPlanClock,
+      LearningPlanPersonalizationContextService personalizationContextService,
+      LearningPlanAiRevisionAccessService aiRevisionAccessService,
+      ObjectProvider<LearningPlanDraftRevisionGenerationEventPublisher> eventPublisherProvider,
+      LearningPlanDraftRevisionGenerationMetrics metrics) {
+    return new LearningPlanDraftRevisionGenerationService(
+        draftRepository,
+        proposalRepository,
+        groupService,
+        agentRuntime,
+        objectMapper,
+        transactionOperations,
+        learningPlanClock,
+        personalizationContextService,
+        aiRevisionAccessService,
+        eventPublisherProvider.getIfAvailable(() -> (draftId, revisionId, event) -> { }),
+        metrics);
   }
 
   @Bean

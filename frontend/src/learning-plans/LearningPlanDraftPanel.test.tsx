@@ -122,6 +122,31 @@ describe('LearningPlanDraftPanel', () => {
     expect(screen.getByRole('button', { name: '按要求调整计划' })).toBeDisabled();
   });
 
+  it('uses the shared work indicator and aligns revision and save actions', () => {
+    const { container } = render(
+      <LearningPlanDraftPanel
+        draft={{
+          draftId: 100,
+          status: 'GENERATED',
+          assistantMessage: '已生成训练方案草案。',
+          missingFields: [],
+          draftPlan,
+        }}
+        loading
+        workEvent={{ message: '正在根据要求调整计划' }}
+        onConfirm={vi.fn()}
+        onReturnToWizard={vi.fn()}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('正在根据要求调整计划');
+    expect(container.querySelector('.agent-work-indicator .spin-icon')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '按要求调整计划' }).parentElement)
+      .toBe(screen.getByRole('button', { name: '保存方案' }).parentElement);
+  });
+
   it('keeps the save action when template revision is disabled', () => {
     const onConfirm = vi.fn();
     render(

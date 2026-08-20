@@ -2,7 +2,7 @@
 
 ## 1. 文档信息
 
-- 状态：待实施
+- 状态：已实施
 - 创建日期：2026-08-20
 - 实施范围：仅学习计划 AI 首次草案创建
 - 总体设计：docs/learning-plan-ai-generation-sse-resilience-design.md

@@ -48,22 +48,21 @@ algo-mentor:
       generation-recovery:
         enabled: ${LEARNING_PLAN_GENERATION_RECOVERY_ENABLED:true}
         minimum-age: ${LEARNING_PLAN_GENERATION_RECOVERY_MINIMUM_AGE:1m}
-    generation:
-      realtime-stream:
-        enabled: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ENABLED:true}
-        host: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_HOST:${REDIS_STREAM_HOST}}
-        port: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PORT:${REDIS_STREAM_PORT}}
-        database: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_DATABASE:${REDIS_STREAM_DATABASE:0}}
-        username: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_USERNAME:${REDIS_STREAM_USERNAME:}}
-        password: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PASSWORD:${REDIS_STREAM_PASSWORD:}}
-        ssl-enabled: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SSL_ENABLED:${REDIS_STREAM_SSL_ENABLED:false}}
-        command-timeout: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMMAND_TIMEOUT:3s}
-        connect-timeout: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_CONNECT_TIMEOUT:2s}
-        shutdown-timeout: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SHUTDOWN_TIMEOUT:2s}
-        read-block: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_READ_BLOCK:2s}
-        max-read-connections: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_MAX_READ_CONNECTIONS:32}
-        active-retention: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ACTIVE_RETENTION:2h}
-        completed-retention: ${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMPLETED_RETENTION:24h}
+    realtime-stream:
+      enabled: ${LEARNING_PLAN_REALTIME_STREAM_ENABLED:${algo-mentor.learning-plan.generation.realtime-stream.enabled:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ENABLED:true}}}
+      host: ${LEARNING_PLAN_REALTIME_STREAM_HOST:${algo-mentor.learning-plan.generation.realtime-stream.host:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_HOST:${REDIS_STREAM_HOST}}}}
+      port: ${LEARNING_PLAN_REALTIME_STREAM_PORT:${algo-mentor.learning-plan.generation.realtime-stream.port:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PORT:${REDIS_STREAM_PORT}}}}
+      database: ${LEARNING_PLAN_REALTIME_STREAM_DATABASE:${algo-mentor.learning-plan.generation.realtime-stream.database:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_DATABASE:${REDIS_STREAM_DATABASE:0}}}}
+      username: ${LEARNING_PLAN_REALTIME_STREAM_USERNAME:${algo-mentor.learning-plan.generation.realtime-stream.username:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_USERNAME:${REDIS_STREAM_USERNAME:}}}}
+      password: ${LEARNING_PLAN_REALTIME_STREAM_PASSWORD:${algo-mentor.learning-plan.generation.realtime-stream.password:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_PASSWORD:${REDIS_STREAM_PASSWORD:}}}}
+      ssl-enabled: ${LEARNING_PLAN_REALTIME_STREAM_SSL_ENABLED:${algo-mentor.learning-plan.generation.realtime-stream.ssl-enabled:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SSL_ENABLED:${REDIS_STREAM_SSL_ENABLED:false}}}}
+      command-timeout: ${LEARNING_PLAN_REALTIME_STREAM_COMMAND_TIMEOUT:${algo-mentor.learning-plan.generation.realtime-stream.command-timeout:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMMAND_TIMEOUT:3s}}}
+      connect-timeout: ${LEARNING_PLAN_REALTIME_STREAM_CONNECT_TIMEOUT:${algo-mentor.learning-plan.generation.realtime-stream.connect-timeout:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_CONNECT_TIMEOUT:2s}}}
+      shutdown-timeout: ${LEARNING_PLAN_REALTIME_STREAM_SHUTDOWN_TIMEOUT:${algo-mentor.learning-plan.generation.realtime-stream.shutdown-timeout:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_SHUTDOWN_TIMEOUT:2s}}}
+      read-block: ${LEARNING_PLAN_REALTIME_STREAM_READ_BLOCK:${algo-mentor.learning-plan.generation.realtime-stream.read-block:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_READ_BLOCK:2s}}}
+      max-read-connections: ${LEARNING_PLAN_REALTIME_STREAM_MAX_READ_CONNECTIONS:${algo-mentor.learning-plan.generation.realtime-stream.max-read-connections:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_MAX_READ_CONNECTIONS:32}}}
+      active-retention: ${LEARNING_PLAN_REALTIME_STREAM_ACTIVE_RETENTION:${algo-mentor.learning-plan.generation.realtime-stream.active-retention:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_ACTIVE_RETENTION:2h}}}
+      completed-retention: ${LEARNING_PLAN_REALTIME_STREAM_COMPLETED_RETENTION:${algo-mentor.learning-plan.generation.realtime-stream.completed-retention:${LEARNING_PLAN_GENERATION_REALTIME_STREAM_COMPLETED_RETENTION:24h}}}
   practice-chat:
     realtime-stream:
       enabled: ${PRACTICE_REALTIME_STREAM_ENABLED:true}

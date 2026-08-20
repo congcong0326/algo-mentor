@@ -60,20 +60,25 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProgr
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyResult;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionResult;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationStart;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalEvent;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanDraftRevisionRealtimeEventStore;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationService;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftGenerationStart;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftCommand;
@@ -126,6 +131,15 @@ class LearningPlanControllerTest {
 
   @MockBean
   private LearningPlanDraftRevisionStreamService draftRevisionStreamService;
+
+  @MockBean
+  private LearningPlanDraftRevisionGenerationService draftRevisionGenerationService;
+
+  @MockBean
+  private LearningPlanProposalRepository proposalRepository;
+
+  @MockBean
+  private LearningPlanDraftRevisionRealtimeEventStore draftRevisionRealtimeEventStore;
 
   @MockBean
   private LearningPlanExtensionProposalStreamService extensionProposalStreamService;
@@ -383,6 +397,63 @@ class LearningPlanControllerTest {
 
     verify(draftRevisionStreamService).stream(eq(42L), eq(100L), eq("请增加动态规划训练"), any(), eq(Map.of()));
     verifyNoInteractions(admissionService, lifecycleService);
+  }
+
+  @Test
+  void startsDraftRevisionGenerationWithAcceptedLocationAndMinimalControlPlanePayload() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    LearningPlanDraftRevision revision = generatingDraftRevision();
+    when(draftRevisionGenerationService.start(42L, 100L, "请增加动态规划训练", "revision-key"))
+        .thenReturn(new LearningPlanDraftRevisionGenerationStart(revision, true));
+
+    mockMvc.perform(post("/api/learning-plans/drafts/100/revisions/generations")
+            .header("Idempotency-Key", "revision-key")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"instruction\":\"  请增加动态规划训练  \"}"))
+        .andExpect(status().isAccepted())
+        .andExpect(header().string("Location", "/api/learning-plans/drafts/100/revisions/203"))
+        .andExpect(jsonPath("$.data.revisionId").value(203))
+        .andExpect(jsonPath("$.data.proposalGroupId").value(72))
+        .andExpect(jsonPath("$.data.draftId").value(100))
+        .andExpect(jsonPath("$.data.revisionNo").value(3))
+        .andExpect(jsonPath("$.data.status").value("GENERATING"))
+        .andExpect(jsonPath("$.data.eventsUrl").value("/api/learning-plans/drafts/100/revisions/203/events"))
+        .andExpect(jsonPath("$.data.initialAfter").value("0-0"))
+        .andExpect(jsonPath("$.data.realtimeProtocolVersion").value(1));
+  }
+
+  @Test
+  void readsRevisionStatusWithoutInstructionOrSnapshotPayloads() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(proposalRepository.findDraftRevisionForUserAndDraft(203L, 42L, 100L))
+        .thenReturn(Optional.of(generatingDraftRevision()));
+
+    mockMvc.perform(get("/api/learning-plans/drafts/100/revisions/203"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.revisionId").value(203))
+        .andExpect(jsonPath("$.data.proposalGroupId").value(72))
+        .andExpect(jsonPath("$.data.status").value("GENERATING"))
+        .andExpect(jsonPath("$.data.instruction").doesNotExist())
+        .andExpect(jsonPath("$.data.basePlan").doesNotExist())
+        .andExpect(jsonPath("$.data.proposedPlan").doesNotExist())
+        .andExpect(jsonPath("$.data.errorCode").doesNotExist());
+  }
+
+  @Test
+  void rejectsCrossDraftRevisionCombinationAndInvalidRevisionCursor() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(proposalRepository.findDraftRevisionForUserAndDraft(203L, 42L, 999L)).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/api/learning-plans/drafts/999/revisions/203"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("LEARNING_PLAN_PROPOSAL_REVISION_NOT_FOUND"));
+
+    when(proposalRepository.findDraftRevisionForUserAndDraft(203L, 42L, 100L))
+        .thenReturn(Optional.of(generatingDraftRevision()));
+    mockMvc.perform(get("/api/learning-plans/drafts/100/revisions/203/events?after=1-1")
+            .accept(MediaType.TEXT_EVENT_STREAM))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("LEARNING_PLAN_DRAFT_REVISION_CURSOR_INVALID"));
   }
 
   @Test
@@ -782,6 +853,24 @@ class LearningPlanControllerTest {
         null,
         startedAt,
         null);
+  }
+
+  private LearningPlanDraftRevision generatingDraftRevision() {
+    Instant startedAt = Instant.parse("2026-08-20T08:00:00Z");
+    return new LearningPlanDraftRevision(
+        203L,
+        72L,
+        100L,
+        42L,
+        3,
+        LearningPlanProposalRevisionStatus.GENERATING,
+        "请增加动态规划训练",
+        draftPlan(),
+        null,
+        null,
+        null,
+        startedAt,
+        startedAt);
   }
 
   private LearningPlanDraftPlan draftPlanWithMultipleProblems() {

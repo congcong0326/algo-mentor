@@ -4,11 +4,13 @@ import {
   createLearningPlanDraftFromTemplate,
   confirmLearningPlanDraft,
   getLearningPlanDraft,
+  getLearningPlanDraftRevision,
   readLearningPlanDraftGenerationEvents,
+  readLearningPlanDraftRevisionEvents,
   requireApiData,
   sendLearningPlanDraftMessage,
   startLearningPlanDraftGeneration,
-  streamLearningPlanDraftRevision,
+  startLearningPlanDraftRevisionGeneration,
 } from '../services/api';
 import type {
   AgentWorkStatusEvent,
@@ -18,7 +20,7 @@ import type {
   LearningPlanDraftGenerationEventData,
   LearningPlanDraftGenerationResponse,
   LearningPlanDraftGenerationStartResponse,
-  LearningPlanDraftRevisionReadyEvent,
+  LearningPlanDraftRevisionEventData,
   LearningPlanDraftResponse,
   LearningPlanTemplateDraftRequest,
   LearningPlanAiRevisionCapabilities,
@@ -37,13 +39,23 @@ type LearningPlanCreateState = 'editing' | 'generating' | 'collecting' | 'previe
 type LearningPlanCreateMode = 'ai' | 'template';
 
 const pendingGenerationStorageKey = 'learning-plan.pending-generation';
+const pendingRevisionStorageKey = 'learning-plan.pending-revision';
 const initialGenerationAfter = '0-0';
 const generationEventNames = new Set(['work_start', 'work_progress', 'work_tool_start', 'work_tool_end', 'draft_completed', 'draft_failed']);
+const revisionEventNames = new Set(['work_start', 'work_progress', 'revision_completed', 'revision_failed', 'revision_superseded']);
 
 interface PendingGeneration {
   draftId: number;
   idempotencyKey: string;
   lastEventId: string;
+}
+
+interface PendingRevision {
+  draftId: number;
+  revisionId: number;
+  idempotencyKey: string;
+  lastEventId: string;
+  protocolVersion: number;
 }
 
 interface AiOperationError {
@@ -90,11 +102,16 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   const [error, setError] = useState('');
   const [capacityUnavailable, setCapacityUnavailable] = useState(false);
   const [operationError, setOperationError] = useState<AiOperationError>();
+  const [revisionCompletedVersion, setRevisionCompletedVersion] = useState(0);
   const observerAbortRef = useRef<AbortController | undefined>(undefined);
   const observerRetryRef = useRef<number | undefined>(undefined);
   const observerVersionRef = useRef(0);
   const lastEventIdRef = useRef(initialGenerationAfter);
   const activeIdempotencyKeyRef = useRef<string | undefined>(undefined);
+  const revisionObserverAbortRef = useRef<AbortController | undefined>(undefined);
+  const revisionObserverRetryRef = useRef<number | undefined>(undefined);
+  const revisionObserverVersionRef = useRef(0);
+  const revisionLastEventIdRef = useRef(initialGenerationAfter);
 
   function showCapacityUnavailable() {
     setError('');
@@ -124,6 +141,16 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
   }
 
+  function clearRevisionObserver() {
+    revisionObserverVersionRef.current += 1;
+    revisionObserverAbortRef.current?.abort();
+    revisionObserverAbortRef.current = undefined;
+    if (revisionObserverRetryRef.current !== undefined) {
+      window.clearTimeout(revisionObserverRetryRef.current);
+      revisionObserverRetryRef.current = undefined;
+    }
+  }
+
   function pendingGeneration(): PendingGeneration | undefined {
     try {
       const raw = window.sessionStorage.getItem(pendingGenerationStorageKey);
@@ -143,6 +170,27 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     }
   }
 
+  function pendingRevision(): PendingRevision | undefined {
+    try {
+      const raw = window.sessionStorage.getItem(pendingRevisionStorageKey);
+      if (!raw) {
+        return undefined;
+      }
+      const value = JSON.parse(raw) as Partial<PendingRevision>;
+      if (typeof value.draftId !== 'number' || value.draftId < 1
+          || typeof value.revisionId !== 'number' || value.revisionId < 1
+          || typeof value.idempotencyKey !== 'string' || !value.idempotencyKey
+          || !isContinuousCursor(value.lastEventId) || value.protocolVersion !== 1) {
+        window.sessionStorage.removeItem(pendingRevisionStorageKey);
+        return undefined;
+      }
+      return value as PendingRevision;
+    } catch {
+      window.sessionStorage.removeItem(pendingRevisionStorageKey);
+      return undefined;
+    }
+  }
+
   function savePendingGeneration(draftId: number, idempotencyKey: string, lastEventId: string) {
     window.sessionStorage.setItem(pendingGenerationStorageKey, JSON.stringify({ draftId, idempotencyKey, lastEventId }));
   }
@@ -152,9 +200,26 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     window.sessionStorage.removeItem(pendingGenerationStorageKey);
   }
 
+  function savePendingRevision(pending: PendingRevision) {
+    window.sessionStorage.setItem(pendingRevisionStorageKey, JSON.stringify(pending));
+  }
+
+  function clearPendingRevision() {
+    window.sessionStorage.removeItem(pendingRevisionStorageKey);
+  }
+
+  function revisionEventsUrl(draftId: number, revisionId: number) {
+    return `/api/learning-plans/drafts/${draftId}/revisions/${revisionId}/events`;
+  }
+
   function updateCursor(draftId: number, idempotencyKey: string, nextCursor: string) {
     lastEventIdRef.current = nextCursor;
     savePendingGeneration(draftId, idempotencyKey, nextCursor);
+  }
+
+  function updateRevisionCursor(pending: PendingRevision, nextCursor: string) {
+    revisionLastEventIdRef.current = nextCursor;
+    savePendingRevision({ ...pending, lastEventId: nextCursor });
   }
 
   function completeFromDraft(nextDraft: LearningPlanDraftResponse) {
@@ -177,6 +242,119 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       code: nextDraft.generationErrorCode,
       message: nextDraft.generationErrorMessage ?? nextDraft.assistantMessage,
     }, resources.learningPlans.generateFailed);
+  }
+
+  async function recoverRevision(
+      draftId: number,
+      revisionId: number,
+      eventsUrl: string,
+      observerVersion: number) {
+    try {
+      const revision = requireApiData(
+        await getLearningPlanDraftRevision(draftId, revisionId),
+        resources.learningPlans.revisionFailed,
+      );
+      if (observerVersion !== revisionObserverVersionRef.current) {
+        return;
+      }
+      if (revision.status === 'READY') {
+        const nextDraft = requireApiData(await getLearningPlanDraft(draftId), resources.learningPlans.revisionFailed);
+        if (observerVersion !== revisionObserverVersionRef.current) {
+          return;
+        }
+        clearRevisionObserver();
+        clearPendingRevision();
+        setRevisionCompletedVersion((current) => current + 1);
+        setDraft(nextDraft);
+        setWorkEvent(undefined);
+        setFlowState('previewing');
+        return;
+      }
+      if (revision.status === 'FAILED') {
+        clearRevisionObserver();
+        clearPendingRevision();
+        setWorkEvent(undefined);
+        setFlowState('previewing');
+        showAiOperationError({ message: revision.errorMessage }, resources.learningPlans.revisionFailed);
+        return;
+      }
+      if (revision.status === 'SUPERSEDED') {
+        clearRevisionObserver();
+        clearPendingRevision();
+        try {
+          const nextDraft = requireApiData(await getLearningPlanDraft(draftId), resources.learningPlans.revisionFailed);
+          setDraft(nextDraft);
+        } catch {
+          // SUPERSEDED 的 revision 状态仍是权威结果；草案回读失败保留当前预览。
+        }
+        setWorkEvent(undefined);
+        setFlowState('previewing');
+        showAiOperationError({ message: revision.errorMessage }, resources.learningPlans.revisionFailed);
+        return;
+      }
+      if (revision.status !== 'GENERATING') {
+        clearRevisionObserver();
+        clearPendingRevision();
+        setWorkEvent(undefined);
+        setFlowState('previewing');
+        return;
+      }
+    } catch {
+      if (observerVersion !== revisionObserverVersionRef.current) {
+        return;
+      }
+    }
+    if (observerVersion === revisionObserverVersionRef.current) {
+      revisionObserverRetryRef.current = window.setTimeout(() => {
+        observeRevision(draftId, revisionId, eventsUrl, revisionLastEventIdRef.current);
+      }, 1000);
+    }
+  }
+
+  function observeRevision(draftId: number, revisionId: number, eventsUrl: string, after: string) {
+    clearRevisionObserver();
+    const observerVersion = ++revisionObserverVersionRef.current;
+    const controller = new AbortController();
+    revisionObserverAbortRef.current = controller;
+    let recoveryRequested = false;
+    void readLearningPlanDraftRevisionEvents(eventsUrl, {
+      after,
+      signal: controller.signal,
+      onEvent: (event) => {
+        if (observerVersion !== revisionObserverVersionRef.current) {
+          return;
+        }
+        const pending = pendingRevision();
+        const data = event.data as Partial<LearningPlanDraftRevisionEventData>;
+        if (!pending || pending.draftId !== draftId || pending.revisionId !== revisionId
+            || !revisionEventNames.has(event.eventName) || !event.id || !isContinuousCursor(event.id)
+            || data.draftId !== draftId || data.revisionId !== revisionId
+            || hasCursorGap(revisionLastEventIdRef.current, event.id)) {
+          recoveryRequested = true;
+          controller.abort();
+          void recoverRevision(draftId, revisionId, eventsUrl, observerVersion);
+          return;
+        }
+        updateRevisionCursor(pending, event.id);
+        if (event.eventName === 'work_start' || event.eventName === 'work_progress') {
+          setWorkEvent(data);
+          return;
+        }
+        recoveryRequested = true;
+        void recoverRevision(draftId, revisionId, eventsUrl, observerVersion);
+      },
+    }).then(
+      () => {
+        if (!recoveryRequested) {
+          void recoverRevision(draftId, revisionId, eventsUrl, observerVersion);
+        }
+      },
+      () => {
+        if (!recoveryRequested) {
+          void recoverRevision(draftId, revisionId, eventsUrl, observerVersion);
+        }
+      },
+    );
   }
 
   async function recoverGeneration(draftId: number, eventsUrl: string, observerVersion: number) {
@@ -251,15 +429,41 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
   }
 
   useEffect(() => {
-    const pending = pendingGeneration();
-    if (pending) {
-      lastEventIdRef.current = pending.lastEventId;
-      activeIdempotencyKeyRef.current = pending.idempotencyKey;
+    const generation = pendingGeneration();
+    if (generation) {
+      lastEventIdRef.current = generation.lastEventId;
+      activeIdempotencyKeyRef.current = generation.idempotencyKey;
       setFlowState('generating');
       setWorkEvent({ message: resources.learningPlans.generateStart });
-      observeGeneration(pending.draftId, generationEventsUrl(pending.draftId), pending.lastEventId);
+      observeGeneration(generation.draftId, generationEventsUrl(generation.draftId), generation.lastEventId);
     }
-    return clearObserver;
+    const revision = pendingRevision();
+    if (!generation && revision) {
+      revisionLastEventIdRef.current = revision.lastEventId;
+      setFlowState('generating');
+      setWorkEvent({ message: resources.learningPlans.reviseDraft });
+      void getLearningPlanDraft(revision.draftId).then((response) => {
+        const restored = requireApiData(response, resources.learningPlans.revisionFailed);
+        setDraft(restored);
+        observeRevision(
+          revision.draftId,
+          revision.revisionId,
+          revisionEventsUrl(revision.draftId, revision.revisionId),
+          revision.lastEventId,
+        );
+      }).catch(() => {
+        void recoverRevision(
+          revision.draftId,
+          revision.revisionId,
+          revisionEventsUrl(revision.draftId, revision.revisionId),
+          revisionObserverVersionRef.current,
+        );
+      });
+    }
+    return () => {
+      clearObserver();
+      clearRevisionObserver();
+    };
   }, []);
 
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
@@ -322,13 +526,6 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
       return;
     }
-    if (event.eventName === 'draft_revision_ready') {
-      const revision = event.data as LearningPlanDraftRevisionReadyEvent;
-      setDraft(revision.draft);
-      setWorkEvent(undefined);
-      setFlowState('previewing');
-      return;
-    }
     if (event.eventName === 'draft_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
       showAiOperationError(draftError, resources.learningPlans.generateFailed);
@@ -375,26 +572,23 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
     setOperationError(undefined);
     setWorkEvent({ message: resources.learningPlans.reviseDraft });
     try {
-      let revisionReady = false;
-      let revisionFailed = false;
-      await streamLearningPlanDraftRevision(draft.draftId, { instruction: instruction.trim() }, {
-        onEvent: (event) => {
-          if (event.eventName === 'draft_revision_ready') {
-            revisionReady = true;
-          }
-          if (event.eventName === 'draft_revision_error') {
-            revisionFailed = true;
-          }
-          handleDraftStreamEvent(event);
-        },
+      const idempotencyKey = newIdempotencyKey();
+      const started = await startLearningPlanDraftRevisionGeneration(draft.draftId, {
+        instruction: instruction.trim(),
+      }, {
+        idempotencyKey,
       });
-      if (!revisionReady && !revisionFailed) {
-        setError(resources.learningPlans.revisionFailed);
-        setWorkEvent(undefined);
-        setFlowState('previewing');
-        return false;
-      }
-      return revisionReady && !revisionFailed;
+      const pending: PendingRevision = {
+        draftId: started.draftId,
+        revisionId: started.revisionId,
+        idempotencyKey,
+        lastEventId: started.initialAfter,
+        protocolVersion: started.realtimeProtocolVersion,
+      };
+      revisionLastEventIdRef.current = started.initialAfter;
+      savePendingRevision(pending);
+      observeRevision(started.draftId, started.revisionId, started.eventsUrl, started.initialAfter);
+      return false;
     } catch (nextError) {
       showAiOperationError(nextError, resources.learningPlans.revisionFailed);
       setWorkEvent(undefined);
@@ -464,6 +658,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved, capabil
               onConfirm={confirmDraft}
               onRetryCreate={retryCreateDraft}
               onReviseDraft={reviseDraft}
+              revisionCompletedVersion={revisionCompletedVersion}
               onSendFollowUp={sendFollowUp}
               capabilities={capabilities}
             />

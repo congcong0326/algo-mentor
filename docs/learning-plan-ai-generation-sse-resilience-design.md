@@ -4,8 +4,8 @@
 
 - 原始设计日期：2026-08-04
 - Redis Stream 方案更新：2026-08-20
-- 状态：设计更新完成，第一阶段待实施
-- 当前实施范围：学习计划 AI 草案首次生成；草案 AI 修订列为第二阶段
+- 状态：第一阶段已实施，第二阶段待实施
+- 当前实施范围：学习计划 AI 草案修订；首次草案生成已完成 Redis Stream 解耦
 - 关联接口：`/api/learning-plans/drafts/*`
 - 关联线程模型：`docs/agent-thread-model-refactoring-design.md`
 - 关联 SSE 基础设施设计：`docs/sse-managed-connection-heartbeat-design.md`
@@ -679,7 +679,7 @@ SSE 断开不能直接记录 `learning_plan_generation_failed`。只有草案记
 
 以下阶段划分替代本节此前的兼容接口优先顺序。
 
-### 当前阶段一：首次草案 Redis Stream 解耦
+### 已完成阶段一：首次草案 Redis Stream 解耦
 
 1. 为首次 AI 草案补齐 GENERATING、生成元数据、幂等键和按用户查询。
 2. 新增启动、草案查询与带 after 游标的事件读取接口。
@@ -687,7 +687,7 @@ SSE 断开不能直接记录 `learning_plan_generation_failed`。只有草案记
 4. 为首次草案新增低敏事件投影、Redis key/envelope/cursor、TTL、独立配置和指标。
 5. 前端切换到“启动 -> 游标订阅 -> 数据库查询”，终态 SSE 不再传输结构化草案。
 
-### 后续阶段二：草案 AI 修订 Redis Stream 解耦
+### 当前阶段二：草案 AI 修订 Redis Stream 解耦
 
 1. 草案修订启动返回既有持久化 revisionId，而不是 SSE 正文。
 2. 新增 revision 状态读取与 revisionId 级 Redis Stream 事件接口。
@@ -789,7 +789,7 @@ SSE 断开不能直接记录 `learning_plan_generation_failed`。只有草案记
 
 ### 15.1 兼容期存在两套入口
 
-阶段一继续保留 `/drafts/stream`，阶段二新增 `/drafts/generations` 和观察接口。通过常量统一路径、明确前端切换点和完成后标记旧接口待删除，控制双协议维护时间。
+阶段一已使用 `/drafts/generations` 和观察接口，并在兼容期保留 `/drafts/stream`。阶段二新增 revision 启动、观察和查询接口，并继续保留 `/revisions/stream`；通过常量统一路径、明确前端切换点和完成后标记旧接口待删除，控制双协议维护时间。
 
 ### 15.2 单实例内存控制注册表
 

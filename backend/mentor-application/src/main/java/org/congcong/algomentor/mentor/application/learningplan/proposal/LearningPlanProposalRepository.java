@@ -35,6 +35,44 @@ public interface LearningPlanProposalRepository {
 
   Optional<LearningPlanDraftRevision> findDraftRevisionForUser(long revisionId, long userId);
 
+  default void lockDraftRevisionGenerationRequest(long userId, long draftId, String requestKey) {
+    throw new UnsupportedOperationException("Learning plan draft revision generation request locking is not supported");
+  }
+
+  default Optional<LearningPlanDraftRevision> findDraftRevisionByGenerationRequestKey(
+      long userId, long draftId, String requestKey) {
+    return Optional.empty();
+  }
+
+  default Optional<LearningPlanDraftRevision> findDraftRevisionForUserAndDraft(
+      long revisionId, long userId, long draftId) {
+    return findDraftRevisionForUser(revisionId, userId).filter(revision -> revision.draftId() == draftId);
+  }
+
+  default Optional<LearningPlanDraftRevision> findDraftRevisionForUserAndDraftForUpdate(
+      long revisionId, long userId, long draftId) {
+    return findDraftRevisionForUserAndDraft(revisionId, userId, draftId);
+  }
+
+  default Optional<LearningPlanDraftRevision> completeDraftRevisionIfGenerating(
+      LearningPlanDraftRevision revision) {
+    return Optional.empty();
+  }
+
+  default Optional<LearningPlanDraftRevision> failDraftRevisionIfGenerating(
+      long revisionId, long userId, long draftId, String errorCode, String errorMessage, Instant completedAt) {
+    return Optional.empty();
+  }
+
+  default Optional<LearningPlanDraftRevision> supersedeDraftRevisionIfGenerating(
+      long revisionId, long userId, long draftId, String errorCode, String errorMessage, Instant completedAt) {
+    return Optional.empty();
+  }
+
+  default List<LearningPlanDraftRevision> findInterruptedDraftRevisionGenerations(Instant startedBefore) {
+    return List.of();
+  }
+
   default Optional<LearningPlanRevisionBaseSnapshot> findDraftOriginForUser(long draftId, long userId) {
     return Optional.empty();
   }

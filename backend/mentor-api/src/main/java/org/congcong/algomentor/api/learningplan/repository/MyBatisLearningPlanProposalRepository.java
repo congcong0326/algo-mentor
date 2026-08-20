@@ -26,6 +26,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.revision.LearningPlanRevisionBaseSnapshot;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 public class MyBatisLearningPlanProposalRepository implements LearningPlanProposalRepository {
@@ -149,6 +150,69 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   }
 
   @Override
+  public void lockDraftRevisionGenerationRequest(long userId, long draftId, String requestKey) {
+    mapper.lockDraftRevisionGenerationRequest(userId, draftId, requestKey);
+  }
+
+  @Override
+  public Optional<LearningPlanDraftRevision> findDraftRevisionByGenerationRequestKey(
+      long userId, long draftId, String requestKey) {
+    return Optional.ofNullable(mapper.findDraftRevisionByGenerationRequestKey(userId, draftId, requestKey))
+        .map(this::toDraftRevision);
+  }
+
+  @Override
+  public Optional<LearningPlanDraftRevision> findDraftRevisionForUserAndDraft(
+      long revisionId, long userId, long draftId) {
+    return Optional.ofNullable(mapper.findDraftRevisionForUserAndDraft(revisionId, userId, draftId))
+        .map(this::toDraftRevision);
+  }
+
+  @Override
+  public Optional<LearningPlanDraftRevision> findDraftRevisionForUserAndDraftForUpdate(
+      long revisionId, long userId, long draftId) {
+    return Optional.ofNullable(mapper.lockDraftRevisionForUserAndDraftForUpdate(revisionId, userId, draftId))
+        .map(this::toDraftRevision);
+  }
+
+  @Override
+  @Transactional
+  public Optional<LearningPlanDraftRevision> completeDraftRevisionIfGenerating(LearningPlanDraftRevision revision) {
+    return updateDraftRevisionIfGenerating(revision);
+  }
+
+  @Override
+  @Transactional
+  public Optional<LearningPlanDraftRevision> failDraftRevisionIfGenerating(
+      long revisionId, long userId, long draftId, String errorCode, String errorMessage, Instant completedAt) {
+    LearningPlanDraftRevision current = findDraftRevisionForUserAndDraft(revisionId, userId, draftId).orElse(null);
+    return current == null ? Optional.empty() : updateDraftRevisionIfGenerating(
+        current.withFailure(errorCode, errorMessage, completedAt));
+  }
+
+  @Override
+  @Transactional
+  public Optional<LearningPlanDraftRevision> supersedeDraftRevisionIfGenerating(
+      long revisionId, long userId, long draftId, String errorCode, String errorMessage, Instant completedAt) {
+    LearningPlanDraftRevision current = findDraftRevisionForUserAndDraft(revisionId, userId, draftId).orElse(null);
+    if (current == null) {
+      return Optional.empty();
+    }
+    LearningPlanDraftRevision superseded = current.withFailure(errorCode, errorMessage, completedAt)
+        .withStatus(LearningPlanProposalRevisionStatus.SUPERSEDED, completedAt);
+    return updateDraftRevisionIfGenerating(superseded);
+  }
+
+  @Override
+  public List<LearningPlanDraftRevision> findInterruptedDraftRevisionGenerations(Instant startedBefore) {
+    return mapper.findInterruptedDraftRevisionGenerations(
+            startedBefore, LearningPlanProposalRevisionStatus.GENERATING.name())
+        .stream()
+        .map(this::toDraftRevision)
+        .toList();
+  }
+
+  @Override
   public Optional<LearningPlanRevisionBaseSnapshot> findDraftOriginForUser(long draftId, long userId) {
     return Optional.ofNullable(mapper.findDraftOriginForUser(draftId, userId)).map(this::toBaseSnapshot);
   }
@@ -187,7 +251,14 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   @Override
   @Transactional
   public List<Long> markReadyDraftRevisionsSuperseded(long proposalGroupId, long exceptRevisionId) {
-    return mapper.markReadyDraftRevisionsSuperseded(proposalGroupId, exceptRevisionId, Instant.now());
+    Instant completedAt = Instant.now();
+    return mapper.markReadyDraftRevisionsSuperseded(
+        proposalGroupId,
+        exceptRevisionId,
+        LearningPlanDraftRevisionGenerationConstants.SUPERSEDED_CODE,
+        LearningPlanDraftRevisionGenerationConstants.SUPERSEDED_MESSAGE,
+        completedAt,
+        completedAt);
   }
 
   @Override
@@ -270,6 +341,11 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         revision.proposedPlan(),
         revision.errorCode(),
         revision.errorMessage(),
+        revision.generationRequestKey(),
+        revision.generationRequestFingerprint(),
+        revision.generationRunId(),
+        revision.generationStartedAt(),
+        revision.generationCompletedAt(),
         revision.createdAt(),
         revision.updatedAt());
   }
@@ -310,8 +386,19 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         json(revision.proposedPlan()),
         revision.errorCode(),
         revision.errorMessage(),
+        revision.generationRequestKey(),
+        revision.generationRequestFingerprint(),
+        revision.generationRunId(),
+        revision.generationStartedAt(),
+        revision.generationCompletedAt(),
         revision.createdAt(),
         revision.updatedAt());
+  }
+
+  private Optional<LearningPlanDraftRevision> updateDraftRevisionIfGenerating(LearningPlanDraftRevision revision) {
+    return mapper.updateDraftRevisionIfGenerating(toDraftRevisionRow(revision)) == 1
+        ? findDraftRevisionForUserAndDraft(revision.id(), revision.userId(), revision.draftId())
+        : Optional.empty();
   }
 
   private LearningPlanExtensionRevisionRow toExtensionRevisionRow(LearningPlanExtensionRevision revision) {
@@ -364,6 +451,11 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         readNullable(row.proposedPlanJson(), LearningPlanDraftPlan.class),
         row.errorCode(),
         row.errorMessage(),
+        row.generationRequestKey(),
+        row.generationRequestFingerprint(),
+        row.generationRunId(),
+        row.generationStartedAt(),
+        row.generationCompletedAt(),
         row.createdAt(),
         row.updatedAt());
   }

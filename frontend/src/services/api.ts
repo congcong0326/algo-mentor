@@ -65,6 +65,8 @@ import type {
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
   LearningPlanDraftGenerationStartResponse,
+  LearningPlanDraftRevisionGenerationResponse,
+  LearningPlanDraftRevisionStatusResponse,
   LearningPlanAiRevisionCapabilities,
   LearningPlanExtensionApplyResponse,
   LearningPlanListQuery,
@@ -2085,6 +2087,74 @@ export async function streamLearningPlanDraftRevision(
 
   options.onOpen?.();
   await readEventStream(response.body, options.onEvent);
+}
+
+export interface StartLearningPlanDraftRevisionGenerationOptions {
+  idempotencyKey: string;
+  signal?: AbortSignal;
+}
+
+export async function startLearningPlanDraftRevisionGeneration(
+  draftId: number,
+  request: LearningPlanRevisionRequest,
+  options: StartLearningPlanDraftRevisionGenerationOptions,
+): Promise<LearningPlanDraftRevisionGenerationResponse> {
+  const response = await apiFetch(`/api/learning-plans/drafts/${draftId}/revisions/generations`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': options.idempotencyKey,
+    },
+    body: JSON.stringify(request),
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft revision generation start failed');
+  }
+  return requireApiData(
+    await response.json() as ApiResponse<LearningPlanDraftRevisionGenerationResponse>,
+    'Learning plan draft revision generation start failed',
+  );
+}
+
+export async function getLearningPlanDraftRevision(
+  draftId: number,
+  revisionId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanDraftRevisionStatusResponse>> {
+  const response = await apiFetch(`/api/learning-plans/drafts/${draftId}/revisions/${revisionId}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft revision query failed');
+  }
+  return response.json();
+}
+
+export interface ReadLearningPlanDraftRevisionEventsOptions {
+  after?: string;
+  signal?: AbortSignal;
+  onEvent: (event: SseStreamEvent) => void;
+}
+
+export async function readLearningPlanDraftRevisionEvents(
+  eventsUrl: string,
+  options: ReadLearningPlanDraftRevisionEventsOptions,
+): Promise<void> {
+  const after = options.after ? `?after=${encodeURIComponent(options.after)}` : '';
+  const response = await apiFetch(`${eventsUrl}${after}`, {
+    headers: { Accept: 'text/event-stream, application/json' },
+    signal: options.signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft revision event subscription failed');
+  }
+  if (!response.body) {
+    throw new Error('Learning plan draft revision event response does not include a readable body');
+  }
+  await readEventStream(response.body, options.onEvent, true);
 }
 
 export async function sendLearningPlanDraftMessage(

@@ -9,11 +9,13 @@ import {
   getLearningPlanTemplate,
   getLearningPlanTemplates,
   getLearningPlanDraft,
+  getLearningPlanDraftRevision,
   readLearningPlanDraftGenerationEvents,
+  readLearningPlanDraftRevisionEvents,
   sendLearningPlanDraftMessage,
   setApiLocale,
   startLearningPlanDraftGeneration,
-  streamLearningPlanDraftRevision,
+  startLearningPlanDraftRevisionGeneration,
 } from '../services/api';
 import type {
   ApiResponse,
@@ -28,7 +30,9 @@ vi.mock('../services/api', () => ({
   getLearningPlanTemplate: vi.fn(),
   getLearningPlanTemplates: vi.fn(),
   getLearningPlanDraft: vi.fn(),
+  getLearningPlanDraftRevision: vi.fn(),
   readLearningPlanDraftGenerationEvents: vi.fn(),
+  readLearningPlanDraftRevisionEvents: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, fallbackMessage: string): T => {
     if (response.success && response.data !== undefined) {
       return response.data;
@@ -38,7 +42,7 @@ vi.mock('../services/api', () => ({
   setApiLocale: vi.fn(),
   sendLearningPlanDraftMessage: vi.fn(),
   startLearningPlanDraftGeneration: vi.fn(),
-  streamLearningPlanDraftRevision: vi.fn(),
+  startLearningPlanDraftRevisionGeneration: vi.fn(),
 }));
 
 const getLearningPlanTemplatesMock = vi.mocked(getLearningPlanTemplates);
@@ -46,8 +50,10 @@ const getLearningPlanTemplateMock = vi.mocked(getLearningPlanTemplate);
 const createLearningPlanDraftFromTemplateMock = vi.mocked(createLearningPlanDraftFromTemplate);
 const startLearningPlanDraftGenerationMock = vi.mocked(startLearningPlanDraftGeneration);
 const getLearningPlanDraftMock = vi.mocked(getLearningPlanDraft);
+const getLearningPlanDraftRevisionMock = vi.mocked(getLearningPlanDraftRevision);
 const readLearningPlanDraftGenerationEventsMock = vi.mocked(readLearningPlanDraftGenerationEvents);
-const streamLearningPlanDraftRevisionMock = vi.mocked(streamLearningPlanDraftRevision);
+const readLearningPlanDraftRevisionEventsMock = vi.mocked(readLearningPlanDraftRevisionEvents);
+const startLearningPlanDraftRevisionGenerationMock = vi.mocked(startLearningPlanDraftRevisionGeneration);
 const sendLearningPlanDraftMessageMock = vi.mocked(sendLearningPlanDraftMessage);
 const confirmLearningPlanDraftMock = vi.mocked(confirmLearningPlanDraft);
 const setApiLocaleMock = vi.mocked(setApiLocale);
@@ -64,46 +70,31 @@ beforeEach(() => {
     draftPlan: null,
   });
   getLearningPlanDraftMock.mockResolvedValue(apiResponse(generatedDraft()));
+  getLearningPlanDraftRevisionMock.mockResolvedValue(apiResponse({
+    revisionId: 2,
+    proposalGroupId: 1,
+    draftId: 101,
+    revisionNo: 1,
+    status: 'READY',
+    startedAt: '2026-08-20T00:00:00Z',
+    completedAt: '2026-08-20T00:00:01Z',
+  }));
   readLearningPlanDraftGenerationEventsMock.mockResolvedValue(undefined);
-  streamLearningPlanDraftRevisionMock.mockImplementation(async (_draftId, _request, options) => {
+  startLearningPlanDraftRevisionGenerationMock.mockResolvedValue({
+    revisionId: 2,
+    proposalGroupId: 1,
+    draftId: 101,
+    revisionNo: 1,
+    status: 'GENERATING',
+    eventsUrl: '/api/learning-plans/drafts/101/revisions/2/events',
+    initialAfter: '0-0',
+    realtimeProtocolVersion: 1,
+  });
+  readLearningPlanDraftRevisionEventsMock.mockImplementation(async (_url, options) => {
     options.onEvent({
-      eventName: 'draft_revision_ready',
-      data: {
-        proposalGroupId: 1,
-        proposalId: 2,
-        draftId: 101,
-        revisionNo: 1,
-        status: 'READY',
-        supersededProposalIds: [],
-        draft: generatedDraft({
-          assistantMessage: '已按要求调整训练方案。',
-          draftPlan: learningPlanDraftPlan({
-            title: '三周动态规划面试计划',
-            objective: '三周内集中突破动态规划面试题',
-            phases: [{
-              ...learningPlanDraftPlan().phases[0],
-              title: '动态规划基础强化',
-              focus: '动态规划',
-              problems: [{
-                ...learningPlanDraftPlan().phases[0].problems[0],
-                slug: 'climbing-stairs',
-                frontendId: 70,
-                title: 'Climbing Stairs',
-                titleCn: '爬楼梯',
-                tags: ['Dynamic Programming'],
-                reason: '建立状态转移手感。',
-              }],
-            }],
-            weeklyBuckets: [{
-              weekIndex: 1,
-              title: '动态规划基础强化',
-              plannedProblemCount: 1,
-              plannedLoadPoints: 2.5,
-              problemSlugs: ['climbing-stairs'],
-            }],
-          }),
-        }),
-      },
+      id: '1-0',
+      eventName: 'revision_completed',
+      data: { draftId: 101, revisionId: 2 },
     });
   });
   sendLearningPlanDraftMessageMock.mockResolvedValue(apiResponse(generatedDraft({ draftId: 100 })));
@@ -301,13 +292,12 @@ describe('LearningPlanCreatePage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
 
-    await waitFor(() => expect(streamLearningPlanDraftRevisionMock).toHaveBeenCalledWith(
+    await waitFor(() => expect(startLearningPlanDraftRevisionGenerationMock).toHaveBeenCalledWith(
       101,
       { instruction: '三周内集中突破动态规划面试题' },
-      expect.objectContaining({ onEvent: expect.any(Function) }),
+      expect.objectContaining({ idempotencyKey: expect.any(String) }),
     ));
-    expect(await screen.findByText('动态规划基础强化')).toBeInTheDocument();
-    expect(screen.getAllByText('爬楼梯').length).toBeGreaterThan(0);
+    expect(await screen.findByText('基础题型恢复')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '返回新建方案' }));
 

@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /** 学习计划首次草案 Redis Stream 的独立连接与保留配置。 */
-@ConfigurationProperties(prefix = MentorConfigurationKeys.LEARNING_PLAN_GENERATION_REALTIME_STREAM_PREFIX)
+@ConfigurationProperties(prefix = MentorConfigurationKeys.LEARNING_PLAN_REALTIME_STREAM_PREFIX)
 public class LearningPlanGenerationRealtimeStreamProperties {
 
   private static final int STREAMS_REDIS_PORT = 6380;

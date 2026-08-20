@@ -20,6 +20,8 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftReq
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDetailResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftGenerationResponse;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftRevisionGenerationResponse;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftRevisionStatusResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanExtensionApplyResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanPageResponse;
@@ -37,6 +39,10 @@ import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationR
 import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeEventStore;
 import org.congcong.algomentor.api.learningplan.realtime.LearningPlanGenerationRealtimeProtocol;
 import org.congcong.algomentor.api.learningplan.realtime.UnavailableLearningPlanGenerationRealtimeEventStore;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanDraftRevisionRealtimeEvent;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanDraftRevisionRealtimeEventStore;
+import org.congcong.algomentor.api.learningplan.realtime.LearningPlanDraftRevisionRealtimeProtocol;
+import org.congcong.algomentor.api.learningplan.realtime.UnavailableLearningPlanDraftRevisionRealtimeEventStore;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
@@ -56,7 +62,11 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadS
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionGenerationStart;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
@@ -98,6 +108,9 @@ public class LearningPlanController {
   private final ObjectProvider<LearningPlanDraftGenerationService> draftGenerationServiceProvider;
   private final ObjectProvider<LearningPlanGenerationRealtimeEventStore> generationRealtimeEventStoreProvider;
   private final ObjectProvider<LearningPlanDraftRevisionStreamService> draftRevisionStreamServiceProvider;
+  private final ObjectProvider<LearningPlanDraftRevisionGenerationService> draftRevisionGenerationServiceProvider;
+  private final ObjectProvider<LearningPlanDraftRevisionRealtimeEventStore> draftRevisionRealtimeEventStoreProvider;
+  private final ObjectProvider<LearningPlanProposalRepository> proposalRepositoryProvider;
   private final ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider;
   private final ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider;
   private final ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider;
@@ -123,6 +136,9 @@ public class LearningPlanController {
       ObjectProvider<LearningPlanDraftGenerationService> draftGenerationServiceProvider,
       ObjectProvider<LearningPlanGenerationRealtimeEventStore> generationRealtimeEventStoreProvider,
       ObjectProvider<LearningPlanDraftRevisionStreamService> draftRevisionStreamServiceProvider,
+      ObjectProvider<LearningPlanDraftRevisionGenerationService> draftRevisionGenerationServiceProvider,
+      ObjectProvider<LearningPlanDraftRevisionRealtimeEventStore> draftRevisionRealtimeEventStoreProvider,
+      ObjectProvider<LearningPlanProposalRepository> proposalRepositoryProvider,
       ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider,
       ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider,
       ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider,
@@ -143,6 +159,9 @@ public class LearningPlanController {
     this.draftGenerationServiceProvider = draftGenerationServiceProvider;
     this.generationRealtimeEventStoreProvider = generationRealtimeEventStoreProvider;
     this.draftRevisionStreamServiceProvider = draftRevisionStreamServiceProvider;
+    this.draftRevisionGenerationServiceProvider = draftRevisionGenerationServiceProvider;
+    this.draftRevisionRealtimeEventStoreProvider = draftRevisionRealtimeEventStoreProvider;
+    this.proposalRepositoryProvider = proposalRepositoryProvider;
     this.extensionProposalStreamServiceProvider = extensionProposalStreamServiceProvider;
     this.extensionApplyServiceProvider = extensionApplyServiceProvider;
     this.proposalGroupServiceProvider = proposalGroupServiceProvider;
@@ -281,6 +300,66 @@ public class LearningPlanController {
     String instruction = normalizedInstruction(request);
     return proposalStream(runId -> requiredDraftRevisionStreamService()
         .stream(userId, draftId, instruction, runId, Map.of()));
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_REVISION_GENERATIONS_PATH)
+  public ResponseEntity<ApiResponse<LearningPlanDraftRevisionGenerationResponse>> startDraftRevisionGeneration(
+      @PathVariable long draftId,
+      @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,
+      @RequestBody LearningPlanRevisionRequest request) {
+    LearningPlanDraftRevisionGenerationStart start = requiredDraftRevisionGenerationService().start(
+        requireCurrentUserId(), draftId, normalizedInstruction(request), idempotencyKey);
+    var revision = start.revision();
+    return ResponseEntity.status(HttpStatus.ACCEPTED)
+        .location(URI.create(draftRevisionUrl(draftId, revision.id())))
+        .body(ApiResponse.success(new LearningPlanDraftRevisionGenerationResponse(
+            revision.id(), revision.proposalGroupId(), revision.draftId(), revision.revisionNo(), revision.status(),
+            draftRevisionEventsUrl(draftId, revision.id()), LearningPlanDraftRevisionRealtimeProtocol.INITIAL_AFTER,
+            LearningPlanDraftRevisionRealtimeProtocol.REALTIME_PROTOCOL_VERSION)));
+  }
+
+  @GetMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_REVISION_STATUS_PATH)
+  public ApiResponse<LearningPlanDraftRevisionStatusResponse> getDraftRevisionStatus(
+      @PathVariable long draftId,
+      @PathVariable long revisionId) {
+    var revision = requiredProposalRepository().findDraftRevisionForUserAndDraft(
+            revisionId, requireCurrentUserId(), draftId)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_PROPOSAL_REVISION_NOT_FOUND", "学习计划草案修订记录不存在。"));
+    return ApiResponse.success(LearningPlanDraftRevisionStatusResponse.fromRevision(revision));
+  }
+
+  @GetMapping(value = ApiContractConstants.LEARNING_PLAN_DRAFT_REVISION_EVENTS_PATH,
+      produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter draftRevisionEvents(
+      @PathVariable long draftId,
+      @PathVariable long revisionId,
+      @RequestParam(name = ApiContractConstants.LEARNING_PLAN_DRAFT_REVISION_AFTER_PARAM, required = false) String after) {
+    long userId = requireCurrentUserId();
+    requiredProposalRepository().findDraftRevisionForUserAndDraft(revisionId, userId, draftId)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_PROPOSAL_REVISION_NOT_FOUND", "学习计划草案修订记录不存在。"));
+    String cursor;
+    try {
+      cursor = LearningPlanGenerationRealtimeCursor.normalizeAfter(after);
+    } catch (LearningPlanGenerationRealtimeCursorInvalidException exception) {
+      throw new LearningPlanException(
+          LearningPlanDraftRevisionRealtimeProtocol.CURSOR_INVALID_CODE, "学习计划草案修订事件游标无效。");
+    }
+    if (!requiredDraftRevisionRealtimeEventStore().available()) {
+      throw new LearningPlanException(
+          LearningPlanDraftRevisionRealtimeProtocol.REALTIME_UNAVAILABLE_CODE,
+          "学习计划修订实时进度暂不可用，请查询修订状态。");
+    }
+    SseEmitter emitter = new SseEmitter(sseProperties.learningPlanDraftTimeoutMillis());
+    AtomicBoolean connectionOpen = new AtomicBoolean(true);
+    emitter.onCompletion(() -> connectionOpen.set(false));
+    emitter.onTimeout(() -> connectionOpen.set(false));
+    emitter.onError(ignored -> connectionOpen.set(false));
+    Thread reader = new Thread(
+        () -> replayDraftRevisionEvents(emitter, userId, draftId, revisionId, cursor, connectionOpen),
+        "learning-plan-draft-revision-events");
+    reader.setDaemon(true);
+    reader.start();
+    return emitter;
   }
 
   @PostMapping(value = ApiContractConstants.LEARNING_PLAN_EXTENSION_PROPOSALS_STREAM_PATH,
@@ -490,6 +569,51 @@ public class LearningPlanController {
         || LearningPlanGenerationRealtimeProtocol.DRAFT_FAILED.equals(eventName);
   }
 
+  private void replayDraftRevisionEvents(
+      SseEmitter emitter,
+      long userId,
+      long draftId,
+      long revisionId,
+      String initialCursor,
+      AtomicBoolean connectionOpen) {
+    String cursor = initialCursor;
+    boolean replay = true;
+    try {
+      while (connectionOpen.get()) {
+        List<LearningPlanDraftRevisionRealtimeEvent> events = requiredDraftRevisionRealtimeEventStore()
+            .readAfter(draftId, revisionId, cursor, !replay);
+        replay = false;
+        for (LearningPlanDraftRevisionRealtimeEvent event : events) {
+          if (!connectionOpen.get()) {
+            return;
+          }
+          emitter.send(SseEmitter.event().id(event.cursor()).name(event.eventName()).data(event.data()));
+          cursor = event.cursor();
+          if (isDraftRevisionTerminalEvent(event.eventName())) {
+            emitter.complete();
+            return;
+          }
+        }
+        var revision = requiredProposalRepository().findDraftRevisionForUserAndDraft(revisionId, userId, draftId)
+            .orElse(null);
+        if (revision == null || revision.status() != LearningPlanProposalRevisionStatus.GENERATING) {
+          emitter.complete();
+          return;
+        }
+      }
+    } catch (IOException | RuntimeException exception) {
+      if (connectionOpen.get()) {
+        emitter.completeWithError(exception);
+      }
+    }
+  }
+
+  private boolean isDraftRevisionTerminalEvent(String eventName) {
+    return LearningPlanDraftRevisionRealtimeProtocol.REVISION_COMPLETED.equals(eventName)
+        || LearningPlanDraftRevisionRealtimeProtocol.REVISION_FAILED.equals(eventName)
+        || LearningPlanDraftRevisionRealtimeProtocol.REVISION_SUPERSEDED.equals(eventName);
+  }
+
   private String draftUrl(long draftId) {
     return ApiContractConstants.LEARNING_PLANS_BASE_PATH
         + ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH + "/" + draftId;
@@ -497,6 +621,14 @@ public class LearningPlanController {
 
   private String draftEventsUrl(long draftId) {
     return ApiContractConstants.LEARNING_PLANS_BASE_PATH + "/drafts/" + draftId + "/events";
+  }
+
+  private String draftRevisionUrl(long draftId, long revisionId) {
+    return ApiContractConstants.LEARNING_PLANS_BASE_PATH + "/drafts/" + draftId + "/revisions/" + revisionId;
+  }
+
+  private String draftRevisionEventsUrl(long draftId, long revisionId) {
+    return draftRevisionUrl(draftId, revisionId) + "/events";
   }
 
   private List<PracticeProgress> progressByPlan(long userId, long planId) {
@@ -593,6 +725,22 @@ public class LearningPlanController {
   private LearningPlanDraftRevisionStreamService requiredDraftRevisionStreamService() {
     return draftRevisionStreamServiceProvider.getIfAvailable(() -> {
       throw unavailableGovernance();
+    });
+  }
+
+  private LearningPlanDraftRevisionGenerationService requiredDraftRevisionGenerationService() {
+    return draftRevisionGenerationServiceProvider.getIfAvailable(() -> {
+      throw unavailableGovernance();
+    });
+  }
+
+  private LearningPlanDraftRevisionRealtimeEventStore requiredDraftRevisionRealtimeEventStore() {
+    return draftRevisionRealtimeEventStoreProvider.getIfAvailable(UnavailableLearningPlanDraftRevisionRealtimeEventStore::new);
+  }
+
+  private LearningPlanProposalRepository requiredProposalRepository() {
+    return proposalRepositoryProvider.getIfAvailable(() -> {
+      throw new LearningPlanException("LEARNING_PLAN_REPOSITORY_UNAVAILABLE", "学习计划草案修订服务不可用。");
     });
   }
 

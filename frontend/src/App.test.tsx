@@ -75,6 +75,10 @@ function sseEvent(eventName: string, data: unknown): string {
   return `event:${eventName}\ndata:${JSON.stringify(data)}\n\n`;
 }
 
+function sseEventWithId(id: string, eventName: string, data: unknown): string {
+  return `id:${id}\nevent:${eventName}\ndata:${JSON.stringify(data)}\n\n`;
+}
+
 describe('App', () => {
   beforeEach(() => {
     stubbedLocalStorage = createFakeStorage();
@@ -1901,7 +1905,7 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US');
   });
 
-  it('revises a generated draft through the revision stream and updates the preview', async () => {
+  it('revises a generated draft through revision generation and reads the authoritative draft', async () => {
     const basePlan = learningPlanDetail();
     const revisedPlan = learningPlanDetail({
       title: '三周动态规划面试计划',
@@ -1922,21 +1926,14 @@ describe('App', () => {
       }],
     });
     const fetchMock = mockLearningPlanFetch({
-      draftRevisionStream: sseStream([
-        sseEvent('draft_revision_ready', {
-          proposalGroupId: 1,
-          proposalId: 2,
-          draftId: 100,
-          revisionNo: 1,
-          status: 'READY',
-          supersededProposalIds: [],
-          draft: {
-            ...generatedLearningPlanDraft(),
-            assistantMessage: '已按要求调整训练方案。',
-            draftPlan: revisedPlan,
-          },
-        }),
+      revisionEvents: sseStream([
+        sseEventWithId('1-0', 'revision_completed', { draftId: 100, revisionId: 2 }),
       ]),
+      revisedDraft: {
+        ...generatedLearningPlanDraft(),
+        assistantMessage: '已按要求调整训练方案。',
+        draftPlan: revisedPlan,
+      },
     });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -1964,7 +1961,7 @@ describe('App', () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/learning-plans/drafts/100/revisions/stream',
+        '/api/learning-plans/drafts/100/revisions/generations',
         expect.objectContaining({
           method: 'POST',
           credentials: 'same-origin',
@@ -1973,17 +1970,35 @@ describe('App', () => {
         }),
       );
     });
-    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/stream');
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/generations');
+    expectHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/generations', 'Idempotency-Key', 'generated-key');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/100/revisions/2',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/100',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+    await waitFor(() => expect(
+      screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }),
+    ).toHaveValue(''));
     expect(await screen.findByText('动态规划基础强化')).toBeInTheDocument();
     expect(screen.getByText('爬楼梯')).toBeInTheDocument();
     expect(screen.getByText('三周内集中突破动态规划面试题')).toBeInTheDocument();
   });
 
-  it('returns to draft preview with an error when revision stream has no terminal event', async () => {
+  it('returns to draft preview with an error after revision event EOF recovers a failed revision', async () => {
     const fetchMock = mockLearningPlanFetch({
-      draftRevisionStream: sseStream([
-        sseEvent('work_start', { message: '正在调整计划' }),
+      revisionEvents: sseStream([
+        sseEventWithId('1-0', 'work_start', {
+          draftId: 100,
+          revisionId: 2,
+          message: '正在调整计划',
+        }),
       ]),
+      revisionStatus: 'FAILED',
+      revisionErrorMessage: '调整学习计划失败，请稍后重试。',
     });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -2008,14 +2023,18 @@ describe('App', () => {
     expect(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' })).toHaveValue('减少每周题量');
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/learning-plans/drafts/100/revisions/stream',
+        '/api/learning-plans/drafts/100/revisions/generations',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ instruction: '减少每周题量' }),
         }),
       );
     });
-    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/stream');
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/generations');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/100/revisions/2',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
   });
 
   it('keeps revision text when draft revision submission rejects', async () => {
@@ -2042,11 +2061,11 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '保存方案' })).not.toBeDisabled();
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        '/api/learning-plans/drafts/100/revisions/stream',
+        '/api/learning-plans/drafts/100/revisions/generations',
         expect.objectContaining({ method: 'POST' }),
       );
     });
-    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/stream');
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/generations');
   });
 
   it('keeps clarification panel and typed answer when follow-up submission fails', async () => {
@@ -2623,12 +2642,15 @@ function abilityTags() {
 function mockLearningPlanFetch(options: {
   activeRunSequence?: Array<ReturnType<typeof activePracticeRun> | null>;
   blockPracticeMessage?: boolean;
-  draftRevisionStream?: ReadableStream<Uint8Array>;
   failDraftRevision?: boolean;
   failPracticeMessage?: boolean;
   includePracticeReviews?: boolean;
   omitLeetCodeUrl?: boolean;
   practiceRunEventStream?: ReadableStream<Uint8Array>;
+  revisedDraft?: ReturnType<typeof generatedLearningPlanDraft>;
+  revisionErrorMessage?: string;
+  revisionEvents?: ReadableStream<Uint8Array>;
+  revisionStatus?: 'READY' | 'FAILED' | 'SUPERSEDED';
 } = {}) {
   let messagePosted = false;
   return vi.fn((url: string, init?: RequestInit) => {
@@ -2902,7 +2924,7 @@ function mockLearningPlanFetch(options: {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts/100/revisions/stream') {
+    if (url === '/api/learning-plans/drafts/100/revisions/generations') {
       if (options.failDraftRevision) {
         return Promise.resolve(jsonResponse({
           success: false,
@@ -2911,17 +2933,55 @@ function mockLearningPlanFetch(options: {
         }, 500));
       }
 
-      return Promise.resolve(new Response(options.draftRevisionStream ?? sseStream([
-        sseEvent('draft_revision_ready', {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          revisionId: 2,
           proposalGroupId: 1,
-          proposalId: 2,
           draftId: 100,
           revisionNo: 1,
-          status: 'READY',
-          supersededProposalIds: [],
-          draft: generatedLearningPlanDraft(),
-        }),
+          status: 'GENERATING',
+          eventsUrl: '/api/learning-plans/drafts/100/revisions/2/events',
+          initialAfter: '0-0',
+          realtimeProtocolVersion: 1,
+        },
+        timestamp: '2026-08-20T00:00:00Z',
+      }, 202));
+    }
+
+    if (url.startsWith('/api/learning-plans/drafts/100/revisions/2/events?after=')) {
+      return Promise.resolve(new Response(options.revisionEvents ?? sseStream([
+        sseEventWithId('1-0', 'revision_completed', { draftId: 100, revisionId: 2 }),
       ]), { status: 200 }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/revisions/2') {
+      const status = options.revisionStatus ?? 'READY';
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          revisionId: 2,
+          proposalGroupId: 1,
+          draftId: 100,
+          revisionNo: 1,
+          status,
+          ...(status === 'READY' ? {} : {
+            errorCode: 'LEARNING_PLAN_DRAFT_REVISION_FAILED',
+            errorMessage: options.revisionErrorMessage ?? '调整学习计划失败，请稍后重试。',
+          }),
+          startedAt: '2026-08-20T00:00:00Z',
+          completedAt: '2026-08-20T00:00:01Z',
+        },
+        timestamp: '2026-08-20T00:00:01Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: options.revisedDraft ?? generatedLearningPlanDraft(),
+        timestamp: '2026-08-20T00:00:01Z',
+      }));
     }
 
     if (url === '/api/learning-plans/drafts/100/confirm' && messagePosted) {
