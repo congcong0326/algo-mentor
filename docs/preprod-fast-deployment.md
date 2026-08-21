@@ -43,10 +43,16 @@ PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED=true
 
 ## 使用方式
 
+日常发布使用自动入口。它会先比较运行中容器提交与待发布提交的 Flyway 迁移目录；没有迁移时自动选择快速发布，有迁移时直接停止并要求走数据库感知的完整发布流程：
+
+```bash
+make deploy-preprod
+```
+
 先执行只读预检。默认目标是 `leetmentor-root`；预检会检查后端、前端、预发布 Dockerfile 与环境变量契约的发布状态、Flyway 迁移、关联测试、本地打包、SSH 访问和目标机的运行时变量契约，但绝不上传制品、构建远端镜像或替换容器。预检允许当前 Makefile、发布脚本和说明文档未提交，便于先验证发布工具本身：
 
 ```bash
-make deploy-preprod-fast-preflight
+make deploy-preprod-preflight
 ```
 
 预检通过后发布：
@@ -64,3 +70,7 @@ make deploy-preprod-fast
 命令要求应用发布输入（后端、前端、构建文件、预发布 Dockerfile 和发布脚本）没有未提交变更，且发布 ref 已提交；无关的本地文档或运维记录不阻塞发布。根据变更范围运行相关前端或后端测试，再打包包含前端静态文件的应用 JAR，并在远端构建新的运行镜像；快速发布仍会测试、打包和构建远端镜像，不是增量编译。
 
 旧容器被停止并按带 release ID 的名称保留。新容器通过 readiness 健康检查后才视为成功；若启动、运行或健康检查在 60 秒内失败，脚本会移除新容器并恢复旧容器。快速发布不执行数据库迁移，故容器级回滚不需要回退 schema，但应用启动仍会校验既有 Flyway 迁移。
+
+发布成功后脚本会输出远端资源报告，包括 Docker 内存/CPU 硬限制、JVM 最大堆与 RAM 百分比、容器当前 RSS/CPU，以及宿主机总量和可用内存。若 `memory_limit_bytes=0` 或 `nano_cpus=0`，表示未设置 Docker 硬限制；此时 JVM 的最大堆来自 Java 容器感知和宿主机可见内存，不是镜像内固定的 `-Xmx`。
+
+预发布运行容器使用 3GiB Docker 内存上限、1.5GiB Java 堆上限（`Xms=256m`、`Xmx=1536m`），并启用 `ExitOnOutOfMemoryError`。应用日志同时写入宿主机 `/var/log/algo-mentor`（可通过 `PREPROD_LOG_DIR` 覆盖），由 Logback 按天和 100MiB 大小滚动，最多保留 14 天、总量 2GiB；容器 stdout 仍保留给 Promtail，并额外限制 Docker `json-file` 日志为每个文件 100MiB、最多 5 个文件。日志目录在容器替换和回滚时复用，不随容器删除。

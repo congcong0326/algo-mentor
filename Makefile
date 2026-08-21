@@ -44,8 +44,9 @@ PREPROD_HOST ?= leetmentor-root
 PREPROD_CONTAINER_NAME ?= algo-mentor
 PREPROD_BASE_REF ?=
 PREPROD_BOOTSTRAP_BASE_REF ?=
+PREPROD_LOG_DIR ?= /var/log/algo-mentor
 
-.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev deploy-preprod-fast deploy-preprod-fast-preflight test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
+.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev deploy-preprod deploy-preprod-preflight deploy-preprod-fast deploy-preprod-fast-preflight test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
 
 build: backend-build frontend-build
 
@@ -153,11 +154,17 @@ frontend-dev:
 	$(NPM) run dev -- --host 0.0.0.0
 
 # 仅发布不含 Flyway 迁移的已提交应用代码；运行时配置始终保留在目标机受保护的环境文件中。
+deploy-preprod:
+	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" PREPROD_BOOTSTRAP_BASE_REF="$(PREPROD_BOOTSTRAP_BASE_REF)" PREPROD_LOG_DIR="$(PREPROD_LOG_DIR)" bash scripts/deploy-preprod.sh
+
+deploy-preprod-preflight:
+	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" PREPROD_BOOTSTRAP_BASE_REF="$(PREPROD_BOOTSTRAP_BASE_REF)" PREPROD_LOG_DIR="$(PREPROD_LOG_DIR)" bash scripts/deploy-preprod.sh --preflight
+
 deploy-preprod-fast:
-	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" PREPROD_BOOTSTRAP_BASE_REF="$(PREPROD_BOOTSTRAP_BASE_REF)" bash scripts/deploy-preprod-fast.sh
+	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" PREPROD_BOOTSTRAP_BASE_REF="$(PREPROD_BOOTSTRAP_BASE_REF)" PREPROD_LOG_DIR="$(PREPROD_LOG_DIR)" bash scripts/deploy-preprod-fast.sh
 
 deploy-preprod-fast-preflight:
-	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" PREPROD_BOOTSTRAP_BASE_REF="$(PREPROD_BOOTSTRAP_BASE_REF)" bash scripts/deploy-preprod-fast.sh --preflight
+	PREPROD_HOST="$(PREPROD_HOST)" PREPROD_CONTAINER_NAME="$(PREPROD_CONTAINER_NAME)" PREPROD_BASE_REF="$(PREPROD_BASE_REF)" PREPROD_BOOTSTRAP_BASE_REF="$(PREPROD_BOOTSTRAP_BASE_REF)" PREPROD_LOG_DIR="$(PREPROD_LOG_DIR)" bash scripts/deploy-preprod-fast.sh --preflight
 
 test: test-smoke
 

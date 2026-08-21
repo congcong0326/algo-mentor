@@ -3,12 +3,18 @@ FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-RUN groupadd --system algo-mentor \
-    && useradd --system --gid algo-mentor --home-dir /app --no-create-home algo-mentor
+ARG APP_UID=10001
+ARG APP_GID=10001
+
+RUN groupadd --system --gid "${APP_GID}" algo-mentor \
+    && useradd --system --uid "${APP_UID}" --gid "${APP_GID}" --home-dir /app --no-create-home algo-mentor
 
 COPY --chown=algo-mentor:algo-mentor mentor-api.jar /app/app.jar
 
 USER algo-mentor
+
+ENV LOG_PATH=/var/log/algo-mentor \
+    JAVA_TOOL_OPTIONS="-Xms256m -Xmx1536m -XX:+ExitOnOutOfMemoryError"
 
 EXPOSE 18080
 

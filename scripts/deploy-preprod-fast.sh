@@ -10,6 +10,7 @@ readonly PREPROD_CONTAINER_NAME="${PREPROD_CONTAINER_NAME:-algo-mentor}"
 readonly PREPROD_BOOTSTRAP_BASE_REF="${PREPROD_BOOTSTRAP_BASE_REF:-}"
 readonly PREPROD_RUNTIME_DIR="${PREPROD_RUNTIME_DIR:-/etc/algo-mentor}"
 readonly PREPROD_RELEASE_ROOT="${PREPROD_RELEASE_ROOT:-/opt/algo-mentor/releases}"
+readonly PREPROD_LOG_DIR="${PREPROD_LOG_DIR:-/var/log/algo-mentor}"
 readonly PREPROD_PORT="${PREPROD_PORT:-18080}"
 readonly RUNTIME_CONTRACT="${REPOSITORY_ROOT}/deploy/docker/preprod-runtime-env.required"
 
@@ -36,6 +37,8 @@ validate_deployment_parameters() {
     || fail "PREPROD_RUNTIME_DIR must be an absolute path without shell metacharacters."
   [[ "${PREPROD_RELEASE_ROOT}" =~ ^/[A-Za-z0-9_./-]*$ ]] \
     || fail "PREPROD_RELEASE_ROOT must be an absolute path without shell metacharacters."
+  [[ "${PREPROD_LOG_DIR}" =~ ^/[A-Za-z0-9_./-]*$ ]] \
+    || fail "PREPROD_LOG_DIR must be an absolute path without shell metacharacters."
 }
 
 remote_command() {
@@ -55,7 +58,7 @@ validate_worktree() {
     deploy/docker/preprod-runtime-env.required
   )
   if [[ "${allow_deployment_tool_changes}" != true ]]; then
-    release_input_paths+=(Makefile pom.xml scripts/deploy-preprod-fast.sh)
+    release_input_paths+=(Makefile pom.xml scripts/deploy-preprod.sh scripts/deploy-preprod-fast.sh)
   fi
 
   git -C "${REPOSITORY_ROOT}" diff --quiet -- "${release_input_paths[@]}" \
@@ -69,7 +72,7 @@ validate_worktree() {
       backend/*|frontend/*|deploy/docker/Dockerfile.preprod|deploy/docker/preprod-runtime-env.required)
         fail "commit or remove untracked application-release input: ${untracked_file}"
         ;;
-      Makefile|pom.xml|scripts/deploy-preprod-fast.sh)
+      Makefile|pom.xml|scripts/deploy-preprod.sh|scripts/deploy-preprod-fast.sh)
         if [[ "${allow_deployment_tool_changes}" != true ]]; then
           fail "commit or remove untracked application-release input: ${untracked_file}"
         fi
@@ -211,6 +214,32 @@ echo 'Remote runtime contract is satisfied.'
 REMOTE_SCRIPT
 }
 
+report_remote_resources() {
+  remote_command "sudo /bin/bash -s -- '${PREPROD_CONTAINER_NAME}'" <<'REMOTE_SCRIPT'
+set -euo pipefail
+readonly container_name="$1"
+echo 'Preprod resource report:'
+docker inspect -f '  image={{.Config.Image}} status={{.State.Status}} memory_limit_bytes={{.HostConfig.Memory}} memory_swap_limit_bytes={{.HostConfig.MemorySwap}} nano_cpus={{.HostConfig.NanoCpus}} cpu_quota={{.HostConfig.CpuQuota}} cpu_period={{.HostConfig.CpuPeriod}}' "${container_name}"
+echo '  java_environment:'
+docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "${container_name}" | awk -F= '$1 ~ /^(JAVA_TOOL_OPTIONS|JAVA_OPTS|JDK_JAVA_OPTIONS|JAVA_MAX_RAM_PERCENTAGE|JAVA_INITIAL_RAM_PERCENTAGE)$/ { print "    " $0 }'
+echo '  jvm_settings:'
+docker exec "${container_name}" sh -c 'java -XshowSettings:vm -version 2>&1' | awk '/Max. Heap Size|Initial Heap Size|Max. Metaspace Size|Using VM/ { print "    " $0 }'
+echo '  jvm_ram_percentages:'
+docker exec "${container_name}" sh -c 'java -XX:+PrintFlagsFinal -version 2>&1' | awk '$2 ~ /^(InitialRAMPercentage|MaxRAMPercentage)$/ { print "    " $2 "=" $4 }'
+echo '  container_usage:'
+docker stats --no-stream --format '    cpu={{.CPUPerc}} memory={{.MemUsage}} memory_percent={{.MemPerc}} network={{.NetIO}} block={{.BlockIO}} pids={{.PIDs}}' "${container_name}"
+echo '  log_mount:'
+docker inspect -f '{{range .Mounts}}{{if eq .Destination "/var/log/algo-mentor"}}    source={{.Source}} destination={{.Destination}} rw={{.RW}}{{end}}{{end}}' "${container_name}"
+if [[ -f /var/log/algo-mentor/application.log ]]; then
+  stat -c '    application_log_size_bytes=%s owner=%U:%G mode=%a' /var/log/algo-mentor/application.log
+fi
+echo '  host_capacity:'
+free -h | awk '/^Mem:/ { print "    memory_total=" $2 " memory_used=" $3 " memory_free=" $4 " memory_available=" $7 }'
+echo "    cpu_count=$(nproc)"
+uptime | sed 's/^/    /'
+REMOTE_SCRIPT
+}
+
 deploy_remote_release() {
   local release_ref="$1"
   local release_id="$2"
@@ -235,6 +264,7 @@ readonly release_ref='${release_ref}'
 readonly remote_stage='${remote_stage}'
 readonly release_root='${PREPROD_RELEASE_ROOT}'
 readonly runtime_dir='${PREPROD_RUNTIME_DIR}'
+readonly log_dir='${PREPROD_LOG_DIR}'
 readonly container_name='${PREPROD_CONTAINER_NAME}'
 readonly application_port='${PREPROD_PORT}'
 readonly release_dir="\${release_root}/\${release_id}"
@@ -289,6 +319,7 @@ install -m 0644 "\${remote_stage}/mentor-api.jar" "\${release_dir}/mentor-api.ja
 install -m 0644 "\${remote_stage}/Dockerfile" "\${release_dir}/Dockerfile"
 install -m 0644 "\${remote_stage}/commit.txt" "\${release_dir}/commit.txt"
 install -m 0644 "\${remote_stage}/mentor-api.jar.sha256" "\${release_dir}/mentor-api.jar.sha256"
+install -d -m 0750 -o 10001 -g 10001 "\${log_dir}"
 
 docker build --pull -t "\${image_name}" "\${release_dir}"
 
@@ -304,6 +335,13 @@ replacement_container_may_exist=true
 docker run -d \
   --name "\${container_name}" \
   --restart unless-stopped \
+  --memory 3g \
+  --memory-swap 3g \
+  --stop-timeout 45 \
+  --log-driver json-file \
+  --log-opt max-size=100m \
+  --log-opt max-file=5 \
+  --mount "type=bind,src=\${log_dir},dst=/var/log/algo-mentor" \
   --label "org.congcong.algomentor.commit=\${release_ref}" \
   --label "org.congcong.algomentor.release=\${release_id}" \
   --env-file "\${runtime_dir}/database.env" \
@@ -378,6 +416,7 @@ main() {
     return
   fi
   deploy_remote_release "${release_commit}" "${release_id}" "${stage_dir}"
+  report_remote_resources
 }
 
 main "$@"

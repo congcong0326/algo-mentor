@@ -8,6 +8,7 @@
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：可选的本地 Docker Compose 应用/PostgreSQL 便利配置；默认开发流程直接运行本机进程和本机 PostgreSQL。
 - `deploy/docker/Dockerfile.preprod`：仅接收已构建 `mentor-api.jar` 的预发布运行镜像定义；不启动数据库或 Redis。
+- `scripts/deploy-preprod.sh`：预发布自动发布入口；无 Flyway 迁移时选择快速发布，发现迁移时阻止误走快速路径。
 - `scripts/deploy-preprod-fast.sh`：预发布无迁移快速发布脚本；构建并校验应用制品、检查目标机运行时变量、替换容器并在健康检查失败时回滚。
 - `deploy/docker/preprod-runtime-env.required`：预发布受保护环境文件的必需变量键名契约，不包含任何真实配置值或密钥。
 - `docs/preprod-fast-deployment.md`：预发布快速发布的配置分层、变量登记规则、使用方式和回滚边界。
