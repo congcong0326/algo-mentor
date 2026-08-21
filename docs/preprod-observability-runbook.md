@@ -186,6 +186,8 @@ http://192.168.10.85:3001/d/algo-mentor-preprod
 - Learner Memory 队列、worker、更新/投影/工具调用结果；
 - Practice realtime Redis Stream、学习计划、认证会话和反馈状态变更。
 
+认证会话面板覆盖以下已由应用暴露的低基数指标：策略解析/淘汰/绝对过期/失败、管理员查询延迟与吊销结果、身份状态联动吊销、改密联动吊销和 beta 准入联动吊销。查询只使用 `source`、`outcome`、`operation`、`status` 等固定标签，不使用用户 ID 或 Session ID。
+
 最近窗口内没有 5xx 时，5xx 面板无时间序列是正常现象，不代表 scrape 失败。判断采集状态应使用 `up` 面板。
 
 Redis 使用 provisioned dashboard `Algo Mentor - Redis Preprod`，UID 为
@@ -239,6 +241,7 @@ Dashboard 必须通过 provisioning 文件维护，不只在 Grafana UI 中保�
 - Learner Memory 最老消息积压；
 - Practice realtime Redis 非成功操作。
 - Redis exporter / Redis 不可用、缓存内存与淘汰、Streams 内存、AOF 写入和 RDB 保存失败。
+- 认证会话策略、身份状态/管理员/beta 准入联动吊销失败，以及会话监控查询平均延迟过高。
 
 规则只负责 Prometheus 侧判断，通知路由仍由监控主机现有 Alertmanager/Grafana 配置管理。
 加载前备份并执行：
@@ -292,6 +295,13 @@ ssh prometheus-root 'cd /root/docker-nas/prometheus && docker exec prometheus pr
 - 发布后必须验证 `ai_run_active{job="java",environment="preprod",service="algo-mentor-api"}` 存在；没有运行中的 AI 请求时值为 `0` 仍属于正常结果。
 - 2026-08-19 11:20 UTC 已将 dashboard 和告警规则同步到观测主机；Prometheus readiness 正常、target `up=1`、告警组 10 条规则 health 为 `ok`，Grafana API 返回 `Algo Mentor - Preprod`。
 - 验收时 `AlgoMentorPreprodLearnerQueueStale` 为 `pending/warning`：`learner_profile_queue_oldest_pending_age` 约 5,250 秒、pending 2 条；这是当前预发布队列积压，需业务侧处理，不属于本次指标接入失败。
+
+## 2026-08-21 会话监控补齐
+
+- 核实认证模块已暴露 10 个会话相关指标族，包含策略控制、管理员会话监控、身份状态吊销、密码修改吊销和 beta 准入吊销。
+- `Algo Mentor - Preprod` dashboard 从 19 个面板扩展为 22 个面板、63 个 PromQL 查询，新增会话策略、会话吊销和会话监控查询延迟图表，并将反馈状态变更保留为独立面板。
+- `preprod-alert-rules.yml` 从 18 条扩展为 20 条，新增认证会话控制失败和管理员查询平均延迟超过 1 秒的告警；当前计时器实际导出 `_sum/_count`，未假设尚未发布的 histogram bucket。
+- 本地 Compose Prometheus 同时挂载预发布规则文件，便于配置语法和规则回归校验；预发布规则仍由外置 Prometheus 按本手册同步。
 
 ## 2026-08-20 Redis 接入记录
 

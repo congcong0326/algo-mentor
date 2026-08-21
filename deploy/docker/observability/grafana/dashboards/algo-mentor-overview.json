@@ -115,6 +115,30 @@
       "gridPos": {"x": 0, "y": 22, "w": 24, "h": 6},
       "datasource": {"type": "loki", "uid": "Loki"},
       "targets": [{"expr": "{job=\"algo-mentor-docker\", compose_service=\"mentor-api\"} |= \"eventType=\" |~ \"failed|timeout\"", "refId": "A"}]
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Auth session control",
+      "gridPos": {"x": 0, "y": 28, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_auth_session_policy_failures_total{application=\"algo-mentor-api\"}[5m])) by (operation)", "legendFormat": "policy failure {{operation}}", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_auth_session_admin_revocations_total{application=\"algo-mentor-api\"}[5m])) by (outcome)", "legendFormat": "admin {{outcome}}", "refId": "B"},
+        {"expr": "sum(rate(algo_mentor_auth_session_absolute_expirations_total{application=\"algo-mentor-api\"}[5m]))", "legendFormat": "absolute expiration", "refId": "C"}
+      ]
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "Auth session admin query latency",
+      "gridPos": {"x": 12, "y": 28, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_auth_session_admin_query_seconds_sum{application=\"algo-mentor-api\"}[10m])) / clamp_min(sum(rate(algo_mentor_auth_session_admin_query_seconds_count{application=\"algo-mentor-api\"}[10m])), 0.001)", "legendFormat": "average", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_auth_session_admin_query_seconds_count{application=\"algo-mentor-api\"}[10m]))", "legendFormat": "queries/s", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
     }
   ]
 }

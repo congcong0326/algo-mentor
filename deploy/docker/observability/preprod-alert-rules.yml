@@ -106,6 +106,32 @@ groups:
           summary: Algo Mentor preprod realtime Redis operations failed
           description: Practice realtime Redis reported a non-success operation in the last 10 minutes.
 
+      - alert: AlgoMentorPreprodAuthSessionControlFailures
+        expr: |
+          sum(increase(algo_mentor_auth_session_policy_failures_total{job="java",environment="preprod",service="algo-mentor-api"}[10m]))
+          + sum(increase(algo_mentor_auth_session_revocation_failures_total{job="java",environment="preprod",service="algo-mentor-api"}[10m]))
+          + sum(increase(algo_mentor_auth_session_admin_revocations_total{job="java",environment="preprod",service="algo-mentor-api",outcome="failed"}[10m]))
+          + sum(increase(algo_mentor_beta_access_session_revocation_failures_total{job="java",environment="preprod",service="algo-mentor-api"}[10m])) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod auth session control failures are present
+          description: Session policy resolution, session revocation, or beta-access revocation failed in the last 10 minutes.
+
+      - alert: AlgoMentorPreprodAuthSessionAdminQuerySlow
+        expr: |
+          sum(rate(algo_mentor_auth_session_admin_query_seconds_sum{job="java",environment="preprod",service="algo-mentor-api"}[10m]))
+          /
+          clamp_min(sum(rate(algo_mentor_auth_session_admin_query_seconds_count{job="java",environment="preprod",service="algo-mentor-api"}[10m])), 0.001) > 1
+          and sum(increase(algo_mentor_auth_session_admin_query_seconds_count{job="java",environment="preprod",service="algo-mentor-api"}[10m])) > 20
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Algo Mentor preprod auth session admin queries are slow
+          description: The session monitoring query average exceeded 1 second with more than 20 queries in the last 10 minutes.
+
       - alert: AlgoMentorPreprodRedisExporterDown
         expr: up{job="redis",environment="preprod"} == 0
         for: 2m

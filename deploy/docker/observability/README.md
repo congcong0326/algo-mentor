@@ -18,6 +18,9 @@ Prometheus 通过 Docker 网络抓取 `mentor-api:8080/actuator/prometheus`。Gr
 ```bash
 docker compose -f deploy/docker/docker-compose.yml --profile observability config >/tmp/algo-mentor-observability-compose.yml
 python3 -m json.tool deploy/docker/observability/grafana/dashboards/algo-mentor-overview.json >/tmp/algo-mentor-overview.json
+python3 -m json.tool deploy/docker/observability/grafana/dashboards/algomentor-preprod.json >/tmp/algo-mentor-preprod.json
+docker run --rm --entrypoint promtool -v "$PWD/deploy/docker/observability:/etc/prometheus:ro" prom/prometheus:v2.55.1 \
+  check rules /etc/prometheus/preprod-alert-rules.yml
 ```
 
 手动启动：
@@ -29,3 +32,5 @@ docker compose -f deploy/docker/docker-compose.yml --profile observability up -d
 ## 告警规则
 
 `prometheus-alert-rules.yml` 只提供开发/测试示例规则。项目不在应用内发送告警；生产或外置监控接入时，应由外部 Prometheus/Alertmanager 或云厂商平台读取同一套指标。
+
+预发布规则 `preprod-alert-rules.yml` 也会被本地 Compose 挂载并参与 Prometheus 配置校验，但只有带有 `job="java", environment="preprod", service="algo-mentor-api"` 标签的外置目标会触发其中的预发布告警。

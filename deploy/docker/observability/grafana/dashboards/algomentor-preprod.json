@@ -262,13 +262,49 @@
     {
       "id": 19,
       "type": "timeseries",
-      "title": "认证与反馈异常",
+      "title": "认证会话策略",
       "gridPos": {"x": 12, "y": 52, "w": 12, "h": 6},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "targets": [
-        {"expr": "sum(rate(algo_mentor_auth_session_policy_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (operation)", "legendFormat": "session policy {{operation}}", "refId": "A"},
-        {"expr": "sum(rate(algo_mentor_auth_session_revocation_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "session revoke failure", "refId": "B"},
-        {"expr": "sum(rate(feedback_thread_status_changed_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "feedback {{status}}", "refId": "C"}
+        {"expr": "sum(rate(algo_mentor_auth_session_policy_resolutions_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (source, outcome)", "legendFormat": "resolution {{source}}/{{outcome}}", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_auth_session_policy_evictions_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "evictions/s", "refId": "B"},
+        {"expr": "sum(rate(algo_mentor_auth_session_absolute_expirations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "absolute expirations/s", "refId": "C"},
+        {"expr": "sum(rate(algo_mentor_auth_session_policy_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (operation)", "legendFormat": "policy failure {{operation}}/s", "refId": "D"}
+      ]
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "认证会话吊销",
+      "gridPos": {"x": 0, "y": 58, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_auth_session_admin_revocations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (outcome)", "legendFormat": "admin {{outcome}}/s", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_auth_session_revocations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "status change {{status}}/s", "refId": "B"},
+        {"expr": "sum(rate(algo_mentor_auth_password_session_revocations_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "password session revocations/s", "refId": "C"},
+        {"expr": "sum(rate(algo_mentor_beta_access_session_revocation_failures_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m]))", "legendFormat": "beta access failures/s", "refId": "D"}
+      ]
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "会话监控查询延迟",
+      "gridPos": {"x": 12, "y": 58, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(algo_mentor_auth_session_admin_query_seconds_sum{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[10m])) / clamp_min(sum(rate(algo_mentor_auth_session_admin_query_seconds_count{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[10m])), 0.001)", "legendFormat": "average", "refId": "A"},
+        {"expr": "sum(rate(algo_mentor_auth_session_admin_query_seconds_count{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[10m]))", "legendFormat": "queries/s", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "反馈状态变更",
+      "gridPos": {"x": 0, "y": 64, "w": 12, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [
+        {"expr": "sum(rate(feedback_thread_status_changed_total{job=\"java\",environment=\"preprod\",service=\"algo-mentor-api\"}[5m])) by (status)", "legendFormat": "feedback {{status}}", "refId": "A"}
       ]
     }
   ]
