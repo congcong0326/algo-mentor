@@ -414,6 +414,18 @@ export default function App() {
   }, [theme]);
 
   useEffect(() => {
+    const privatePath = ['/me', '/learning-plans', '/mistakes', '/settings', '/password', '/admin', '/login']
+      .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+    let robots = document.querySelector('meta[name="robots"]');
+    if (!robots) {
+      robots = document.createElement('meta');
+      robots.setAttribute('name', 'robots');
+      document.head.appendChild(robots);
+    }
+    robots.setAttribute('content', privatePath ? 'noindex, nofollow' : 'index, follow');
+  }, [pathname]);
+
+  useEffect(() => {
     if (!currentUser || currentUser.passwordChangeRequired) {
       setFeedbackUnreadCount(undefined);
       return undefined;

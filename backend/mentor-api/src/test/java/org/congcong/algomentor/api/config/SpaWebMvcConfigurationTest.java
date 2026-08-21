@@ -38,10 +38,28 @@ class SpaWebMvcConfigurationTest {
   }
 
   @Test
-  void doesNotForwardLegacyProblemRouteToIndexHtml() throws Exception {
+  void forwardsPublishedProblemIndexToStaticHtml() throws Exception {
     mockMvc.perform(get("/problems"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/problems/index.html"));
+  }
+
+  @Test
+  void forwardsPublishedProblemPagesButRejectsUnknownSlugs() throws Exception {
+    mockMvc.perform(get("/problems/two-sum"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/problems/two-sum/index.html"));
+
+    mockMvc.perform(get("/en/problems/two-sum"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/en/problems/two-sum/index.html"));
+
+    mockMvc.perform(get("/problems/unknown-slug"))
         .andExpect(status().isNotFound())
         .andExpect(content().string(not(containsString("<div id=\"root\"></div>"))));
+
+    mockMvc.perform(get("/en/problems/cn-only"))
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -114,7 +132,7 @@ class SpaWebMvcConfigurationTest {
       WebMvcAutoConfiguration.class,
       ErrorMvcAutoConfiguration.class
   })
-  @Import({SpaWebMvcConfiguration.class, SpaFallbackController.class})
+  @Import({SpaWebMvcConfiguration.class, SpaFallbackController.class, SeoPageController.class, PrivatePageRobotsFilter.class})
   static class TestApplication {
   }
 }

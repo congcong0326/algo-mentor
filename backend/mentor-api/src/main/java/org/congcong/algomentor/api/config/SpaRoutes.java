@@ -77,8 +77,19 @@ public final class SpaRoutes {
   /**
    * 历史后端路径或已废弃页面路径，不能被 SPA fallback 接管。
    */
-  public static final String[] BACKEND_RESERVED_EXACT_PATHS = {
-      "/problems"
+  public static final String[] BACKEND_RESERVED_EXACT_PATHS = {};
+
+  /**
+   * 登录后个人工作台页面不应被搜索引擎建立索引。
+   */
+  public static final String[] PRIVATE_PAGE_PATH_PREFIXES = {
+      "/me",
+      "/learning-plans",
+      "/mistakes",
+      "/settings",
+      "/password",
+      "/admin",
+      "/login",
   };
 
   private SpaRoutes() {
