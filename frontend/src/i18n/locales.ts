@@ -1614,6 +1614,7 @@ export interface LocaleResources {
     completed: string;
     skipped: string;
     markCompleted: string;
+    practiceCompletionSuccess: string;
     practiceMoreActions: string;
     skipProblem: string;
     skipProblemConfirmTitle: string;
@@ -3332,6 +3333,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completed: '已完成',
       skipped: '已跳过',
       markCompleted: '标记完成',
+      practiceCompletionSuccess: '本题已完成',
       practiceMoreActions: '更多操作',
       skipProblem: '跳过本题',
       skipProblemConfirmTitle: '跳过本题？',
@@ -5128,6 +5130,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completed: 'Completed',
       skipped: 'Skipped',
       markCompleted: 'Mark completed',
+      practiceCompletionSuccess: 'Problem completed',
       practiceMoreActions: 'More actions',
       skipProblem: 'Skip this problem',
       skipProblemConfirmTitle: 'Skip this problem?',

@@ -51,6 +51,7 @@ const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
 const RUN_STREAM_RECONNECT_ATTEMPTS = 2;
 const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
 const COMPOSER_AUTO_RESIZE_MAX_HEIGHT_PX = 360;
+const COMPLETION_SUCCESS_VISIBLE_MS = 900;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
 const COACH_SUMMARY_PROPOSAL_TOOL_NAME = 'propose_current_problem_coach_summary';
@@ -480,6 +481,7 @@ export default function PracticeChatWorkbench({
   const [error, setError] = useState('');
   const [capacityUnavailable, setCapacityUnavailable] = useState(false);
   const [completionUpdating, setCompletionUpdating] = useState(false);
+  const [completionSuccessSessionId, setCompletionSuccessSessionId] = useState<number>();
   const [moreActionsOpen, setMoreActionsOpen] = useState(false);
   const [skipConfirmationOpen, setSkipConfirmationOpen] = useState(false);
   const [postRunRefreshing, setPostRunRefreshing] = useState(false);
@@ -516,6 +518,7 @@ export default function PracticeChatWorkbench({
     setError('');
     setComposerExpanded(false);
     setCompletionUpdating(false);
+    setCompletionSuccessSessionId(undefined);
     setMoreActionsOpen(false);
     setSkipConfirmationOpen(false);
     setReviewHistory(undefined);
@@ -630,7 +633,10 @@ export default function PracticeChatWorkbench({
   const canMarkCompleted = Boolean(sessionId)
     && completionGate?.canComplete === true
     && progressStatus !== 'COMPLETED';
+  const completionSucceeded = sessionId !== undefined && completionSuccessSessionId === sessionId;
+  const shouldShowCompletionAction = canMarkCompleted || completionSucceeded;
   const completionActionDisabled = completionUpdating
+    || completionSucceeded
     || postRunRefreshing
     || status === 'loading'
     || status === 'streaming'
@@ -776,6 +782,19 @@ export default function PracticeChatWorkbench({
       composerRef.current?.focus();
     }
   }, [composerExpanded]);
+
+  useEffect(() => {
+    if (!completionSucceeded || sessionId === undefined) {
+      return undefined;
+    }
+
+    const completedSessionId = sessionId;
+    const timer = window.setTimeout(() => {
+      setCompletionSuccessSessionId((current) => current === completedSessionId ? undefined : current);
+    }, COMPLETION_SUCCESS_VISIBLE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [completionSucceeded, sessionId]);
 
   useEffect(() => {
     const timers = Object.entries(assistantWorkStates).flatMap(([messageId, value]) => {
@@ -1382,6 +1401,7 @@ export default function PracticeChatWorkbench({
       || status === 'loading'
       || status === 'streaming'
       || hasActiveRun
+      || completionSucceeded
       || !completionGate?.canComplete) {
       return;
     }
@@ -1396,6 +1416,7 @@ export default function PracticeChatWorkbench({
         return;
       }
       const nextSessionResponse = requireApiData(response, resources.learningPlans.progressUpdateFailed);
+      setCompletionSuccessSessionId(activeSessionId);
       setSessionResponse(nextSessionResponse);
       setMessages(nextSessionResponse.messages);
       setStatus('idle');
@@ -1567,17 +1588,6 @@ export default function PracticeChatWorkbench({
             <ClipboardList aria-hidden="true" />
             <span>{resources.learningPlans.reviewHistory}</span>
           </button>
-          {canMarkCompleted && (
-            <button
-              className="primary-button compact practice-completion-toolbar-action"
-              disabled={completionActionDisabled}
-              onClick={() => void handleMarkCompleted()}
-              type="button"
-            >
-              <CheckCircle2 aria-hidden="true" />
-              <span>{resources.learningPlans.markCompleted}</span>
-            </button>
-          )}
           {shouldShowSkipButton && (
             <span
               className={`toolbar-tooltip-wrap practice-more-actions ${moreActionsOpen ? 'is-open' : ''}`}
@@ -1767,14 +1777,39 @@ export default function PracticeChatWorkbench({
           onMouseDown={() => setComposerExpanded(false)}
         />
       )}
-      <form
-        aria-label={composerExpanded ? undefined : resources.learningPlans.sendMessage}
-        aria-labelledby={composerExpanded ? composerFocusModeTitleId : undefined}
-        aria-modal={composerExpanded || undefined}
-        className={`practice-composer${composerExpanded ? ' is-expanded' : ''}`}
-        onSubmit={handleSubmit}
-        role={composerExpanded ? 'dialog' : undefined}
-      >
+      <footer className="practice-footer">
+        {shouldShowCompletionAction && (
+          <div className={`practice-completion-action${completionSucceeded ? ' is-success' : ''}`}>
+            <p>
+              <CheckCircle2 aria-hidden="true" />
+              <span>{completionSucceeded
+                ? resources.learningPlans.practiceCompletionSuccess
+                : resources.learningPlans.reviewPassed}</span>
+            </p>
+            {completionSucceeded && (
+              <span className="visually-hidden" role="status">{resources.learningPlans.practiceCompletionSuccess}</span>
+            )}
+            <button
+              className="primary-button compact practice-completion-action-button"
+              disabled={completionActionDisabled}
+              onClick={() => void handleMarkCompleted()}
+              type="button"
+            >
+              <CheckCircle2 aria-hidden="true" />
+              <span>{completionSucceeded
+                ? resources.learningPlans.practiceCompletionSuccess
+                : resources.learningPlans.markCompleted}</span>
+            </button>
+          </div>
+        )}
+        <form
+          aria-label={composerExpanded ? undefined : resources.learningPlans.sendMessage}
+          aria-labelledby={composerExpanded ? composerFocusModeTitleId : undefined}
+          aria-modal={composerExpanded || undefined}
+          className={`practice-composer${composerExpanded ? ' is-expanded' : ''}`}
+          onSubmit={handleSubmit}
+          role={composerExpanded ? 'dialog' : undefined}
+        >
         {composerExpanded && (
           <div className="practice-composer-expanded-header">
             <span className="visually-hidden" id={composerFocusModeTitleId}>{resources.learningPlans.composerFocusMode}</span>
@@ -1827,7 +1862,8 @@ export default function PracticeChatWorkbench({
         <button className="primary-button compact" disabled={sendDisabled} type="submit">
           {resources.learningPlans.send}
         </button>
-      </form>
+        </form>
+      </footer>
 
       {skipConfirmationOpen && (
         <div className="modal-backdrop" role="presentation">

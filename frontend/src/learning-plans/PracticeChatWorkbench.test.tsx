@@ -138,6 +138,42 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
   });
 
+  it('keeps a passed completion action above the composer and celebrates completion briefly', async () => {
+    createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
+      latestReview: reviewSummaryFixture(),
+      completionGate: completionGate({ canComplete: true, reasonCode: 'PASSED', latestScore: 92 }),
+    })));
+    updatePracticeProgressStatus.mockResolvedValue(apiResponse(sessionFixture({
+      session: { ...sessionFixture().session, progressStatus: 'COMPLETED' },
+      latestReview: reviewSummaryFixture(),
+      completionGate: completionGate({
+        canComplete: false,
+        reasonCode: 'ALREADY_COMPLETED',
+        latestScore: 92,
+      }),
+    })));
+    renderWorkbench();
+
+    const action = await screen.findByRole('button', { name: '标记完成' });
+    expect(action.closest('.practice-footer')).not.toBeNull();
+    expect(action.closest('.practice-toolbar')).toBeNull();
+
+    vi.useFakeTimers();
+    await act(async () => {
+      fireEvent.click(action);
+    });
+
+    const successAction = screen.getByRole('button', { name: '本题已完成' });
+    expect(successAction).toBeDisabled();
+    expect(successAction.closest('.practice-completion-action')).toHaveClass('is-success');
+
+    await act(async () => {
+      vi.advanceTimersByTime(900);
+    });
+
+    expect(screen.queryByRole('button', { name: '本题已完成' })).not.toBeInTheDocument();
+  });
+
   it('starts a run through POST and reads the separately issued event URL', async () => {
     const subscription = captureSubscription();
     renderWorkbench();
