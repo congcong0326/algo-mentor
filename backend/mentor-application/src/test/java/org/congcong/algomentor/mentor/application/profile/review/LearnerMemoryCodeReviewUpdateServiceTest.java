@@ -81,9 +81,13 @@ class LearnerMemoryCodeReviewUpdateServiceTest {
     assertThat(normalPrompt)
         .contains("同题恢复使用 SAME_PROBLEM_RECOVERY")
         .contains("跨两题及以上恢复使用 CROSS_PROBLEM_RECOVERY")
-        .contains("CURRENT_STRENGTH 的跨题通用观察使用 CROSS_PROBLEM_RECURRENCE");
+        .contains("CURRENT_STRENGTH 的跨题通用观察使用 CROSS_PROBLEM_RECURRENCE")
+        .contains("scope 与 observationType 必须匹配")
+        .contains("scope=kind=GENERAL_OBSERVATION,dimension=PROBLEM_SOLVING_APPROACH,tagId=null -> observationType=[CURRENT_STRENGTH]")
+        .contains("REVISE 不带 scope 字段，必须继承 active claim 中 targetRevisionId 对应的 scope");
     assertThat(prompt)
         .contains("唯一一次修复调用")
+        .contains("scope 与 observationType 语义错配")
         .contains("SAME_PROBLEM_RECOVERY")
         .contains("CROSS_PROBLEM_RECOVERY")
         .contains("CROSS_PROBLEM_LONGITUDINAL")
@@ -150,6 +154,43 @@ class LearnerMemoryCodeReviewUpdateServiceTest {
         .isInstanceOf(IllegalArgumentException.class);
     assertThatThrownBy(() -> mapper.map(tagWithUnrelatedEvidence, observationInput(true, 8L)))
         .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void rejectsObservationTypesThatDoNotMatchTheirGeneralScope() throws Exception {
+    JsonNode riskInProblemSolvingScope = objectMapper.readTree("""
+        {"operations":[{
+          "action":"ADD","scope":{"kind":"GENERAL_OBSERVATION","dimension":"PROBLEM_SOLVING_APPROACH"},
+          "claimText":"当前仍有实现风险。","observationType":"ACTIVE_RISK",
+          "pattern":"SAME_PROBLEM_PERSISTENCE","reason":"当前版本失败",
+          "reviewEvidence":[{"reviewId":701,"role":"OBSERVED"},{"reviewId":702,"role":"OBSERVED"}]
+        }]}""");
+    JsonNode recoveredInImplementationScope = objectMapper.readTree("""
+        {"operations":[{
+          "action":"ADD","scope":{"kind":"GENERAL_OBSERVATION","dimension":"IMPLEMENTATION_AND_ERROR_PATTERN"},
+          "claimText":"曾经的问题已经修正。","observationType":"RECOVERED_CHALLENGE",
+          "pattern":"SAME_PROBLEM_RECOVERY","reason":"同题失败后通过",
+          "reviewEvidence":[{"reviewId":701,"role":"OBSERVED"},{"reviewId":702,"role":"RESOLVED"}]
+        }]}""");
+
+    assertThatThrownBy(() -> mapper.map(riskInProblemSolvingScope, observationInput(false, 9L)))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> mapper.map(recoveredInImplementationScope, observationInput(true, 9L)))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void acceptsActiveRiskForImplementationAndErrorPatternScope() throws Exception {
+    JsonNode valid = objectMapper.readTree("""
+        {"operations":[{
+          "action":"ADD","scope":{"kind":"GENERAL_OBSERVATION","dimension":"IMPLEMENTATION_AND_ERROR_PATTERN"},
+          "claimText":"当前实现仍有未修正的边界处理风险。","observationType":"ACTIVE_RISK",
+          "pattern":"SINGLE_REVIEW","reason":"最新版本仍未通过",
+          "reviewEvidence":[{"reviewId":702,"role":"OBSERVED"}]
+        }]}""");
+
+    assertThat(mapper.map(valid, observationInput(false, 9L))).singleElement()
+        .isInstanceOf(LearnerMemoryOperation.Add.class);
   }
 
   @Test

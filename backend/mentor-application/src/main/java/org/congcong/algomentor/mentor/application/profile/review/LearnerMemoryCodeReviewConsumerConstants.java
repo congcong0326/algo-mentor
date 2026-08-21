@@ -14,7 +14,7 @@ public final class LearnerMemoryCodeReviewConsumerConstants {
   /** 单次画像 Prompt 中保留的标签事实行上限。 */
   public static final int MAX_SNAPSHOT_TAG_FACTS = 20;
   public static final int MAX_STALE_RETRIES = 1;
-  public static final String PROMPT_VERSION = "code-review-claim-update-v6";
+  public static final String PROMPT_VERSION = "code-review-claim-update-v7";
   public static final String SCHEMA_VERSION = "v3";
   public static final String AGENT_TITLE = "code-review-profile-update";
   public static final String BACKGROUND_IDEMPOTENCY_KEY_PREFIX = "code-review-profile:";

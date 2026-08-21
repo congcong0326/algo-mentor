@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
@@ -13,6 +14,7 @@ import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptReso
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
 import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewVerification;
 import org.congcong.algomentor.mentor.application.profile.review.snapshot.LearnerReviewFactSnapshot;
 import org.congcong.algomentor.mentor.application.profile.review.snapshot.ProblemReviewTrajectory;
@@ -62,6 +64,7 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
             + "同题恢复使用 SAME_PROBLEM_RECOVERY，跨两题及以上恢复使用 CROSS_PROBLEM_RECOVERY；"
             + "CURRENT_STRENGTH 的跨题通用观察使用 CROSS_PROBLEM_RECURRENCE，标签表现使用 TAG_BREADTH；"
             + "ACTIVE_RISK 只能引用当前最新失败版本。\n");
+    appendObservationScopeRules(output, input);
     appendFactSnapshot(output, input.reviewFactSnapshot());
     Map<Long, String> findingSummaries = findingSummaries(input.reviewFactSnapshot());
     output.append("\n当前横向窗口的最新正式 Review：\n");
@@ -212,6 +215,8 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
     }
     output.append("\n上一次候选 operations 未通过服务端证据校验。这是唯一一次修复调用：重新输出完整 operations，"
             + "删除不能被下列受信 Review 严格支持的操作；不要解释校验过程。\n")
+        .append("上一次失败也可能是 scope 与 observationType 语义错配：必须重新核对下方允许组合；"
+            + "REVISE 必须继承目标 revision 的 scope，不得通过 observationType、claimText 或 reason 改变目标维度。\n")
         .append("所有 reviewEvidence 只能引用下列 reviewId。所有 pattern 只能使用 Review 证据：\n")
         .append("- SINGLE_REVIEW：恰好一条 Review，且仅可用于该 Review 含有目标 tag 的 TAG_ASSESSMENT。\n")
         .append("- SAME_PROBLEM_PERSISTENCE：同一 problemSlug 至少两条不同 version。\n")
@@ -257,7 +262,25 @@ public final class LearnerMemoryCodeReviewPromptBuilder {
     return titles;
   }
 
-  private String scope(org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope value) {
+  private void appendObservationScopeRules(
+      StringBuilder output,
+      LearnerMemoryCodeReviewUpdateAgentInput input
+  ) {
+    output.append("\nscope 与 observationType 必须匹配，服务端会拒绝语义错配；允许组合如下：\n");
+    for (LearnerMemoryCodeReviewUpdateAgentInput.ScopeCapacity capacity : input.capacities()) {
+      LearnerMemoryClaimScope scope = capacity.scope();
+      String allowedTypes = java.util.Arrays.stream(LearnerMemoryReviewObservationType.values())
+          .filter(type -> type.supports(scope))
+          .map(Enum::name)
+          .collect(Collectors.joining(", ", "[", "]"));
+      output.append("- scope=").append(scope(scope))
+          .append(" -> observationType=").append(allowedTypes).append('\n');
+    }
+    output.append("REVISE 不带 scope 字段，必须继承 active claim 中 targetRevisionId 对应的 scope；"
+        + "不得自行改变语义维度。\n");
+  }
+
+  private String scope(LearnerMemoryClaimScope value) {
     return "kind=" + value.kind() + ",dimension=" + value.dimension() + ",tagId=" + value.tagId();
   }
 
