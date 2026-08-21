@@ -14,7 +14,7 @@ COPY --chown=algo-mentor:algo-mentor mentor-api.jar /app/app.jar
 USER algo-mentor
 
 ENV LOG_PATH=/var/log/algo-mentor \
-    JAVA_TOOL_OPTIONS="-Xms256m -Xmx1536m -XX:+ExitOnOutOfMemoryError"
+    JAVA_TOOL_OPTIONS="-Xms256m -Xmx3g -XX:+ExitOnOutOfMemoryError"
 
 EXPOSE 18080
 

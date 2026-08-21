@@ -335,8 +335,8 @@ replacement_container_may_exist=true
 docker run -d \
   --name "\${container_name}" \
   --restart unless-stopped \
-  --memory 3g \
-  --memory-swap 3g \
+  --memory 4608m \
+  --memory-swap 4608m \
   --stop-timeout 45 \
   --log-driver json-file \
   --log-opt max-size=100m \

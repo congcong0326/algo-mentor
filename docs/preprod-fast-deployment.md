@@ -73,4 +73,4 @@ make deploy-preprod-fast
 
 发布成功后脚本会输出远端资源报告，包括 Docker 内存/CPU 硬限制、JVM 最大堆与 RAM 百分比、容器当前 RSS/CPU，以及宿主机总量和可用内存。若 `memory_limit_bytes=0` 或 `nano_cpus=0`，表示未设置 Docker 硬限制；此时 JVM 的最大堆来自 Java 容器感知和宿主机可见内存，不是镜像内固定的 `-Xmx`。
 
-预发布运行容器使用 3GiB Docker 内存上限、1.5GiB Java 堆上限（`Xms=256m`、`Xmx=1536m`），并启用 `ExitOnOutOfMemoryError`。应用日志同时写入宿主机 `/var/log/algo-mentor`（可通过 `PREPROD_LOG_DIR` 覆盖），由 Logback 按天和 100MiB 大小滚动，最多保留 14 天、总量 2GiB；容器 stdout 仍保留给 Promtail，并额外限制 Docker `json-file` 日志为每个文件 100MiB、最多 5 个文件。日志目录在容器替换和回滚时复用，不随容器删除。
+预发布运行容器使用 4.5GiB Docker 内存上限、3GiB Java 堆上限（`Xms=256m`、`Xmx=3g`），并启用 `ExitOnOutOfMemoryError`。应用日志同时写入宿主机 `/var/log/algo-mentor`（可通过 `PREPROD_LOG_DIR` 覆盖），由 Logback 按天和 100MiB 大小滚动，最多保留 14 天、总量 2GiB；容器 stdout 仍保留给 Promtail，并额外限制 Docker `json-file` 日志为每个文件 100MiB、最多 5 个文件。日志目录在容器替换和回滚时复用，不随容器删除。
