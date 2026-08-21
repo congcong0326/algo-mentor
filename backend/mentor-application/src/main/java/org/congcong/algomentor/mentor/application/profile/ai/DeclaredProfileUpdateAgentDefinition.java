@@ -85,19 +85,19 @@ public final class DeclaredProfileUpdateAgentDefinition implements AgentDefiniti
                     claim.revisionId(), claim.claimText()))
                 .toList())).toList(), snapshot),
         Map.copyOf(metadata),
-        executionOptions(),
+        executionOptions(candidate),
         null,
         false,
         null,
         candidate.retryOfRunId());
   }
 
-  private AgentExecutionOptions executionOptions() {
+  private AgentExecutionOptions executionOptions(DeclaredProfileUpdateAgentInput candidate) {
     return new AgentExecutionOptions(
         LlmGenerationOptions.defaults(),
         new LlmResponseFormat.JsonSchema(
             DeclaredProfileUpdateJsonSchema.SCHEMA_NAME,
-            DeclaredProfileUpdateJsonSchema.schema(),
+            DeclaredProfileUpdateJsonSchema.schema(candidate.candidates()),
             true),
         new AgentStructuredOutputOptions(
             StructuredOutputStrategy.PROVIDER_NATIVE,

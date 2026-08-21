@@ -22,6 +22,7 @@ public final class LearnerMemoryOperationFailure extends RuntimeException {
     HARD_LIMIT,
     DUPLICATE_ACTIVE_TEXT,
     UPDATE_RUN_INVALID,
+    INVALID_AGENT_OUTPUT,
     AGENT_FAILURE
   }
 }

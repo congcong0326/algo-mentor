@@ -74,6 +74,9 @@ class PracticeChatPromptSectionProviderTest {
         .contains("引导型教练")
         .contains("分层提示协议")
         .contains("面向学习者的回复语言：简体中文")
+        .contains("正式事实与写入操作")
+        .contains("应先调用 submit_practice_code_review")
+        .contains("PROPOSED 仅表示候选已创建，不表示正式总结已保存")
         .contains("- planId: 12")
         .contains("- objective: 4 周内准备后端面试")
         .contains("- phaseIndex: 1")
@@ -250,7 +253,7 @@ class PracticeChatPromptSectionProviderTest {
         .contains("工具只创建候选，不会立即修改已保存的教练总结")
         .contains("不得在普通讲解或代码 Review 后自动生成候选")
         .contains("学习者自述画像工具边界")
-        .contains("一次做题表现、临时情绪、短期困惑、猜测、未明确表达的偏好和模型自行推断都不得调用它")
+        .contains("一次做题表现、临时情绪、短期困惑、猜测和未明确表达的偏好不得调用它")
         .doesNotContain("用户粘贴代码时，先定位关键问题和最小修改");
   }
 

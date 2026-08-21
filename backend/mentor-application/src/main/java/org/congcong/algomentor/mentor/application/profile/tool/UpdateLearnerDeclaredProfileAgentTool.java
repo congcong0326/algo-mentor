@@ -15,9 +15,13 @@ import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimensionCatalog;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** 仅从受信 Agent 上下文读取身份的长期用户自述画像工具。 */
 public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
+
+  private static final Logger log = LoggerFactory.getLogger(UpdateLearnerDeclaredProfileAgentTool.class);
 
   private static final LlmToolSpec SPEC = new LlmToolSpec(
       LearnerDeclaredProfileToolContracts.TOOL_NAME,
@@ -67,7 +71,11 @@ public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
           parentRunDbId,
           context.stepIndex())
           .toJson(objectMapper);
+    } catch (IllegalArgumentException exception) {
+      log.info("Declared profile tool arguments rejected. exceptionType={}", exception.getClass().getSimpleName());
+      return DeclaredProfileUpdateResult.failed(List.of()).toJson(objectMapper);
     } catch (RuntimeException exception) {
+      log.warn("Declared profile tool execution failed. exceptionType={}", exception.getClass().getSimpleName());
       return DeclaredProfileUpdateResult.failed(List.of()).toJson(objectMapper);
     }
   }

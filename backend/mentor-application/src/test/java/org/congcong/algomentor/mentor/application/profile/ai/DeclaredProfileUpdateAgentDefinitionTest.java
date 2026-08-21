@@ -11,6 +11,7 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys
 import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
+import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.junit.jupiter.api.Test;
 
 class DeclaredProfileUpdateAgentDefinitionTest {
@@ -32,6 +33,12 @@ class DeclaredProfileUpdateAgentDefinitionTest {
     assertThat(prepared.metadata()).containsEntry(
         AgentRuntimeMetadataKeys.SCHEMA_VERSION, LearnerDeclaredProfileToolContracts.SCHEMA_VERSION);
     assertThat(prepared.retryOfRunId()).isNull();
+    LlmResponseFormat.JsonSchema schema =
+        (LlmResponseFormat.JsonSchema) prepared.executionOptions().responseFormat();
+    assertThat(schema.schema().path("properties").path("operations").path("items").path("anyOf"))
+        .singleElement()
+        .extracting(value -> value.path("properties").path("dimension").path("enum").get(0).asText())
+        .isEqualTo(LearnerMemoryClaimDimension.GOALS_AND_INTENTS.name());
   }
 
   @Test

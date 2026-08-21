@@ -52,6 +52,12 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
     UpdateLearnerDeclaredProfileAgentTool tool = new UpdateLearnerDeclaredProfileAgentTool(service, objectMapper);
 
     JsonNode invalid = tool.execute(objectMapper.readTree("{\"userId\":9}"), context(42L));
+    JsonNode duplicateDimension = tool.execute(objectMapper.readTree("""
+        {"updates":[
+          {"dimension":"LEARNER_BACKGROUND","statement":"Five years of experience","intent":"DECLARE"},
+          {"dimension":"LEARNER_BACKGROUND","statement":"Solved Hot 100 before","intent":"DECLARE"}
+        ]}
+        """), context(42L));
     JsonNode nonPractice = tool.execute(objectMapper.readTree("""
         {"updates":[{"dimension":"GOALS_AND_INTENTS","statement":"Prepare interview","intent":"DECLARE"}]}
         """), new AgentExecutionContext("run-42", 4, Map.of(
@@ -65,6 +71,8 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
             PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO), false));
 
     assertThat(invalid.path(LearnerDeclaredProfileToolContracts.RESULT_FIELD_STATUS).asText())
+        .isEqualTo(DeclaredProfileUpdateResult.Status.FAILED.name());
+    assertThat(duplicateDimension.path(LearnerDeclaredProfileToolContracts.RESULT_FIELD_STATUS).asText())
         .isEqualTo(DeclaredProfileUpdateResult.Status.FAILED.name());
     assertThat(nonPractice.path(LearnerDeclaredProfileToolContracts.RESULT_FIELD_STATUS).asText())
         .isEqualTo(DeclaredProfileUpdateResult.Status.FAILED.name());

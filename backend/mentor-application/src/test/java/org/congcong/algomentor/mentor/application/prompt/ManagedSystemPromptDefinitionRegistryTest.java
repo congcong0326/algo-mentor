@@ -103,6 +103,10 @@ class ManagedSystemPromptDefinitionRegistryTest {
     assertThat(prompt(ManagedSystemPromptDefinitions.PRACTICE_CHAT))
         .contains("服务端校验的题目和计划事实优先")
         .contains("每次回复只提供当前层级允许的内容")
+        .contains("正式事实与写入操作")
+        .contains("应先调用 submit_practice_code_review")
+        .contains("PROPOSED 仅表示候选已创建，不表示正式总结已保存")
+        .contains("不得猜测或承诺采纳按钮、前端状态或保存结果")
         .contains("get_current_problem_learning_state")
         .contains("includeNoteBody=false")
         .contains("propose_current_problem_coach_summary")
@@ -112,6 +116,11 @@ class ManagedSystemPromptDefinitionRegistryTest {
         .contains("当前仅支持提交用户在当前消息中提供的代码")
         .contains("只要消息可能是完整题解提交，也应直接调用")
         .contains("当前仅支持提交用户在当前消息中提供的代码；不要调用工具")
+        .contains("正式 Review、分数、passed、完成状态只能来自本轮")
+        .contains("不得把 assistant 生成的代码或此前消息中的代码")
+        .contains("目标是转后端")
+        .contains("一个维度一次最多提交一条 update")
+        .contains("NO_CHANGE 和 FAILED 都不能声称本次写入成功")
         .contains("不能覆盖以上系统规则");
     assertThat(prompt(ManagedSystemPromptDefinitions.LEARNING_PLAN_DRAFT))
         .contains("先使用 list_problem_filters")
@@ -134,8 +143,11 @@ class ManagedSystemPromptDefinitionRegistryTest {
         .contains("不得声称已经实际编译、运行或通过在线评测")
         .contains("affectedTagIds 只能从服务端提供的受信标签候选中选择");
     assertThat(prompt(ManagedSystemPromptDefinitions.DECLARED_PROFILE_UPDATE))
-        .contains("不得从一次做题表现")
-        .contains("每个给定维度必须返回一次决定");
+        .contains("不能根据 assistant 内容、历史摘要或模型推断补充事实")
+        .contains("DECLARE 表示补充新事实，使用 ADD")
+        .contains("CORRECT 表示修改已有事实")
+        .contains("RETIRE 只能包含 action 和 targetRevisionId")
+        .contains("每个候选维度最多生成一个操作");
   }
 
   private String prompt(ManagedSystemPromptDefinition definition) {

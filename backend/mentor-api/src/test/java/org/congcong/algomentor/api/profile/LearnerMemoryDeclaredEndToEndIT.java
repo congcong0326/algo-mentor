@@ -144,6 +144,22 @@ class LearnerMemoryDeclaredEndToEndIT extends PostgresIntegrationTestSupport {
   }
 
   @Test
+  void classifiesAnAddOutputForACorrectionAsInvalidAgentOutput() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    Fixture fixture = fixture(userId, insertUserMessage(userId), addOutput());
+
+    DeclaredProfileUpdateResult result = fixture.service().update(
+        userId, request(DeclaredProfileUpdateIntent.CORRECT), 401L, 1);
+
+    assertThat(result.status()).isEqualTo(DeclaredProfileUpdateResult.Status.FAILED);
+    assertThat(fixture.claims().findActiveByUser(userId)).isEmpty();
+    assertThat(queryLong(
+        "SELECT COUNT(*) FROM learner_memory_update_run WHERE status = 'FAILED' AND failure_code = 'INVALID_AGENT_OUTPUT'"))
+        .isEqualTo(1L);
+  }
+
+  @Test
   void rejectsDuplicateTargetsWithoutPartiallyRevisingTheClaim() throws Exception {
     migrateLatest();
     long userId = insertUser();

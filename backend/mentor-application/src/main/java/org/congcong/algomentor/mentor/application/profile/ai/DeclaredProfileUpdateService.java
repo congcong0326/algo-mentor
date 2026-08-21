@@ -171,6 +171,16 @@ public class DeclaredProfileUpdateService implements DeclaredProfileUpdateHandle
         runLifecycleService.markFailed(userId, updateRun.id(), 0, failure.code());
         metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.DECLARED_FACT, LearnerMemoryRunContract.Status.FAILED);
       }
+    } catch (IllegalArgumentException exception) {
+      log.info(
+          "Declared memory agent output rejected. failureCode={}",
+          LearnerMemoryOperationFailure.Code.INVALID_AGENT_OUTPUT);
+      if (updateRun != null) {
+        runLifecycleService.markFailed(
+            userId, updateRun.id(), 0, LearnerMemoryOperationFailure.Code.INVALID_AGENT_OUTPUT);
+        metrics.recordInvalidOutput("SCHEMA");
+        metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.DECLARED_FACT, LearnerMemoryRunContract.Status.FAILED);
+      }
     } catch (RuntimeException exception) {
       log.warn("Declared memory update failed. exceptionType={}", exception.getClass().getSimpleName());
       if (updateRun != null) {
