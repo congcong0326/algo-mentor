@@ -66,7 +66,7 @@ main() {
   fi
 
   echo "No Flyway migration files changed between ${base_ref} and ${release_ref}; selecting fast preprod deployment."
-  exec "${SCRIPT_DIR}/deploy-preprod-fast.sh" "$@"
+  exec bash "${SCRIPT_DIR}/deploy-preprod-fast.sh" "$@"
 }
 
 main "$@"
