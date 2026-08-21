@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.controller;
 
 import org.congcong.algomentor.auth.model.CurrentUserResponse;
 import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsProvider;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthSessionAuthenticationMethod;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
@@ -16,7 +17,7 @@ public class CurrentUserResponseFactory {
   private final AuthUserRepository authUserRepository;
   private final CurrentAuthenticationContextResolver authenticationContextResolver;
   private final AuthPermissionService permissionService;
-  private final AuthProperties authProperties;
+  private final AuthLoginSettingsProvider loginSettingsProvider;
 
   public CurrentUserResponseFactory(
       AuthUserRepository authUserRepository,
@@ -24,10 +25,23 @@ public class CurrentUserResponseFactory {
       AuthPermissionService permissionService,
       AuthProperties authProperties
   ) {
+    this(
+        authUserRepository,
+        authenticationContextResolver,
+        permissionService,
+        AuthLoginSettingsProvider.fromProperties(authProperties));
+  }
+
+  public CurrentUserResponseFactory(
+      AuthUserRepository authUserRepository,
+      CurrentAuthenticationContextResolver authenticationContextResolver,
+      AuthPermissionService permissionService,
+      AuthLoginSettingsProvider loginSettingsProvider
+  ) {
     this.authUserRepository = authUserRepository;
     this.authenticationContextResolver = authenticationContextResolver;
     this.permissionService = permissionService;
-    this.authProperties = authProperties;
+    this.loginSettingsProvider = loginSettingsProvider;
   }
 
   public CurrentUserResponseFactory(
@@ -62,6 +76,6 @@ public class CurrentUserResponseFactory {
         principal.passwordChangeRequired(),
         passwordConfigured,
         method,
-        authProperties.isPasswordLoginEnabled());
+        loginSettingsProvider.current().passwordLoginEnabled());
   }
 }

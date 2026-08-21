@@ -29,6 +29,7 @@ import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.AuthenticatedUserResponseHeaders;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
+import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.identity.model.AuthUser;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.BeforeEach;
@@ -165,6 +166,19 @@ class AuthSecurityAutoConfigurationTest {
             BetaAccessErrorCode.AUTH_BETA_ACCESS_DENIED.name())));
 
     assertThat(response.getRedirectedUrl()).isEqualTo("/login?auth=beta-access-denied");
+  }
+
+  @Test
+  void oauth2RegistrationClosedRedirectsToDedicatedLoginState() throws Exception {
+    MockHttpServletResponse response = new MockHttpServletResponse();
+
+    new OAuth2AuthenticationFailureHandler().onAuthenticationFailure(
+        new MockHttpServletRequest(),
+        response,
+        new OAuth2AuthenticationException(new OAuth2Error(
+            OAuth2LoginUserService.ACCOUNT_REGISTRATION_DISABLED_CODE)));
+
+    assertThat(response.getRedirectedUrl()).isEqualTo("/login?auth=registration-disabled");
   }
 
   @Test

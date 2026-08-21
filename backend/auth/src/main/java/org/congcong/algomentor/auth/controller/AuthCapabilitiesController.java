@@ -3,6 +3,8 @@ package org.congcong.algomentor.auth.controller;
 import java.util.Arrays;
 import java.util.List;
 import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.loginsettings.model.AuthLoginSettings;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsProvider;
 import org.congcong.algomentor.auth.model.AuthCapabilitiesResponse;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
@@ -18,36 +20,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(AuthApiContractConstants.AUTH_API_BASE_PATH)
 public class AuthCapabilitiesController {
 
-  private final AuthProperties properties;
+  private final AuthLoginSettingsProvider loginSettingsProvider;
   private final ClientRegistrationRepository clientRegistrationRepository;
 
   public AuthCapabilitiesController(AuthProperties properties) {
-    this(properties, null);
+    this(AuthLoginSettingsProvider.fromProperties(properties), null);
   }
 
   public AuthCapabilitiesController(
       AuthProperties properties,
       ClientRegistrationRepository clientRegistrationRepository
   ) {
-    this.properties = properties;
+    this(AuthLoginSettingsProvider.fromProperties(properties), clientRegistrationRepository);
+  }
+
+  public AuthCapabilitiesController(
+      AuthLoginSettingsProvider loginSettingsProvider,
+      ClientRegistrationRepository clientRegistrationRepository
+  ) {
+    this.loginSettingsProvider = loginSettingsProvider;
     this.clientRegistrationRepository = clientRegistrationRepository;
   }
 
   @GetMapping(AuthApiContractConstants.CAPABILITIES_PATH)
   public ApiResponse<AuthCapabilitiesResponse> capabilities() {
-    boolean passwordLoginEnabled = properties.isPasswordLoginEnabled();
+    AuthLoginSettings settings = loginSettingsProvider.current();
+    boolean passwordLoginEnabled = settings.passwordLoginEnabled();
     return ApiResponse.success(new AuthCapabilitiesResponse(
         passwordLoginEnabled,
-        passwordLoginEnabled && properties.isPasswordRegistrationEnabled(),
-        configuredOAuthProviders()));
+        passwordLoginEnabled
+            && settings.passwordRegistrationEnabled()
+            && settings.accountRegistrationEnabled(),
+        configuredOAuthProviders(settings)));
   }
 
-  private List<String> configuredOAuthProviders() {
+  private List<String> configuredOAuthProviders(AuthLoginSettings settings) {
     if (clientRegistrationRepository == null) {
       return List.of();
     }
     return Arrays.stream(OAuthProvider.values())
         .filter(provider -> clientRegistrationRepository.findByRegistrationId(provider.value()) != null)
+        .filter(settings::oauthLoginEnabled)
         .map(OAuthProvider::value)
         .toList();
   }

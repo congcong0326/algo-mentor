@@ -10,6 +10,7 @@ export type AdminPageId =
   | 'users'
   | 'userGroups'
   | 'betaAccess'
+  | 'authSettings'
   | 'sessions'
   | 'sessionPolicies'
   | 'learningPlanPolicies'
@@ -33,6 +34,7 @@ export type AdminNavigationLabelKey =
   | 'users'
   | 'userGroups'
   | 'betaAccess'
+  | 'authSettings'
   | 'sessions'
   | 'sessionPolicies'
   | 'learningPlanPolicies'
@@ -89,6 +91,7 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
       { id: 'users', labelKey: 'users', path: APP_ROUTES.adminUsers, permission: 'user:manage' },
       { id: 'userGroups', labelKey: 'userGroups', path: APP_ROUTES.adminUserGroups, permission: 'user:manage' },
       { id: 'betaAccess', labelKey: 'betaAccess', path: APP_ROUTES.adminBetaAccess, permission: 'beta-access:manage' },
+      { id: 'authSettings', labelKey: 'authSettings', path: APP_ROUTES.adminAuthSettings, permission: 'auth-settings:manage' },
       { id: 'sessions', labelKey: 'sessions', path: APP_ROUTES.adminSessions, permission: 'session:manage' },
       { id: 'sessionPolicies', labelKey: 'sessionPolicies', path: APP_ROUTES.adminSessionPolicies, permission: 'policy:manage' },
     ],

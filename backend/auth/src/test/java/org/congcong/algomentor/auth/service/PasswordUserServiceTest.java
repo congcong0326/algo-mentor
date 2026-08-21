@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import org.congcong.algomentor.auth.model.PasswordCredential;
+import org.congcong.algomentor.auth.loginsettings.model.AuthLoginSettings;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.junit.jupiter.api.Test;
@@ -99,5 +100,21 @@ class PasswordUserServiceTest {
     assertThatThrownBy(() -> service.register("user@example.com", "password-123", " "))
         .isInstanceOf(PasswordRegistrationException.class)
         .hasMessage("请输入昵称。");
+  }
+
+  @Test
+  void disabledPasswordRegistrationRejectsNewAccounts() {
+    PasswordUserService service = new PasswordUserService(
+        repository,
+        repository,
+        passwordEncoder,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        null,
+        null,
+        () -> new AuthLoginSettings((short) 1, true, true, false, true, true, null, null, NOW));
+
+    assertThatThrownBy(() -> service.register("user@example.com", "password-123", "User Name"))
+        .isInstanceOf(PasswordRegistrationException.class)
+        .hasMessage("当前未开放新账号注册。");
   }
 }

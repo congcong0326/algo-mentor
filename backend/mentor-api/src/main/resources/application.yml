@@ -92,6 +92,7 @@ algo-mentor:
     admin-emails: ${AUTH_ADMIN_EMAILS:}
     password-login-enabled: ${AUTH_PASSWORD_LOGIN_ENABLED:false}
     password-registration-enabled: ${AUTH_PASSWORD_REGISTRATION_ENABLED:false}
+    account-registration-enabled: ${AUTH_ACCOUNT_REGISTRATION_ENABLED:true}
   agent:
     runtime:
       enabled: ${AGENT_RUNTIME_ENABLED:true}

@@ -5,6 +5,11 @@ package org.congcong.algomentor.common.admin.audit;
  */
 public enum AdminAuditMetadataKey {
   EMAIL_ALLOWLIST_ENABLED("emailAllowlistEnabled"),
+  ACCOUNT_REGISTRATION_ENABLED("accountRegistrationEnabled"),
+  PASSWORD_LOGIN_ENABLED("passwordLoginEnabled"),
+  PASSWORD_REGISTRATION_ENABLED("passwordRegistrationEnabled"),
+  GOOGLE_LOGIN_ENABLED("googleLoginEnabled"),
+  GITHUB_LOGIN_ENABLED("githubLoginEnabled"),
   ADDED_COUNT("addedCount"),
   EXISTING_COUNT("existingCount"),
   INVALID_COUNT("invalidCount"),

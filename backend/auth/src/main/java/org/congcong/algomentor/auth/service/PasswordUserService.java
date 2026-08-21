@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.List;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.betaaccess.service.BetaEmailAddress;
+import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsProvider;
 import org.congcong.algomentor.auth.password.PasswordPolicyConstraints;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
@@ -25,6 +27,7 @@ public class PasswordUserService {
   private final Clock clock;
   private final AdminEmailRoleService adminEmailRoleService;
   private final BetaAccessPolicy betaAccessPolicy;
+  private final AuthLoginSettingsProvider loginSettingsProvider;
 
   public PasswordUserService(
       AuthUserRepository authRepository,
@@ -39,7 +42,8 @@ public class PasswordUserService {
         passwordEncoder,
         clock,
         adminEmailRoleService,
-        null);
+        null,
+        new AuthProperties());
   }
 
   public PasswordUserService(
@@ -50,16 +54,61 @@ public class PasswordUserService {
       AdminEmailRoleService adminEmailRoleService,
       BetaAccessPolicy betaAccessPolicy
   ) {
+    this(
+        authRepository,
+        identityRepository,
+        passwordEncoder,
+        clock,
+        adminEmailRoleService,
+        betaAccessPolicy,
+        new AuthProperties());
+  }
+
+  public PasswordUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      PasswordEncoder passwordEncoder,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessPolicy betaAccessPolicy,
+      AuthProperties authProperties
+  ) {
+    this(
+        authRepository,
+        identityRepository,
+        passwordEncoder,
+        clock,
+        adminEmailRoleService,
+        betaAccessPolicy,
+        AuthLoginSettingsProvider.fromProperties(authProperties));
+  }
+
+  public PasswordUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      PasswordEncoder passwordEncoder,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessPolicy betaAccessPolicy,
+      AuthLoginSettingsProvider loginSettingsProvider
+  ) {
     this.authRepository = authRepository;
     this.identityRepository = identityRepository;
     this.passwordEncoder = passwordEncoder;
     this.clock = clock;
     this.adminEmailRoleService = adminEmailRoleService;
     this.betaAccessPolicy = betaAccessPolicy;
+    this.loginSettingsProvider = loginSettingsProvider;
   }
 
   @Transactional
   public AuthenticatedUserPrincipal register(String email, String password, String displayName) {
+    var settings = loginSettingsProvider.current();
+    if (!settings.accountRegistrationEnabled() || !settings.passwordRegistrationEnabled()) {
+      throw new PasswordRegistrationException(
+          PasswordAuthErrorCode.AUTH_PASSWORD_REGISTRATION_DISABLED,
+          "当前未开放新账号注册。");
+    }
     String normalizedEmail = normalizeEmail(email);
     String normalizedDisplayName = normalizeDisplayName(displayName);
     validateRegistration(normalizedEmail, password, normalizedDisplayName);

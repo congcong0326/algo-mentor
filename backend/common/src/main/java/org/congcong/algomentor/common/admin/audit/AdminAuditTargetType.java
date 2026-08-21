@@ -5,6 +5,7 @@ package org.congcong.algomentor.common.admin.audit;
  */
 public enum AdminAuditTargetType {
   BETA_ACCESS_SETTINGS,
+  AUTH_LOGIN_SETTINGS,
   BETA_ALLOWED_EMAIL,
   USER,
   AUTH_SESSION,

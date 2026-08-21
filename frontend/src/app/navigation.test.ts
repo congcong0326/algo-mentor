@@ -114,6 +114,8 @@ describe('learning plan practice submissions navigation', () => {
   it('maps the beta access and required password change routes', () => {
     expect(viewFromPath('/admin/beta-access')).toBe('adminBetaAccess');
     expect(pathForView('adminBetaAccess')).toBe('/admin/beta-access');
+    expect(viewFromPath('/admin/auth-settings')).toBe('adminAuthSettings');
+    expect(pathForView('adminAuthSettings')).toBe('/admin/auth-settings');
     expect(viewFromPath('/password/change-required')).toBe('passwordChangeRequired');
   });
 

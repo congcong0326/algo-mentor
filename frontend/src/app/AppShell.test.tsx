@@ -156,6 +156,31 @@ describe('AppShell', () => {
       .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心']);
   });
 
+  it('shows login entry settings navigation only with auth settings permission', () => {
+    const onNavigate = vi.fn();
+    render(
+      <AppShell
+        activeView="adminAuthSettings"
+        currentUser={{
+          ...user,
+          roles: ['ADMIN'],
+          permissions: ['auth-settings:manage'],
+        }}
+        onLogout={vi.fn()}
+        onNavigate={onNavigate}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Login settings page</div>
+      </AppShell>,
+    );
+
+    expect(screen.queryByRole('button', { name: '登录入口设置' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
+    expect(onNavigate).toHaveBeenCalledWith('adminAuthSettings');
+  });
+
   it('shows AI governance navigation only with the governance permission', () => {
     const { rerender } = render(
       <AppShell

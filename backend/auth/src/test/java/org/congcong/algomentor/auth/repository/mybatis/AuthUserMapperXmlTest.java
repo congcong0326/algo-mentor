@@ -78,4 +78,25 @@ class AuthUserMapperXmlTest {
     assertThat(allowedEmailMappings.get(0).getJavaType()).isEqualTo(long.class);
     assertThat(allowedEmailMappings.get(3).getJavaType()).isEqualTo(long.class);
   }
+
+  @Test
+  void mybatisLoadsAuthLoginSettingsMapperXml() throws Exception {
+    Configuration configuration = new Configuration();
+    configuration.setMapUnderscoreToCamelCase(true);
+
+    try (Reader reader = Resources.getResourceAsReader("mapper/auth/AuthLoginSettingsMapper.xml")) {
+      new XMLMapperBuilder(
+          reader,
+          configuration,
+          "mapper/auth/AuthLoginSettingsMapper.xml",
+          configuration.getSqlFragments()).parse();
+    }
+
+    String namespace = "org.congcong.algomentor.auth.loginsettings.repository.mybatis.AuthLoginSettingsMapper.";
+    assertThat(configuration.hasStatement(namespace + "findSettings")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "insertIfAbsent")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "updateSettings")).isTrue();
+    assertThat(configuration.getResultMap(namespace + "AuthLoginSettingsRowMap")
+        .getConstructorResultMappings()).hasSize(9);
+  }
 }

@@ -49,4 +49,18 @@ class AuthMigrationResourceTest {
         .contains("ADD COLUMN reset_required BOOLEAN NOT NULL DEFAULT FALSE")
         .contains("ADD COLUMN temporary_password_expires_at TIMESTAMPTZ NULL");
   }
+
+  @Test
+  void loginSettingsMigrationDefinesTheSingletonRuntimeSwitchTable() throws Exception {
+    ClassPathResource resource = new ClassPathResource(
+        "db/migration/auth/V71__auth_login_settings.sql");
+
+    assertThat(resource.exists()).isTrue();
+    assertThat(resource.getContentAsString(StandardCharsets.UTF_8))
+        .contains("CREATE TABLE auth_login_settings")
+        .contains("account_registration_enabled BOOLEAN NOT NULL")
+        .contains("password_login_enabled BOOLEAN NOT NULL")
+        .contains("google_login_enabled BOOLEAN NOT NULL")
+        .contains("CONSTRAINT ck_auth_login_settings_singleton CHECK (id = 1)");
+  }
 }

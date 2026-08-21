@@ -15,6 +15,7 @@ export const APP_ROUTES = {
   reviewSession: '/mistakes/review',
   problems: '/admin/problems',
   adminBetaAccess: '/admin/beta-access',
+  adminAuthSettings: '/admin/auth-settings',
   adminUsers: '/admin/users',
   adminUserGroups: '/admin/user-groups',
   adminMonitoring: '/admin/monitoring',
@@ -103,6 +104,7 @@ export type AppView =
   | 'mistakes'
   | 'problems'
   | 'adminBetaAccess'
+  | 'adminAuthSettings'
   | 'adminUsers'
   | 'adminUserGroups'
   | 'adminMonitoring'
@@ -167,6 +169,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     path: APP_ROUTES.adminBetaAccess,
     icon: ShieldCheck,
     permission: 'beta-access:manage',
+  },
+  {
+    view: 'adminAuthSettings',
+    labelKey: 'adminAuthSettings',
+    path: APP_ROUTES.adminAuthSettings,
+    icon: ShieldCheck,
+    permission: 'auth-settings:manage',
   },
   {
     view: 'adminUsers',
@@ -315,6 +324,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminBetaAccess) {
     return 'adminBetaAccess';
+  }
+  if (pathname === APP_ROUTES.adminAuthSettings) {
+    return 'adminAuthSettings';
   }
   if (pathname === APP_ROUTES.passwordChangeRequired) {
     return 'passwordChangeRequired';

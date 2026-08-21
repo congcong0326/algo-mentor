@@ -3,14 +3,12 @@ package org.congcong.algomentor.auth.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.model.UserPasswordUpdateRequest;
 import org.congcong.algomentor.auth.password.UserPasswordErrorCode;
 import org.congcong.algomentor.auth.password.UserPasswordException;
@@ -31,15 +29,12 @@ class UserPasswordControllerTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
   private final UserPasswordService service = mock(UserPasswordService.class);
   private MockMvc mockMvc;
-  private AuthProperties authProperties;
 
   @BeforeEach
   void setUp() {
-    authProperties = new AuthProperties();
     mockMvc = MockMvcBuilders.standaloneSetup(new UserPasswordController(
         service,
-        new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
-        authProperties)).build();
+        new ApiErrorResponseFactory(new ApiErrorMessageResolver()))).build();
   }
 
   @Test
@@ -70,8 +65,11 @@ class UserPasswordControllerTest {
   }
 
   @Test
-  void rejectsPasswordUpdateWithoutCallingServiceWhenPasswordLoginIsDisabled() throws Exception {
-    authProperties.setPasswordLoginEnabled(false);
+  void allowsAnAlreadyLoggedInUserToUpdatePasswordAfterLoginIsDisabled() throws Exception {
+    when(service.updatePassword(any())).thenReturn(new UserPasswordUpdateResult(
+        true,
+        UserPasswordUpdateOperation.UPDATED,
+        0));
 
     mockMvc.perform(put("/api/auth/password")
             .contentType(MediaType.APPLICATION_JSON)
@@ -79,11 +77,10 @@ class UserPasswordControllerTest {
                 "old-password",
                 "new-password",
                 "new-password"))))
-        .andExpect(status().isForbidden())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.code").value("AUTH_PASSWORD_LOGIN_DISABLED"));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
 
-    verifyNoInteractions(service);
+    verify(service).updatePassword(any());
   }
 
   @Test

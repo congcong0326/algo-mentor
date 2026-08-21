@@ -42,7 +42,7 @@ describe('BetaAccessPage', () => {
     await waitFor(() => expect(toggle).toBeChecked());
   });
 
-  it('shows structured batch results and session revocation warnings', async () => {
+  it('shows structured batch results and removes an allowlist entry without session messaging', async () => {
     let removed = false;
     const fetchMock = vi.fn((url: string, init?: RequestInit) => {
       if (url === '/api/admin/beta-access?page=1&pageSize=20') {
@@ -68,8 +68,6 @@ describe('BetaAccessPage', () => {
           allowedEmailId: 7,
           associatedUserId: 42,
           associatedUserStatus: 'ACTIVE',
-          revokedSessionCount: 0,
-          sessionRevocationSucceeded: false,
         }));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -87,10 +85,13 @@ describe('BetaAccessPage', () => {
     expect(screen.getByText('无效')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '移除 member@example.com' }));
-    expect(screen.getByRole('dialog')).toHaveTextContent('会立即吊销关联用户的全部 Session');
+    expect(screen.getByRole('dialog')).toHaveTextContent('不会删除关联账号或学习数据');
     fireEvent.click(screen.getByRole('button', { name: '移除' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Session 吊销失败');
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/beta-access/emails/7',
+      expect.objectContaining({ method: 'DELETE' }),
+    ));
     expect(screen.queryByText('member@example.com')).not.toBeInTheDocument();
   });
 });

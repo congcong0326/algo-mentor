@@ -5,18 +5,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Optional;
-import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
-import org.congcong.algomentor.auth.betaaccess.service.BetaAccessErrorCode;
 import org.congcong.algomentor.auth.cache.AuthAccessSnapshot;
 import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
 import org.congcong.algomentor.auth.config.AuthSecurityPaths;
-import org.congcong.algomentor.common.api.ApiErrorLocales;
-import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
-import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
-import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.slf4j.Logger;
@@ -35,9 +28,6 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
 
   private final IdentityUserRepository identityUserRepository;
   private final AuthenticationEntryPoint authenticationEntryPoint;
-  private final BetaAccessPolicy betaAccessPolicy;
-  private final ObjectMapper objectMapper;
-  private final ApiErrorResponseFactory responseFactory;
   private final AuthAccessSnapshotCache accessSnapshotCache;
   private final RequestMatcher apiRequestMatcher = new AntPathRequestMatcher(AuthSecurityPaths.API_PATTERN);
 
@@ -48,41 +38,16 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
     this(
         identityUserRepository,
         authenticationEntryPoint,
-        null,
-        new ObjectMapper().findAndRegisterModules(),
-        new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
         null);
   }
 
   public ActiveIdentityUserFilter(
       IdentityUserRepository identityUserRepository,
       AuthenticationEntryPoint authenticationEntryPoint,
-      BetaAccessPolicy betaAccessPolicy,
-      ObjectMapper objectMapper,
-      ApiErrorResponseFactory responseFactory
-  ) {
-    this(
-        identityUserRepository,
-        authenticationEntryPoint,
-        betaAccessPolicy,
-        objectMapper,
-        responseFactory,
-        null);
-  }
-
-  public ActiveIdentityUserFilter(
-      IdentityUserRepository identityUserRepository,
-      AuthenticationEntryPoint authenticationEntryPoint,
-      BetaAccessPolicy betaAccessPolicy,
-      ObjectMapper objectMapper,
-      ApiErrorResponseFactory responseFactory,
       AuthAccessSnapshotCache accessSnapshotCache
   ) {
     this.identityUserRepository = identityUserRepository;
     this.authenticationEntryPoint = authenticationEntryPoint;
-    this.betaAccessPolicy = betaAccessPolicy;
-    this.objectMapper = objectMapper;
-    this.responseFactory = responseFactory;
     this.accessSnapshotCache = accessSnapshotCache;
   }
 
@@ -114,16 +79,6 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
     if (session != null) {
       session.invalidate();
     }
-    if (validation == IdentityValidation.BETA_ACCESS_DENIED) {
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      response.setContentType("application/json");
-      response.setCharacterEncoding("UTF-8");
-      objectMapper.writeValue(response.getWriter(), responseFactory.failure(
-          BetaAccessErrorCode.AUTH_BETA_ACCESS_DENIED.name(),
-          "当前邮箱不在内测准入名单中。",
-          ApiErrorLocales.parse(request.getHeader("Accept-Language"))));
-      return;
-    }
     authenticationEntryPoint.commence(
         request,
         response,
@@ -138,13 +93,7 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
       if (snapshot.isEmpty() || snapshot.get().status() != AuthUserStatus.ACTIVE) {
         return IdentityValidation.INACTIVE;
       }
-      if (betaAccessPolicy == null) {
-        return IdentityValidation.ALLOWED;
-      }
-      return betaAccessPolicy.evaluate(
-          snapshot.get().email(), snapshot.get().roles().contains(AuthRole.ADMIN)).allowed()
-          ? IdentityValidation.ALLOWED
-          : IdentityValidation.BETA_ACCESS_DENIED;
+      return IdentityValidation.ALLOWED;
     } catch (RuntimeException exception) {
       log.warn("Failed to validate active identity user for authenticated request. userId={}",
           principal.userId(),
@@ -174,7 +123,6 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
 
   private enum IdentityValidation {
     ALLOWED,
-    INACTIVE,
-    BETA_ACCESS_DENIED
+    INACTIVE
   }
 }

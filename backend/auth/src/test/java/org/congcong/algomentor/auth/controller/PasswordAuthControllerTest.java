@@ -109,7 +109,8 @@ class PasswordAuthControllerTest {
         .andExpect(jsonPath("$.data.permissions").isArray())
         .andExpect(jsonPath("$.data.permissions[3]").value("problem:read"))
         .andExpect(jsonPath("$.data.permissions[8]").value("beta-access:manage"))
-        .andExpect(jsonPath("$.data.permissions[12]").value("session:manage"))
+        .andExpect(jsonPath("$.data.permissions[9]").value("auth-settings:manage"))
+        .andExpect(jsonPath("$.data.permissions[13]").value("session:manage"))
         .andReturn();
 
     Object context = result.getRequest().getSession(false).getAttribute(
@@ -137,6 +138,26 @@ class PasswordAuthControllerTest {
         .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "1"))
         .andExpect(jsonPath("$.data.email").value("user@example.com"))
         .andExpect(jsonPath("$.data.roles[0]").value("USER"));
+  }
+
+  @Test
+  void existingPasswordUserCanLoginWhenNewAccountRegistrationIsDisabled() throws Exception {
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
+                "user@example.com",
+                "password-123",
+                "User Name"))))
+        .andExpect(status().isOk());
+    authProperties.setAccountRegistrationEnabled(false);
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordLoginRequest(
+                "user@example.com",
+                "password-123"))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.email").value("user@example.com"));
   }
 
   @Test

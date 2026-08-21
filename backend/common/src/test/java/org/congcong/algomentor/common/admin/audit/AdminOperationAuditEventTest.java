@@ -20,7 +20,9 @@ class AdminOperationAuditEventTest {
     assertThat(event.metadata()).containsEntry(AdminAuditMetadataKey.EMAIL_ALLOWLIST_ENABLED, true);
     assertThat(AdminAuditMetadataKey.values())
         .extracting(AdminAuditMetadataKey::value)
-        .noneMatch(key -> key.toLowerCase().matches(".*(password|authorization|token|prompt|sourcecode|usercode).*"));
+        .noneMatch(key -> !key.equals("passwordLoginEnabled")
+            && !key.equals("passwordRegistrationEnabled")
+            && key.toLowerCase().matches(".*(password|authorization|token|prompt|sourcecode|usercode).*"));
   }
 
   @Test

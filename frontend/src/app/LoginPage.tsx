@@ -10,7 +10,9 @@ import type { OAuthProvider, PasswordLoginRequest, PasswordRegisterRequest } fro
 export interface LoginPageProps {
   authFailed?: boolean;
   betaAccessDenied?: boolean;
+  providerDisabled?: boolean;
   authError?: string;
+  registrationDisabled?: boolean;
   pending?: boolean;
   onLogin?: (request: PasswordLoginRequest) => Promise<void>;
   onRegister?: (request: PasswordRegisterRequest) => Promise<void>;
@@ -26,7 +28,9 @@ type PasswordMode = 'login' | 'register';
 export default function LoginPage({
   authFailed = false,
   betaAccessDenied = false,
+  providerDisabled = false,
   authError = '',
+  registrationDisabled = false,
   pending = false,
   onLogin,
   onRegister,
@@ -106,7 +110,9 @@ export default function LoginPage({
 
   const errorText = validationError
     || authError
+    || (registrationDisabled ? resources.auth.registrationDisabled : '')
     || (betaAccessDenied ? resources.auth.betaAccessDenied : '')
+    || (providerDisabled ? resources.auth.providerDisabled : '')
     || (authFailed ? resources.auth.failed : '');
 
   return (

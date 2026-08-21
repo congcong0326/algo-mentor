@@ -10,6 +10,7 @@ import MistakeNotebookPage from './mistakes/MistakeNotebookPage';
 import ReviewSessionPage from './mistakes/ReviewSessionPage';
 import UserManagementPage from './admin/UserManagementPage';
 import BetaAccessPage from './admin/BetaAccessPage';
+import AuthLoginSettingsPage from './admin/AuthLoginSettingsPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
 import { isAiGovernanceTab } from './admin/ai/aiGovernanceRoute';
 import SystemMonitoringPage from './admin/monitoring/SystemMonitoringPage';
@@ -113,6 +114,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminBetaAccess' && !hasPermission(user, 'beta-access:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminAuthSettings' && !hasPermission(user, 'auth-settings:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminAi'
@@ -280,7 +284,8 @@ function isLegalRoute(pathname: string): boolean {
 
 function hasAuthFailedQuery(search: string): boolean {
   const authStatus = new URLSearchParams(search).get('auth');
-  return authStatus === 'failed' || authStatus === 'beta-access-denied';
+  return authStatus === 'failed' || authStatus === 'beta-access-denied'
+    || authStatus === 'provider-disabled';
 }
 
 function normalizePublicLocation(pathname: string, search: string): string {
@@ -769,7 +774,9 @@ export default function App() {
       <LoginPage
         authError={passwordAuthError}
         authFailed={new URLSearchParams(window.location.search).get('auth') === 'failed'}
+        registrationDisabled={new URLSearchParams(window.location.search).get('auth') === 'registration-disabled'}
         betaAccessDenied={new URLSearchParams(window.location.search).get('auth') === 'beta-access-denied'}
+        providerDisabled={new URLSearchParams(window.location.search).get('auth') === 'provider-disabled'}
         onLogin={handlePasswordLogin}
         onRegister={handlePasswordRegister}
         passwordLoginEnabled={authCapabilities?.passwordLoginEnabled ?? false}
@@ -822,6 +829,8 @@ export default function App() {
       : <UserGroupManagementPage onNavigate={navigateToPath} />
     : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
     ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
+    : activeView === 'adminAuthSettings' && hasPermission(currentUser, 'auth-settings:manage')
+    ? <AuthLoginSettingsPage onNavigateHome={() => navigateToView('home')} />
     : activeView === 'adminAi'
         && (hasPermission(currentUser, 'ai-governance:manage') || hasPermission(currentUser, 'ai-run:read'))
     ? <AiGovernancePage

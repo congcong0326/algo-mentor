@@ -16,6 +16,7 @@ public class AuthProperties {
   private List<String> adminEmails = List.of();
   private boolean passwordLoginEnabled = true;
   private boolean passwordRegistrationEnabled = true;
+  private boolean accountRegistrationEnabled = true;
 
   public String getLoginSuccessUrl() {
     return loginSuccessUrl;
@@ -95,5 +96,13 @@ public class AuthProperties {
 
   public void setPasswordRegistrationEnabled(boolean passwordRegistrationEnabled) {
     this.passwordRegistrationEnabled = passwordRegistrationEnabled;
+  }
+
+  public boolean isAccountRegistrationEnabled() {
+    return accountRegistrationEnabled;
+  }
+
+  public void setAccountRegistrationEnabled(boolean accountRegistrationEnabled) {
+    this.accountRegistrationEnabled = accountRegistrationEnabled;
   }
 }

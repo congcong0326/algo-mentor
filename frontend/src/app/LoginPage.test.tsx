@@ -46,6 +46,18 @@ describe('LoginPage', () => {
     expect(screen.getByText('登录失败，请重新尝试。')).toBeInTheDocument();
   });
 
+  it('shows the new-account registration closed message', () => {
+    render(<LoginPage registrationDisabled />);
+
+    expect(screen.getByText('当前已关闭新账号注册，已有账号可以继续登录。')).toBeInTheDocument();
+  });
+
+  it('shows the disabled provider message', () => {
+    render(<LoginPage providerDisabled />);
+
+    expect(screen.getByText('该登录方式当前已关闭，请选择其他方式。')).toBeInTheDocument();
+  });
+
   it('prevents duplicate Google login navigation after the first click', () => {
     render(<LoginPage />);
 

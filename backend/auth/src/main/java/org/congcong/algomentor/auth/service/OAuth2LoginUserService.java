@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessException;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.betaaccess.service.BetaEmailAddress;
+import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsProvider;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
@@ -28,19 +30,22 @@ public class OAuth2LoginUserService {
 
   public static final String AUTH_USER_DISABLED_CODE = "auth_user_disabled";
   public static final String MISSING_SUBJECT_CODE = "missing_provider_subject";
+  public static final String ACCOUNT_REGISTRATION_DISABLED_CODE = "account_registration_disabled";
+  public static final String PROVIDER_LOGIN_DISABLED_CODE = "oauth_provider_login_disabled";
 
   private final AuthUserRepository authRepository;
   private final IdentityUserRepository identityRepository;
   private final Clock clock;
   private final AdminEmailRoleService adminEmailRoleService;
   private final BetaAccessPolicy betaAccessPolicy;
+  private final AuthLoginSettingsProvider loginSettingsProvider;
 
   public OAuth2LoginUserService(
       AuthUserRepository authRepository,
       IdentityUserRepository identityRepository,
       Clock clock
   ) {
-    this(authRepository, identityRepository, clock, null, null);
+    this(authRepository, identityRepository, clock, null, null, new AuthProperties());
   }
 
   public OAuth2LoginUserService(
@@ -49,7 +54,7 @@ public class OAuth2LoginUserService {
       Clock clock,
       AdminEmailRoleService adminEmailRoleService
   ) {
-    this(authRepository, identityRepository, clock, adminEmailRoleService, null);
+    this(authRepository, identityRepository, clock, adminEmailRoleService, null, new AuthProperties());
   }
 
   public OAuth2LoginUserService(
@@ -59,11 +64,46 @@ public class OAuth2LoginUserService {
       AdminEmailRoleService adminEmailRoleService,
       BetaAccessPolicy betaAccessPolicy
   ) {
+    this(
+        authRepository,
+        identityRepository,
+        clock,
+        adminEmailRoleService,
+        betaAccessPolicy,
+        new AuthProperties());
+  }
+
+  public OAuth2LoginUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessPolicy betaAccessPolicy,
+      AuthProperties authProperties
+  ) {
+    this(
+        authRepository,
+        identityRepository,
+        clock,
+        adminEmailRoleService,
+        betaAccessPolicy,
+        AuthLoginSettingsProvider.fromProperties(authProperties));
+  }
+
+  public OAuth2LoginUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessPolicy betaAccessPolicy,
+      AuthLoginSettingsProvider loginSettingsProvider
+  ) {
     this.authRepository = authRepository;
     this.identityRepository = identityRepository;
     this.clock = clock;
     this.adminEmailRoleService = adminEmailRoleService;
     this.betaAccessPolicy = betaAccessPolicy;
+    this.loginSettingsProvider = loginSettingsProvider;
   }
 
   @Transactional
@@ -76,6 +116,7 @@ public class OAuth2LoginUserService {
       OAuthProvider provider,
       Map<String, Object> attributes
   ) {
+    requireProviderLoginEnabled(provider);
     String subject = requiredAttribute(attributes, provider.subjectAttribute(), MISSING_SUBJECT_CODE);
     String email = stringAttribute(attributes, provider.emailAttribute());
     String emailNormalized = normalizeEmail(email);
@@ -86,11 +127,22 @@ public class OAuth2LoginUserService {
     Instant now = Instant.now(clock);
 
     Optional<OAuthAccount> existingAccount = authRepository.findOAuthAccount(provider, subject);
+    Optional<AuthUser> existingUserByEmail = existingAccount.isPresent()
+        ? Optional.empty()
+        : findUserByEmail(emailNormalized);
+    requireAccountRegistrationAllowed(existingAccount, existingUserByEmail);
     requireBetaAccess(email, existingAccount);
     boolean createdAccount = existingAccount.isEmpty();
     OAuthAccount account = existingAccount
         .orElseGet(() -> createOAuthAccount(
-            provider, subject, email, emailNormalized, displayName, avatarUrl, now));
+            provider,
+            subject,
+            email,
+            emailNormalized,
+            displayName,
+            avatarUrl,
+            now,
+            existingUserByEmail));
 
     AuthUser user = identityRepository.findUserById(account.userId())
         .orElseThrow(() -> authenticationException("auth_user_missing", "Authenticated user does not exist."));
@@ -154,12 +206,10 @@ public class OAuth2LoginUserService {
       String emailNormalized,
       String displayName,
       String avatarUrl,
-      Instant now
+      Instant now,
+      Optional<AuthUser> existingUserByEmail
   ) {
-    Optional<AuthUser> userByEmail = emailNormalized == null
-        ? Optional.empty()
-        : identityRepository.findUserByEmailNormalized(emailNormalized);
-    AuthUser user = userByEmail
+    AuthUser user = existingUserByEmail
         .orElseGet(() -> identityRepository.createUser(
             email,
             emailNormalized,
@@ -168,7 +218,7 @@ public class OAuth2LoginUserService {
             AuthUserStatus.ACTIVE,
             now));
     ensureActive(user);
-    if (userByEmail.isEmpty()) {
+    if (existingUserByEmail.isEmpty()) {
       identityRepository.addRole(user.id(), AuthRole.USER);
     }
     return authRepository.createOAuthAccount(new OAuthAccount(
@@ -181,6 +231,35 @@ public class OAuth2LoginUserService {
         avatarUrl,
         now,
         now));
+  }
+
+  private Optional<AuthUser> findUserByEmail(String emailNormalized) {
+    return emailNormalized == null
+        ? Optional.empty()
+        : identityRepository.findUserByEmailNormalized(emailNormalized);
+  }
+
+  private void requireAccountRegistrationAllowed(
+      Optional<OAuthAccount> existingAccount,
+      Optional<AuthUser> existingUserByEmail
+  ) {
+    if (loginSettingsProvider.current().accountRegistrationEnabled()
+        || existingAccount.isPresent()
+        || existingUserByEmail.isPresent()) {
+      return;
+    }
+    throw authenticationException(
+        ACCOUNT_REGISTRATION_DISABLED_CODE,
+        "New account registration is not currently available.");
+  }
+
+  private void requireProviderLoginEnabled(OAuthProvider provider) {
+    if (loginSettingsProvider.oauthLoginEnabled(provider)) {
+      return;
+    }
+    throw authenticationException(
+        PROVIDER_LOGIN_DISABLED_CODE,
+        "OAuth provider login is not currently available.");
   }
 
   private static AuthenticatedUserPrincipal toPrincipal(AuthUser user, List<AuthRole> roles) {

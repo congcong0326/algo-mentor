@@ -13,13 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmail;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailAddStatus;
-import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailRemovalResult;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
-import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
 import org.congcong.algomentor.common.admin.audit.AdminAuditAction;
 import org.congcong.algomentor.common.admin.audit.AdminAuditOutcome;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditEvent;
-import org.congcong.algomentor.identity.model.AuthUser;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.junit.jupiter.api.Test;
@@ -38,10 +35,8 @@ class BetaAccessAdminServiceTest {
     BetaAccessAdminService service = service(
         repository,
         mock(IdentityUserRepository.class),
-        userId -> 0,
         audits,
-        mock(BetaAllowedEmailRemovalExecutor.class),
-        () -> { });
+        mock(BetaAllowedEmailRemovalExecutor.class));
 
     var result = service.addEmails(List.of(
         "Member@example.com",
@@ -71,7 +66,7 @@ class BetaAccessAdminServiceTest {
   }
 
   @Test
-  void removalStaysDeletedWhenSessionRevocationFails() {
+  void removingAllowlistEntryDoesNotTouchAssociatedUserSession() {
     BetaAccessRepository repository = mock(BetaAccessRepository.class);
     IdentityUserRepository identityRepository = mock(IdentityUserRepository.class);
     BetaAllowedEmailRemovalExecutor removalExecutor = mock(BetaAllowedEmailRemovalExecutor.class);
@@ -86,25 +81,18 @@ class BetaAccessAdminServiceTest {
         AuthUserStatus.ACTIVE);
     when(removalExecutor.remove(7L)).thenReturn(Optional.of(allowedEmail));
     when(identityRepository.findUserByEmailNormalized("member@example.com"))
-        .thenReturn(Optional.of(user(42L)));
-    AuthSessionRevocationService revocationService = userId -> {
-      throw new IllegalStateException("session store unavailable");
-    };
-    CountingMetrics metrics = new CountingMetrics();
+        .thenReturn(Optional.empty());
     List<AdminOperationAuditEvent> audits = new ArrayList<>();
     BetaAccessAdminService service = service(
         repository,
         identityRepository,
-        revocationService,
         audits,
-        removalExecutor,
-        metrics);
+        removalExecutor);
 
-    BetaAllowedEmailRemovalResult result = service.removeEmail(7L, 1L);
+    var result = service.removeEmail(7L, 1L);
 
-    assertThat(result.sessionRevocationSucceeded()).isFalse();
-    assertThat(result.associatedUserId()).isEqualTo(42L);
-    assertThat(metrics.failures).isEqualTo(1);
+    assertThat(result.allowedEmailId()).isEqualTo(7L);
+    assertThat(result.associatedUserId()).isNull();
     verify(removalExecutor).remove(7L);
     assertThat(audits).singleElement().satisfies(event -> {
       assertThat(event.action()).isEqualTo(AdminAuditAction.BETA_ALLOWED_EMAIL_REMOVE);
@@ -115,42 +103,14 @@ class BetaAccessAdminServiceTest {
   private static BetaAccessAdminService service(
       BetaAccessRepository repository,
       IdentityUserRepository identityRepository,
-      AuthSessionRevocationService revocationService,
       List<AdminOperationAuditEvent> audits,
-      BetaAllowedEmailRemovalExecutor removalExecutor,
-      BetaAccessMetrics metrics
+      BetaAllowedEmailRemovalExecutor removalExecutor
   ) {
     return new BetaAccessAdminService(
         repository,
         identityRepository,
-        revocationService,
         audits::add,
         removalExecutor,
-        metrics,
         Clock.fixed(NOW, ZoneOffset.UTC));
-  }
-
-  private static AuthUser user(long id) {
-    return new AuthUser(
-        id,
-        "member@example.com",
-        "member@example.com",
-        "Member",
-        null,
-        AuthUserStatus.ACTIVE,
-        NOW,
-        NOW,
-        null,
-        null,
-        null);
-  }
-
-  private static final class CountingMetrics implements BetaAccessMetrics {
-    private int failures;
-
-    @Override
-    public void recordSessionRevocationFailure() {
-      failures++;
-    }
   }
 }

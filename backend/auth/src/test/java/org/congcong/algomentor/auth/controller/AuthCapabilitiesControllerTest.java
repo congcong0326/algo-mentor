@@ -43,6 +43,18 @@ class AuthCapabilitiesControllerTest {
   }
 
   @Test
+  void suppressesPasswordRegistrationWhenNewAccountRegistrationIsDisabled() throws Exception {
+    AuthProperties properties = new AuthProperties();
+    properties.setAccountRegistrationEnabled(false);
+    MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new AuthCapabilitiesController(properties)).build();
+
+    mockMvc.perform(get("/api/auth/capabilities"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.passwordLoginEnabled").value(true))
+        .andExpect(jsonPath("$.data.passwordRegistrationEnabled").value(false));
+  }
+
+  @Test
   void reportsConfiguredOAuthProviders() throws Exception {
     AuthProperties properties = new AuthProperties();
     ClientRegistrationRepository registrations = mock(ClientRegistrationRepository.class);

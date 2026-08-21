@@ -46,6 +46,8 @@ import type {
   AdminGenericPolicyPage,
   AdminGenericPolicyUpdateRequest,
   AdminGenericPolicyWriteRequest,
+  AuthLoginSettings,
+  AuthLoginSettingsUpdateRequest,
   BetaAccessListQuery,
   BetaAccessPage,
   BetaAccessSettings,
@@ -272,6 +274,33 @@ export async function getAuthCapabilities(): Promise<AuthCapabilities> {
 
   const body = await response.json() as ApiResponse<AuthCapabilities>;
   return requireApiData(body, 'Authentication capabilities request failed');
+}
+
+export async function getAdminAuthLoginSettings(
+  signal?: AbortSignal,
+): Promise<ApiResponse<AuthLoginSettings>> {
+  const response = await apiFetch('/api/admin/auth-settings', {
+    headers: jsonHeaders,
+    signal,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Authentication login settings request failed');
+  }
+  return response.json();
+}
+
+export async function updateAdminAuthLoginSettings(
+  request: AuthLoginSettingsUpdateRequest,
+): Promise<ApiResponse<AuthLoginSettings>> {
+  const response = await apiFetch('/api/admin/auth-settings', {
+    method: 'PATCH',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Authentication login settings update failed');
+  }
+  return response.json();
 }
 
 export async function loginWithPassword(request: PasswordLoginRequest): Promise<CurrentUser> {

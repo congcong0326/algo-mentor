@@ -44,6 +44,7 @@ export default function AppShell({
   const adminEntryView: AppView | undefined = permissions.has('admin-overview:read') ? 'adminOverview'
     : permissions.has('user:manage') ? 'adminUsers'
     : permissions.has('beta-access:manage') ? 'adminBetaAccess'
+    : permissions.has('auth-settings:manage') ? 'adminAuthSettings'
     : permissions.has('session:manage') ? 'adminSessions'
     : permissions.has('policy:manage') ? 'adminSessionPolicies'
     : permissions.has('ai-governance:manage') ? 'adminAi'

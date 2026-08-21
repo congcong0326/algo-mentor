@@ -6989,8 +6989,7 @@ textarea[aria-invalid='true'] {
   font-weight: 700;
 }
 
-.practice-coach-summary-action,
-.practice-completion-action {
+.practice-coach-summary-action {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -6999,16 +6998,14 @@ textarea[aria-invalid='true'] {
   border-top: 1px solid var(--border-subtle);
 }
 
-.practice-coach-summary-action button,
-.practice-completion-action button {
+.practice-coach-summary-action button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
 }
 
 .practice-coach-summary-action button svg,
-.practice-coach-summary-action p svg,
-.practice-completion-action button svg {
+.practice-coach-summary-action p svg {
   width: 16px;
   height: 16px;
   flex: 0 0 auto;
@@ -11087,6 +11084,15 @@ textarea[aria-invalid='true'] {
   .admin-users-pagination .secondary-button {
     flex: 1;
   }
+
+  .auth-login-settings-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .auth-login-settings-actions {
+    justify-content: flex-end;
+  }
 }
 
 .beta-access-page {
@@ -11307,6 +11313,127 @@ textarea[aria-invalid='true'] {
 .beta-access-warning {
   color: var(--warning-text, #92400e);
   margin: 6px 0 0;
+}
+
+.auth-login-settings-page {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+}
+
+.auth-login-settings-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.auth-login-settings-header h1 {
+  font-size: 28px;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.auth-login-settings-header p {
+  color: var(--text-muted);
+  margin: 8px 0 0;
+  max-width: 720px;
+}
+
+.auth-login-settings-header p.error-text {
+  color: var(--danger);
+}
+
+.auth-login-settings-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.auth-login-settings-list {
+  border-bottom: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.auth-login-setting-row {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 14px 4px;
+}
+
+.auth-login-setting-row + .auth-login-setting-row {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.auth-login-setting-row > span:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.auth-login-setting-row small {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.auth-login-settings-switch {
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.auth-login-settings-switch input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.auth-login-settings-switch > span[aria-hidden="true"] {
+  background: var(--surface-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  display: block;
+  height: 28px;
+  position: relative;
+  transition: background 140ms ease, border-color 140ms ease;
+  width: 48px;
+}
+
+.auth-login-settings-switch > span[aria-hidden="true"]::after {
+  background: var(--surface-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  content: '';
+  height: 20px;
+  left: 3px;
+  position: absolute;
+  top: 3px;
+  transition: transform 140ms ease;
+  width: 20px;
+}
+
+.auth-login-settings-switch input:checked + span {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.auth-login-settings-switch input:checked + span::after {
+  transform: translateX(20px);
+}
+
+.auth-login-settings-switch input:focus-visible + span {
+  outline: 2px solid var(--action-primary);
+  outline-offset: 2px;
+}
+
+.auth-login-settings-meta {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0;
 }
 
 .password-change-page {
@@ -14048,6 +14175,7 @@ textarea[aria-invalid='true'] {
   .admin-overview-page,
   .admin-users-page,
   .beta-access-page,
+  .auth-login-settings-page,
   .system-monitoring-page,
   .session-monitoring-page,
   .session-policy-page,
@@ -14067,6 +14195,7 @@ textarea[aria-invalid='true'] {
   .admin-overview-header,
   .admin-users-toolbar,
   .beta-access-toolbar,
+  .auth-login-settings-header,
   .system-monitoring-header,
   .session-monitoring-header,
   .feedback-page-header,

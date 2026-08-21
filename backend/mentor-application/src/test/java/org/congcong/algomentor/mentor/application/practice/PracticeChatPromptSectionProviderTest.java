@@ -75,7 +75,7 @@ class PracticeChatPromptSectionProviderTest {
         .contains("分层提示协议")
         .contains("面向学习者的回复语言：简体中文")
         .contains("正式事实与写入操作")
-        .contains("应先调用 submit_practice_code_review")
+        .contains("只要当前用户消息包含当前题目的代码候选，就必须先调用 submit_practice_code_review")
         .contains("PROPOSED 仅表示候选已创建，不表示正式总结已保存")
         .contains("- planId: 12")
         .contains("- objective: 4 周内准备后端面试")

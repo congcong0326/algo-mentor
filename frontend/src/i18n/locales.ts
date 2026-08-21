@@ -62,6 +62,8 @@ export interface LocaleResources {
     privacyLabel: string;
     failed: string;
     betaAccessDenied: string;
+    providerDisabled: string;
+    registrationDisabled: string;
     googleLogin: string;
     githubLogin: string;
     emailLabel: string;
@@ -93,6 +95,7 @@ export interface LocaleResources {
     mistakes: string;
     problems: string;
     adminBetaAccess: string;
+    adminAuthSettings: string;
     adminUsers: string;
     adminUserGroups: string;
     adminMonitoring: string;
@@ -120,7 +123,7 @@ export interface LocaleResources {
     pageNavigation: string;
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'learningPlanAiRevisionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'aiAudit' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'learningPlanPolicies' | 'learningPlanAiRevisionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'aiAudit' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'authSettings' | 'problems', string>;
   };
   adminFeedback: {
     listLoadFailed: string;
@@ -895,6 +898,23 @@ export interface LocaleResources {
     confirmRemoval: (email: string) => string;
     sessionRevocationWarning: string;
     operationFailed: string;
+  };
+  authLoginSettings: {
+    ariaLabel: string;
+    title: string;
+    subtitle: string;
+    refresh: string;
+    save: string;
+    saving: string;
+    loadFailed: string;
+    saveFailed: string;
+    forbidden: string;
+    backHome: string;
+    updatedAt: (value: string) => string;
+    settings: Record<'accountRegistrationEnabled' | 'passwordLoginEnabled' | 'passwordRegistrationEnabled' | 'googleLoginEnabled' | 'githubLoginEnabled', {
+      label: string;
+      summary: string;
+    }>;
   };
   passwordChange: {
     ariaLabel: string;
@@ -1757,6 +1777,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       privacyLabel: '隐私政策',
       failed: '登录失败，请重新尝试。',
       betaAccessDenied: '当前邮箱不在内测准入名单中。',
+      providerDisabled: '该登录方式当前已关闭，请选择其他方式。',
+      registrationDisabled: '当前已关闭新账号注册，已有账号可以继续登录。',
       googleLogin: '使用 Google 登录',
       githubLogin: '使用 GitHub 登录',
       emailLabel: '邮箱',
@@ -1788,6 +1810,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       mistakes: '复习中心',
       problems: '题库',
       adminBetaAccess: '内测准入',
+      adminAuthSettings: '登录入口设置',
       adminUsers: '用户管理',
       adminUserGroups: '用户组管理',
       adminMonitoring: '系统监控',
@@ -1841,6 +1864,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         users: '用户管理',
         userGroups: '用户组管理',
         betaAccess: '内测准入',
+        authSettings: '登录入口设置',
         problems: '题库管理',
       },
     },
@@ -2529,10 +2553,30 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       confirmDisableTitle: '关闭邮箱白名单',
       confirmDisableDescription: '关闭后，邮箱白名单不再限制注册、登录和已登录请求。',
       confirmRemoveTitle: '移除白名单邮箱',
-      confirmRegisteredRemoval: (email) => `移除 ${email} 后会立即吊销关联用户的全部 Session，但不会删除账号和学习数据。`,
+      confirmRegisteredRemoval: (email) => `确认移除 ${email}？这不会删除关联账号或学习数据。`,
       confirmRemoval: (email) => `确认从白名单移除 ${email}？`,
-      sessionRevocationWarning: '白名单记录已移除，但 Session 吊销失败；该用户后续请求仍会被实时准入检查拒绝。',
+      sessionRevocationWarning: '',
       operationFailed: '内测准入操作失败，请稍后重试。',
+    },
+    authLoginSettings: {
+      ariaLabel: '登录入口设置管理',
+      title: '登录入口设置',
+      subtitle: '修改后立即影响新的登录、注册和 OAuth 入口；已登录用户不受影响。',
+      refresh: '刷新登录入口设置',
+      save: '保存设置',
+      saving: '保存中',
+      loadFailed: '登录入口设置加载失败。',
+      saveFailed: '登录入口设置保存失败。',
+      forbidden: '没有权限管理登录入口设置。',
+      backHome: '返回首页',
+      updatedAt: (value) => `最近更新：${value}`,
+      settings: {
+        accountRegistrationEnabled: { label: '账号注册', summary: '允许新用户创建账号。' },
+        passwordLoginEnabled: { label: '邮箱密码登录', summary: '允许已有账号使用邮箱和密码登录。' },
+        passwordRegistrationEnabled: { label: '邮箱密码注册', summary: '允许新用户通过邮箱和密码注册。' },
+        googleLoginEnabled: { label: 'Google 登录', summary: '允许通过 Google OAuth 登录。' },
+        githubLoginEnabled: { label: 'GitHub 登录', summary: '允许通过 GitHub OAuth 登录。' },
+      },
     },
     passwordChange: {
       ariaLabel: '修改临时密码',
@@ -3512,6 +3556,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       privacyLabel: 'Privacy Policy',
       failed: 'Sign-in failed. Please try again.',
       betaAccessDenied: 'This email is not currently allowed to access the private beta.',
+      providerDisabled: 'This sign-in method is currently disabled. Choose another method.',
+      registrationDisabled: 'New account registration is currently closed. Existing accounts can still sign in.',
       googleLogin: 'Sign in with Google',
       githubLogin: 'Sign in with GitHub',
       emailLabel: 'Email',
@@ -3543,6 +3589,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       mistakes: 'Review Center',
       problems: 'Problems',
       adminBetaAccess: 'Beta Access',
+      adminAuthSettings: 'Login entry settings',
       adminUsers: 'Users',
       adminUserGroups: 'User Groups',
       adminMonitoring: 'System monitoring',
@@ -3596,6 +3643,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         users: 'Users',
         userGroups: 'User Groups',
         betaAccess: 'Beta Access',
+        authSettings: 'Login entry settings',
         problems: 'Problem Library',
       },
     },
@@ -4289,10 +4337,30 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       confirmDisableTitle: 'Disable the email allowlist',
       confirmDisableDescription: 'The allowlist will no longer restrict registration, sign-in, or authenticated requests.',
       confirmRemoveTitle: 'Remove allowlisted email',
-      confirmRegisteredRemoval: (email) => `Removing ${email} immediately revokes the linked user's sessions without deleting the account or learning data.`,
+      confirmRegisteredRemoval: (email) => `Remove ${email}? The linked account and learning data will not be deleted.`,
       confirmRemoval: (email) => `Remove ${email} from the allowlist?`,
-      sessionRevocationWarning: 'The allowlist entry was removed, but session revocation failed. Real-time access checks will still reject subsequent requests.',
+      sessionRevocationWarning: '',
       operationFailed: 'Beta access operation failed. Please try again later.',
+    },
+    authLoginSettings: {
+      ariaLabel: 'Login entry settings management',
+      title: 'Login entry settings',
+      subtitle: 'Changes apply immediately to new login, registration, and OAuth entry attempts. Existing sessions are unaffected.',
+      refresh: 'Refresh login entry settings',
+      save: 'Save settings',
+      saving: 'Saving',
+      loadFailed: 'Failed to load login entry settings.',
+      saveFailed: 'Failed to save login entry settings.',
+      forbidden: 'You do not have permission to manage login entry settings.',
+      backHome: 'Back to home',
+      updatedAt: (value) => `Last updated: ${value}`,
+      settings: {
+        accountRegistrationEnabled: { label: 'Account registration', summary: 'Allow new users to create accounts.' },
+        passwordLoginEnabled: { label: 'Email and password sign-in', summary: 'Allow existing accounts to sign in with email and password.' },
+        passwordRegistrationEnabled: { label: 'Email and password registration', summary: 'Allow new users to register with email and password.' },
+        googleLoginEnabled: { label: 'Google sign-in', summary: 'Allow sign-in through Google OAuth.' },
+        githubLoginEnabled: { label: 'GitHub sign-in', summary: 'Allow sign-in through GitHub OAuth.' },
+      },
     },
     passwordChange: {
       ariaLabel: 'Change temporary password',

@@ -302,6 +302,7 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
       ...sessionFixture().messages,
       messageFixture({ id: 2, role: 'USER', contentMarkdown: '这是完整代码。' }),
       messageFixture({ id: 3, role: 'ASSISTANT', contentMarkdown: '代码提交记录已生成。' }),
+      messageFixture({ id: 4, role: 'ASSISTANT', contentMarkdown: '第二次代码还存在问题，但本轮没有生成正式 Review。' }),
     ];
     getPracticeSessionMessages.mockResolvedValue(apiResponse(refreshedMessages));
     getPracticeSession.mockResolvedValue(apiResponse(sessionFixture({
@@ -328,7 +329,11 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     const reviewMessage = await screen.findByText('代码提交记录已生成。');
     const reviewBubble = reviewMessage.closest('article');
     expect(reviewBubble).not.toBeNull();
-    expect(within(reviewBubble!).getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+    expect(within(reviewBubble!).queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
+    const unreviewedBubble = screen.getByText('第二次代码还存在问题，但本轮没有生成正式 Review。').closest('article');
+    expect(unreviewedBubble).not.toBeNull();
+    expect(within(unreviewedBubble!).queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
   });
 
   it('confirms a complete v2 run in memory without messages or active-run reads', async () => {

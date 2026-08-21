@@ -12,6 +12,7 @@ import org.congcong.algomentor.auth.session.admin.controller.AdminAuthSessionCon
 import org.congcong.algomentor.auth.session.admin.repository.AuthSessionAdminRepository;
 import org.congcong.algomentor.auth.session.admin.repository.mybatis.AuthSessionAdminMapper;
 import org.congcong.algomentor.auth.session.admin.service.AuthSessionAdminService;
+import org.congcong.algomentor.auth.loginsettings.repository.mybatis.AuthLoginSettingsMapper;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.PasswordUserService;
 import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
@@ -87,6 +88,7 @@ class AuthApiAutoConfigurationTest {
     SqlSessionTemplate sqlSessionTemplate() {
       SqlSessionTemplate sqlSessionTemplate = mock(SqlSessionTemplate.class);
       when(sqlSessionTemplate.getMapper(AuthUserMapper.class)).thenReturn(mock(AuthUserMapper.class));
+      when(sqlSessionTemplate.getMapper(AuthLoginSettingsMapper.class)).thenReturn(mock(AuthLoginSettingsMapper.class));
       when(sqlSessionTemplate.getMapper(AuthSessionAdminMapper.class)).thenReturn(mock(AuthSessionAdminMapper.class));
       when(sqlSessionTemplate.getMapper(IdentityUserMapper.class)).thenReturn(mock(IdentityUserMapper.class));
       return sqlSessionTemplate;

@@ -17,6 +17,8 @@ public final class AuthConfigurationKeys {
   public static final String PASSWORD_LOGIN_ENABLED = AUTH_PREFIX + ".password-login-enabled";
   /** 是否允许通过邮箱密码自助注册。 */
   public static final String PASSWORD_REGISTRATION_ENABLED = AUTH_PREFIX + ".password-registration-enabled";
+  /** 是否允许创建全新本地账号；关闭后已有账号仍可登录。 */
+  public static final String ACCOUNT_REGISTRATION_ENABLED = AUTH_PREFIX + ".account-registration-enabled";
   /** Google OAuth2 客户端凭据的环境变量。 */
   public static final String GOOGLE_OAUTH2_CLIENT_ID_ENV = "GOOGLE_CLIENT_ID";
   public static final String GOOGLE_OAUTH2_CLIENT_SECRET_ENV = "GOOGLE_CLIENT_SECRET";

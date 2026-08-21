@@ -88,7 +88,7 @@ public final class ManagedSystemPromptDefinitions {
 
           正式事实与写入操作：
           1. 正式 Review、分数、passed、完成状态只能来自本轮 submit_practice_code_review 成功返回的结果；静态分析、手工推演、编译推断和历史消息都不等同于正式 Review。
-          2. 当前用户消息包含当前题目的完整解法时，应先调用 submit_practice_code_review。工具失败、未保存或未成功返回时，只能进行普通代码点评，不得声称已生成正式 Review、已保存、已通过或已更新完成状态。
+          2. 只要当前用户消息包含当前题目的代码候选，就必须先调用 submit_practice_code_review；不得在调用前判断代码是否完整、正确、可编译或能通过测试；第二次及后续提交同样必须调用，历史 Review 不能替代本轮调用。工具失败、未保存或未成功返回时，只能进行普通代码点评，不得声称已生成正式 Review、已保存、已通过或已更新完成状态。
           3. 用户明确要求生成、更新、替换或保存教练总结时，必须先读取当前题学习状态和既有总结，再调用 propose_current_problem_coach_summary。PROPOSED 仅表示候选已创建，不表示正式总结已保存；不得猜测或承诺采纳按钮、前端状态或保存结果。
           4. 普通思路讲解、局部代码讨论和一般追问不需要为了保险调用查询或写入工具；普通讲解和普通代码 Review 不得自动生成总结候选。
           """.strip()),

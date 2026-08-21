@@ -8,6 +8,7 @@ import java.util.Locale;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
 import org.congcong.algomentor.auth.github.GitHubOAuthConstants;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsProvider;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.security.ActiveIdentityUserFilter;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
@@ -16,6 +17,7 @@ import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
 import org.congcong.algomentor.auth.security.CsrfTokenCookieFilter;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationSuccessHandler;
+import org.congcong.algomentor.auth.security.OAuthLoginEntryFilter;
 import org.congcong.algomentor.auth.security.PasswordChangeRequiredFilter;
 import org.congcong.algomentor.auth.security.SpaCsrfTokenRequestHandler;
 import org.congcong.algomentor.auth.session.policy.AuthSessionAbsoluteTimeoutFilter;
@@ -53,6 +55,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
@@ -148,8 +151,8 @@ public class AuthSecurityAutoConfiguration {
       ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository,
       ObjectProvider<SecurityContextRepository> securityContextRepository,
       ObjectProvider<IdentityUserRepository> identityUserRepositoryProvider,
-      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider,
       ObjectProvider<AuthAccessSnapshotCache> accessSnapshotCacheProvider,
+      ObjectProvider<AuthLoginSettingsProvider> loginSettingsProvider,
       ObjectProvider<AuthSessionPolicyLoginService> sessionPolicyLoginServiceProvider,
       ObjectProvider<AuthSessionPolicyMetrics> sessionPolicyMetricsProvider,
       ObjectProvider<Clock> authClockProvider,
@@ -205,6 +208,8 @@ public class AuthSecurityAutoConfiguration {
             .anyRequest().permitAll());
 
     if (registrations != null) {
+      AuthLoginSettingsProvider settingsProvider = loginSettingsProvider.getIfAvailable(
+          () -> AuthLoginSettingsProvider.fromProperties(properties));
       http.oauth2Login(oauth2 -> oauth2
           .loginPage("/login")
           .authorizationEndpoint(authorization -> authorization
@@ -216,6 +221,7 @@ public class AuthSecurityAutoConfiguration {
           .successHandler(new OAuth2AuthenticationSuccessHandler(
               properties.getLoginSuccessUrl(), sessionPolicyLoginServiceProvider.getIfAvailable()))
           .failureHandler(new OAuth2AuthenticationFailureHandler()));
+      http.addFilterBefore(new OAuthLoginEntryFilter(settingsProvider), OAuth2AuthorizationRequestRedirectFilter.class);
     }
 
     http
@@ -237,11 +243,6 @@ public class AuthSecurityAutoConfiguration {
         new ActiveIdentityUserFilter(
             repository,
             apiAuthenticationEntryPoint,
-            betaAccessPolicyProvider.getIfAvailable(),
-            objectMapper,
-            apiErrorResponseFactory == null
-                ? new ApiErrorResponseFactory(new org.congcong.algomentor.common.api.ApiErrorMessageResolver())
-                : apiErrorResponseFactory,
             accessSnapshotCacheProvider.getIfAvailable()),
         SecurityContextHolderFilter.class));
     http.addFilterAfter(

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.auth.loginsettings.repository.mybatis.AuthLoginSettingsMapper">
+  <resultMap id="AuthLoginSettingsRowMap" type="org.congcong.algomentor.auth.loginsettings.repository.mybatis.model.AuthLoginSettingsRow">
+    <constructor>
+      <idArg column="id" javaType="_short"/>
+      <arg column="account_registration_enabled" javaType="_boolean"/>
+      <arg column="password_login_enabled" javaType="_boolean"/>
+      <arg column="password_registration_enabled" javaType="_boolean"/>
+      <arg column="google_login_enabled" javaType="_boolean"/>
+      <arg column="github_login_enabled" javaType="_boolean"/>
+      <arg column="updated_by" javaType="java.lang.Long"/>
+      <arg column="updated_by_display_name" javaType="java.lang.String"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <select id="findSettings" resultMap="AuthLoginSettingsRowMap">
+    SELECT settings.id,
+           settings.account_registration_enabled,
+           settings.password_login_enabled,
+           settings.password_registration_enabled,
+           settings.google_login_enabled,
+           settings.github_login_enabled,
+           settings.updated_by,
+           COALESCE(updater.display_name, updater.email) AS updated_by_display_name,
+           settings.updated_at
+    FROM auth_login_settings settings
+    LEFT JOIN auth_users updater ON updater.id = settings.updated_by
+    WHERE settings.id = 1
+  </select>
+
+  <insert id="insertIfAbsent">
+    INSERT INTO auth_login_settings (
+      id,
+      account_registration_enabled,
+      password_login_enabled,
+      password_registration_enabled,
+      google_login_enabled,
+      github_login_enabled,
+      updated_at
+    ) VALUES (
+      1,
+      #{accountRegistrationEnabled},
+      #{passwordLoginEnabled},
+      #{passwordRegistrationEnabled},
+      #{googleLoginEnabled},
+      #{githubLoginEnabled},
+      #{updatedAt}
+    )
+    ON CONFLICT (id) DO NOTHING
+  </insert>
+
+  <update id="updateSettings">
+    UPDATE auth_login_settings
+    SET account_registration_enabled = #{accountRegistrationEnabled},
+        password_login_enabled = #{passwordLoginEnabled},
+        password_registration_enabled = #{passwordRegistrationEnabled},
+        google_login_enabled = #{googleLoginEnabled},
+        github_login_enabled = #{githubLoginEnabled},
+        updated_by = #{updatedBy},
+        updated_at = #{updatedAt}
+    WHERE id = 1
+  </update>
+</mapper>

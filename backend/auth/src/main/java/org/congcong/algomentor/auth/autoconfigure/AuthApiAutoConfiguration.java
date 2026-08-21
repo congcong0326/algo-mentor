@@ -16,7 +16,14 @@ import org.congcong.algomentor.auth.cache.AuthCacheProperties;
 import org.congcong.algomentor.auth.cache.BetaAccessCache;
 import org.congcong.algomentor.auth.cache.IdentityUserAccessCacheInvalidationListener;
 import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.controller.admin.AuthLoginSettingsController;
+import org.congcong.algomentor.auth.controller.admin.AuthLoginSettingsExceptionHandler;
 import org.congcong.algomentor.auth.controller.AuthCapabilitiesController;
+import org.congcong.algomentor.auth.loginsettings.repository.AuthLoginSettingsRepository;
+import org.congcong.algomentor.auth.loginsettings.repository.mybatis.AuthLoginSettingsMapper;
+import org.congcong.algomentor.auth.loginsettings.repository.mybatis.MyBatisAuthLoginSettingsRepository;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsProvider;
+import org.congcong.algomentor.auth.loginsettings.service.AuthLoginSettingsService;
 import org.congcong.algomentor.auth.github.GitHubEmailClient;
 import org.congcong.algomentor.auth.github.RestClientGitHubEmailClient;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessController;
@@ -134,13 +141,13 @@ public class AuthApiAutoConfiguration {
       ObjectProvider<AuthUserRepository> authUserRepositoryProvider,
       CurrentAuthenticationContextResolver authenticationContextResolver,
       AuthPermissionService authPermissionService,
-      AuthProperties properties
+      ObjectProvider<AuthLoginSettingsProvider> loginSettingsProvider
   ) {
     return new CurrentUserResponseFactory(
         authUserRepositoryProvider.getIfAvailable(),
         authenticationContextResolver,
         authPermissionService,
-        properties);
+        loginSettingsProvider.getIfAvailable(() -> AuthLoginSettingsProvider.fromProperties(new AuthProperties())));
   }
 
   @Bean
@@ -159,11 +166,11 @@ public class AuthApiAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public AuthCapabilitiesController authCapabilitiesController(
-      AuthProperties properties,
+      ObjectProvider<AuthLoginSettingsProvider> loginSettingsProvider,
       ObjectProvider<ClientRegistrationRepository> clientRegistrationRepositoryProvider
   ) {
     return new AuthCapabilitiesController(
-        properties,
+        loginSettingsProvider.getIfAvailable(() -> AuthLoginSettingsProvider.fromProperties(new AuthProperties())),
         clientRegistrationRepositoryProvider.getIfAvailable());
   }
 
@@ -184,6 +191,20 @@ public class AuthApiAutoConfiguration {
   @Bean
   @ConditionalOnBean(SqlSessionTemplate.class)
   @ConditionalOnMissingBean
+  public AuthLoginSettingsMapper authLoginSettingsMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(AuthLoginSettingsMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthLoginSettingsMapper.class)
+  @ConditionalOnMissingBean
+  public AuthLoginSettingsRepository authLoginSettingsRepository(AuthLoginSettingsMapper authLoginSettingsMapper) {
+    return new MyBatisAuthLoginSettingsRepository(authLoginSettingsMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
   public BetaAccessMapper betaAccessMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(BetaAccessMapper.class);
   }
@@ -199,6 +220,46 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public Clock authClock() {
     return Clock.systemUTC();
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthLoginSettingsRepository.class)
+  @ConditionalOnMissingBean
+  public AuthLoginSettingsService authLoginSettingsService(
+      AuthLoginSettingsRepository repository,
+      AuthProperties authProperties,
+      ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
+      Clock authClock
+  ) {
+    return new AuthLoginSettingsService(
+        repository,
+        authProperties,
+        auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
+        authClock);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthLoginSettingsService.class)
+  @ConditionalOnMissingBean
+  public AuthLoginSettingsProvider authLoginSettingsProvider(AuthLoginSettingsService service) {
+    return service;
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthLoginSettingsService.class)
+  @ConditionalOnMissingBean
+  public AuthLoginSettingsController authLoginSettingsController(AuthLoginSettingsService service) {
+    return new AuthLoginSettingsController(service);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthLoginSettingsController.class)
+  @ConditionalOnMissingBean
+  public AuthLoginSettingsExceptionHandler authLoginSettingsExceptionHandler(
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
+  ) {
+    return new AuthLoginSettingsExceptionHandler(responseFactoryProvider.getIfAvailable(
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
   }
 
   @Bean("authUserSessionPolicyType")
@@ -299,20 +360,16 @@ public class AuthApiAutoConfiguration {
   public BetaAccessAdminService betaAccessAdminService(
       BetaAccessRepository betaAccessRepository,
       IdentityUserRepository identityUserRepository,
-      ObjectProvider<AuthSessionRevocationService> sessionRevocationServiceProvider,
       ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
       BetaAllowedEmailRemovalExecutor removalExecutor,
-      BetaAccessMetrics betaAccessMetrics,
       Clock authClock,
       ObjectProvider<BetaAccessCache> cacheProvider
   ) {
     return new BetaAccessAdminService(
         betaAccessRepository,
         identityUserRepository,
-        sessionRevocationServiceProvider.getIfAvailable(),
         auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
         removalExecutor,
-        betaAccessMetrics,
         authClock,
         cacheProvider.getIfAvailable());
   }
@@ -359,7 +416,8 @@ public class AuthApiAutoConfiguration {
       PasswordEncoder passwordEncoder,
       Clock authClock,
       ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider,
-      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider
+      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider,
+      ObjectProvider<AuthLoginSettingsProvider> loginSettingsProvider
   ) {
     return new PasswordUserService(
         authUserRepository,
@@ -367,7 +425,8 @@ public class AuthApiAutoConfiguration {
         passwordEncoder,
         authClock,
         adminEmailRoleServiceProvider.getIfAvailable(),
-        betaAccessPolicyProvider.getIfAvailable());
+        betaAccessPolicyProvider.getIfAvailable(),
+        loginSettingsProvider.getIfAvailable(() -> AuthLoginSettingsProvider.fromProperties(new AuthProperties())));
   }
 
   @Bean
@@ -456,11 +515,10 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public UserPasswordController userPasswordController(
       UserPasswordService userPasswordService,
-      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider,
-      AuthProperties properties
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
   ) {
     return new UserPasswordController(userPasswordService, responseFactoryProvider.getIfAvailable(
-        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())), properties);
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
   }
 
   @Bean
@@ -648,14 +706,16 @@ public class AuthApiAutoConfiguration {
       IdentityUserRepository identityUserRepository,
       Clock authClock,
       ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider,
-      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider
+      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider,
+      ObjectProvider<AuthLoginSettingsProvider> loginSettingsProvider
   ) {
     return new OAuth2LoginUserService(
         authUserRepository,
         identityUserRepository,
         authClock,
         adminEmailRoleServiceProvider.getIfAvailable(),
-        betaAccessPolicyProvider.getIfAvailable());
+        betaAccessPolicyProvider.getIfAvailable(),
+        loginSettingsProvider.getIfAvailable(() -> AuthLoginSettingsProvider.fromProperties(new AuthProperties())));
   }
 
   @Bean
@@ -681,7 +741,7 @@ public class AuthApiAutoConfiguration {
       ObjectProvider<PasswordResetService> passwordResetServiceProvider,
       ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider,
       AuthSessionPolicyLoginService authSessionPolicyLoginService,
-      AuthProperties properties
+      ObjectProvider<AuthLoginSettingsProvider> loginSettingsProvider
   ) {
     ApiErrorResponseFactory responseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
     return new PasswordAuthController(
@@ -694,7 +754,7 @@ public class AuthApiAutoConfiguration {
         currentUserResponseFactory,
         passwordResetServiceProvider.getIfAvailable(),
         authSessionPolicyLoginService,
-        properties);
+        loginSettingsProvider.getIfAvailable(() -> AuthLoginSettingsProvider.fromProperties(new AuthProperties())));
   }
 
   @Bean

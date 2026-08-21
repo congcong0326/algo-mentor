@@ -2,7 +2,6 @@ package org.congcong.algomentor.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.model.UserPasswordUpdateRequest;
 import org.congcong.algomentor.auth.model.UserPasswordUpdateResponse;
 import org.congcong.algomentor.auth.password.UserPasswordErrorCode;
@@ -27,27 +26,16 @@ public class UserPasswordController {
 
   private final UserPasswordService userPasswordService;
   private final ApiErrorResponseFactory responseFactory;
-  private final AuthProperties authProperties;
-
   public UserPasswordController(UserPasswordService userPasswordService) {
-    this(userPasswordService, new ApiErrorResponseFactory(new ApiErrorMessageResolver()), new AuthProperties());
+    this(userPasswordService, new ApiErrorResponseFactory(new ApiErrorMessageResolver()));
   }
 
   public UserPasswordController(
       UserPasswordService userPasswordService,
       ApiErrorResponseFactory responseFactory
   ) {
-    this(userPasswordService, responseFactory, new AuthProperties());
-  }
-
-  public UserPasswordController(
-      UserPasswordService userPasswordService,
-      ApiErrorResponseFactory responseFactory,
-      AuthProperties authProperties
-  ) {
     this.userPasswordService = userPasswordService;
     this.responseFactory = responseFactory;
-    this.authProperties = authProperties;
   }
 
   @PutMapping(AuthApiContractConstants.PASSWORD_PATH)
@@ -55,12 +43,6 @@ public class UserPasswordController {
       @RequestBody(required = false) UserPasswordUpdateRequest request,
       HttpServletRequest servletRequest
   ) {
-    if (!authProperties.isPasswordLoginEnabled()) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseFactory.failure(
-          UserPasswordErrorCode.AUTH_PASSWORD_LOGIN_DISABLED.name(),
-          "当前未开放邮箱密码登录。",
-          ApiErrorLocales.parse(servletRequest.getHeader("Accept-Language"))));
-    }
     try {
       HttpSession session = servletRequest.getSession(false);
       UserPasswordUpdateResult result = userPasswordService.updatePassword(new UserPasswordUpdateCommand(

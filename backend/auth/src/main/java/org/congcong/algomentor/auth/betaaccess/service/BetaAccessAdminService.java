@@ -19,7 +19,6 @@ import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailPage;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailRemovalResult;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
 import org.congcong.algomentor.auth.cache.BetaAccessCache;
-import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
 import org.congcong.algomentor.common.admin.audit.AdminAuditAction;
 import org.congcong.algomentor.common.admin.audit.AdminAuditMetadataKey;
 import org.congcong.algomentor.common.admin.audit.AdminAuditTargetType;
@@ -27,41 +26,31 @@ import org.congcong.algomentor.common.admin.audit.AdminOperationAuditEvent;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.identity.model.AuthUser;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 public class BetaAccessAdminService {
 
   public static final int MAX_BATCH_SIZE = 100;
   public static final int MAX_PAGE_SIZE = 100;
-  private static final Logger log = LoggerFactory.getLogger(BetaAccessAdminService.class);
-
   private final BetaAccessRepository repository;
   private final IdentityUserRepository identityUserRepository;
-  private final AuthSessionRevocationService sessionRevocationService;
   private final AdminOperationAuditRecorder auditRecorder;
   private final BetaAllowedEmailRemovalExecutor removalExecutor;
-  private final BetaAccessMetrics metrics;
   private final Clock clock;
   private final BetaAccessCache cache;
 
   public BetaAccessAdminService(
       BetaAccessRepository repository,
       IdentityUserRepository identityUserRepository,
-      AuthSessionRevocationService sessionRevocationService,
       AdminOperationAuditRecorder auditRecorder,
       BetaAllowedEmailRemovalExecutor removalExecutor,
-      BetaAccessMetrics metrics,
       Clock clock
   ) {
     this(
         repository,
         identityUserRepository,
-        sessionRevocationService,
         auditRecorder,
         removalExecutor,
-        metrics,
         clock,
         null);
   }
@@ -69,19 +58,15 @@ public class BetaAccessAdminService {
   public BetaAccessAdminService(
       BetaAccessRepository repository,
       IdentityUserRepository identityUserRepository,
-      AuthSessionRevocationService sessionRevocationService,
       AdminOperationAuditRecorder auditRecorder,
       BetaAllowedEmailRemovalExecutor removalExecutor,
-      BetaAccessMetrics metrics,
       Clock clock,
       BetaAccessCache cache
   ) {
     this.repository = repository;
     this.identityUserRepository = identityUserRepository;
-    this.sessionRevocationService = sessionRevocationService;
     this.auditRecorder = auditRecorder;
     this.removalExecutor = removalExecutor;
-    this.metrics = metrics;
     this.clock = clock;
     this.cache = cache;
   }
@@ -252,24 +237,6 @@ public class BetaAccessAdminService {
         removed.emailNormalized());
     int revokedSessions = 0;
     boolean revocationSucceeded = true;
-    if (associatedUser.isPresent()) {
-      if (sessionRevocationService == null) {
-        revocationSucceeded = false;
-        metrics.recordSessionRevocationFailure();
-      } else {
-        try {
-          revokedSessions = sessionRevocationService.revokeSessionsForUser(associatedUser.get().id());
-        } catch (RuntimeException exception) {
-          revocationSucceeded = false;
-          metrics.recordSessionRevocationFailure();
-          log.warn(
-              "Failed to revoke sessions after beta allowlist removal. allowedEmailId={} userId={}",
-              allowedEmailId,
-              associatedUser.get().id(),
-              exception);
-        }
-      }
-    }
 
     auditRecorder.record(AdminOperationAuditEvent.success(
         operatorUserId,

@@ -5,6 +5,7 @@ package org.congcong.algomentor.common.admin.audit;
  */
 public enum AdminAuditAction {
   BETA_ACCESS_SETTING_UPDATE,
+  AUTH_LOGIN_SETTING_UPDATE,
   BETA_ALLOWED_EMAIL_ADD,
   BETA_ALLOWED_EMAIL_REMOVE,
   AI_GLOBAL_SETTING_UPDATE,

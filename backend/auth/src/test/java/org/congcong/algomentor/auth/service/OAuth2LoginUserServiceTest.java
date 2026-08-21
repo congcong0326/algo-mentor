@@ -19,6 +19,7 @@ import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAccessSettings;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
+import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.identity.model.AuthRole;
@@ -60,6 +61,62 @@ public class OAuth2LoginUserServiceTest {
     assertThat(repository.rolesByUserId.get(1L)).containsExactly(AuthRole.USER);
     assertThat(repository.oauthAccountsByKey)
         .containsKey(OAuthProvider.GOOGLE.value() + ":google-sub-1");
+  }
+
+  @Test
+  void disabledAccountRegistrationRejectsFirstOAuthLoginWithoutCreatingUser() {
+    AuthProperties properties = new AuthProperties();
+    properties.setAccountRegistrationEnabled(false);
+    OAuth2LoginUserService registrationClosedService = new OAuth2LoginUserService(
+        repository,
+        repository,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        null,
+        null,
+        properties);
+
+    assertThatThrownBy(() -> registrationClosedService.syncGoogleUser(googleAttributes(
+        "new-google-sub",
+        "new@example.com",
+        "New User",
+        null)))
+        .isInstanceOf(OAuth2AuthenticationException.class)
+        .extracting(exception -> ((OAuth2AuthenticationException) exception).getError().getErrorCode())
+        .isEqualTo(OAuth2LoginUserService.ACCOUNT_REGISTRATION_DISABLED_CODE);
+    assertThat(repository.createUserCalls).isZero();
+    assertThat(repository.oauthAccountsByKey).isEmpty();
+  }
+
+  @Test
+  void disabledAccountRegistrationStillAllowsExistingUserToBindOAuthLogin() {
+    AuthProperties properties = new AuthProperties();
+    properties.setAccountRegistrationEnabled(false);
+    AuthUser user = repository.createUser(
+        "existing@example.com",
+        "existing@example.com",
+        "Existing User",
+        null,
+        AuthUserStatus.ACTIVE,
+        NOW.minusSeconds(3600));
+    repository.addRole(user.id(), AuthRole.USER);
+    OAuth2LoginUserService registrationClosedService = new OAuth2LoginUserService(
+        repository,
+        repository,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        null,
+        null,
+        properties);
+
+    AuthenticatedUserPrincipal principal = registrationClosedService.syncGoogleUser(googleAttributes(
+        "existing-google-sub",
+        "EXISTING@example.com",
+        "Existing User",
+        null));
+
+    assertThat(principal.userId()).isEqualTo(user.id());
+    assertThat(repository.createUserCalls).isEqualTo(1);
+    assertThat(repository.oauthAccountsByKey)
+        .containsKey(OAuthProvider.GOOGLE.value() + ":existing-google-sub");
   }
 
   @Test

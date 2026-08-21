@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessErrorCode;
+import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -34,7 +35,11 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
   private static String failureUrl(AuthenticationException exception) {
     return BetaAccessErrorCode.AUTH_BETA_ACCESS_DENIED.name().equals(errorCode(exception))
         ? "/login?auth=beta-access-denied"
-        : "/login?auth=failed";
+        : OAuth2LoginUserService.ACCOUNT_REGISTRATION_DISABLED_CODE.equals(errorCode(exception))
+            ? "/login?auth=registration-disabled"
+            : OAuth2LoginUserService.PROVIDER_LOGIN_DISABLED_CODE.equals(errorCode(exception))
+                ? "/login?auth=provider-disabled"
+            : "/login?auth=failed";
   }
 
   private static String errorCode(AuthenticationException exception) {

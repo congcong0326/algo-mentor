@@ -60,6 +60,7 @@ export type AuthPermission =
   | 'policy:manage'
   | 'admin-overview:read'
   | 'beta-access:manage'
+  | 'auth-settings:manage'
   | 'session:manage'
   | 'ai-governance:manage'
   | 'ai-run:read'
@@ -84,6 +85,26 @@ export interface AuthCapabilities {
   passwordLoginEnabled: boolean;
   passwordRegistrationEnabled: boolean;
   oauthProviders: OAuthProvider[];
+}
+
+export interface AuthLoginSettings {
+  id: number;
+  accountRegistrationEnabled: boolean;
+  passwordLoginEnabled: boolean;
+  passwordRegistrationEnabled: boolean;
+  googleLoginEnabled: boolean;
+  githubLoginEnabled: boolean;
+  updatedBy?: number | null;
+  updatedByDisplayName?: string | null;
+  updatedAt: string;
+}
+
+export interface AuthLoginSettingsUpdateRequest {
+  accountRegistrationEnabled: boolean;
+  passwordLoginEnabled: boolean;
+  passwordRegistrationEnabled: boolean;
+  googleLoginEnabled: boolean;
+  githubLoginEnabled: boolean;
 }
 
 export interface AdminUserSummary {

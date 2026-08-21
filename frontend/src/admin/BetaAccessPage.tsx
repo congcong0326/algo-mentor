@@ -35,7 +35,6 @@ export default function BetaAccessPage({ onNavigateHome }: BetaAccessPageProps) 
   const [loading, setLoading] = useState(false);
   const [operationPending, setOperationPending] = useState(false);
   const [error, setError] = useState('');
-  const [warning, setWarning] = useState('');
   const [forbidden, setForbidden] = useState(false);
   const requestIdRef = useRef(0);
 
@@ -95,7 +94,6 @@ export default function BetaAccessPage({ onNavigateHome }: BetaAccessPageProps) 
     }
     setOperationPending(true);
     setError('');
-    setWarning('');
     try {
       const settings = requireApiData(await updateBetaAccessSettings({
         emailAllowlistEnabled: pendingSetting,
@@ -124,7 +122,6 @@ export default function BetaAccessPage({ onNavigateHome }: BetaAccessPageProps) 
     }
     setOperationPending(true);
     setError('');
-    setWarning('');
     try {
       const result = requireApiData(await addBetaAllowedEmails(emails), t.operationFailed);
       setBatchResult(result);
@@ -146,9 +143,8 @@ export default function BetaAccessPage({ onNavigateHome }: BetaAccessPageProps) 
     }
     setOperationPending(true);
     setError('');
-    setWarning('');
     try {
-      const result = requireApiData(
+      requireApiData(
         await removeBetaAllowedEmail(pendingRemoval.id),
         t.operationFailed,
       );
@@ -158,9 +154,6 @@ export default function BetaAccessPage({ onNavigateHome }: BetaAccessPageProps) 
         setPage(nextPage);
       } else {
         await load(nextPage);
-      }
-      if (!result.sessionRevocationSucceeded) {
-        setWarning(t.sessionRevocationWarning);
       }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : t.operationFailed);
@@ -189,7 +182,6 @@ export default function BetaAccessPage({ onNavigateHome }: BetaAccessPageProps) 
         <div>
           <h1>{t.title}</h1>
           {error ? <p className="error-text" role="alert">{error}</p> : null}
-          {warning ? <p className="beta-access-warning" role="alert">{warning}</p> : null}
         </div>
         <form className="beta-access-search" onSubmit={handleSearch}>
           <input
