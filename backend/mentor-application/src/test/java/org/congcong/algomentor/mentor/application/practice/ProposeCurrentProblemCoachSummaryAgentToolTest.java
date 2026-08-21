@@ -51,8 +51,22 @@ class ProposeCurrentProblemCoachSummaryAgentToolTest {
       new ProposeCurrentProblemCoachSummaryAgentTool(sessionRepository, proposalService);
 
   @Test
+  void describesSummaryAsLayeredLearningDocumentInsteadOfMetaSummary() {
+    assertThat(tool.spec().description())
+        .contains("layered, review-ready learning document")
+        .contains("Never submit an announcement or a meta-description");
+    assertThat(tool.spec().inputSchema()
+        .path("properties")
+        .path("summaryMarkdown")
+        .path("description")
+        .asText())
+        .contains("actual key takeaways, reasoning, solution steps")
+        .contains("Never provide an announcement, table of contents, or meta-summary");
+  }
+
+  @Test
   void createsProposalFromTrustedContextAndReturnsExactMarkdown() {
-    String markdown = "# 教练总结\n\n- 先查补数";
+    String markdown = "## 先记住这几句\n\n- 题型识别：先查补数，再写入当前元素。";
 
     JsonNode result = tool.execute(arguments(markdown), context("call-1", "two-sum"));
 

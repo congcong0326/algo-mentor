@@ -84,16 +84,19 @@ public class PracticeCodeReviewPromptBuilder {
         历史读取状态：%s
 
         判定顺序与硬门槛：
-        1. 先判断 judgeAssessment，再进行分项评分。不要先算总分再反推是否能通过评测。
-        2. verdict 只能是 ACCEPTED、LIKELY_ACCEPTED、WRONG_ANSWER、TIME_LIMIT_EXCEEDED、MEMORY_LIMIT_EXCEEDED、COMPILE_ERROR、RUNTIME_ERROR、UNKNOWN。
-        3. basis 只能是 SERVER_EXECUTION、USER_REPORTED_EXECUTION、STATIC_ANALYSIS、INSUFFICIENT_CONTEXT。
-        4. 只有 ACCEPTED 或 LIKELY_ACCEPTED 可以通过；其余 verdict 都属于评测阻断，blockingIssue 必须为 true。
-        5. 编译失败、存在合法反例、实际或预计 WA/TLE/MLE/RE、缺少核心流程、无法确认最大数据范围可通过，都属于评测阻断。
-        6. 评测阻断时 correctness <= 2、total <= 5、passed=false；TLE 时 complexity=0，MLE 时 complexity<=0.5。代码质量、边界处理或题意贴合不得抵消阻断问题。
-        7. 如果代码预计可以通过，但没有达到题目明确要求、follow-up 或公认目标复杂度，meetsExpectedComplexity=false、complexity<=1、total<=8；不得给 9 分或 10 分。
-        8. 如果缺少题面约束且无法可靠判断性能，verdict=UNKNOWN、basis=INSUFFICIENT_CONTEXT、blockingIssue=true，不得声称正式通过。
-        9. 如果 originalMessage 明确报告本次提交为 WA、TLE、MLE、Compile Error 或 Runtime Error，且没有相反的服务端执行事实，必须采用对应 verdict、basis=USER_REPORTED_EXECUTION、blockingIssue=true。
-        10. isCompleteLeetCodeSolution 只描述本轮代码是否构成当前题的完整 LeetCode 解法，不能由正确性、编译结果、运行时错误、WA、TLE、MLE 或边界缺陷决定。上述问题出现在结构完整的提交中时，该字段必须为 true，并按对应 verdict 生成正式 Review；只有代码片段、辅助函数、伪代码、报错日志或缺少解法主体时才为 false。
+        1. 当前提交必须独立判定。同题历史正式 Review 只能用于生成 reviewHistorySummary，不得提高或降低当前 verdict。
+        2. 先判断 judgeAssessment，再进行分项评分。不要先算总分再反推是否能通过评测。
+        3. verdict 只能是 ACCEPTED、LIKELY_ACCEPTED、WRONG_ANSWER、TIME_LIMIT_EXCEEDED、MEMORY_LIMIT_EXCEEDED、COMPILE_ERROR、RUNTIME_ERROR、UNKNOWN。
+        4. basis 只能是 SERVER_EXECUTION、USER_REPORTED_EXECUTION、STATIC_ANALYSIS、INSUFFICIENT_CONTEXT。本次请求没有服务端执行结果，禁止使用 SERVER_EXECUTION；静态分析只能使用 LIKELY_ACCEPTED 表示预计通过，不能使用 ACCEPTED 冒充真实通过。
+        5. 只有 ACCEPTED 或 LIKELY_ACCEPTED 可以通过；其余 verdict 都属于评测阻断，blockingIssue 必须为 true。
+        6. 使用 STATIC_ANALYSIS 判定 LIKELY_ACCEPTED 前，必须完成编译与语言语义检查、主动寻找合法反例、检查适用于本题的关键边界条件，并结合最大输入约束检查最坏时间和空间复杂度；任一项存在未解决且可能改变评测结果的疑点时不得判定预计通过。不检查用户是否粘贴 import、include、package、use 等依赖声明，不得仅因缺少这些声明判定 COMPILE_ERROR；编译检查只关注解法主体内部确定的语法、类型、符号和返回契约问题。
+        7. 使用 STATIC_ANALYSIS 判定 WRONG_ANSWER 时，必须找到合法反例，或指出确定会产生错误结果的代码路径；不能只以“可能出错”“存在风险”或“边界不足”作为 WRONG_ANSWER 的依据。
+        8. 编译失败、存在合法反例、实际或预计 WA/TLE/MLE/RE、缺少核心流程、无法确认最大数据范围可通过，都属于评测阻断。
+        9. 评测阻断时 correctness <= 2、total <= 5、passed=false；TLE 时 complexity=0，MLE 时 complexity<=0.5。代码质量、边界处理或题意贴合不得抵消阻断问题。
+        10. 如果代码预计可以通过，但没有达到题目明确要求、follow-up 或公认目标复杂度，meetsExpectedComplexity=false、complexity<=1、total<=8；不得给 9 分或 10 分。
+        11. 如果缺少题面约束且无法可靠判断性能，verdict=UNKNOWN、basis=INSUFFICIENT_CONTEXT、blockingIssue=true，不得声称正式通过。
+        12. 如果 originalMessage 明确报告当前这份代码为 AC、WA、TLE、MLE、Compile Error 或 Runtime Error，且没有相反的服务端执行事实，必须采用对应 verdict 和 basis=USER_REPORTED_EXECUTION；失败结果的 blockingIssue 必须为 true。不得把此前版本或其他提交的结果套用到当前代码。
+        13. isCompleteLeetCodeSolution 只描述本轮代码是否构成当前题的完整 LeetCode 解法，不能由正确性、编译结果、运行时错误、WA、TLE、MLE 或边界缺陷决定。上述问题出现在结构完整的提交中时，该字段必须为 true，并按对应 verdict 生成正式 Review；只有代码片段、辅助函数、伪代码、报错日志或缺少解法主体时才为 false。
 
         复杂度评分锚点：
         - 2.0：达到题目要求或公认目标复杂度，且最大约束下可通过。

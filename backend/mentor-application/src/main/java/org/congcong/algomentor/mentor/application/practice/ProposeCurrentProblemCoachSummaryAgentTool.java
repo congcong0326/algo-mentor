@@ -21,8 +21,10 @@ public final class ProposeCurrentProblemCoachSummaryAgentTool implements AgentTo
       """
           Create a complete coach-summary proposal for the active practice problem. Use this when the user asks to create, \
           update, replace, or save a coach summary. summaryMarkdown must be the exact complete Markdown that the user will \
-          see in the assistant message and may apply with an inline button. This tool creates only a proposal and never \
-          changes the saved coach summary by itself.
+          see in the assistant message and may apply with an inline button. Write a layered, review-ready learning document \
+          with actual explanations, concrete corrections, and real self-test questions. Never submit an announcement or a \
+          meta-description of what the summary contains. Follow the structure and evidence rules in the system instructions. \
+          This tool creates only a proposal and never changes the saved coach summary by itself.
           """.strip(),
       inputSchema(),
       true);
@@ -165,6 +167,10 @@ public final class ProposeCurrentProblemCoachSummaryAgentTool implements AgentTo
     ObjectNode summary = properties.putObject(
         ProposeCurrentProblemCoachSummaryAgentToolContracts.ARGUMENT_SUMMARY_MARKDOWN);
     summary.put("type", "string");
+    summary.put("description", "The exact complete user-facing Markdown learning document. It must contain the actual "
+        + "key takeaways, reasoning, solution steps, concrete corrections, boundary checks, and self-test questions "
+        + "required by the system instructions. Never provide an announcement, table of contents, or meta-summary of "
+        + "what the document contains.");
     summary.put("minLength", 1);
     summary.put("maxLength", ReviewContractConstants.NOTE_MARKDOWN_MAX_CHARS);
     schema.putArray("required")

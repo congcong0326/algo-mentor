@@ -124,6 +124,7 @@ class AgentConversationServiceTest {
             LlmMessage.Role.SYSTEM,
             LlmMessage.Role.SYSTEM,
             LlmMessage.Role.SYSTEM,
+            LlmMessage.Role.SYSTEM,
             LlmMessage.Role.USER,
             LlmMessage.Role.USER);
 
@@ -134,6 +135,8 @@ class AgentConversationServiceTest {
         .contains("分层提示协议")
         .contains("面向学习者的回复语言：简体中文")
         .contains("题目聊天教学策略")
+        .contains("最终回复前强制核验")
+        .contains("本轮未生成正式 Review，下面仅提供普通代码点评")
         .contains("当前训练上下文")
         .contains("- planId: 12")
         .contains("- phaseIndex: 1")

@@ -19,6 +19,7 @@ public final class PracticeChatPromptConstants {
   public static final String SECTION_COACH_STYLE = "practice.strategy.coach-style";
   public static final String SECTION_RESPONSE_LANGUAGE = "practice.strategy.response-language";
   public static final String SECTION_SCENARIO_POLICY = "practice.strategy.coach";
+  public static final String SECTION_FORMAL_REVIEW_OUTPUT_GATE = "practice.current-turn.formal-review-output-gate";
   public static final String SECTION_RUNTIME_CONTEXT = "practice.context.training";
   public static final String SECTION_SUBMITTED_PROBLEMS = "practice.context.submitted-problems";
   public static final String SECTION_RELATED_SUBMITTED_PROBLEMS = "practice.context.related-submitted-problems";

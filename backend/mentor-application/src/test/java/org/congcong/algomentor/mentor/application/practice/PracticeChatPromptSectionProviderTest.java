@@ -52,6 +52,7 @@ class PracticeChatPromptSectionProviderTest {
             LlmMessage.Role.SYSTEM,
             LlmMessage.Role.SYSTEM,
             LlmMessage.Role.SYSTEM,
+            LlmMessage.Role.SYSTEM,
             LlmMessage.Role.USER,
             LlmMessage.Role.ASSISTANT,
             LlmMessage.Role.USER);
@@ -59,6 +60,7 @@ class PracticeChatPromptSectionProviderTest {
         .extracting(section -> section.section().slot())
         .containsExactly(
             PromptSlot.STATIC_INSTRUCTION,
+            PromptSlot.SCENARIO_POLICY,
             PromptSlot.SCENARIO_POLICY,
             PromptSlot.SCENARIO_POLICY,
             PromptSlot.SCENARIO_POLICY,
@@ -75,7 +77,9 @@ class PracticeChatPromptSectionProviderTest {
         .contains("分层提示协议")
         .contains("面向学习者的回复语言：简体中文")
         .contains("正式事实与写入操作")
-        .contains("只要当前用户消息包含当前题目的代码候选，就必须先调用 submit_practice_code_review")
+        .contains("只要当前用户消息包含当前题目的代码候选，本轮第一项动作就必须调用 submit_practice_code_review")
+        .contains("最终回复前强制核验")
+        .contains("本轮未生成正式 Review，下面仅提供普通代码点评")
         .contains("PROPOSED 仅表示候选已创建，不表示正式总结已保存")
         .contains("- planId: 12")
         .contains("- objective: 4 周内准备后端面试")
@@ -92,6 +96,42 @@ class PracticeChatPromptSectionProviderTest {
     assertThat(assembly.metadata())
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
         .containsEntry("promptPolicy", PracticeChatPromptConstants.POLICY_NAME);
+  }
+
+  @Test
+  void placesFormalReviewOutputGateAsLastScenarioPolicyBeforeRuntimeContextAndHistory() {
+    PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
+        PracticeChatPromptConstants.SCENARIO,
+        PracticeChatPromptConstants.PROFILE_ID,
+        8_000,
+        Map.of(
+            PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
+            PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(
+                message(1, AgentMessage.Role.ASSISTANT, "你的提交已生成正式 Review（评分 5.0，通过）。", Map.of())),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "```java\nclass Solution { }\n```"),
+        Map.of()));
+
+    List<LlmMessage> messages = assembly.canonicalMessages();
+    int outputGateIndex = indexOfMessageContaining(messages, "最终回复前强制核验");
+    int runtimeContextIndex = indexOfMessageContaining(messages, "# 当前训练上下文");
+    int historicalClaimIndex = indexOfMessageContaining(messages, "你的提交已生成正式 Review（评分 5.0，通过）。");
+    assertThat(outputGateIndex).isLessThan(runtimeContextIndex);
+    assertThat(runtimeContextIndex).isLessThan(historicalClaimIndex);
+
+    LlmMessage outputGate = messages.get(outputGateIndex);
+    assertThat(outputGate.role()).isEqualTo(LlmMessage.Role.SYSTEM);
+    assertThat(outputGate.text())
+        .contains("最终回复前强制核验")
+        .contains("历史 assistant 回复")
+        .contains("status=SAVED")
+        .contains("reviewId")
+        .contains("versionNo")
+        .contains("totalScore")
+        .contains("passed")
+        .contains("本轮未生成正式 Review，下面仅提供普通代码点评");
+    assertThat(messages.get(messages.size() - 1))
+        .extracting(LlmMessage::role, LlmMessage::text)
+        .containsExactly(LlmMessage.Role.USER, "```java\nclass Solution { }\n```");
   }
 
   @Test
@@ -232,6 +272,12 @@ class PracticeChatPromptSectionProviderTest {
         .orElseThrow()
         .renderedText();
     assertThat(policyText)
+        .contains("本轮第一项动作就必须调用 "
+            + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
+        .contains("在工具结果返回前，不得输出正式分数、通过或未通过、已提交、已保存、已生成 Review 或完成状态")
+        .contains("第二次及后续代码提交同样必须先调用 "
+            + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
+        .contains("历史 Review 和历史 assistant 回复都不能替代本轮调用")
         .contains("当当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法时，应优先调用 "
             + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
         .contains("即使用户没有明确要求正式代码提交记录，只要消息可能是完整题解提交，也应直接调用 "
@@ -299,6 +345,15 @@ class PracticeChatPromptSectionProviderTest {
         .filter(section -> sectionId.equals(section.section().id()))
         .findFirst()
         .orElseThrow();
+  }
+
+  private int indexOfMessageContaining(List<LlmMessage> messages, String expectedText) {
+    for (int index = 0; index < messages.size(); index++) {
+      if (messages.get(index).text().contains(expectedText)) {
+        return index;
+      }
+    }
+    throw new AssertionError("Missing prompt message containing: " + expectedText);
   }
 
   private PracticeChatContext context(PracticeChatProblemDetail detail) {

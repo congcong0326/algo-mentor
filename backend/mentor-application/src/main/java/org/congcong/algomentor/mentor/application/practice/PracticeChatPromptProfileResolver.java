@@ -28,6 +28,7 @@ public class PracticeChatPromptProfileResolver implements PromptProfileResolver 
             PracticeChatPromptConstants.SECTION_BASE_INSTRUCTION,
             PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,
             PracticeChatPromptConstants.SECTION_RUNTIME_CONTEXT,
+            PracticeChatPromptConstants.SECTION_FORMAL_REVIEW_OUTPUT_GATE,
             PracticeChatPromptConstants.SECTION_CURRENT_USER_MESSAGE),
         PromptSlot.canonicalOrder());
   }

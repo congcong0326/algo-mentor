@@ -10,11 +10,27 @@ class PracticeCodeReviewPromptBuilderTest {
 
   @Test
   void requiresJudgeFirstHardGatesAndSuboptimalScoreCap() {
-    List<LlmMessage> messages = new PracticeCodeReviewPromptBuilder().build(context("zh-CN"));
+    PracticeCodeReviewPromptBuilder builder = new PracticeCodeReviewPromptBuilder();
+    List<LlmMessage> messages = builder.build(context("zh-CN"));
 
     assertThat(messages).hasSize(2);
+    assertThat(builder.snapshot(7L).sourceRevision()).isEqualTo("2026-08-21.2");
+    assertThat(messages.get(0).text())
+        .contains("当前提交必须独立判定")
+        .contains("静态分析判定 LIKELY_ACCEPTED 前")
+        .contains("不得仅因缺少这些声明判定 COMPILE_ERROR")
+        .contains("静态分析判定 WRONG_ANSWER 时")
+        .contains("静态分析预计通过时只能使用 LIKELY_ACCEPTED");
     assertThat(messages.get(1).text())
         .contains("先判断 judgeAssessment，再进行分项评分")
+        .contains("当前提交必须独立判定")
+        .contains("本次请求没有服务端执行结果，禁止使用 SERVER_EXECUTION")
+        .contains("静态分析只能使用 LIKELY_ACCEPTED 表示预计通过")
+        .contains("主动寻找合法反例")
+        .contains("不检查用户是否粘贴 import、include、package、use 等依赖声明")
+        .contains("编译检查只关注解法主体内部确定的语法、类型、符号和返回契约问题")
+        .contains("必须找到合法反例，或指出确定会产生错误结果的代码路径")
+        .contains("不得把此前版本或其他提交的结果套用到当前代码")
         .contains("TLE 时 complexity=0")
         .contains("total<=8；不得给 9 分或 10 分")
         .contains("basis=USER_REPORTED_EXECUTION")

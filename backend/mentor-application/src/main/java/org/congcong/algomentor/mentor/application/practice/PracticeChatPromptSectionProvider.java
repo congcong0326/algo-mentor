@@ -57,6 +57,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
     sections.add(coachStyle(promptSnapshot, coachStyle));
     sections.add(responseLanguage(promptSnapshot, responseLanguage));
     sections.add(scenarioPolicy(promptSnapshot));
+    sections.add(formalReviewOutputGate(promptSnapshot));
     sections.add(runtimeContext(context));
     submittedProblems(request).ifPresent(sections::add);
     relatedSubmittedProblems(request).ifPresent(sections::add);
@@ -264,6 +265,21 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         .filter(this::isChatHistoryMessage)
         .map(this::historySection)
         .toList();
+  }
+
+  private PromptSection formalReviewOutputGate(ResolvedSystemPromptSnapshot promptSnapshot) {
+    return ManagedSystemPromptSectionFactory.create(
+        promptSnapshot,
+        SystemPromptSectionKeys.PRACTICE_FORMAL_REVIEW_OUTPUT_GATE,
+        PracticeChatPromptConstants.SECTION_FORMAL_REVIEW_OUTPUT_GATE,
+        "本轮正式 Review 事实核验",
+        PromptSlot.SCENARIO_POLICY,
+        50,
+        PromptCachePolicy.CACHEABLE_STATIC,
+        PromptBudgetPolicy.FAIL_IF_OVER_BUDGET,
+        PromptRenderMode.MARKDOWN,
+        Map.of(),
+        null);
   }
 
   private PromptSection historySection(AgentMessage message) {

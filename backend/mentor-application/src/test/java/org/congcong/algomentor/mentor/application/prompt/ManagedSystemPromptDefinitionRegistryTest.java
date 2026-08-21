@@ -69,6 +69,57 @@ class ManagedSystemPromptDefinitionRegistryTest {
   }
 
   @Test
+  void practiceCoachSummaryPromptUsesLayeredExplanationAndEvidenceContract() {
+    String prompt = sectionText(
+        ManagedSystemPromptDefinitions.PRACTICE_CHAT,
+        SystemPromptSectionKeys.PRACTICE_COACH_SUMMARY_PROPOSAL_TOOL_BOUNDARY);
+
+    assertThat(ManagedSystemPromptDefinitions.PRACTICE_CHAT.sourceRevision()).isEqualTo("2026-08-21.5");
+    assertThat(prompt)
+        .contains("分层学习文档")
+        .contains("旧总结只用于保留仍然正确且有复习价值的内容")
+        .contains("## 先记住这几句")
+        .contains("## 核心原理")
+        .contains("## 解法主线")
+        .contains("## 解法对比")
+        .contains("错误机制或根因 -> 具体修正")
+        .contains("只写“初始化错误”“边界有问题”等模糊标签不合格")
+        .contains("多版本正式 Review 反复出现同类未解决问题")
+        .contains("暂无明确证据")
+        .contains("完整性优先于压缩")
+        .contains("1400 至 2200 个中文字符")
+        .contains("允许在确有比较价值时使用表格")
+        .contains("不得粘贴完整代码")
+        .contains("这份复习卡覆盖四个部分")
+        .contains("不得只说“包含若干自测题”");
+  }
+
+  @Test
+  void practiceChatPromptEnforcesFormalReviewFactsAtThreeStages() {
+    ManagedSystemPromptDefinition definition = ManagedSystemPromptDefinitions.PRACTICE_CHAT;
+    String base = sectionText(definition, SystemPromptSectionKeys.PRACTICE_BASE_IDENTITY);
+    String interaction = sectionText(definition, SystemPromptSectionKeys.PRACTICE_INTERACTION);
+    String outputGate = sectionText(definition, SystemPromptSectionKeys.PRACTICE_FORMAL_REVIEW_OUTPUT_GATE);
+
+    assertThat(base)
+        .contains("不得编造题面、样例、约束、隐藏条件、提交结果、正式 Review、分数、通过状态、保存状态、完成状态")
+        .contains("submit_practice_code_review 返回 status=SAVED")
+        .contains("reviewId、versionNo、totalScore、passed")
+        .contains("历史 assistant 回复都不能替代本轮工具结果");
+    assertThat(interaction)
+        .contains("本轮第一项动作就必须调用 submit_practice_code_review")
+        .contains("在工具结果返回前，不得输出正式分数")
+        .contains("第二次及后续代码提交同样必须先调用 submit_practice_code_review")
+        .contains("本轮未生成正式 Review");
+    assertThat(outputGate)
+        .contains("最终回复前强制核验")
+        .contains("status=SAVED、reviewId、versionNo、totalScore 和 passed")
+        .contains("历史工具结果、历史 assistant 回复")
+        .contains("本轮未生成正式 Review，下面仅提供普通代码点评")
+        .contains("不得为了让回复显得完整而猜测 reviewId、versionNo、totalScore、passed");
+  }
+
+  @Test
   void learnerMemoryCodeReviewPromptRequiresRecognizableCrossProblemObservations() {
     ManagedSystemPromptDefinition definition = ManagedSystemPromptDefinitions.CODE_REVIEW_PROFILE_UPDATE;
     String prompt = definition.sections().stream()
@@ -104,7 +155,9 @@ class ManagedSystemPromptDefinitionRegistryTest {
         .contains("服务端校验的题目和计划事实优先")
         .contains("每次回复只提供当前层级允许的内容")
         .contains("正式事实与写入操作")
-        .contains("应先调用 submit_practice_code_review")
+        .contains("必须先调用 submit_practice_code_review")
+        .contains("最终回复前强制核验")
+        .contains("本轮未生成正式 Review，下面仅提供普通代码点评")
         .contains("PROPOSED 仅表示候选已创建，不表示正式总结已保存")
         .contains("不得猜测或承诺采纳按钮、前端状态或保存结果")
         .contains("get_current_problem_learning_state")
@@ -154,5 +207,13 @@ class ManagedSystemPromptDefinitionRegistryTest {
     return definition.sections().stream()
         .map(ManagedSystemPromptSectionDefinition::defaultText)
         .reduce("", (left, right) -> left + "\n" + right);
+  }
+
+  private String sectionText(ManagedSystemPromptDefinition definition, String sectionKey) {
+    return definition.sections().stream()
+        .filter(section -> sectionKey.equals(section.key()))
+        .findFirst()
+        .orElseThrow()
+        .defaultText();
   }
 }

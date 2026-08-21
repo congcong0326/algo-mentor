@@ -15,6 +15,8 @@ public final class SystemPromptSectionKeys {
   public static final String PRACTICE_COACH_SUMMARY_PROPOSAL_TOOL_BOUNDARY =
       "practice.strategy.coach-summary-proposal-tool-boundary";
   public static final String PRACTICE_PROFILE_TOOL_BOUNDARY = "practice.strategy.profile-tool-boundary";
+  public static final String PRACTICE_FORMAL_REVIEW_OUTPUT_GATE =
+      "practice.strategy.formal-review-output-gate";
   public static final String PRACTICE_ACTIVE_SUMMARY_BOUNDARY = "practice.memory.active-summary-boundary";
   public static final String PRACTICE_LEARNER_PROFILE_BOUNDARY = "practice.memory.learner-profile-boundary";
   public static final String LEARNING_PLAN_DRAFT_BASE = "learning-plan-draft.base";
