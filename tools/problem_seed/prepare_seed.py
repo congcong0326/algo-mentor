@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import urlsplit
 
 if __package__ in (None, ""):
     sys.path.append(str(Path(__file__).resolve().parents[2]))
@@ -38,6 +39,7 @@ CONTENT_STATUS_BILINGUAL = "BILINGUAL"
 CONTENT_STATUS_CN_ONLY = "CN_ONLY"
 SOURCE_SITE_LEETCODE_COM_CN = "LEETCODE_COM_CN"
 SOURCE_SITE_LEETCODE_CN = "LEETCODE_CN"
+ALLOWED_IMAGE_URL_SCHEMES = frozenset({"http", "https"})
 
 
 @dataclass(frozen=True)
@@ -415,6 +417,8 @@ class SimpleHtmlMarkdownParser(HTMLParser):
             self.write("- ")
         elif tag == "sup":
             self.write("<sup>")
+        elif tag == "img" and not self.in_pre:
+            self.write_image(attrs)
 
     def handle_endtag(self, tag: str) -> None:
         if tag in self.BLOCK_TAGS:
@@ -454,6 +458,22 @@ class SimpleHtmlMarkdownParser(HTMLParser):
     def write(self, text: str) -> None:
         self.parts.append(text)
 
+    def write_image(self, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = {name.lower(): value for name, value in attrs if value is not None}
+        source = as_optional_string(attributes.get("src"))
+        if source is None or not is_allowed_image_url(source):
+            return
+
+        alt = re.sub(r"\s+", " ", attributes.get("alt") or "").strip()
+        self.trim_blank_line_indentation()
+        self.write(f"![{escape_markdown_image_alt(alt)}](<{source}>)")
+
+    def trim_blank_line_indentation(self) -> None:
+        current = "".join(self.parts)
+        current_line = current.rsplit("\n", maxsplit=1)[-1]
+        if current_line and current_line.isspace():
+            self.parts = [current[:-len(current_line)]]
+
     def ensure_blank_line(self) -> None:
         current = "".join(self.parts)
         if not current:
@@ -476,6 +496,17 @@ def html_to_markdown(html: str) -> str:
     parser.feed(html)
     parser.close()
     return parser.markdown()
+
+
+def is_allowed_image_url(value: str) -> bool:
+    if any(character in value for character in "\r\n<>"):
+        return False
+    parsed = urlsplit(value)
+    return parsed.scheme.lower() in ALLOWED_IMAGE_URL_SCHEMES and bool(parsed.netloc)
+
+
+def escape_markdown_image_alt(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
 
 
 def normalize_slug(value: str) -> str | None:

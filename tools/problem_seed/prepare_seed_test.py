@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.problem_seed.prepare_seed import build_seed, write_seed
+from tools.problem_seed.prepare_seed import build_seed, html_to_markdown, write_seed
 
 
 def response(question: dict) -> dict:
@@ -32,6 +32,31 @@ def question(**overrides: object) -> dict:
 
 
 class PrepareSeedTest(unittest.TestCase):
+
+    def test_html_to_markdown_preserves_safe_images(self) -> None:
+        markdown = html_to_markdown(
+            '<p>Example</p>\n<img alt="elevation [map]" '
+            'src=" https://assets.leetcode.com/uploads/rainwatertrap.png " />'
+        )
+
+        self.assertEqual(
+            "Example\n\n![elevation \\[map\\]](<https://assets.leetcode.com/uploads/rainwatertrap.png>)",
+            markdown,
+        )
+        self.assertEqual(
+            "**![](<https://assets.leetcode.com/uploads/rainwatertrap.png>)**",
+            html_to_markdown(
+                '<strong><img src="https://assets.leetcode.com/uploads/rainwatertrap.png"></strong>'
+            ),
+        )
+
+    def test_html_to_markdown_ignores_unsafe_or_invalid_images(self) -> None:
+        markdown = html_to_markdown(
+            '<p>before</p><img src="javascript:alert(1)">'
+            '<img src="image explanation for example 1"><img alt="missing source"><p>after</p>'
+        )
+
+        self.assertEqual("before\n\nafter", markdown)
 
     def test_build_seed_outputs_bilingual_problem_from_api_cache(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

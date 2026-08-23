@@ -237,7 +237,7 @@ public class PracticeSessionService {
             .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
             .map(this::toPracticeSessionMessage)
             .toList();
-    messages = enrichProblemStatementTemplate(messages, problemDetail, programmingLanguage);
+    messages = projectCurrentProblemStatement(messages, problemDetail, programmingLanguage);
     messages = enrichCoachSummaryActions(session, messages);
     Optional<AgentActiveRun> activeRun = session.agentTaskId() == null
         ? Optional.empty()
@@ -247,26 +247,21 @@ public class PracticeSessionService {
     return new PracticeSessionResult(session, problemDetail, messages, activeRun, latestReview.orElse(null), completionGate);
   }
 
-  private List<PracticeSessionMessage> enrichProblemStatementTemplate(
+  private List<PracticeSessionMessage> projectCurrentProblemStatement(
       List<PracticeSessionMessage> messages,
       PracticeChatProblemDetail problemDetail,
       String programmingLanguage
   ) {
-    PracticeCodeTemplate template = problemDetail.templateFor(programmingLanguage);
-    if (template == null) {
-      return messages;
-    }
-    String marker = "## 代码模板（" + template.languageLabel() + "）";
+    String currentContent = seedContent(problemDetail, programmingLanguage);
     return messages.stream().map(message -> {
-      if (!PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT.equals(message.messageType())
-          || message.contentMarkdown().contains(marker)) {
+      if (!PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT.equals(message.messageType())) {
         return message;
       }
       return new PracticeSessionMessage(
           message.id(),
           message.role(),
           message.messageType(),
-          appendCodeTemplate(message.contentMarkdown(), template),
+          currentContent,
           message.createdAt(),
           message.coachSummaryAction());
     }).toList();

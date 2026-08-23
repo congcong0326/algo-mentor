@@ -5,6 +5,14 @@ import MarkdownView, { normalizeMarkdownContent } from './MarkdownView';
 afterEach(cleanup);
 
 describe('MarkdownView', () => {
+  it('renders safe images from imported problem statements', () => {
+    const source = 'https://assets.leetcode.com/uploads/2018/10/22/rainwatertrap.png';
+
+    render(<MarkdownView content={`![接雨水示意图](<${source}>)`} />);
+
+    expect(screen.getByRole('img', { name: '接雨水示意图' })).toHaveAttribute('src', source);
+  });
+
   it('renders bold labels that are immediately followed by Chinese text', () => {
     render(<MarkdownView content="**注意：**给定 n 是一个正整数。" />);
 

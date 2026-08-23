@@ -114,6 +114,31 @@ class PracticeSessionServiceTest {
   }
 
   @Test
+  void returnsCurrentProblemStatementWithoutRewritingPersistedSeed() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    FakeProblemCatalog problemCatalog = new FakeProblemCatalog();
+    PracticeSessionService service = service(sessionRepository, messageRepository, problemCatalog);
+
+    PracticeSessionResult created = service.createOrReuse(7, reference());
+    String persistedSeed = messageRepository.messages.get(0).content();
+    problemCatalog.contentMarkdown = "# Two Sum\n\n![example](https://example.com/two-sum.png)";
+
+    PracticeSessionResult loaded = service.get(7, created.session().id());
+
+    assertThat(loaded.messages()).singleElement().satisfies(message -> {
+      assertThat(message.id()).isEqualTo(200L);
+      assertThat(message.contentMarkdown())
+          .contains("![example](https://example.com/two-sum.png)")
+          .contains("## 代码模板（Java）")
+          .contains("class Solution");
+    });
+    assertThat(messageRepository.messages.get(0).content())
+        .isEqualTo(persistedSeed)
+        .doesNotContain("two-sum.png");
+  }
+
+  @Test
   void returnsActiveRunForSessionTask() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
@@ -505,6 +530,7 @@ class PracticeSessionServiceTest {
   private static final class FakeProblemCatalog implements PracticeChatProblemCatalog {
 
     private final List<String> locales = new ArrayList<>();
+    private String contentMarkdown = "# Two Sum";
 
     @Override
     public Optional<PracticeChatProblemDetail> findProblemBySlug(String slug, String locale) {
@@ -519,7 +545,7 @@ class PracticeSessionServiceTest {
           "两数之和",
           "EASY",
           List.of("Array", "Hash Table"),
-          "# Two Sum",
+          contentMarkdown,
           "https://leetcode.com/problems/two-sum/",
           List.of(new PracticeCodeTemplate("java", "Java", "class Solution { }"))));
     }
