@@ -147,7 +147,10 @@ public class PracticeSessionService {
       AgentMessage seedMessage = agentTaskMessageRepository.createAssistantSeedMessage(
               new AgentAssistantSeedMessageRequest(
                   session.agentTaskId(),
-                  seedContent(context.problemDetail(), context.plan().plan().programmingLanguage()),
+                  seedContent(
+                      context.problemDetail(),
+                      context.plan().plan().programmingLanguage(),
+                      reference.locale()),
                   messageMetadata(session.id(), reference, PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT)));
       session = practiceSessionRepository.attachProblemStatementMessage(session.id(), seedMessage.id());
     }
@@ -237,7 +240,7 @@ public class PracticeSessionService {
             .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
             .map(this::toPracticeSessionMessage)
             .toList();
-    messages = projectCurrentProblemStatement(messages, problemDetail, programmingLanguage);
+    messages = projectCurrentProblemStatement(messages, problemDetail, programmingLanguage, session.locale());
     messages = enrichCoachSummaryActions(session, messages);
     Optional<AgentActiveRun> activeRun = session.agentTaskId() == null
         ? Optional.empty()
@@ -250,9 +253,10 @@ public class PracticeSessionService {
   private List<PracticeSessionMessage> projectCurrentProblemStatement(
       List<PracticeSessionMessage> messages,
       PracticeChatProblemDetail problemDetail,
-      String programmingLanguage
+      String programmingLanguage,
+      String locale
   ) {
-    String currentContent = seedContent(problemDetail, programmingLanguage);
+    String currentContent = seedContent(problemDetail, programmingLanguage, locale);
     return messages.stream().map(message -> {
       if (!PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT.equals(message.messageType())) {
         return message;
@@ -350,19 +354,23 @@ public class PracticeSessionService {
     return "题目练习：" + title;
   }
 
-  private String seedContent(PracticeChatProblemDetail detail, String programmingLanguage) {
+  private String seedContent(PracticeChatProblemDetail detail, String programmingLanguage, String locale) {
     if (detail.contentMarkdown() == null || detail.contentMarkdown().isBlank()) {
-      return appendCodeTemplate("题库暂未提供题面 Markdown。", detail.templateFor(programmingLanguage));
+      return appendCodeTemplate("题库暂未提供题面 Markdown。", detail.templateFor(programmingLanguage), locale);
     }
-    return appendCodeTemplate(detail.contentMarkdown(), detail.templateFor(programmingLanguage));
+    return appendCodeTemplate(detail.contentMarkdown(), detail.templateFor(programmingLanguage), locale);
   }
 
-  private String appendCodeTemplate(String statement, PracticeCodeTemplate template) {
+  private String appendCodeTemplate(String statement, PracticeCodeTemplate template, String locale) {
     if (template == null) {
       return statement;
     }
-    return "%s\n\n## 代码模板（%s）\n\n```%s\n%s\n```"
-        .formatted(statement.strip(), template.languageLabel(), template.languageSlug(), template.code()).strip();
+    String heading = PracticeResponseLanguage.fromLocale(locale) == PracticeResponseLanguage.EN_US
+        ? "## Code Template (%s)"
+        : "## 代码模板（%s）";
+    return "%s\n\n%s\n\n```%s\n%s\n```"
+        .formatted(statement.strip(), heading.formatted(template.languageLabel()), template.languageSlug(), template.code())
+        .strip();
   }
 
   private Map<String, Object> metadata(long sessionId, PracticeChatReference reference) {

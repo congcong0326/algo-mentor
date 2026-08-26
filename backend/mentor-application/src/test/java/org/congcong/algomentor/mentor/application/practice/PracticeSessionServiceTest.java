@@ -93,6 +93,9 @@ class PracticeSessionServiceTest {
         .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "en-US");
     assertThat(messageRepository.seedRequests.get(0).metadata())
         .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "en-US");
+    assertThat(messageRepository.seedRequests.get(0).content())
+        .contains("## Code Template (Java)")
+        .doesNotContain("## 代码模板（Java）");
   }
 
   @Test
