@@ -878,6 +878,9 @@ export default function PracticeChatWorkbench({
   }
 
   function replaceAssistantContent(assistantMessageId: number, content: string) {
+    if (coachSummaryProposalMessageIdsRef.current.has(assistantMessageId)) {
+      return;
+    }
     setMessages((current) => current.map((message) => (
       message.id === assistantMessageId ? { ...message, contentMarkdown: content } : message
     )));

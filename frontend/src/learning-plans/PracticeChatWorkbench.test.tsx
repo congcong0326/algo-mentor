@@ -333,6 +333,52 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(await screen.findByText('已保存到教练总结')).toBeInTheDocument();
   });
 
+  it('keeps the full coach summary visible when the model emits a follow-up recap', async () => {
+    startPracticeMessage.mockResolvedValue({ ...runSubscription(), realtimeProtocolVersion: 2 });
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 1 }, '1-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 1, finishReason: 'TOOL_CALLS', toolCallCount: 1 },
+        '2-0',
+      ));
+      options.onEvent(sseEvent('agent_tool_start', agentToolEvent({
+        toolName: 'propose_current_problem_coach_summary',
+        toolCallId: 'proposal-call-1',
+      }), '3-0'));
+      options.onEvent(sseEvent('agent_tool_end', agentToolEndEvent({
+        toolName: 'propose_current_problem_coach_summary',
+        toolCallId: 'proposal-call-1',
+        result: {
+          type: 'current_problem_coach_summary_proposed',
+          status: 'PROPOSED',
+          proposalId: 'proposal-1',
+          summaryMarkdown: '## 核心原理\n\n完整的教练笔记正文。',
+          operation: 'REPLACE',
+        },
+      }), '4-0'));
+      options.onEvent(sseEvent('agent_step_start', { runId: 'run-80', stepIndex: 2 }, '5-0'));
+      options.onEvent(sseEvent('content_delta', { content: '工具完成后的简短摘要。' }, '6-0'));
+      options.onEvent(sseEvent(
+        'agent_step_end',
+        { runId: 'run-80', stepIndex: 2, finishReason: 'STOP', toolCallCount: 0 },
+        '7-0',
+      ));
+      options.onEvent(sseEvent(
+        'agent_run_end',
+        { runId: 'run-80', steps: 2, finishReason: 'STOP' },
+        '8-0',
+      ));
+    });
+    renderWorkbench();
+
+    await sendMessage('生成并更新教练总结。');
+
+    expect(await screen.findByText('完整的教练笔记正文。')).toBeInTheDocument();
+    expect(screen.queryByText('工具完成后的简短摘要。')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '替换教练总结' })).toBeInTheDocument();
+  });
+
   it('refreshes persisted messages, session, and reviews after run completion', async () => {
     const refreshedMessages = [
       ...sessionFixture().messages,
