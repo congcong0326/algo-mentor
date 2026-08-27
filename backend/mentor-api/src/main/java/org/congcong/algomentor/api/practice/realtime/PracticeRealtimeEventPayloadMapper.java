@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Optional;
-import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentStreamEventNames;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.ProposeCurrentProblemCoachSummaryAgentToolContracts;
@@ -21,11 +22,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public final class PracticeRealtimeEventPayloadMapper {
-
-  /** 前端已识别的容量错误；其余内部错误统一投影为该稳定码。 */
-  public static final String PRACTICE_RUN_FAILED_CODE = "PRACTICE_RUN_FAILED";
-  /** 不使用异常原文的固定用户文案，前端可按错误码替换为本地化版本。 */
-  public static final String PRACTICE_RUN_FAILED_MESSAGE = "本次 AI 回复未能完成，请稍后重试。";
 
   public Optional<PracticeRealtimeEventPayload> map(AgentStreamEvent event) {
     if (event instanceof AgentStreamEvent.AgentStepStart start) {
@@ -47,8 +43,8 @@ public final class PracticeRealtimeEventPayloadMapper {
     if (event instanceof AgentStreamEvent.AgentError error) {
       ObjectNode data = object();
       data.put("runId", error.runId());
-      data.put("code", publicErrorCode(error.error().code()));
-      data.put("message", PRACTICE_RUN_FAILED_MESSAGE);
+      data.put("code", errorCode(error.error()));
+      data.put("message", errorMessage(error.error()));
       data.put("retryable", error.error().retryable());
       return Optional.of(payload(AgentStreamEventNames.AGENT_ERROR, data));
     }
@@ -156,10 +152,17 @@ public final class PracticeRealtimeEventPayloadMapper {
         || LearnerDeclaredProfileToolContracts.TOOL_NAME.equals(toolName);
   }
 
-  private String publicErrorCode(AgentErrorCode code) {
-    return code == AgentErrorCode.AGENT_EXECUTOR_OVERLOADED
-        ? AgentErrorCode.AGENT_EXECUTOR_OVERLOADED.name()
-        : PRACTICE_RUN_FAILED_CODE;
+  private String errorCode(AgentException error) {
+    Object providerCode = error.metadata().get(LlmMetadataKeys.ERROR_CODE);
+    if (providerCode instanceof String value && !value.isBlank()) {
+      return value;
+    }
+    return error.code().name();
+  }
+
+  private String errorMessage(AgentException error) {
+    String message = error.getMessage();
+    return message == null || message.isBlank() ? error.code().name() : message;
   }
 
   private ObjectNode object() {

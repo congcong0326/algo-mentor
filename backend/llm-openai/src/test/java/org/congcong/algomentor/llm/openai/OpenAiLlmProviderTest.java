@@ -342,7 +342,8 @@ class OpenAiLlmProviderTest {
           LlmException error = ((LlmStreamEvent.Error) event).error();
           assertThat(error.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
           assertThat(error.retryable()).isTrue();
-          assertThat(error.getMessage()).isEqualTo("OpenAI provider returned HTTP 200");
+          assertThat(error.getMessage()).isEqualTo(
+              "200: Our servers are currently overloaded. Please try again later.");
         });
   }
 

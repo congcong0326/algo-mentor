@@ -8,6 +8,7 @@ import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.junit.jupiter.api.Test;
@@ -47,18 +48,20 @@ class PracticeRealtimeEventPayloadMapperTest {
   }
 
   @Test
-  void hidesUnknownToolsAndMapsUnknownErrorsToSafeStablePayload() {
+  void hidesUnknownToolsAndProjectsTheActualErrorReason() {
     ObjectNode result = JsonNodeFactory.instance.objectNode().put("source", "raw").put("secret", "value");
     assertThat(mapper.map(new AgentStreamEvent.AgentToolEnd(
         "run-1", 1, "call-1", "read_practice_submission_detail", result))).isEmpty();
 
     PracticeRealtimeEventPayload error = mapper.map(new AgentStreamEvent.AgentError(
-        "run-1", new AgentException(AgentErrorCode.TOOL_EXECUTION_FAILED, "provider details", false,
-        Map.of("cause", "sensitive"), null))).orElseThrow();
-    assertThat(error.data().path("code").asText()).isEqualTo("PRACTICE_RUN_FAILED");
-    assertThat(error.data().path("message").asText()).isEqualTo(
-        PracticeRealtimeEventPayloadMapper.PRACTICE_RUN_FAILED_MESSAGE);
-    assertThat(error.data().toString()).doesNotContain("provider details", "sensitive", "cause");
+        "run-1", new AgentException(AgentErrorCode.LLM_STREAM_FAILED,
+        "Our servers are currently overloaded. Please try again later.", true,
+        Map.of(LlmMetadataKeys.ERROR_CODE, "server_is_overloaded", "cause", "sensitive"), null))).orElseThrow();
+    assertThat(error.data().path("code").asText()).isEqualTo("server_is_overloaded");
+    assertThat(error.data().path("message").asText())
+        .isEqualTo("Our servers are currently overloaded. Please try again later.");
+    assertThat(error.data().path("retryable").asBoolean()).isTrue();
+    assertThat(error.data().toString()).doesNotContain("sensitive", "cause");
   }
 
   @Test

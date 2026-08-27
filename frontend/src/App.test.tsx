@@ -1569,7 +1569,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
     expect(await screen.findByText('后台回复已经持久化。')).toBeInTheDocument();
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent('provider failed');
   });
 
   it('reports a rejected practice-run start without adding failed local messages', async () => {

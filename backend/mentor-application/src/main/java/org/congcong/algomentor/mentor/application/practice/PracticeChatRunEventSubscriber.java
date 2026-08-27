@@ -1,8 +1,13 @@
 package org.congcong.algomentor.mentor.application.practice;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Flow;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.llm.core.exception.LlmException;
 
 /**
  * Practice Chat 单次 run 的唯一事件出口订阅者。
@@ -19,6 +24,7 @@ public final class PracticeChatRunEventSubscriber implements Flow.Subscriber<Age
   private final String runUuid;
   private final EventStore eventStore;
   private final Runnable runEnded;
+  private final AtomicBoolean terminalEventReceived = new AtomicBoolean(false);
   private Flow.Subscription subscription;
 
   public PracticeChatRunEventSubscriber(String runUuid, EventStore eventStore) {
@@ -42,6 +48,9 @@ public final class PracticeChatRunEventSubscriber implements Flow.Subscriber<Age
 
   @Override
   public void onNext(AgentStreamEvent event) {
+    if (isTerminalEvent(event)) {
+      terminalEventReceived.set(true);
+    }
     try {
       eventStore.append(runUuid, Objects.requireNonNull(event, "Practice chat stream event must not be null"));
     } catch (RuntimeException ignored) {
@@ -62,11 +71,49 @@ public final class PracticeChatRunEventSubscriber implements Flow.Subscriber<Age
 
   @Override
   public void onError(Throwable throwable) {
-    // Runtime 已持久化失败终态；Redis 写入端不需要反向改变 run 生命周期。
+    appendFallbackError(toAgentException(throwable));
   }
 
   @Override
   public void onComplete() {
-    // 终态事件由 Agent Loop 发出；无额外业务事件。
+    appendFallbackError(new AgentException(
+        AgentErrorCode.UNKNOWN,
+        "Agent stream completed without a terminal event",
+        false,
+        Map.of(),
+        null));
+  }
+
+  private void appendFallbackError(AgentException error) {
+    if (!terminalEventReceived.compareAndSet(false, true)) {
+      return;
+    }
+    try {
+      eventStore.append(runUuid, new AgentStreamEvent.AgentError(runUuid, error));
+    } catch (RuntimeException ignored) {
+      // EventStore 负责低敏日志和指标；此处必须保持 Agent 数据面可用。
+    }
+  }
+
+  private boolean isTerminalEvent(AgentStreamEvent event) {
+    return event instanceof AgentStreamEvent.AgentRunEnd || event instanceof AgentStreamEvent.AgentError;
+  }
+
+  private AgentException toAgentException(Throwable throwable) {
+    if (throwable instanceof AgentException error) {
+      return error;
+    }
+    if (throwable instanceof LlmException error) {
+      return new AgentException(
+          AgentErrorCode.LLM_STREAM_FAILED,
+          error.getMessage(),
+          error.retryable(),
+          error.metadata(),
+          error);
+    }
+    String message = throwable == null || throwable.getMessage() == null || throwable.getMessage().isBlank()
+        ? "Agent stream failed"
+        : throwable.getMessage();
+    return new AgentException(AgentErrorCode.UNKNOWN, message, false, Map.of(), throwable);
   }
 }

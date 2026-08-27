@@ -78,6 +78,8 @@ interface PracticeRunStreamState {
   nextExpectedSequence: number;
   realtimeIncomplete: boolean;
   successfulRunEndReceived: boolean;
+  terminalErrorReceived: boolean;
+  terminalErrorMessage?: string;
   currentStepIndex?: number;
   toolExecutionStepIndex?: number;
   activeToolCallIds: Set<string>;
@@ -95,6 +97,13 @@ class PracticeRealtimeIncompleteError extends Error {
 
 function isPracticeRealtimeV2(runState: PracticeRunStreamState): boolean {
   return runState.realtimeProtocolVersion === 2;
+}
+
+function readAgentErrorMessage(value: unknown): string | undefined {
+  if (!isRecord(value) || typeof value.message !== 'string' || !value.message.trim()) {
+    return undefined;
+  }
+  return value.message;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -746,6 +755,7 @@ export default function PracticeChatWorkbench({
       nextExpectedSequence: 1,
       realtimeIncomplete: false,
       successfulRunEndReceived: false,
+      terminalErrorReceived: false,
       activeToolCallIds: new Set(),
       nextExpectedStepIndex: 1,
       stepBuffers: new Map(),
@@ -985,6 +995,17 @@ export default function PracticeChatWorkbench({
     let terminalEventReceived = false;
     let reviewRefreshRequested = false;
 
+    const processAgentError = (data: unknown) => {
+      runState.terminalErrorReceived = true;
+      runState.terminalErrorMessage = readAgentErrorMessage(data);
+      if (isAgentExecutorOverloaded(data)) {
+        setCapacityUnavailable(true);
+        setError(resources.common.aiCapacityUnavailable);
+        return;
+      }
+      setError(runState.terminalErrorMessage ?? resources.learningPlans.practiceMessageFailed);
+    };
+
     const processProjectedToolEvent = (event: import('../types/api').SseStreamEvent) => {
       if (event.eventName === 'agent_tool_end') {
         const toolEnd = readAgentToolEndEvent(event.data);
@@ -1094,6 +1115,7 @@ export default function PracticeChatWorkbench({
       } else if (event.eventName === 'agent_error') {
         runState.realtimeIncomplete = true;
         terminalEventReceived = true;
+        processAgentError(event.data);
       }
 
       if (event.eventName === 'agent_tool_start' || event.eventName === 'agent_tool_end') {
@@ -1112,10 +1134,6 @@ export default function PracticeChatWorkbench({
         }
         processProjectedToolEvent(event);
       }
-      if (event.eventName === 'agent_error' && isAgentExecutorOverloaded(event.data)) {
-        setCapacityUnavailable(true);
-        setError(resources.common.aiCapacityUnavailable);
-      }
       runState.lastEventId = event.id!;
       runState.nextExpectedSequence += 1;
     };
@@ -1132,9 +1150,8 @@ export default function PracticeChatWorkbench({
         terminalEventReceived = true;
       }
 
-      if (event.eventName === 'agent_error' && isAgentExecutorOverloaded(event.data)) {
-        setCapacityUnavailable(true);
-        setError(resources.common.aiCapacityUnavailable);
+      if (event.eventName === 'agent_error') {
+        processAgentError(event.data);
       }
       processProjectedToolEvent(event);
     };
@@ -1224,7 +1241,7 @@ export default function PracticeChatWorkbench({
       const activeRun = activeRunResponse.success ? activeRunResponse.data : undefined;
       if (activeRun?.runUuid === runState.runUuid) {
         // Redis 回放不可用或短连接结束时，run 仍由 PostgreSQL 表示为执行中。
-        setStatus('streaming');
+        setStatus(runState.terminalErrorReceived ? 'error' : 'streaming');
         return;
       }
 
@@ -1239,8 +1256,10 @@ export default function PracticeChatWorkbench({
         setSessionResponse((current) => current && current.session.id === runState.sessionId
           ? { ...current, activeRun: null }
           : current);
-        setStatus('idle');
-        setError('');
+        setStatus(runState.terminalErrorReceived ? 'error' : 'idle');
+        setError(runState.terminalErrorReceived
+          ? runState.terminalErrorMessage ?? resources.learningPlans.practiceMessageFailed
+          : '');
         if (practiceRunStreamRef.current?.runUuid === runState.runUuid) {
           practiceRunStreamRef.current = undefined;
         }
@@ -1318,6 +1337,7 @@ export default function PracticeChatWorkbench({
         nextExpectedSequence: 1,
         realtimeIncomplete: false,
         successfulRunEndReceived: false,
+        terminalErrorReceived: false,
         activeToolCallIds: new Set(),
         nextExpectedStepIndex: 1,
         stepBuffers: new Map(),

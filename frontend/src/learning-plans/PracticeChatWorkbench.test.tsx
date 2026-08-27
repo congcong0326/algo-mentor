@@ -262,6 +262,22 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(await screen.findByRole('dialog', { name: '提示' })).toHaveTextContent('当前算力不够，请稍后重试。');
   });
 
+  it('shows the provider error reason reported by the subscribed run', async () => {
+    readPracticeRunEvents.mockImplementation(async (_url, options) => {
+      options.onEvent(sseEvent('agent_error', {
+        code: 'server_is_overloaded',
+        message: 'Our servers are currently overloaded. Please try again later.',
+        retryable: true,
+      }, '1710000000000-0'));
+    });
+    renderWorkbench();
+
+    await sendMessage('请给我一点提示。');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Our servers are currently overloaded. Please try again later.');
+  });
+
   it('does not render a permission dialog when an automatic Review runs', async () => {
     const subscription = captureSubscription();
     renderWorkbench();

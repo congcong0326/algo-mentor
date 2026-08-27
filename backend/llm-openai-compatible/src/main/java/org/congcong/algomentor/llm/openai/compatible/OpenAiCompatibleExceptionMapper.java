@@ -114,8 +114,9 @@ public final class OpenAiCompatibleExceptionMapper {
   }
 
   private static String safeMessage(Throwable error, OpenAiCompatibleProviderProfile profile) {
-    if (error instanceof OpenAIServiceException serviceException) {
-      return profile.safeProviderHttpErrorMessage(serviceException.statusCode());
+    String message = error.getMessage();
+    if (message != null && !message.isBlank()) {
+      return message;
     }
     return profile.safeProviderErrorMessage();
   }
