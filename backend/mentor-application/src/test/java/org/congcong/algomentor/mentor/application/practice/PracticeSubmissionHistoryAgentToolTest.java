@@ -48,14 +48,19 @@ class PracticeSubmissionHistoryAgentToolTest {
         .containsExactly(PracticeSubmissionHistoryToolContracts.ARGUMENT_PROBLEM_REF);
     assertThat(list.spec().inputSchema().path("required"))
         .extracting(JsonNode::asText)
-        .containsExactly(PracticeSubmissionHistoryToolContracts.ARGUMENT_PROBLEM_REF);
+        .containsExactly(
+            PracticeSubmissionHistoryToolContracts.ARGUMENT_PROBLEM_REF,
+            PracticeSubmissionHistoryToolContracts.ARGUMENT_CURSOR,
+            PracticeSubmissionHistoryToolContracts.ARGUMENT_LIMIT);
     assertThat(detail.spec().inputSchema().path("required"))
         .extracting(JsonNode::asText)
         .containsExactly(PracticeSubmissionHistoryToolContracts.ARGUMENT_SUBMISSION_REF);
     assertThat(list.spec().inputSchema().path("properties")
-        .path(PracticeSubmissionHistoryToolContracts.ARGUMENT_CURSOR).path("type"))
-        .extracting(JsonNode::asText)
-        .containsExactly("string", "null");
+        .path(PracticeSubmissionHistoryToolContracts.ARGUMENT_CURSOR).path("type").asText())
+        .isEqualTo("string");
+    assertThat(list.spec().inputSchema().path("properties")
+        .path(PracticeSubmissionHistoryToolContracts.ARGUMENT_LIMIT).path("type").asText())
+        .isEqualTo("integer");
     assertThat(overview.spec().inputSchema().toString()
         + list.spec().inputSchema()
         + detail.spec().inputSchema())

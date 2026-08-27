@@ -321,14 +321,14 @@ Prompt 历史题索引
 ```json
 {
   "problemRef": "pp_a8K2...",
-  "cursor": null,
+  "cursor": "",
   "limit": 3
 }
 ```
 
 - `problemRef` 必填，含义同总览 Tool。
-- `cursor` 可选；首页传 `null` 或省略，后续页只能使用同一 Tool 上次返回的 opaque cursor。
-- `limit` 可选，默认 `3`，最小 `1`，最大 `5`。
+- `cursor` 必填；首页传空字符串，后续页只能使用同一 Tool 上次返回的 opaque cursor。
+- `limit` 必填；默认使用 `3`，最小 `1`，最大 `5`。
 - 排序固定为 `created_at DESC, id DESC`，即最新提交在前；不接受模型提供排序或筛选条件。
 
 成功输出：

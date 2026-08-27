@@ -178,16 +178,23 @@ public final class SearchLearnerMemoryAgentTool implements AgentTool {
     schema.put("additionalProperties", false);
     ObjectNode properties = schema.putObject("properties");
     properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_QUERY).put("type", "string");
-    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF).put("type", "string");
+    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF)
+        .put("type", "string")
+        .put("description", "Empty string to search all memory sections.");
     ObjectNode tags = properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_TAG_VALUES);
-    tags.put("type", "array");
+    tags.put("type", "array").put("description", "Empty array to skip tag filtering.");
     tags.putObject("items").put("type", "integer");
     properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT).put("type", "integer").put("minimum", 1)
         .put("maximum", LearnerMemoryRecallToolContracts.MAX_ITEMS);
-    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR).put("type", "string");
+    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR)
+        .put("type", "string")
+        .put("description", "Empty string for the first page; use the returned cursor for later pages.");
     schema.putArray("required")
         .add(LearnerMemoryRecallToolContracts.ARGUMENT_QUERY)
-        .add(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT);
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF)
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_TAG_VALUES)
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT)
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR);
     return schema;
   }
 

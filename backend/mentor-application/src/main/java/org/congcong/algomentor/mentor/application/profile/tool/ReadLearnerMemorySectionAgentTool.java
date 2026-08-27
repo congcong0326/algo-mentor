@@ -149,11 +149,14 @@ public final class ReadLearnerMemorySectionAgentTool implements AgentTool {
     schema.put("additionalProperties", false);
     ObjectNode properties = schema.putObject("properties");
     properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF).put("type", "string");
-    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_AFTER_STATEMENT_REF).put("type", "string");
+    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_AFTER_STATEMENT_REF)
+        .put("type", "string")
+        .put("description", "Empty string for the first page; use nextAfterStatementRef for later pages.");
     properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT).put("type", "integer").put("minimum", 1)
         .put("maximum", LearnerMemoryRecallToolContracts.MAX_ITEMS);
     schema.putArray("required")
         .add(LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF)
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_AFTER_STATEMENT_REF)
         .add(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT);
     return schema;
   }

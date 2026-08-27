@@ -27,9 +27,9 @@
 
 ## 3. 三项工具契约
 
-- `search_learner_memory(query, sectionRef?, tagValues?, limit, cursor)`：规范化文本、scope/tag 过滤和确定性排序，最多 20 条。
-- `read_learner_memory_section(sectionRef, afterStatementRef?, limit)`：按投影顺序读完整 statement，最多 20 条。
-- `get_learner_memory_evidence(statementRef, limit, cursor)`：返回 Review/message 摘要，最多 20 条。
+- `search_learner_memory(query, sectionRef, tagValues, limit, cursor)`：规范化文本、scope/tag 过滤和确定性排序，最多 20 条；`sectionRef`/`cursor` 用空字符串表示未设置，`tagValues` 用空数组表示不筛选。
+- `read_learner_memory_section(sectionRef, afterStatementRef, limit)`：按投影顺序读完整 statement，最多 20 条；首页 `afterStatementRef` 传空字符串。
+- `get_learner_memory_evidence(statementRef, limit, cursor)`：返回 Review/message 摘要，最多 20 条；首页 `cursor` 传空字符串。
 
 参数不接受 user ID、claim/revision ID 或 document revision。伪造 ref/cursor 统一返回不存在或无权限，不泄漏 ref 是否属于其他用户。
 

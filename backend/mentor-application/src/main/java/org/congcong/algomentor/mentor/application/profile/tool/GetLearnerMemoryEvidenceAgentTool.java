@@ -170,10 +170,13 @@ public final class GetLearnerMemoryEvidenceAgentTool implements AgentTool {
     properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_STATEMENT_REF).put("type", "string");
     properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT).put("type", "integer").put("minimum", 1)
         .put("maximum", LearnerMemoryRecallToolContracts.MAX_ITEMS);
-    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR).put("type", "string");
+    properties.putObject(LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR)
+        .put("type", "string")
+        .put("description", "Empty string for the first page; use the returned cursor for later pages.");
     schema.putArray("required")
         .add(LearnerMemoryRecallToolContracts.ARGUMENT_STATEMENT_REF)
-        .add(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT);
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT)
+        .add(LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR);
     return schema;
   }
 

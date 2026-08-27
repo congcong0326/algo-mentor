@@ -124,10 +124,15 @@ public final class ListPracticeProblemSubmissionsAgentTool implements AgentTool 
     ObjectNode properties = schema.putObject("properties");
     properties.putObject(PracticeSubmissionHistoryToolContracts.ARGUMENT_PROBLEM_REF).put("type", "string");
     properties.putObject(PracticeSubmissionHistoryToolContracts.ARGUMENT_CURSOR)
-        .putArray("type").add("string").add("null");
+        .put("type", "string")
+        .put("description", "Empty string for the first page; use nextCursor for subsequent pages.");
     properties.putObject(PracticeSubmissionHistoryToolContracts.ARGUMENT_LIMIT).put("type", "integer")
-        .put("minimum", 1).put("maximum", PracticeSubmissionHistoryToolContracts.MAX_LIST_LIMIT);
-    schema.putArray("required").add(PracticeSubmissionHistoryToolContracts.ARGUMENT_PROBLEM_REF);
+        .put("minimum", 1).put("maximum", PracticeSubmissionHistoryToolContracts.MAX_LIST_LIMIT)
+        .put("description", "Number of submissions to return; use 3 as the default.");
+    schema.putArray("required")
+        .add(PracticeSubmissionHistoryToolContracts.ARGUMENT_PROBLEM_REF)
+        .add(PracticeSubmissionHistoryToolContracts.ARGUMENT_CURSOR)
+        .add(PracticeSubmissionHistoryToolContracts.ARGUMENT_LIMIT);
     return schema;
   }
 }

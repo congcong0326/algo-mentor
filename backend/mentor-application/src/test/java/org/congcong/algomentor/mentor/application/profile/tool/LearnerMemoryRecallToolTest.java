@@ -35,6 +35,36 @@ import org.junit.jupiter.api.Test;
 class LearnerMemoryRecallToolTest {
 
   @Test
+  void exposesStrictSchemasWithEveryPropertyRequired() {
+    LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+    SearchLearnerMemoryAgentTool search = new SearchLearnerMemoryAgentTool(registry);
+    ReadLearnerMemorySectionAgentTool readSection = new ReadLearnerMemorySectionAgentTool(registry);
+    GetLearnerMemoryEvidenceAgentTool evidence = new GetLearnerMemoryEvidenceAgentTool(
+        registry, new EvidenceRepository(List.of(), List.of()));
+
+    assertThat(search.spec().inputSchema().path("required"))
+        .extracting(JsonNode::asText)
+        .containsExactly(
+            LearnerMemoryRecallToolContracts.ARGUMENT_QUERY,
+            LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF,
+            LearnerMemoryRecallToolContracts.ARGUMENT_TAG_VALUES,
+            LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT,
+            LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR);
+    assertThat(readSection.spec().inputSchema().path("required"))
+        .extracting(JsonNode::asText)
+        .containsExactly(
+            LearnerMemoryRecallToolContracts.ARGUMENT_SECTION_REF,
+            LearnerMemoryRecallToolContracts.ARGUMENT_AFTER_STATEMENT_REF,
+            LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT);
+    assertThat(evidence.spec().inputSchema().path("required"))
+        .extracting(JsonNode::asText)
+        .containsExactly(
+            LearnerMemoryRecallToolContracts.ARGUMENT_STATEMENT_REF,
+            LearnerMemoryRecallToolContracts.ARGUMENT_LIMIT,
+            LearnerMemoryRecallToolContracts.ARGUMENT_CURSOR);
+  }
+
+  @Test
   void pagesOnlyCurrentScopeAndRejectsForgedReferencesWithoutLeaking() {
     LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
     LearnerMemoryRunScopeRegistry.RecallScopeLease lease = openScope(registry, 7L, List.of(

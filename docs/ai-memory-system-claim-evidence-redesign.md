@@ -604,9 +604,9 @@ Practice Chat Agent Definition 增加三项业务只读工具：
 
 | Tool | 用途 | 主要参数 | 返回 |
 |---|---|---|---|
-| `search_learner_memory` | 按自然语言、主题或 tag 搜索相关记忆 | `query`、可选 `sectionRef/tagValues`、`limit/cursor` | claim ref、正文、来源摘要、更新时间、下一 cursor |
-| `read_learner_memory_section` | 按画像自然主题顺序浏览长内容 | `sectionRef`、`afterStatementRef`、`limit` | 完整 statement、citation 摘要、下一 cursor |
-| `get_learner_memory_evidence` | 在需要核对判断来源时查看证据 | `statementRef`、`limit/cursor` | Review/message evidence 摘要和下一 cursor |
+| `search_learner_memory` | 按自然语言、主题或 tag 搜索相关记忆 | `query`、`sectionRef`、`tagValues`、`limit`、`cursor`；未设置的筛选使用空字符串/空数组 | claim ref、正文、来源摘要、更新时间、下一 cursor |
+| `read_learner_memory_section` | 按画像自然主题顺序浏览长内容 | `sectionRef`、`afterStatementRef`、`limit`；首页 `afterStatementRef` 为空字符串 | 完整 statement、citation 摘要、下一 cursor |
+| `get_learner_memory_evidence` | 在需要核对判断来源时查看证据 | `statementRef`、`limit`、`cursor`；首页 `cursor` 为空字符串 | Review/message evidence 摘要和下一 cursor |
 
 统一约束：
 
