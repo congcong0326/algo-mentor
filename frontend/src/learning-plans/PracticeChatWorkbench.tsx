@@ -1407,7 +1407,7 @@ export default function PracticeChatWorkbench({
 
   function handleComposerKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
     if (event.key !== 'Enter'
-      || (!event.ctrlKey && !event.metaKey)
+      || event.shiftKey
       || event.nativeEvent.isComposing
       || sendDisabled) {
       return;

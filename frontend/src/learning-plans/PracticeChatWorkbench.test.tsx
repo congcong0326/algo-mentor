@@ -90,7 +90,7 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(startPracticeMessage).not.toHaveBeenCalled();
   });
 
-  it('grows the composer to its cap and supports focus editing with keyboard send', async () => {
+  it('grows the composer to its cap and sends with Enter', async () => {
     renderWorkbench();
     await screen.findByText('给定整数数组 nums 和目标值 target。');
 
@@ -103,7 +103,7 @@ describe('PracticeChatWorkbench run subscription contracts', () => {
     expect(screen.getByRole('dialog', { name: '展开输入框' })).toBeInTheDocument();
     expect(composer).toHaveFocus();
 
-    fireEvent.keyDown(composer, { key: 'Enter', ctrlKey: true });
+    fireEvent.keyDown(composer, { key: 'Enter' });
     await waitFor(() => expect(startPracticeMessage).toHaveBeenCalledWith(
       101,
       { message: '第一行\n第二行\n第三行' },
