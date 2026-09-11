@@ -13,6 +13,8 @@ import org.congcong.algomentor.llm.core.model.LlmModelId;
 
 public final class OpenAiCompatibleExceptionMapper {
 
+  private static final String SERVER_IS_OVERLOADED = "server_is_overloaded";
+
   private OpenAiCompatibleExceptionMapper() {
   }
 
@@ -65,6 +67,10 @@ public final class OpenAiCompatibleExceptionMapper {
         true,
         metadata == null ? Map.of() : metadata,
         null);
+  }
+
+  static boolean isServerOverloaded(LlmException error) {
+    return SERVER_IS_OVERLOADED.equals(error.metadata().get(LlmMetadataKeys.ERROR_CODE));
   }
 
   private static LlmException mapServiceException(

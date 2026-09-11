@@ -71,6 +71,7 @@ public final class OpenAiProviderAdapter implements LlmProviderAdapter {
     OpenAiProviderConfig config = OpenAiProviderConfig.fromJson(instance.config());
     return new OpenAiCompatibleProviderClient(
         clientFactory.create(config.toConnectionConfig()),
-        OpenAiProviderProfile.INSTANCE);
+        OpenAiProviderProfile.INSTANCE,
+        config.maxRetries());
   }
 }

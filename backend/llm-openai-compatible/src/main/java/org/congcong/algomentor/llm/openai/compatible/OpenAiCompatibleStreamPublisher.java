@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
@@ -36,11 +37,16 @@ import org.slf4j.LoggerFactory;
 public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
 
   private static final Logger log = LoggerFactory.getLogger(OpenAiCompatibleStreamPublisher.class);
+  /** overload 首次请求计入总次数，最多尝试 5 次。 */
+  private static final int SERVER_OVERLOAD_MAX_ATTEMPTS = 5;
+  private static final long STREAM_RETRY_INITIAL_BACKOFF_MILLIS = 200L;
+  private static final long STREAM_RETRY_MAX_BACKOFF_MILLIS = 2_000L;
 
-  private final StreamResponse<ResponseStreamEvent> stream;
+  private final Supplier<StreamResponse<ResponseStreamEvent>> streamFactory;
   private final OpenAiCompatibleResponsesMapper mapper;
   private final OpenAiCompatibleProviderProfile profile;
   private final LlmModelId modelId;
+  private final int maxRetries;
   private final Map<String, StringBuilder> toolArgumentDeltas = new HashMap<>();
   private final List<ResponseReasoningItem> reasoningItems = new ArrayList<>();
   private final List<LlmToolCall> completedToolCalls = new ArrayList<>();
@@ -52,10 +58,24 @@ public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<Llm
       OpenAiCompatibleProviderProfile profile,
       LlmModelId modelId
   ) {
-    this.stream = Objects.requireNonNull(stream, "stream must not be null");
+    this(() -> stream, mapper, profile, modelId, 0);
+  }
+
+  public OpenAiCompatibleStreamPublisher(
+      Supplier<StreamResponse<ResponseStreamEvent>> streamFactory,
+      OpenAiCompatibleResponsesMapper mapper,
+      OpenAiCompatibleProviderProfile profile,
+      LlmModelId modelId,
+      int maxRetries
+  ) {
+    this.streamFactory = Objects.requireNonNull(streamFactory, "stream factory must not be null");
     this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
     this.profile = Objects.requireNonNull(profile, "profile must not be null");
     this.modelId = Objects.requireNonNull(modelId, "modelId must not be null");
+    if (maxRetries < 0) {
+      throw new IllegalArgumentException("maxRetries must not be negative");
+    }
+    this.maxRetries = maxRetries;
   }
 
   @Override
@@ -198,8 +218,11 @@ public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<Llm
     private final AtomicBoolean resourcesClosed = new AtomicBoolean(false);
     private final AtomicBoolean terminalSignalled = new AtomicBoolean(false);
     private Stream<ResponseStreamEvent> responseEvents;
+    private StreamResponse<ResponseStreamEvent> currentStream;
     private Iterator<ResponseStreamEvent> iterator;
     private boolean sourceCompleted;
+    private boolean emittedAnyEvent;
+    private int retryCount;
     private volatile Thread consumerThread;
 
     private OpenAiStreamSubscription(Flow.Subscriber<? super LlmStreamEvent> subscriber) {
@@ -274,7 +297,10 @@ public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<Llm
         try {
           ensureIterator();
           if (iterator.hasNext()) {
-            publishEvent(iterator.next(), pendingEvents::add);
+            publishEvent(iterator.next(), event -> {
+              emittedAnyEvent = true;
+              pendingEvents.add(event);
+            });
           } else {
             sourceCompleted = true;
             closeResources();
@@ -284,7 +310,26 @@ public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<Llm
             sourceCompleted = true;
             return null;
           }
-          pendingEvents.add(mapStreamFailure(error));
+          LlmException mapped = OpenAiCompatibleExceptionMapper.map(error, profile, modelId);
+          if (canRetry(mapped)) {
+            retryCount++;
+            int maxAttempts = maxAttempts(mapped);
+            log.warn(
+                "{} stream failed before first event; retrying. provider={} model={} retryAttempt={} maxAttempts={} code={} causeType={}",
+                profile.displayName(),
+                profile.providerId().value(),
+                modelId.value(),
+                retryCount,
+                maxAttempts,
+                mapped.code(),
+                causeType(mapped));
+            closeAttemptResources();
+            clearCollectedState();
+            iterator = null;
+            backoffBeforeRetry();
+            continue;
+          }
+          pendingEvents.add(mapStreamFailure(mapped));
           sourceCompleted = true;
           closeResources();
         }
@@ -296,8 +341,36 @@ public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<Llm
       if (iterator != null) {
         return;
       }
-      responseEvents = stream.stream();
+      currentStream = Objects.requireNonNull(streamFactory.get(), "stream factory returned null");
+      responseEvents = currentStream.stream();
       iterator = responseEvents.iterator();
+    }
+
+    private boolean canRetry(LlmException error) {
+      return !emittedAnyEvent
+          && error.retryable()
+          && retryCount + 1 < maxAttempts(error)
+          && !cancelled.get();
+    }
+
+    private int maxAttempts(LlmException error) {
+      return OpenAiCompatibleExceptionMapper.isServerOverloaded(error)
+          ? SERVER_OVERLOAD_MAX_ATTEMPTS
+          : maxRetries + 1;
+    }
+
+    private void backoffBeforeRetry() {
+      long delay = Math.min(
+          STREAM_RETRY_MAX_BACKOFF_MILLIS,
+          STREAM_RETRY_INITIAL_BACKOFF_MILLIS << Math.min(retryCount - 1, 3));
+      try {
+        Thread.sleep(delay);
+      } catch (InterruptedException interrupted) {
+        Thread.currentThread().interrupt();
+        if (!cancelled.get()) {
+          throw new IllegalStateException("Interrupted while retrying LLM stream", interrupted);
+        }
+      }
     }
 
     private void signalComplete() {
@@ -321,17 +394,25 @@ public final class OpenAiCompatibleStreamPublisher implements Flow.Publisher<Llm
       if (!resourcesClosed.compareAndSet(false, true)) {
         return;
       }
+      closeAttemptResources();
+    }
+
+    private void closeAttemptResources() {
       if (responseEvents != null) {
         try {
           responseEvents.close();
         } catch (RuntimeException error) {
           log.debug("Failed to close {} response event stream", profile.displayName(), error);
         }
+        responseEvents = null;
       }
-      try {
-        stream.close();
-      } catch (RuntimeException error) {
-        log.debug("Failed to close {} SDK stream response", profile.displayName(), error);
+      if (currentStream != null) {
+        try {
+          currentStream.close();
+        } catch (RuntimeException error) {
+          log.debug("Failed to close {} SDK stream response", profile.displayName(), error);
+        }
+        currentStream = null;
       }
     }
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Flow;
+import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
@@ -137,11 +138,19 @@ public class OpenAiLlmProvider implements LlmProvider {
           request.tools().size(),
           request.toolChoice().mode(),
           responseFormatName(request.responseFormat()));
+      var params = mapper.toParams(request, modelId);
+      var initialStream = Objects.requireNonNull(
+          client.createStreaming(params), "stream client returned null");
+      var firstStream = new AtomicReference<>(initialStream);
       return new OpenAiCompatibleStreamPublisher(
-          client.createStreaming(mapper.toParams(request, modelId)),
+          () -> {
+            var first = firstStream.getAndSet(null);
+            return first == null ? client.createStreaming(params) : first;
+          },
           mapper,
           OpenAiProviderProfile.INSTANCE,
-          modelId);
+          modelId,
+          properties.getMaxRetries());
     } catch (Throwable error) {
       LlmException mapped = OpenAiCompatibleExceptionMapper.map(error, OpenAiProviderProfile.INSTANCE, modelId);
       log.warn(

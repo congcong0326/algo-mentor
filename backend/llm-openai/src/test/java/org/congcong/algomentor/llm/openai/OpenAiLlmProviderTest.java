@@ -324,7 +324,7 @@ class OpenAiLlmProviderTest {
             .error(ErrorObject.builder()
                 .message("Our servers are currently overloaded. Please try again later.")
                 .type("server_error")
-                .code("overloaded")
+                .code("server_is_overloaded")
                 .param(Optional.empty())
                 .build())
             .build()));
@@ -333,7 +333,7 @@ class OpenAiLlmProviderTest {
 
     provider.stream(textRequest()).subscribe(subscriber);
 
-    assertThat(subscriber.finished.await(2, TimeUnit.SECONDS)).isTrue();
+    assertThat(subscriber.finished.await(5, TimeUnit.SECONDS)).isTrue();
     assertThat(subscriber.error).isNull();
     assertThat(subscriber.events)
         .filteredOn(LlmStreamEvent.Error.class::isInstance)
@@ -345,6 +345,47 @@ class OpenAiLlmProviderTest {
           assertThat(error.getMessage()).isEqualTo(
               "200: Our servers are currently overloaded. Please try again later.");
         });
+    assertThat(client.streamingCalls).isEqualTo(5);
+  }
+
+  @Test
+  void retriesSseOverloadBeforeFirstEventAndPublishesSuccessfulAttempt() throws Exception {
+    StreamResponse<ResponseStreamEvent> failed = new ThrowingStreamResponse(SseException.builder()
+        .statusCode(200)
+        .headers(Headers.builder().build())
+        .error(ErrorObject.builder()
+            .message("Our servers are currently overloaded. Please try again later.")
+            .type("service_unavailable_error")
+            .code("server_is_overloaded")
+            .param(Optional.empty())
+            .build())
+        .build());
+    StreamResponse<ResponseStreamEvent> successful = new ListStreamResponse(List.of(
+        ResponseStreamEvent.ofOutputTextDelta(ResponseTextDeltaEvent.builder()
+            .contentIndex(0)
+            .delta("recovered")
+            .itemId("msg_123")
+            .logprobs(List.of())
+            .outputIndex(0)
+            .sequenceNumber(1)
+            .build()),
+        ResponseStreamEvent.ofCompleted(ResponseCompletedEvent.builder()
+            .response(response("recovered"))
+            .sequenceNumber(2)
+            .build())));
+    SequencedStreamingResponsesClient client = new SequencedStreamingResponsesClient(failed, successful);
+    OpenAiLlmProperties properties = enabledProperties();
+    properties.setMaxRetries(1);
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(properties, client);
+    TestSubscriber subscriber = new TestSubscriber();
+
+    provider.stream(textRequest()).subscribe(subscriber);
+
+    assertThat(subscriber.finished.await(2, TimeUnit.SECONDS)).isTrue();
+    assertThat(subscriber.error).isNull();
+    assertThat(subscriber.events).contains(new LlmStreamEvent.ContentDelta("recovered"));
+    assertThat(subscriber.events).noneMatch(LlmStreamEvent.Error.class::isInstance);
+    assertThat(client.streamingCalls).isEqualTo(2);
   }
 
   private static LlmCompletionRequest textRequest() {
@@ -426,6 +467,7 @@ class OpenAiLlmProviderTest {
     private final StreamResponse<ResponseStreamEvent> streamResponse;
     private ResponseCreateParams lastParams;
     private StreamResponse<ResponseStreamEvent> lastStreamResponse;
+    private int streamingCalls;
 
     private FakeResponsesClient(Response response) {
       this(response, List.of());
@@ -452,8 +494,30 @@ class OpenAiLlmProviderTest {
     @Override
     public StreamResponse<ResponseStreamEvent> createStreaming(ResponseCreateParams params) {
       this.lastParams = params;
+      this.streamingCalls++;
       this.lastStreamResponse = streamResponse == null ? new ListStreamResponse(streamEvents) : streamResponse;
       return lastStreamResponse;
+    }
+  }
+
+  private static final class SequencedStreamingResponsesClient implements OpenAiCompatibleResponsesClient {
+    private final StreamResponse<ResponseStreamEvent>[] streams;
+    private int streamingCalls;
+
+    @SafeVarargs
+    private SequencedStreamingResponsesClient(StreamResponse<ResponseStreamEvent>... streams) {
+      this.streams = streams;
+    }
+
+    @Override
+    public Response create(ResponseCreateParams params) {
+      return response("unused");
+    }
+
+    @Override
+    public StreamResponse<ResponseStreamEvent> createStreaming(ResponseCreateParams params) {
+      streamingCalls++;
+      return streams[Math.min(streamingCalls - 1, streams.length - 1)];
     }
   }
 

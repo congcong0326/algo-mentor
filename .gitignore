@@ -23,6 +23,7 @@ frontend/build/
 frontend/.vite/
 
 *.log
+**/logs/
 *.tmp
 __pycache__/
 *.py[cod]

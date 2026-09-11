@@ -71,6 +71,7 @@ public final class DeepSeekProviderAdapter implements LlmProviderAdapter {
     DeepSeekProviderConfig config = DeepSeekProviderConfig.fromJson(instance.config());
     return new OpenAiCompatibleProviderClient(
         clientFactory.create(config.toConnectionConfig()),
-        DeepSeekProviderProfile.INSTANCE);
+        DeepSeekProviderProfile.INSTANCE,
+        config.maxRetries());
   }
 }
