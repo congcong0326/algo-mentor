@@ -62,7 +62,7 @@ Spring AgentTool Bean
 | 学习计划草案 `LEARNING_PLAN_DRAFT` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 学习计划修订 `LEARNING_PLAN_REVISION` | 24 | `query_learning_plan_revision`、`compile_learning_plan_revision` | 开启 |
 | 学习计划扩展 `LEARNING_PLAN_EXTENSION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
-| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`propose_current_problem_coach_summary`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像、记忆召回和历史正式提交工具 | 开启 |
+| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`propose_current_problem_coach_summary`、`read_tool_result`，以及按开关加入的 Review 轨迹、自述画像、记忆召回和历史正式提交工具 | 开启 |
 | Code Review 画像后台更新 `CODE_REVIEW_PROFILE_UPDATE` | 4 | `get_problem_review_trajectory`、`get_code_review_evidence`、`compare_submission_versions` | 默认关闭 |
 | Practice Code Review 子 Agent | 1 | 无 | 随 Review 能力开启 |
 | 学习者自述画像决策子 Agent | 1 | 无 | 默认关闭 |
@@ -348,7 +348,7 @@ Spring AgentTool Bean
 
 **开关**
 
-- `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` 默认 `true`。关闭时不创建 scope、不注册三个 Tool 到 Practice Chat 白名单，Phase 1 Prompt 索引仍照常注入。
+- `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` 默认 `false`。关闭时不创建 scope、不注册三个 Tool 到 Practice Chat 白名单，Phase 1 Prompt 索引仍照常注入。
 - `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED` 默认 `true`，且以总开关为前置条件。关闭源码详情开关时只暴露 overview 与 list。
 
 ## 7. Practice Chat 记忆召回工具
@@ -397,7 +397,7 @@ Spring AgentTool Bean
 - 不返回源代码或完整 Review Markdown。
 - 后台画像更新中，同一 run 对同一题最多调用一次，并且题目必须在后台任务预先授权的 Review 窗口内。
 - Practice Chat 中，只能通过当前 run 的不可枚举 capability 读取当前用户、当前训练题，且每个 run 最多调用一次；不会读取源代码或完整 Review Markdown。
-- 前台开关：`PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED`，默认 `true`，不依赖 `LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED`。
+- 前台开关：`PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED`，默认 `false`，不依赖 `LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED`。
 
 ### 8.2 `get_code_review_evidence`
 
@@ -474,8 +474,8 @@ Spring AgentTool Bean
 | `PRACTICE_CODE_REVIEW_ENABLED` | `true` | `submit_practice_code_review` 及 Review 子 Agent |
 | `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` | `true` | Practice Chat 的 `get_current_problem_learning_state` |
 | `PRACTICE_CHAT_COACH_SUMMARY_TOOL_ENABLED` | `true` | Practice Chat 的 `propose_current_problem_coach_summary` |
-| `PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED` | `true` | Practice Chat 的当前题 `get_problem_review_trajectory` |
-| `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` | `true` | `get_practiced_problem_overview`、`list_practice_problem_submissions`，并创建 run-local 历史 scope |
+| `PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED` | `false` | Practice Chat 的当前题 `get_problem_review_trajectory` |
+| `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` | `false` | `get_practiced_problem_overview`、`list_practice_problem_submissions`，并创建 run-local 历史 scope |
 | `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED` | `true` | `read_practice_submission_detail`；必须同时开启历史提交总开关 |
 | `LEARNER_MEMORY_DECLARED_UPDATE_ENABLED` | `false` | `update_learner_declared_profile` |
 | `LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED` | `false` | 三个 Practice Chat 记忆召回工具 |
@@ -513,9 +513,9 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 
 `submit_practice_code_review` 在 `PRACTICE_CHAT` 中由“模型识别疑似完整提交 + 精确工具名与受信 agentKey 自动授权 + 服务端可信上下文校验”组成闭环，不展示确认弹窗；`propose_current_problem_coach_summary` 本身无正式写副作用，先在聊天中展示候选，再由用户点击一次性 apply 按钮写入；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。三者采用与业务风险匹配的不同授权语义。
 
-### 11.6 历史提交能力默认开启
+### 11.6 历史提交与前台 Review 轨迹默认关闭
 
-历史正式提交 Tool 已实现，总开关与源码详情二级开关在 `application.yml` 中均默认开启。源码详情仍需通过当前消息的服务端意图判定和专用 `read_tool_result` 预算；需要收紧暴露范围时，可先关闭二级开关而不影响正式 Review 数据。
+历史正式提交 Tool 总开关与前台 Review 轨迹开关默认关闭，当前题学习状态保持开启。源码详情二级开关仍默认开启，但仅在历史提交总开关显式开启后生效。屏蔽工具不影响正式 Review 数据和历史摘要 Prompt 注入；需要恢复时可显式开启对应环境变量。
 
 ## 12. 主要代码依据
 

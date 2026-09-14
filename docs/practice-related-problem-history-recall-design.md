@@ -602,7 +602,7 @@ practiceSubmissionHistoryToolDataAccessFailure
 
 1. 已新增 `PracticeSubmissionHistoryRunScopeRegistry`、专用 `PracticeSubmissionHistoryToolRepository`、三个 Tool、常量契约和 Micrometer 指标；Phase 1 Prompt 索引的公开字段保持不变。
 2. `AgentConversationService` 会在非 replay 的 Practice Chat run 中打开并合并释放历史 scope；Practice Chat Definition 仅在 capability 已完整装配时加入对应 Tool 白名单。Tool、开关、读写副作用与预算已同步到 `agent-tool-catalog.md`。
-3. 总开关 `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` 默认 `true`。关闭时不创建历史 scope、不把三个 Tool 加入 Practice Chat 白名单，Phase 1 Prompt 索引继续照常工作。
+3. 总开关 `PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED` 默认 `false`。关闭时不创建历史 scope、不把三个 Tool 加入 Practice Chat 白名单，Phase 1 Prompt 索引继续照常工作。
 4. 代码详情开关 `PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED` 默认 `true`，并以总开关为前置条件。关闭源码详情开关时只暴露 overview 和 list。
 5. 代码详情使用 `read_practice_submission_detail` provenance 的专用 `ToolResultReadGuard`，验证了 preview/resultRef 的两次范围读取和 16,000 字符合计上限。详情原始 Tool result 仅进入 run 内模型上下文和受保护的管理员审计链路，不投影到用户 SSE；详情 blob 沿用 Agent run 的 30 天诊断留存与管理员审计访问控制，正式 `practice_code_review` 事实不随 blob 清理删除。
 6. 发布时先在小范围用户中观察 Tool 调用量、scope 拒绝、数据访问失败、代码意图拒绝和上下文字符预算；发现越权、误触发或源码意外投影时，优先关闭代码详情二级开关，必要时关闭总开关，无需回滚正式 Review。

@@ -121,7 +121,7 @@ public final class ManagedSystemPromptDefinitions {
           1. 仅当当前回合提供 %s，且用户询问当前题的完成状态、最近正式 Review、复习安排或既有题目笔记时调用。
           2. 默认传 includeNoteBody=false，以读取状态、最近正式 Review、复习安排和笔记提纲。
           3. 只有当前用户消息明确要求查看笔记正文、全文、完整内容，或者要求生成/更新教练总结时，才传 includeNoteBody=true；只询问是否有笔记或查看提纲时必须传 false。
-          4. 需要比较多个正式 Review 版本的持续问题、已解决问题或分数变化时，继续使用 get_problem_review_trajectory。
+          4. 需要比较多个正式 Review 版本的持续问题、已解决问题或分数变化时，仅在工具可用时使用 get_problem_review_trajectory；不可用时不得臆测历史变化。
           5. 工具失败或笔记正文状态不是 INCLUDED 时，不得声称已读取对应内容。
           """.formatted(PracticeLearningStateAgentToolContracts.TOOL_NAME).strip()),
       section(SystemPromptSectionKeys.PRACTICE_COACH_SUMMARY_PROPOSAL_TOOL_BOUNDARY, "教练总结候选工具边界", 87, true, """

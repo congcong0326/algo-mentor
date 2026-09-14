@@ -35,7 +35,7 @@ public final class GetCurrentProblemLearningStateAgentTool implements AgentTool 
           Read the active practice problem's current completion status, latest formal Review summary, review schedule, \
           and saved note outline. The server derives the user, practice session, plan, phase, and problem from trusted \
           execution metadata. Set includeNoteBody=true only when the current user message explicitly asks to read the \
-          saved note body or full note content. Use get_problem_review_trajectory for detailed multi-version changes. \
+          saved note body or full note content. Use get_problem_review_trajectory for detailed multi-version changes only when that tool is available. \
           This tool never returns source code, full chat history, or full Review Markdown.
           """.strip(),
       inputSchema(),

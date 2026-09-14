@@ -365,8 +365,7 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnProperty(
       prefix = PracticeChatReviewTrajectoryProperties.PREFIX,
       name = "enabled",
-      havingValue = "true",
-      matchIfMissing = true)
+      havingValue = "true")
   @ConditionalOnMissingBean
   public PracticeChatReviewTrajectoryScopeService practiceChatReviewTrajectoryScopeService(
       LearnerMemoryRunScopeRegistry scopeRegistry

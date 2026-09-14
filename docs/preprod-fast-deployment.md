@@ -22,7 +22,7 @@
 例如，提交历史 Tool 的两个开关已在 `application.yml` 中提供映射；预发布值必须位于目标机 `/etc/algo-mentor/runtime.env`：
 
 ```dotenv
-PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED=true
+PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED=false
 PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED=true
 ```
 

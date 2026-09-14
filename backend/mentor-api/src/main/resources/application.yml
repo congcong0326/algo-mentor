@@ -221,9 +221,9 @@ algo-mentor:
     coach-summary:
       enabled: ${PRACTICE_CHAT_COACH_SUMMARY_TOOL_ENABLED:true}
     review-trajectory:
-      enabled: ${PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED:true}
+      enabled: ${PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED:false}
     submission-history-tool:
-      enabled: ${PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED:true}
+      enabled: ${PRACTICE_CHAT_SUBMISSION_HISTORY_TOOL_ENABLED:false}
     submission-history-code-detail:
       enabled: ${PRACTICE_CHAT_SUBMISSION_HISTORY_CODE_DETAIL_ENABLED:true}
     prompt:

@@ -174,7 +174,7 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
-  void enablesCurrentProblemLearningStateInPracticeChatWhenAllReadDependenciesExist() {
+  void enablesCurrentProblemLearningStateByDefaultWithoutReviewTrajectory() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
         .withUserConfiguration(PracticeTrajectoryDependencies.class)
@@ -182,10 +182,7 @@ class AgentConversationApiAutoConfigurationTest {
         .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
         .withBean(ReviewCardRepository.class, () -> mock(ReviewCardRepository.class))
         .withBean(UserProblemNoteRepository.class, () -> mock(UserProblemNoteRepository.class))
-        .withPropertyValues(
-            "algo-mentor.practice-chat.learning-state.enabled=true",
-            "algo-mentor.practice-chat.coach-summary.enabled=false",
-            "algo-mentor.practice-chat.review-trajectory.enabled=false")
+        .withPropertyValues("algo-mentor.practice-chat.coach-summary.enabled=false")
         .run(context -> {
           assertThat(context).hasSingleBean(GetCurrentProblemLearningStateAgentTool.class);
           assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
