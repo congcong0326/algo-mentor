@@ -134,6 +134,69 @@ class KnowledgeImportIT extends PostgresIntegrationTestSupport {
   }
 
   @Test
+  void enrollmentPreservesHistoryAndDoesNotCreateRatings() throws Exception {
+    long user = insertUser();
+    long other = insertUser();
+    transactionTemplate().execute(tx -> service.setEnrollment("stable-card", user, false));
+    assertThat(count("knowledge_card_user_state")).isZero();
+    var enrolled = transactionTemplate().execute(tx -> service.setEnrollment("stable-card", user, true));
+    assertThat(enrolled.enrolled()).isTrue();
+    assertThat(enrolled.isDue()).isTrue();
+    assertThat(enrolled.lastRating()).isNull();
+    assertThat(enrolled.lastReviewedAt()).isNull();
+    assertThat(count("knowledge_card_review_attempt")).isZero();
+    var duplicate = transactionTemplate().execute(tx -> service.setEnrollment("stable-card", user, true));
+    assertThat(duplicate.dueAt()).isEqualTo(enrolled.dueAt());
+    assertThat(count("knowledge_card_user_state")).isEqualTo(1);
+    assertThat(service.reviewCards(user, "DUE", 1, 20).items()).hasSize(1);
+    assertThat(service.summary(other).enrolledCount()).isZero();
+    assertThat(service.topics(user).items().get(0).subtreeEnrolledCardCount()).isEqualTo(1);
+
+    var attempt = UUID.randomUUID();
+    var review = transactionTemplate().execute(tx -> service.review("stable-card", user, attempt, "GOOD", "UTC"));
+    assertThat(review.firstReview()).isTrue();
+    var scheduled = service.card("stable-card", user).learningState();
+    var removed = transactionTemplate().execute(tx -> service.setEnrollment("stable-card", user, false));
+    assertThat(removed.enrolled()).isFalse();
+    assertThat(removed.isDue()).isFalse();
+    assertThat(service.summary(user).enrolledCount()).isZero();
+    assertThat(service.reviewCards(user, "ALL", 1, 20).items()).isEmpty();
+    assertThat(service.topics(user).items().get(0).subtreeEnrolledCardCount()).isZero();
+    assertThat(service.preview("stable-card", user, "UTC").enrolled()).isFalse();
+    assertThat(count("knowledge_card_review_attempt")).isEqualTo(1);
+    var replay = transactionTemplate().execute(tx -> service.review("stable-card", user, attempt, "GOOD", "UTC"));
+    assertThat(replay.duplicate()).isTrue();
+    assertThat(service.card("stable-card", user).learningState().enrolled()).isFalse();
+    var restored = transactionTemplate().execute(tx -> service.setEnrollment("stable-card", user, true));
+    assertThat(restored.dueAt()).isEqualTo(scheduled.dueAt());
+    assertThat(restored.lastReviewedAt()).isEqualTo(scheduled.lastReviewedAt());
+    assertThat(restored.lastRating()).isEqualTo(scheduled.lastRating());
+    transactionTemplate().execute(tx -> service.setEnrollment("stable-card", user, false));
+    var next = transactionTemplate().execute(tx -> service.review("stable-card", user, UUID.randomUUID(), "GOOD", "UTC"));
+    assertThat(next.firstReview()).isFalse();
+    assertThat(service.card("stable-card", user).learningState().enrolled()).isTrue();
+    assertThatThrownBy(() -> transactionTemplate().execute(tx -> service.setEnrollment("draft-card", user, true)))
+        .isInstanceOf(KnowledgeException.class);
+  }
+
+  @Test
+  void cardPaginationSearchesQuestionAndTagsWithMatchingTotals() throws Exception {
+    write("Java.node/基础.node/第二问题.card.md", "---\nslug: second-card\n---\n第二回答");
+    importer.replace(reader.read(root));
+    long user = insertUser();
+    long node = service.card("stable-card", user).outlineNodeId();
+    var first = service.cards(node, user, 1, 1, "问题");
+    var second = service.cards(node, user, 2, 1, "问题");
+    assertThat(first.total()).isEqualTo(2);
+    assertThat(first.items()).hasSize(1);
+    assertThat(second.items()).hasSize(1);
+    assertThat(first.items().get(0).slug()).isNotEqualTo(second.items().get(0).slug());
+    assertThat(service.cards(node, user, 1, 20, " java ").items())
+        .extracting(c -> c.slug()).containsExactly("stable-card");
+    assertThat(service.cards(node, user, 1, 20, "%").total()).isZero();
+  }
+
+  @Test
   void failedReplacementRollsBackOldContent() throws Exception {
     var source = reader.read(root);
     long old = queryLong("SELECT id FROM knowledge_card WHERE slug='stable-card'");

@@ -1,6 +1,6 @@
 import { ArrowLeft, BookOpen, Layers3, RotateCcw, Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { APP_ROUTES } from './app/navigation';
+import { reviewCenterPath, APP_ROUTES } from './app/navigation';
 import MarkdownView from './components/MarkdownView';
 import KnowledgeCardContent from './components/knowledge/KnowledgeCardContent';
 import { useI18n } from './i18n/I18nProvider';
@@ -77,7 +77,7 @@ export default function KnowledgePage({ onNavigate }: { onNavigate?: (path: stri
   }
   const filtered = useMemo(() => cards.filter((card) => `${card.question} ${card.tags.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase())), [cards, query]);
   return <section className="knowledge-page" aria-labelledby="knowledge-title">
-    <header className="knowledge-header"><div><p className="knowledge-eyebrow"><BookOpen aria-hidden="true" /> {resources.nav.knowledge}</p><h1 id="knowledge-title">知识库</h1><p className="knowledge-subtitle">沿大纲阅读文章、学习知识卡，再通过复习巩固记忆。</p></div><button className="secondary-button" onClick={() => onNavigate?.(APP_ROUTES.knowledgeReview)} type="button"><RotateCcw aria-hidden="true" /> 查看复习中心</button></header>
+    <header className="knowledge-header"><div><p className="knowledge-eyebrow"><BookOpen aria-hidden="true" /> {resources.nav.knowledge}</p><h1 id="knowledge-title">知识库</h1><p className="knowledge-subtitle">沿大纲阅读文章、学习知识卡，再通过复习巩固记忆。</p></div><button className="secondary-button" onClick={() => onNavigate?.(reviewCenterPath({ mode: 'knowledge' }))} type="button"><RotateCcw aria-hidden="true" /> 查看复习中心</button></header>
     <dl className="knowledge-stat-grid" aria-label="知识库概览"><div><dt>技术主题</dt><dd>{topics.length}</dd></div><div><dt>知识卡片</dt><dd>{topics.reduce((sum, item) => sum + item.subtreeCardCount, 0)}</dd></div><div><dt>已加入复习</dt><dd>{topics.reduce((sum, item) => sum + item.subtreeEnrolledCardCount, 0)}</dd></div></dl>
     {error && <p className="error-text" role="alert">{error}</p>}
     {loading ? <p role="status">正在加载知识库…</p> : !tree ? <div className="knowledge-topic-grid">{topics.length === 0 ? <p>暂无知识主题。</p> : topics.map((topic) => <button className="knowledge-topic-card" key={topic.id} disabled={contentLoading} onClick={() => void openTopic(topic)} type="button"><Layers3 aria-hidden="true" /><span className="knowledge-topic-copy"><strong>{topic.title}</strong><span>{topic.subtreeCardCount} 张卡片</span></span></button>)}</div> : <div className="knowledge-workspace">

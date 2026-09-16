@@ -5,7 +5,10 @@
 - `knowledge-base/README.md`：正式知识库维护手册；`.node` 大纲、单 Markdown 卡片、slug 与元数据关系、全量导入命令及 demo 审查路径。
 - `docs/product-planning/knowledge-directory-import-v1-design.md`：目录解析、V76 开发期重建迁移、slug API 与用户复习事实保留的实施设计。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/knowledge/`：model 为内容/接口契约，importer 为解析和独立 CLI，repository/service 为用户查询、FSRS 和按 slug 幂等评价。
-- `frontend/src/services/knowledge.ts` / `types/knowledge.ts`：知识库共享前端契约；KnowledgePage 展示大纲、文章、卡片详情和关联，KnowledgeReviewCenterPage 按 slug 复习。
+- `frontend/src/services/knowledge.ts` / `types/knowledge.ts`：知识库共享前端契约；`knowledge/` 下按主题、大纲、节点分页列表与独立卡片详情分层导航；大纲按直属内容分别提供文章/卡片按钮，`KnowledgeArticlePage` 承载独立文章阅读与多篇切换，`review-center/` 承载知识卡列表与按 slug 复习，`KnowledgeReviewCenterPage` 仅兼容旧入口跳转；加入/移除复习保留调度和历史。
+- `frontend/src/review-center/`：两类卡片共用列表布局、详情弹窗、工作台与评级栏；知识卡适配 ALL/DUE 查询、预览与幂等评级，页面通过 `mode=knowledge` 切换。
+- `docs/product-planning/unified-review-center-design.md`：统一复习中心交互、路由、数据适配及验证范围。
+- `docs/product-planning/knowledge-card-browsing-design.md`：知识卡分页搜索、详情共享 Markdown 排版、复习加入状态 API 与 V77 迁移语义。
 
 - `Makefile`：统一构建、测试、本地运行和前端静态资源同步入口。
 - `docs/java-fundamentals-pilot/README.md`：历史 Java 基础知识组织验证资料（不参与正式导入）；正式 demo 与维护格式以 `knowledge-base/` 为准。

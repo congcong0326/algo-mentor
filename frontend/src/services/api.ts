@@ -2395,7 +2395,8 @@ export async function decideAgentToolPermission(
   return response.json();
 }
 
-function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+/** 业务 API 共用的请求入口，统一注入 CSRF 与请求追踪信息。 */
+export function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const method = (init.method ?? 'GET').toUpperCase();
   const headers = apiHeaders(init.headers);
   const csrfToken = readCookie(xsrfCookieName);

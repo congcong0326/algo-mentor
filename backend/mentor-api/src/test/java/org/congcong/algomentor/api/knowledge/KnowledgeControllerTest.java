@@ -73,6 +73,22 @@ class KnowledgeControllerTest {
   }
 
   @Test
+  void enrollmentAndPaginationBindCurrentUser() throws Exception {
+    when(service.setEnrollment("stable-slug", 7L, true))
+        .thenReturn(new LearningState(true, "LEARNING", null, true, null, null));
+    mvc.perform(put("/api/knowledge/cards/stable-slug/review-enrollment"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.enrolled").value(true));
+    mvc.perform(delete("/api/knowledge/cards/stable-slug/review-enrollment"))
+        .andExpect(status().isOk());
+    verify(service).setEnrollment("stable-slug", 7L, false);
+    mvc.perform(get("/api/knowledge/outline-nodes/5/cards")
+            .param("page", "2").param("pageSize", "20").param("keyword", "Java"))
+        .andExpect(status().isOk());
+    verify(service).cards(5L, 7L, 2, 20, "Java");
+  }
+
+  @Test
   void errorsFollowKnowledgeContract() throws Exception {
     when(service.card("missing", 7L)).thenThrow(KnowledgeException.notFound());
     mvc.perform(get("/api/knowledge/cards/missing"))

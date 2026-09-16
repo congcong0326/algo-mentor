@@ -18,7 +18,7 @@ beforeEach(() => {
   vi.spyOn(knowledgeApi, 'articles').mockImplementation(async (id) => page(id === 11 ? [{ id: 20, outlineNodeId: 11, title: '对象与引用' }] : []));
   vi.spyOn(knowledgeApi, 'card').mockImplementation(async (slug) => slug === card.slug ? card : { ...card, slug, question: 'HashMap如何处理哈希冲突', relations: [] });
   vi.spyOn(knowledgeApi, 'article').mockResolvedValue({ id: 20, outlineNodeId: 11, title: '对象与引用', bodyMarkdown: '## 文章章节\n\n独立文章正文' });
-  vi.spyOn(knowledgeApi, 'review').mockResolvedValue({});
+  vi.spyOn(knowledgeApi, 'review').mockResolvedValue({ id: 1, cardSlug: card.slug, clientAttemptId: 'attempt', rating: 'GOOD', reviewedAt: '2026-09-16T00:00:00Z', dueAt: '2026-09-17T00:00:00Z', firstReview: true, duplicate: false });
   vi.spyOn(knowledgeApi, 'summary').mockResolvedValue({ enrolledCount: 1, dueCount: 1 });
   vi.spyOn(knowledgeApi, 'queue').mockResolvedValue(page([card]));
 });
@@ -51,14 +51,10 @@ describe('知识库目录内容', () => {
     expect(screen.getByRole('heading', { name: '文章章节' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '记得' })).not.toBeInTheDocument();
   });
-  it('复习中心按 slug 加载与评价，同时展示详情', async () => {
-    render(<KnowledgeReviewCenterPage onNavigate={() => undefined} />);
-    const show = await screen.findByRole('button', { name: '显示答案' });
-    fireEvent.click(show);
-    expect(screen.getByText('核心测试答案')).toBeInTheDocument();
-    expect(screen.getByText('详细测试解释')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '记得' }));
-    await screen.findByRole('heading', { name: '今日知识卡复习已完成' });
-    expect(knowledgeApi.review).toHaveBeenCalledWith('java-pass-by-value', 'GOOD', expect.any(String));
+  it('旧知识库复习入口跳转到统一复习列表', () => {
+    const onNavigate = vi.fn();
+    render(<KnowledgeReviewCenterPage onNavigate={onNavigate} />);
+    expect(onNavigate).toHaveBeenCalledWith('/mistakes?mode=knowledge', { replace: true });
+    expect(knowledgeApi.queue).not.toHaveBeenCalled();
   });
 });

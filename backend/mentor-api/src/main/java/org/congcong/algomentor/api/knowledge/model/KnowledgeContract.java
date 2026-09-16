@@ -7,6 +7,10 @@ public final class KnowledgeContract {
   private KnowledgeContract() {}
 
   public static final String API = "/api/knowledge";
+  /** 卡片复习加入状态的幂等写入与移除入口。 */
+  public static final String REVIEW_ENROLLMENT_PATH = "/cards/{slug}/review-enrollment";
+  /** 持久化复习加入状态字段。 */
+  public static final String REVIEW_ENROLLED = "review_enrolled";
   public static final String NODE_SUFFIX = ".node";
   public static final String CARD_SUFFIX = ".card.md";
   public static final String ARTICLE_SUFFIX = ".article.md";

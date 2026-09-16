@@ -826,6 +826,96 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/');
   });
 
+  it.each(['/mistakes', '/mistakes?mode=knowledge', '/knowledge/review'])('unifies review navigation from %s and preserves the knowledge session on return', async (entry) => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    const card = { slug: 'java-value', outlineNodeId: 11, question: 'Java 值传递', tags: ['Java'], learningState: { enrolled: true, isDue: true }, answerMarkdown: '知识卡答案' };
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url.startsWith('/api/review-cards?')) return Promise.resolve(jsonResponse({ success: true, data: { items: [], total: 0, page: 1, pageSize: 10 } }));
+      if (url.startsWith('/api/knowledge/review/cards?')) return Promise.resolve(jsonResponse({ success: true, data: { items: [card], total: 1, page: 1, pageSize: 100 } }));
+      if (url === '/api/knowledge/review/summary') return Promise.resolve(jsonResponse({ success: true, data: { enrolledCount: 1, dueCount: 1 } }));
+      if (url === '/api/knowledge/cards/java-value') return Promise.resolve(jsonResponse({ success: true, data: card }));
+      if (url.startsWith('/api/knowledge/cards/java-value/review-preview?')) return Promise.resolve(jsonResponse({ success: true, data: { options: [] } }));
+      return fallbackFetch(url, init);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', entry);
+    render(<App />);
+    if (entry === '/mistakes') {
+      expect(await screen.findByRole('button', { name: '刷题' })).toHaveAttribute('aria-pressed', 'true');
+      expect(fetchMock.mock.calls.some(([url]) => url.startsWith('/api/knowledge/'))).toBe(false);
+      fireEvent.click(screen.getByRole('button', { name: '八股文' }));
+    }
+    expect(await screen.findByRole('heading', { name: 'Java 值传递' })).toBeInTheDocument();
+    expect(window.location.pathname + window.location.search).toBe('/mistakes?mode=knowledge');
+    expect(screen.getByRole('button', { name: '复习中心' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: '开始今日复习 1 题' }));
+    expect(await screen.findByRole('button', { name: '显示答案' })).toBeInTheDocument();
+    expect(window.location.pathname + window.location.search).toBe('/mistakes/review?mode=knowledge');
+    fireEvent.click(screen.getByRole('button', { name: '返回复习中心' }));
+    expect(await screen.findByRole('button', { name: '八股文' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: '刷题' }));
+    expect(await screen.findByRole('button', { name: '刷题' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname + window.location.search).toBe('/mistakes');
+  });
+
+  it('opens knowledge articles separately and returns to the outline', async () => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    const node = { id: 11, title: '基础语法', directArticleCount: 1, directCardCount: 2, subtreeCardCount: 2, subtreeEnrolledCardCount: 0 };
+    const topic = { ...node, id: 10, title: 'Java', directArticleCount: 0, directCardCount: 0 };
+    const article = { id: 21, outlineNodeId: 11, title: '参数传递', bodyMarkdown: '独立文章正文' };
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/knowledge/outline-nodes/11') return Promise.resolve(jsonResponse({ success: true, data: { node, breadcrumbs: [{ id: 10, title: 'Java' }], children: [] } }));
+      if (url.startsWith('/api/knowledge/outline-nodes/11/articles?')) return Promise.resolve(jsonResponse({ success: true, data: { items: [article], total: 1, page: 1, pageSize: 100 } }));
+      if (url === '/api/knowledge/articles/21') return Promise.resolve(jsonResponse({ success: true, data: article }));
+      if (url === '/api/knowledge/outline-nodes/10/tree') return Promise.resolve(jsonResponse({ success: true, data: { node: topic, children: [{ node, children: [] }] } }));
+      return fallbackFetch(url, init);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/knowledge/nodes/11/articles');
+    render(<App />);
+    expect(await screen.findByText('独立文章正文')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '知识库' })).toHaveAttribute('aria-pressed', 'true');
+    expect(fetchMock.mock.calls.some(([url]) => url.includes('/cards?'))).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: '返回大纲' }));
+    fireEvent.click(await screen.findByRole('button', { name: '查看基础语法的文章（1篇）' }));
+    expect(await screen.findByText('独立文章正文')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/knowledge/nodes/11/articles');
+  });
+
+  it('keeps knowledge pagination through card navigation and return', async () => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    const card = { slug: 'java-value', outlineNodeId: 11, question: 'Java 值传递', tags: ['Java'], learningState: { enrolled: false, isDue: false }, answerMarkdown: '完整答案', explanationMarkdown: '## 详情\n\n完整解释' };
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url.startsWith('/api/knowledge/outline-nodes/11/cards?')) {
+        const page = Number(new URL(url, window.location.origin).searchParams.get('page'));
+        return Promise.resolve(jsonResponse({ success: true, data: { items: [card], total: 41, page, pageSize: 20 } }));
+      }
+      if (url === '/api/knowledge/outline-nodes/11') {
+        return Promise.resolve(jsonResponse({ success: true, data: { node: { id: 11, title: '基础' }, breadcrumbs: [{ id: 10, title: 'Java' }], children: [] } }));
+      }
+      if (url.startsWith('/api/knowledge/outline-nodes/11/articles?')) {
+        return Promise.resolve(jsonResponse({ success: true, data: { items: [], total: 0, page: 1, pageSize: 100 } }));
+      }
+      if (url === '/api/knowledge/cards/java-value') {
+        return Promise.resolve(jsonResponse({ success: true, data: card }));
+      }
+      return fallbackFetch(url, init);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/knowledge/nodes/11/cards?page=2&q=Java');
+    render(<App />);
+    await screen.findByText('第 2 / 3 页');
+    fireEvent.click(screen.getByRole('button', { name: '查看' }));
+    expect(await screen.findByText('完整解释')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/knowledge/cards/java-value');
+    expect(window.location.search).toBe('?page=2&q=Java');
+    fireEvent.click(screen.getByRole('button', { name: '返回卡片列表' }));
+    await screen.findByText('第 2 / 3 页');
+    fireEvent.click(screen.getByRole('button', { name: '下一页' }));
+    await screen.findByText('第 3 / 3 页');
+    expect(window.location.search).toBe('?page=3&q=Java');
+  });
+
   it('opens the feedback dialog from the ordinary-user header icon', async () => {
     const fallbackFetch = mockAuthenticatedAppFetch();
     const fetchMock = vi.fn((url: string, init?: RequestInit) => {

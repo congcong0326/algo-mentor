@@ -8,6 +8,10 @@ export const APP_ROUTES = {
   terms: '/terms',
   home: '/',
   knowledge: '/knowledge',
+  knowledgeTopic: '/knowledge/topics',
+  knowledgeNodeCards: '/knowledge/nodes',
+  knowledgeNodeArticles: '/knowledge/nodes',
+  knowledgeCard: '/knowledge/cards',
   knowledgeReview: '/knowledge/review',
   my: '/me',
   settings: '/settings',
@@ -40,6 +44,30 @@ const LEARNING_PLAN_DETAIL_PATTERN = /^\/learning-plans\/(\d+)$/;
 const LEARNING_PLAN_PRACTICE_CHAT_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/chat$/;
 const LEARNING_PLAN_PRACTICE_SUBMISSIONS_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/submissions$/;
 const ADMIN_USER_GROUP_DETAIL_PATTERN = /^\/admin\/user-groups\/(\d+)$/;
+const KNOWLEDGE_TOPIC_PATTERN = /^\/knowledge\/topics\/(\d+)$/;
+const KNOWLEDGE_NODE_CARDS_PATTERN = /^\/knowledge\/nodes\/(\d+)\/cards$/;
+const KNOWLEDGE_NODE_ARTICLES_PATTERN = /^\/knowledge\/nodes\/(\d+)\/articles$/;
+const KNOWLEDGE_CARD_PATTERN = /^\/knowledge\/cards\/([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+
+/** 知识卡列表与详情返回共用的分页、搜索契约。 */
+export const KNOWLEDGE_LIST_QUERY_KEYS = { page: 'page', keyword: 'q' } as const;
+export const KNOWLEDGE_CARD_PAGE_SIZE = 20;
+
+export function knowledgeListOptions(search: string) {
+  const params = new URLSearchParams(search);
+  const page = Number(params.get(KNOWLEDGE_LIST_QUERY_KEYS.page));
+  return {
+    page: Number.isSafeInteger(page) && page > 0 ? page : 1,
+    keyword: (params.get(KNOWLEDGE_LIST_QUERY_KEYS.keyword) || '').slice(0, 200),
+  };
+}
+
+export function knowledgeListSearch(page: number, keyword: string): string {
+  const params = new URLSearchParams();
+  if (page > 1) params.set(KNOWLEDGE_LIST_QUERY_KEYS.page, String(page));
+  if (keyword) params.set(KNOWLEDGE_LIST_QUERY_KEYS.keyword, keyword);
+  return params.size ? `?${params}` : '';
+}
 
 /** Query contract for a code review opened from an evidence citation. */
 export const LEARNER_PROFILE_REVIEW_ORIGIN = 'learner-profile';
@@ -59,6 +87,8 @@ export const REVIEW_CENTER_QUERY_KEYS = {
   mistakeOnly: 'mistakeOnly',
   page: 'page',
   query: 'q',
+  mode: 'mode',
+  dueOnly: 'dueOnly',
 } as const;
 
 const MAX_LEARNER_PROFILE_ANCHOR_LENGTH = 128;
@@ -96,6 +126,8 @@ export interface ReviewCenterSearchOptions {
   keyword?: string;
   mistakeOnly?: boolean;
   page?: number;
+  mode?: 'problems' | 'knowledge';
+  dueOnly?: boolean;
 }
 
 export type AppView =
@@ -154,16 +186,16 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     icon: ClipboardList,
   },
   {
-    view: 'mistakes',
-    labelKey: 'mistakes',
-    path: APP_ROUTES.mistakes,
-    icon: NotebookTabs,
-  },
-  {
     view: 'knowledge',
     labelKey: 'knowledge',
     path: APP_ROUTES.knowledge,
     icon: BookOpen,
+  },
+  {
+    view: 'mistakes',
+    labelKey: 'mistakes',
+    path: APP_ROUTES.mistakes,
+    icon: NotebookTabs,
   },
   {
     view: 'problems',
@@ -353,6 +385,42 @@ export function viewFromPath(pathname: string): AppView | undefined {
   return undefined;
 }
 
+export function knowledgeTopicPath(topicId: number): string {
+  return `${APP_ROUTES.knowledgeTopic}/${topicId}`;
+}
+
+export function knowledgeNodeCardsPath(nodeId: number): string {
+  return `${APP_ROUTES.knowledgeNodeCards}/${nodeId}/cards`;
+}
+
+/** 独立文章阅读入口，与节点卡片列表分开。 */
+export function knowledgeNodeArticlesPath(nodeId: number): string {
+  return `${APP_ROUTES.knowledgeNodeArticles}/${nodeId}/articles`;
+}
+
+export function knowledgeCardPath(slug: string): string {
+  return `${APP_ROUTES.knowledgeCard}/${encodeURIComponent(slug)}`;
+}
+
+export function knowledgeCardSlugFromPath(pathname: string): string | undefined {
+  return KNOWLEDGE_CARD_PATTERN.exec(pathname)?.[1];
+}
+
+export function knowledgeTopicIdFromPath(pathname: string): number | undefined {
+  const match = KNOWLEDGE_TOPIC_PATTERN.exec(pathname);
+  return match ? Number(match[1]) : undefined;
+}
+
+export function knowledgeNodeIdFromPath(pathname: string): number | undefined {
+  const match = KNOWLEDGE_NODE_CARDS_PATTERN.exec(pathname);
+  return match ? Number(match[1]) : undefined;
+}
+
+export function knowledgeArticleNodeIdFromPath(pathname: string): number | undefined {
+  const match = KNOWLEDGE_NODE_ARTICLES_PATTERN.exec(pathname);
+  return match ? Number(match[1]) : undefined;
+}
+
 export function pathForView(view: AppView): string {
   return NAVIGATION_ITEMS.find((item) => item.view === view)?.path ?? APP_ROUTES.home;
 }
@@ -446,6 +514,8 @@ export function reviewCenterSearchOptionsFromSearch(search: string): ReviewCente
     keyword: params.get(REVIEW_CENTER_QUERY_KEYS.query) ?? undefined,
     mistakeOnly: params.get(REVIEW_CENTER_QUERY_KEYS.mistakeOnly) === 'true',
     page: positiveSafeInteger(params.get(REVIEW_CENTER_QUERY_KEYS.page)),
+    mode: params.get(REVIEW_CENTER_QUERY_KEYS.mode) === 'knowledge' ? 'knowledge' : 'problems',
+    dueOnly: params.get(REVIEW_CENTER_QUERY_KEYS.dueOnly) === 'true',
   });
 }
 
@@ -464,8 +534,15 @@ export function reviewCenterPath(options: ReviewCenterSearchOptions = {}): strin
   if (normalized.focusCard) {
     query.set(REVIEW_CENTER_QUERY_KEYS.focusCard, String(normalized.focusCard));
   }
+  if (normalized.mode === 'knowledge') query.set(REVIEW_CENTER_QUERY_KEYS.mode, 'knowledge');
+  if (normalized.dueOnly) query.set(REVIEW_CENTER_QUERY_KEYS.dueOnly, 'true');
   const search = query.toString();
   return search ? `${APP_ROUTES.mistakes}?${search}` : APP_ROUTES.mistakes;
+}
+
+/** 复习工作台与列表共享类别、搜索和分页，返回时保留上下文。 */
+export function reviewSessionPath(options: ReviewCenterSearchOptions = {}): string {
+  return reviewCenterPath(options).replace(APP_ROUTES.mistakes, APP_ROUTES.reviewSession);
 }
 
 /** 仅允许复习中心自身作为代码 Review 深链的返回地址。 */
@@ -518,6 +595,8 @@ function normalizeReviewCenterSearchOptions(options: ReviewCenterSearchOptions):
     keyword: keyword && keyword.length <= MAX_REVIEW_CENTER_QUERY_LENGTH ? keyword : undefined,
     mistakeOnly: options.mistakeOnly === true,
     page: positiveSafeInteger(options.page),
+    mode: options.mode === 'knowledge' ? 'knowledge' : 'problems',
+    dueOnly: options.mode === 'knowledge' && options.dueOnly === true,
   };
 }
 

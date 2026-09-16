@@ -27,7 +27,7 @@ public class KnowledgeRepository {
   private static final String STATE_COLUMNS =
       """
       ,s.id state_id,s.due_at,s.last_rating,s.last_reviewed_at,s.repetitions,s.interval_days,s.lapses,
-       s.fsrs_state,s.fsrs_step,s.fsrs_stability,s.fsrs_difficulty
+       s.fsrs_state,s.fsrs_step,s.fsrs_stability,s.fsrs_difficulty,s.review_enrolled
       """;
   private static final String CARD_FROM =
       """
@@ -49,33 +49,45 @@ public class KnowledgeRepository {
           (SELECT count(*) FROM knowledge_article a WHERE a.outline_node_id=n.id AND a.status='PUBLISHED') direct_article_count,
           (SELECT count(*) FROM knowledge_card c JOIN descendants d ON d.id=c.outline_node_id WHERE d.ancestor=n.id AND c.status='PUBLISHED') subtree_card_count,
           (SELECT count(*) FROM knowledge_card c JOIN descendants d ON d.id=c.outline_node_id
-            JOIN knowledge_card_user_state s ON s.card_slug=c.slug AND s.user_id=? WHERE d.ancestor=n.id AND c.status='PUBLISHED') subtree_enrolled_count,
+            JOIN knowledge_card_user_state s ON s.card_slug=c.slug AND s.user_id=? AND s.review_enrolled WHERE d.ancestor=n.id AND c.status='PUBLISHED') subtree_enrolled_count,
           EXISTS(SELECT 1 FROM visible child WHERE child.parent_id=n.id) has_children
         FROM knowledge_outline_node n JOIN visible v ON v.id=n.id ORDER BY n.sort_order,n.id
         """,
         user);
   }
 
-  public List<Map<String, Object>> cards(long node, long user, int size, int offset) {
+  private static final String CARD_SEARCH =
+      " AND (strpos(lower(c.question), lower(?)) > 0 OR EXISTS"
+          + " (SELECT 1 FROM jsonb_array_elements_text(c.tags_json) tag"
+          + " WHERE strpos(lower(tag), lower(?)) > 0))";
+
+  public List<Map<String, Object>> cards(long node, long user, int size, int offset, String keyword) {
     return jdbc.queryForList(
         VISIBLE
             + "SELECT c.*"
             + STATE_COLUMNS
             + CARD_FROM
-            + " AND c.outline_node_id=? ORDER BY c.sort_order,c.question,c.slug LIMIT ? OFFSET ?",
+            + " AND c.outline_node_id=?"
+            + CARD_SEARCH
+            + " ORDER BY c.sort_order,c.question,c.slug LIMIT ? OFFSET ?",
         user,
         node,
+        keyword,
+        keyword,
         size,
         offset);
   }
 
-  public long cardCount(long node) {
+  public long cardCount(long node, String keyword) {
     return jdbc.queryForObject(
         VISIBLE
             + "SELECT count(*) FROM knowledge_card c JOIN visible v ON v.id=c.outline_node_id WHERE"
-            + " c.outline_node_id=? AND c.status='PUBLISHED'",
+            + " c.outline_node_id=? AND c.status='PUBLISHED'"
+            + CARD_SEARCH,
         Long.class,
-        node);
+        node,
+        keyword,
+        keyword);
   }
 
   public Optional<Map<String, Object>> card(String slug, long user) {
@@ -134,7 +146,7 @@ public class KnowledgeRepository {
             + "SELECT c.*"
             + STATE_COLUMNS
             + CARD_FROM
-            + " AND s.id IS NOT NULL"
+            + " AND s.review_enrolled"
             + (due ? " AND s.due_at<=NOW()" : "")
             + " ORDER BY s.due_at,c.slug LIMIT ? OFFSET ?",
         user,
@@ -149,7 +161,7 @@ public class KnowledgeRepository {
         SELECT count(*) enrolled_count,count(*) FILTER(WHERE s.due_at<=NOW()) due_count,
           min(s.due_at) FILTER(WHERE s.due_at>NOW()) next_due_at
         FROM knowledge_card_user_state s JOIN knowledge_card c ON c.slug=s.card_slug
-        JOIN visible v ON v.id=c.outline_node_id WHERE s.user_id=? AND c.status='PUBLISHED'
+        JOIN visible v ON v.id=c.outline_node_id WHERE s.user_id=? AND s.review_enrolled AND c.status='PUBLISHED'
         """,
         user);
   }
@@ -187,7 +199,7 @@ public class KnowledgeRepository {
         VALUES(?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(user_id,card_slug) DO UPDATE SET
         repetitions=EXCLUDED.repetitions,interval_days=EXCLUDED.interval_days,lapses=EXCLUDED.lapses,
         fsrs_state=EXCLUDED.fsrs_state,fsrs_step=EXCLUDED.fsrs_step,fsrs_stability=EXCLUDED.fsrs_stability,fsrs_difficulty=EXCLUDED.fsrs_difficulty,
-        due_at=EXCLUDED.due_at,last_rating=EXCLUDED.last_rating,last_reviewed_at=EXCLUDED.last_reviewed_at,updated_at=NOW() RETURNING id
+        due_at=EXCLUDED.due_at,last_rating=EXCLUDED.last_rating,last_reviewed_at=EXCLUDED.last_reviewed_at,review_enrolled=TRUE,updated_at=NOW() RETURNING id
         """,
         Long.class,
         user,
@@ -201,7 +213,17 @@ public class KnowledgeRepository {
         state.get(FSRS_DIFFICULTY),
         java.sql.Timestamp.from(dueAt),
         rating,
-        java.sql.Timestamp.from(reviewedAt));
+        reviewedAt == null ? null : java.sql.Timestamp.from(reviewedAt));
+  }
+
+  public void setEnrollment(long user, String slug, boolean enrolled) {
+    jdbc.update(
+        "UPDATE knowledge_card_user_state SET review_enrolled=?, updated_at=NOW()"
+            + " WHERE user_id=? AND card_slug=? AND review_enrolled<>?",
+        enrolled,
+        user,
+        slug,
+        enrolled);
   }
 
   public long saveAttempt(

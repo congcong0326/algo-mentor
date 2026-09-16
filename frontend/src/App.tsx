@@ -1,8 +1,14 @@
 import { Moon, Sun } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
-import KnowledgePage from './KnowledgePage';
 import KnowledgeReviewCenterPage from './KnowledgeReviewCenterPage';
+import KnowledgeReviewListPage from './review-center/KnowledgeReviewListPage';
+import KnowledgeReviewSessionPage from './review-center/KnowledgeReviewSessionPage';
+import KnowledgeTopicPage from './knowledge/KnowledgeTopicPage';
+import KnowledgeOutlinePage from './knowledge/KnowledgeOutlinePage';
+import KnowledgeNodeCardsPage from './knowledge/KnowledgeNodeCardsPage';
+import KnowledgeArticlePage from './knowledge/KnowledgeArticlePage';
+import KnowledgeCardPage from './knowledge/KnowledgeCardPage';
 import LearningPlans from './LearningPlans';
 import MyPage from './MyPage';
 import SettingsPage from './SettingsPage';
@@ -40,16 +46,22 @@ import {
   APP_ROUTES,
   LEARNER_PROFILE_QUERY_KEYS,
   LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS,
-  REVIEW_CENTER_QUERY_KEYS,
   isAdminPath,
   learnerProfileAnchorFromSearch,
   learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
   reviewCenterSearchOptionsFromSearch,
+  reviewCenterPath,
   LEGACY_FEEDBACK_ROUTE,
   pathForView,
   type AppView,
   viewFromPath,
+  knowledgeNodeIdFromPath,
+  knowledgeArticleNodeIdFromPath,
+  knowledgeCardSlugFromPath,
+  knowledgeListOptions,
+  knowledgeListSearch,
+  knowledgeTopicIdFromPath,
 } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
@@ -161,6 +173,10 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
 
 function normalizeAuthenticatedSearch(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
+  if (knowledgeNodeIdFromPath(pathname) || knowledgeCardSlugFromPath(pathname)) {
+    const { page, keyword } = knowledgeListOptions(search);
+    return knowledgeListSearch(page, keyword);
+  }
   if (learningPlanPracticeSubmissionsRouteFromPath(pathname)) {
     const normalized = new URLSearchParams();
     const submissionsOptions = learningPlanPracticeSubmissionsOptionsFromSearch(search);
@@ -186,20 +202,8 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
     const anchor = learnerProfileAnchorFromSearch(search);
     return anchor ? `?${LEARNER_PROFILE_QUERY_KEYS.profileAnchor}=${encodeURIComponent(anchor)}` : '';
   }
-  if (pathname === APP_ROUTES.mistakes) {
-    const reviewCenterOptions = reviewCenterSearchOptionsFromSearch(search);
-    const normalized = new URLSearchParams();
-    if (reviewCenterOptions.keyword) {
-      normalized.set(REVIEW_CENTER_QUERY_KEYS.query, reviewCenterOptions.keyword);
-    }
-    if (reviewCenterOptions.mistakeOnly) {
-      normalized.set(REVIEW_CENTER_QUERY_KEYS.mistakeOnly, 'true');
-    }
-    if (reviewCenterOptions.focusCard) {
-      normalized.set(REVIEW_CENTER_QUERY_KEYS.focusCard, String(reviewCenterOptions.focusCard));
-    }
-    const serialized = normalized.toString();
-    return serialized ? `?${serialized}` : '';
+  if (pathname === APP_ROUTES.mistakes || pathname === APP_ROUTES.reviewSession) {
+    return new URL(reviewCenterPath(reviewCenterSearchOptionsFromSearch(search)), window.location.origin).search;
   }
   if (/^\/learning-plans\/\d+/.test(pathname) && params.get('pack') === 'today') {
     return '?pack=today';
@@ -804,7 +808,15 @@ export default function App() {
   const pageContent = activeView === 'knowledge'
     ? pathname === APP_ROUTES.knowledgeReview
       ? <KnowledgeReviewCenterPage onNavigate={navigateToPath} />
-      : <KnowledgePage onNavigate={navigateToPath} />
+      : knowledgeCardSlugFromPath(pathname)
+        ? <KnowledgeCardPage key={pathname} slug={knowledgeCardSlugFromPath(pathname)!} search={search} onNavigate={navigateToPath} />
+        : knowledgeArticleNodeIdFromPath(pathname)
+          ? <KnowledgeArticlePage key={pathname} nodeId={knowledgeArticleNodeIdFromPath(pathname)!} onNavigate={navigateToPath} />
+          : knowledgeNodeIdFromPath(pathname)
+          ? <KnowledgeNodeCardsPage key={pathname} nodeId={knowledgeNodeIdFromPath(pathname)!} search={search} onNavigate={navigateToPath} />
+          : knowledgeTopicIdFromPath(pathname)
+            ? <KnowledgeOutlinePage topicId={knowledgeTopicIdFromPath(pathname)!} onNavigate={navigateToPath} />
+            : <KnowledgeTopicPage onNavigate={navigateToPath} />
     : activeView === 'home'
     ? <TodayPackPage onNavigate={navigateToPath} />
     : activeView === 'my'
@@ -865,8 +877,12 @@ export default function App() {
     ? <FeedbackManagementPage onNavigate={navigateToPath} onUnreadCountChanged={setFeedbackUnreadCount} search={search} />
     : activeView === 'mistakes'
       ? pathname === APP_ROUTES.reviewSession
-        ? <ReviewSessionPage onNavigate={navigateToPath} />
-        : <MistakeNotebookPage onNavigate={navigateToPath} search={search} />
+        ? reviewCenterSearchOptionsFromSearch(search).mode === 'knowledge'
+          ? <KnowledgeReviewSessionPage onNavigate={navigateToPath} search={search} />
+          : <ReviewSessionPage onNavigate={navigateToPath} />
+        : reviewCenterSearchOptionsFromSearch(search).mode === 'knowledge'
+          ? <KnowledgeReviewListPage onNavigate={navigateToPath} search={search} />
+          : <MistakeNotebookPage onNavigate={navigateToPath} search={search} />
       : activeView === 'learningPlans'
       ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
       : <HomeDashboard onNavigate={navigateToView} />;

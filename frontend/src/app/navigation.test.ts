@@ -9,6 +9,8 @@ import {
   learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
   reviewCenterPath,
+  reviewCenterSearchOptionsFromSearch,
+  reviewSessionPath,
   reviewCenterReturnTo,
   pathForView,
   viewFromPath,
@@ -154,5 +156,16 @@ describe('learning plan practice submissions navigation', () => {
 
   it('does not expose the former user feedback page as an application view', () => {
     expect(viewFromPath('/feedback')).toBeUndefined();
+  });
+});
+
+describe('统一复习中心路由', () => {
+  it('默认刷题，知识卡列表与工作台保留类别和筛选', () => {
+    expect(reviewCenterPath()).toBe('/mistakes');
+    const options = { mode: 'knowledge' as const, keyword: 'Java', page: 2, dueOnly: true };
+    const path = reviewCenterPath(options);
+    expect(reviewSessionPath(options)).toBe(path.replace('/mistakes', '/mistakes/review'));
+    expect(reviewCenterSearchOptionsFromSearch(new URL(path, 'http://localhost').search)).toMatchObject(options);
+    expect(reviewCenterSearchOptionsFromSearch('?mode=invalid').mode).toBe('problems');
   });
 });

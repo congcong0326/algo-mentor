@@ -43,8 +43,9 @@ public class KnowledgeController {
   public ApiResponse<?> cards(
       @PathVariable long id,
       @RequestParam(defaultValue = "1") int page,
-      @RequestParam(defaultValue = "20") int pageSize) {
-    return ApiResponse.success(service.cards(id, user(), page, pageSize));
+      @RequestParam(defaultValue = "20") int pageSize,
+      @RequestParam(defaultValue = "") String keyword) {
+    return ApiResponse.success(service.cards(id, user(), page, pageSize, keyword));
   }
 
   @GetMapping("/outline-nodes/{id}/articles")
@@ -69,6 +70,16 @@ public class KnowledgeController {
   public ApiResponse<?> preview(
       @PathVariable String slug, @RequestParam(defaultValue = "UTC") String timezone) {
     return ApiResponse.success(service.preview(slug, user(), timezone));
+  }
+
+  @PutMapping(org.congcong.algomentor.api.knowledge.model.KnowledgeContract.REVIEW_ENROLLMENT_PATH)
+  public ApiResponse<?> enroll(@PathVariable String slug) {
+    return ApiResponse.success(service.setEnrollment(slug, user(), true));
+  }
+
+  @DeleteMapping(org.congcong.algomentor.api.knowledge.model.KnowledgeContract.REVIEW_ENROLLMENT_PATH)
+  public ApiResponse<?> removeEnrollment(@PathVariable String slug) {
+    return ApiResponse.success(service.setEnrollment(slug, user(), false));
   }
 
   @PostMapping("/cards/{slug}/review-attempts")

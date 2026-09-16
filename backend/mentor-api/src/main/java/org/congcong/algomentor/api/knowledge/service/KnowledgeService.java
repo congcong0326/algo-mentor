@@ -107,13 +107,19 @@ public class KnowledgeService {
   }
 
   public Page<CardSummary> cards(long node, long user, int page, int size) {
+    return cards(node, user, page, size, "");
+  }
+
+  public Page<CardSummary> cards(long node, long user, int page, int size, String keyword) {
     pagination(page, size);
+    String query = keyword == null ? "" : keyword.trim();
+    if (query.length() > 200) throw new IllegalArgumentException("搜索内容最多 200 字符");
     requireNode(repository.nodes(user), node);
     return new Page<>(
-        repository.cards(node, user, size, (page - 1) * size).stream()
+        repository.cards(node, user, size, (page - 1) * size, query).stream()
             .map(this::cardSummary)
             .toList(),
-        repository.cardCount(node),
+        repository.cardCount(node, query),
         page,
         size,
         Instant.now());
@@ -180,7 +186,21 @@ public class KnowledgeService {
                   return new Option(rating.name(), next.dueAt(), next.intervalDays());
                 })
             .toList();
-    return new Preview(slug, r.get("state_id") != null, zone.getId(), now, options);
+    return new Preview(slug, learning(r).enrolled(), zone.getId(), now, options);
+  }
+
+  @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
+  public LearningState setEnrollment(String slug, long user, boolean enrolled) {
+    validateSlug(slug);
+    repository.lockReview(user);
+    var row = repository.card(slug, user).orElseThrow(KnowledgeException::notFound);
+    if (enrolled && row.get("state_id") == null) {
+      var now = Instant.now();
+      repository.saveState(user, slug, snapshot(SchedulingState.initial(), now), null, null, now);
+    } else {
+      repository.setEnrollment(user, slug, enrolled);
+    }
+    return learning(repository.card(slug, user).orElseThrow(KnowledgeException::notFound));
   }
 
   @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
@@ -210,7 +230,7 @@ public class KnowledgeService {
     var now = Instant.now();
     var card = scheduledCard(row, user, now);
     var next = scheduler.apply(card, parsed, preferences.get(user), now, zone);
-    boolean first = row.get("state_id") == null;
+    boolean first = row.get("last_reviewed_at") == null;
     var after = snapshot(next.state(), next.dueAt());
     after.put(FIRST_REVIEW, first);
     long state = repository.saveState(user, slug, after, now, parsed.name(), next.dueAt());
@@ -286,10 +306,10 @@ public class KnowledgeService {
   private LearningState learning(Map<String, Object> r) {
     var due = instant(r.get("due_at"));
     return new LearningState(
-        r.get("state_id") != null,
+        Boolean.TRUE.equals(r.get(REVIEW_ENROLLED)),
         string(r, "fsrs_state"),
         due,
-        due != null && !due.isAfter(Instant.now()),
+        Boolean.TRUE.equals(r.get(REVIEW_ENROLLED)) && due != null && !due.isAfter(Instant.now()),
         string(r, "last_rating"),
         instant(r.get("last_reviewed_at")));
   }

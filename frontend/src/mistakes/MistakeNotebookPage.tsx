@@ -1,4 +1,5 @@
-import { Archive, ArchiveRestore, BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, Eye, RefreshCw, Search, X } from 'lucide-react';
+import { dueTimingLabel } from '../review-center/reviewPresentation';
+import { ReviewCenterHeader, ReviewCenterStats, ReviewCenterToolbar, ReviewCenterCard, ReviewCenterPagination, ReviewCenterDetail } from '../review-center/ReviewCenterLayout';
 import { useEffect, useRef, useState } from 'react';
 import {
   APP_ROUTES,
@@ -9,7 +10,7 @@ import {
 } from '../app/navigation';
 import MarkdownView from '../components/MarkdownView';
 import { useI18n } from '../i18n/I18nProvider';
-import type { LocaleResources, SupportedLocale } from '../i18n/locales';
+import type { SupportedLocale } from '../i18n/locales';
 import ProblemNoteEditor from '../problem-notes/ProblemNoteEditor';
 import {
   archiveReviewCard,
@@ -34,7 +35,7 @@ interface MistakeNotebookPageProps {
   search?: string;
 }
 
-const dayMs = 24 * 60 * 60 * 1000;
+
 
 export default function MistakeNotebookPage({ onNavigate, search = '' }: MistakeNotebookPageProps) {
   const { locale, resources } = useI18n();
@@ -53,7 +54,6 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
   const [reviewSummary, setReviewSummary] = useState<ReviewSummaryResponse>();
   const detailRequestId = useRef(0);
   const detailTriggerButtonRef = useRef<HTMLButtonElement | null>(null);
-  const detailCloseButtonRef = useRef<HTMLButtonElement>(null);
   const cardRefs = useRef(new Map<number, HTMLElement>());
 
   const items = reviewCardsPage?.items ?? [];
@@ -113,12 +113,6 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
     void loadSummary(controller.signal);
     return () => controller.abort();
   }, [locale]);
-
-  useEffect(() => {
-    if (detailCard) {
-      detailCloseButtonRef.current?.focus();
-    }
-  }, [detailCard]);
 
   async function load(signal?: AbortSignal) {
     setLoading(true);
@@ -230,52 +224,17 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
 
   return (
     <section className="mistake-page" aria-labelledby="mistake-title">
-      <header className="mistake-header">
-        <h1 id="mistake-title">{resources.reviewCenter.title}</h1>
-        <div className="mistake-header-actions">
-          <button className="secondary-button compact" onClick={() => onNavigate(APP_ROUTES.knowledgeReview)} type="button">
-            <BookOpen aria-hidden="true" />
-            <span>知识库复习</span>
-          </button>
-          <button
-            className="primary-button mistake-review-button"
-            disabled={currentDueCount === 0}
-            onClick={() => currentDueCount > 0 && onNavigate(APP_ROUTES.reviewSession)}
-            type="button"
-          >
-            <BookOpenCheck aria-hidden="true" />
-            <span>{reviewActionLabel}</span>
-          </button>
-        </div>
-      </header>
-
-      <dl className="mistake-stat-grid" aria-label={resources.reviewCenter.overviewAriaLabel}>
-        <div><dt>{resources.reviewCenter.remainingToday}</dt><dd>{remainingTodayCount}</dd></div>
-        <div><dt>{resources.reviewCenter.reviewProblems}</dt><dd>{activeCount}</dd></div>
-        <div><dt>{resources.reviewCenter.mistakes}</dt><dd>{mistakeCount}</dd></div>
-      </dl>
-
-      <section className="mistake-toolbar" aria-label={resources.reviewCenter.filtersAriaLabel}>
-        <label className="search-field">
-          <Search aria-hidden="true" />
-          <input
-            onChange={(event) => updateFilters(event.target.value, mistakeOnly)}
-            placeholder={resources.reviewCenter.searchPlaceholder}
-            value={keyword}
-          />
-        </label>
-        <label className="checkbox-control">
-          <input
-            checked={mistakeOnly}
-            onChange={(event) => updateFilters(keyword, event.target.checked)}
-            type="checkbox"
-          />
-          <span>{resources.reviewCenter.mistakesOnly}</span>
-        </label>
-        <button aria-label={resources.reviewCenter.refreshCards} className="icon-button" onClick={() => void load()} type="button">
-          <RefreshCw aria-hidden="true" />
-        </button>
-      </section>
+      <ReviewCenterHeader mode="problems" onNavigate={onNavigate} actionLabel={reviewActionLabel}
+        canStart={currentDueCount > 0} onStart={() => onNavigate(APP_ROUTES.reviewSession)} />
+      <ReviewCenterStats items={[
+        { label: resources.reviewCenter.remainingToday, value: remainingTodayCount },
+        { label: resources.reviewCenter.reviewProblems, value: activeCount },
+        { label: resources.reviewCenter.mistakes, value: mistakeCount },
+      ]} />
+      <ReviewCenterToolbar keyword={keyword} placeholder={resources.reviewCenter.searchPlaceholder}
+        onSearch={(value) => updateFilters(value, mistakeOnly)} checked={mistakeOnly}
+        filterLabel={resources.reviewCenter.mistakesOnly} onFilter={(value) => updateFilters(keyword, value)}
+        onRefresh={() => void Promise.all([load(), loadSummary()])} />
 
       {(error || actionError) && <p className="error-text" role="alert">{error || actionError}</p>}
 
@@ -287,18 +246,15 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
         ) : items.map((overview) => {
           const card = overview.card;
           return (
-          <article
-            className="mistake-note-card"
-            key={card.id}
-            ref={(element) => {
+          <ReviewCenterCard
+            key={card.id} title={reviewCardTitle(card, locale)} archived={card.archived}
+            cardRef={(element) => {
               if (element) cardRefs.current.set(card.id, element);
               else cardRefs.current.delete(card.id);
             }}
-            tabIndex={-1}
-          >
-            <div className="mistake-note-main">
-              <h2>{reviewCardTitle(card, locale)}</h2>
-              <div className="mistake-note-meta">
+            onDetail={(trigger) => void handleOpenDetail(card, trigger)}
+            onArchive={() => void handleArchive(card)}
+            meta={<>
                 <span>{resources.reviewCenter.sourceLabels[card.source]}</span>
                 <span>{dueTimingLabel(card.dueAt, resources.reviewCenter)}</span>
                 {card.lastRating && (
@@ -309,79 +265,25 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
                 {card.lapses > 0 && (
                   <span className="mistake-note-lapses">{resources.reviewCenter.forgottenCount(card.lapses)}</span>
                 )}
-              </div>
-            </div>
-            <ReviewCardTimeline
+            </>}
+            timeline={<ReviewCardTimeline
               locale={locale}
               onOpenReview={(review) => openReview(card, review)}
               resources={resources.reviewCenter}
               reviews={overview.recentCodeReviews}
               source={card.source}
-            />
-            <div className="mistake-note-actions">
-              <button
-                aria-label={resources.reviewCenter.viewCardDetail(reviewCardTitle(card, locale))}
-                className="icon-button"
-                onClick={(event) => void handleOpenDetail(card, event.currentTarget)}
-                title={resources.reviewCenter.viewDetail}
-                type="button"
-              >
-                <Eye aria-hidden="true" />
-              </button>
-              <button
-                aria-label={card.archived ? resources.reviewCenter.restoreReview : resources.reviewCenter.removeFromReview}
-                className="icon-button"
-                onClick={() => void handleArchive(card)}
-                title={card.archived ? resources.reviewCenter.restoreReview : resources.reviewCenter.removeFromReview}
-                type="button"
-              >
-                {card.archived ? <ArchiveRestore aria-hidden="true" /> : <Archive aria-hidden="true" />}
-              </button>
-            </div>
-          </article>
+            />}
+          />
           );
         })}
       </div>
 
       {!loading && items.length > 0 && (
-        <nav aria-label={resources.common.pageStatus(page, totalPages)} className="pagination-row mistake-pagination">
-          <button
-            aria-label={resources.common.previousPage}
-            className="icon-button"
-            disabled={page <= 1}
-            onClick={() => updatePage(page - 1)}
-            type="button"
-          >
-            <ChevronLeft aria-hidden="true" />
-          </button>
-          <span>{resources.common.pageStatus(page, totalPages)}</span>
-          <button
-            aria-label={resources.common.nextPage}
-            className="icon-button"
-            disabled={page >= totalPages}
-            onClick={() => updatePage(page + 1)}
-            type="button"
-          >
-            <ChevronRight aria-hidden="true" />
-          </button>
-        </nav>
+        <ReviewCenterPagination page={page} totalPages={totalPages} onPage={updatePage} />
       )}
 
       {detailCard && (
-        <div className="modal-backdrop">
-          <section aria-labelledby="review-card-detail-title" aria-modal="true" className="mistake-detail-modal" role="dialog">
-            <div className="modal-heading">
-              <div>
-                <p className="eyebrow">Review Card</p>
-                <h2 id="review-card-detail-title">
-                  {context?.problem.title || reviewCardTitle(detailCard, locale)}
-                </h2>
-              </div>
-              <button aria-label={resources.reviewCenter.closeDetail} className="icon-button" onClick={closeDetail} ref={detailCloseButtonRef} type="button">
-                <X aria-hidden="true" />
-              </button>
-            </div>
-
+        <ReviewCenterDetail title={context?.problem.title || reviewCardTitle(detailCard, locale)} onClose={closeDetail}>
             {contextLoading ? (
               <div className="loading-panel">{resources.reviewCenter.loadingDetail}</div>
             ) : contextError ? (
@@ -413,29 +315,10 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
                 </section>
               </div>
             ) : null}
-          </section>
-        </div>
+        </ReviewCenterDetail>
       )}
     </section>
   );
-}
-
-function dueTimingLabel(dueAt: string, resources: LocaleResources['reviewCenter']) {
-  const dueTime = new Date(dueAt).getTime();
-  if (Number.isNaN(dueTime)) {
-    return resources.dueUnknown;
-  }
-  const diffDays = Math.round((startOfDay(dueTime) - startOfDay(Date.now())) / dayMs);
-  if (diffDays < 0) return resources.overdue(Math.abs(diffDays));
-  if (diffDays === 0) return resources.dueToday;
-  if (diffDays === 1) return resources.reviewTomorrow;
-  return resources.reviewInDays(diffDays);
-}
-
-function startOfDay(time: number) {
-  const date = new Date(time);
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
 }
 
 function formatDateTime(value: string, locale: SupportedLocale) {
