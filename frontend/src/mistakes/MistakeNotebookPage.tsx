@@ -1,4 +1,4 @@
-import { Archive, ArchiveRestore, BookOpenCheck, ChevronLeft, ChevronRight, Eye, RefreshCw, Search, X } from 'lucide-react';
+import { Archive, ArchiveRestore, BookOpen, BookOpenCheck, ChevronLeft, ChevronRight, Eye, RefreshCw, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import {
   APP_ROUTES,
@@ -232,15 +232,21 @@ export default function MistakeNotebookPage({ onNavigate, search = '' }: Mistake
     <section className="mistake-page" aria-labelledby="mistake-title">
       <header className="mistake-header">
         <h1 id="mistake-title">{resources.reviewCenter.title}</h1>
-        <button
-          className="primary-button mistake-review-button"
-          disabled={currentDueCount === 0}
-          onClick={() => currentDueCount > 0 && onNavigate(APP_ROUTES.reviewSession)}
-          type="button"
-        >
-          <BookOpenCheck aria-hidden="true" />
-          <span>{reviewActionLabel}</span>
-        </button>
+        <div className="mistake-header-actions">
+          <button className="secondary-button compact" onClick={() => onNavigate(APP_ROUTES.knowledgeReview)} type="button">
+            <BookOpen aria-hidden="true" />
+            <span>知识库复习</span>
+          </button>
+          <button
+            className="primary-button mistake-review-button"
+            disabled={currentDueCount === 0}
+            onClick={() => currentDueCount > 0 && onNavigate(APP_ROUTES.reviewSession)}
+            type="button"
+          >
+            <BookOpenCheck aria-hidden="true" />
+            <span>{reviewActionLabel}</span>
+          </button>
+        </div>
       </header>
 
       <dl className="mistake-stat-grid" aria-label={resources.reviewCenter.overviewAriaLabel}>

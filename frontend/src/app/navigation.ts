@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Activity, Archive, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
+import { Activity, Archive, BookOpen, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -7,6 +7,8 @@ export const APP_ROUTES = {
   privacy: '/privacy',
   terms: '/terms',
   home: '/',
+  knowledge: '/knowledge',
+  knowledgeReview: '/knowledge/review',
   my: '/me',
   settings: '/settings',
   learningPlans: '/learning-plans',
@@ -98,6 +100,7 @@ export interface ReviewCenterSearchOptions {
 
 export type AppView =
   | 'home'
+  | 'knowledge'
   | 'my'
   | 'settings'
   | 'learningPlans'
@@ -155,6 +158,12 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     labelKey: 'mistakes',
     path: APP_ROUTES.mistakes,
     icon: NotebookTabs,
+  },
+  {
+    view: 'knowledge',
+    labelKey: 'knowledge',
+    path: APP_ROUTES.knowledge,
+    icon: BookOpen,
   },
   {
     view: 'problems',
@@ -274,6 +283,7 @@ export function viewFromPath(pathname: string): AppView | undefined {
   if (pathname === APP_ROUTES.home) {
     return 'home';
   }
+  if (pathname === APP_ROUTES.knowledge || pathname.startsWith(`${APP_ROUTES.knowledge}/`)) return 'knowledge';
   if (pathname === APP_ROUTES.my) {
     return 'my';
   }

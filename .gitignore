@@ -15,6 +15,9 @@ Thumbs.db
 .worktrees/
 data/sources/
 
+# 本地知识资料仓库，仅供调研阅读。
+/research-sources/
+
 backend/**/target/
 backend/mentor-api/src/main/resources/static/
 node_modules/

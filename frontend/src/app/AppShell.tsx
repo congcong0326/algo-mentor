@@ -60,7 +60,7 @@ export default function AppShell({
     if (item.permission && !permissions.has(item.permission)) {
       return false;
     }
-    return item.view === 'home' || item.view === 'learningPlans' || item.view === 'mistakes';
+    return item.view === 'home' || item.view === 'learningPlans' || item.view === 'mistakes' || item.view === 'knowledge';
   });
 
   useEffect(() => {

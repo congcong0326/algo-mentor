@@ -54,7 +54,7 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', '知识库']);
     fireEvent.click(screen.getByRole('button', { name: '打开反馈信箱' }));
     expect(onOpenFeedback).toHaveBeenCalledOnce();
     expect(screen.getByRole('tooltip', { name: '打开反馈信箱' })).toHaveClass('header-action-tooltip');
@@ -153,7 +153,7 @@ describe('AppShell', () => {
 
     expect(screen.queryByRole('button', { name: '内测准入' })).not.toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', '知识库']);
   });
 
   it('shows login entry settings navigation only with auth settings permission', () => {

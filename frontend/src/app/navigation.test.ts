@@ -100,6 +100,11 @@ describe('learning plan practice submissions navigation', () => {
     expect(pathForView('settings')).toBe('/settings');
   });
 
+  it('maps the fixed knowledge navigation entry to its route', () => {
+    expect(viewFromPath('/knowledge')).toBe('knowledge');
+    expect(pathForView('knowledge')).toBe('/knowledge');
+  });
+
   it('maps the admin users route', () => {
     expect(viewFromPath('/admin/users')).toBe('adminUsers');
     expect(pathForView('adminUsers')).toBe('/admin/users');

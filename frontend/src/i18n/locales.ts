@@ -89,6 +89,7 @@ export interface LocaleResources {
   };
   nav: {
     home: string;
+    knowledge: string;
     my: string;
     settings: string;
     learningPlans: string;
@@ -1805,6 +1806,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     nav: {
       home: '首页',
+      knowledge: '知识库',
       my: '学习画像',
       settings: '设置',
       learningPlans: '方案',
@@ -3585,6 +3587,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     nav: {
       home: 'Home',
+      knowledge: 'Knowledge',
       my: 'Learning Profile',
       settings: 'Settings',
       learningPlans: 'Plans',

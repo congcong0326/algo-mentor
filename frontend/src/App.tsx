@@ -1,6 +1,8 @@
 import { Moon, Sun } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
+import KnowledgePage from './KnowledgePage';
+import KnowledgeReviewCenterPage from './KnowledgeReviewCenterPage';
 import LearningPlans from './LearningPlans';
 import MyPage from './MyPage';
 import SettingsPage from './SettingsPage';
@@ -799,7 +801,11 @@ export default function App() {
     );
   }
 
-  const pageContent = activeView === 'home'
+  const pageContent = activeView === 'knowledge'
+    ? pathname === APP_ROUTES.knowledgeReview
+      ? <KnowledgeReviewCenterPage onNavigate={navigateToPath} />
+      : <KnowledgePage onNavigate={navigateToPath} />
+    : activeView === 'home'
     ? <TodayPackPage onNavigate={navigateToPath} />
     : activeView === 'my'
     ? (

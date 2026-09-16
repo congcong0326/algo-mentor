@@ -3,6 +3,7 @@
 ## 根目录
 
 - `Makefile`：统一构建、测试、本地运行和前端静态资源同步入口。
+- `docs/java-fundamentals-pilot/README.md`：Java 基础知识组织验证入口，包含资料快照、12 主题大纲、独立介绍文档、页面导航与问题卡样稿、卡片关系和验证记录；外部资料仓库存放于 Git 忽略的 `research-sources/`。
 - `pom.xml`：仓库级 Maven 聚合入口，引入 `backend` 多模块工程。
 - `pyproject.toml` / `uv.lock` / `.python-version`：测试工程 Python 3.12 + uv 环境配置，供后续 smoke/eval runner 使用。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
@@ -92,6 +93,8 @@
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
 - `tools/learning_plan_template_seed/prepare_p1b_template_sources.py`：固定版本生成 TIH 核心专题、动态规划进阶、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75 和 LeetCode 面试经典 150 七个模板源目录。
 - `docs/product-planning/learning-plan-load-and-weekly-loop-design.md`：训练方案负载计算与周执行闭环设计，说明模板「推荐/舒缓/冲刺」节奏、AI 时间预算约束、负载估算、周桶进度和分阶段落地方案。
+- `docs/product-planning/knowledge-outline-card-v1-design.md`：知识大纲、共享知识卡片和可选主题文章的第一阶段研发基线，定义虚拟 root 递归树、共享内容与个人 FSRS 存储、首次四档评价入队，以及独立知识库和八股文复习中心页面。
+- `docs/product-planning/knowledge-outline-card-v1-api-design.md`：当前用户侧 API 实施基线，覆盖知识库、大纲、卡片与文章、四档预览/评价及复习中心 12 个接口；内容通过数据库导入维护，管理员 CRUD 方案已撤回。
 - `docs/product-planning/p0-mistake-notebook-spaced-repetition-design.md`：旧版错题本产品设计，已由题目复习卡双面重构方案取代，仅保留历史决策背景。
 - `docs/product-planning/p1-4.0-problem-bank-foundation-design.md`：P1-4.0 题库基座官方 API 全量构建与校验设计，说明以 LeetCode 官方（`.com` 英文 + `.cn` 中文，按 slug join）为唯一内容源、退役 fishjar，分三阶段推进（阶段一原始抓取入本地、阶段二数据画像分类 complete/zh_missing/cn_only/premium/deprecated、阶段三数据驱动加工含是否 AI 翻译），含字段映射、校验规则与 `azl397985856`/`LeetcodeTop` 可选交叉校验。
 - `docs/product-planning/p1-4.0-a-company-problem-metadata-design.md`：P1-4.0-A 公司维度题目元数据设计，说明 `liquidslr`（欧美/时间桶）与 `afatcoder/LeetcodeTop`（国内/岗位）双主源、`role` 岗位维度、cn/com 链接归一、公司高频 seed、数据库模型、题库/API/Agent 工具扩展和测试计划。
