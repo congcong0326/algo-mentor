@@ -2,8 +2,13 @@
 
 ## 根目录
 
+- `knowledge-base/README.md`：正式知识库维护手册；`.node` 大纲、单 Markdown 卡片、slug 与元数据关系、全量导入命令及 demo 审查路径。
+- `docs/product-planning/knowledge-directory-import-v1-design.md`：目录解析、V76 开发期重建迁移、slug API 与用户复习事实保留的实施设计。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/knowledge/`：model 为内容/接口契约，importer 为解析和独立 CLI，repository/service 为用户查询、FSRS 和按 slug 幂等评价。
+- `frontend/src/services/knowledge.ts` / `types/knowledge.ts`：知识库共享前端契约；KnowledgePage 展示大纲、文章、卡片详情和关联，KnowledgeReviewCenterPage 按 slug 复习。
+
 - `Makefile`：统一构建、测试、本地运行和前端静态资源同步入口。
-- `docs/java-fundamentals-pilot/README.md`：Java 基础知识组织验证入口，包含资料快照、12 主题大纲、独立介绍文档、页面导航与问题卡样稿、卡片关系和验证记录；外部资料仓库存放于 Git 忽略的 `research-sources/`。
+- `docs/java-fundamentals-pilot/README.md`：历史 Java 基础知识组织验证资料（不参与正式导入）；正式 demo 与维护格式以 `knowledge-base/` 为准。
 - `pom.xml`：仓库级 Maven 聚合入口，引入 `backend` 多模块工程。
 - `pyproject.toml` / `uv.lock` / `.python-version`：测试工程 Python 3.12 + uv 环境配置，供后续 smoke/eval runner 使用。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。

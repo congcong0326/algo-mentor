@@ -14714,3 +14714,8 @@ textarea[aria-invalid='true'] {
     padding-bottom: 12px;
   }
 }
+
+.knowledge-outline-list { list-style: none; padding-left: 1rem; margin: 0.5rem 0; }
+.knowledge-browser > .knowledge-outline-list { padding-left: 0; }
+.knowledge-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.knowledge-relations { margin-top: 1.5rem; }

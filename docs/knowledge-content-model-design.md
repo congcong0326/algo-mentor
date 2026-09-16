@@ -3,6 +3,8 @@
 设计日期：2026-09-14
 
 > 2026-09-15 产品方向修订：第一阶段以共享知识大纲和问题卡为核心，概览文章改为按需生成、人工批准的可选内容。本文保留早期内容模型讨论；研发实施以 [`docs/product-planning/knowledge-outline-card-v1-design.md`](product-planning/knowledge-outline-card-v1-design.md) 为准。
+> 2026-09-16：本文其余内容为早期产品讨论，不作为文件格式契约；当前采用 .node 目录、一文件一卡、slug 身份、核心回答与自由详情，以及元数据关系。维护规范见 [knowledge-base/README.md](../knowledge-base/README.md)。
+
 
 需求修订：总览定位为当前层级的介绍文档，帮助用户建立整体认识；内容导航由目录和页面结构承担。
 

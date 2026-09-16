@@ -1,0 +1,10 @@
+export type KnowledgeLearningState = { enrolled: boolean; phase?: string; dueAt?: string; isDue: boolean; lastRating?: string };
+export type KnowledgeNode = { id: number; title: string; summary?: string; directCardCount: number; directArticleCount: number; subtreeCardCount: number; subtreeEnrolledCardCount: number };
+export type KnowledgeTree = { node: KnowledgeNode; children: KnowledgeTree[] };
+export type KnowledgeRelationType = 'prerequisites' | 'followups' | 'contrasts' | 'related';
+export type KnowledgeRelation = { type: KnowledgeRelationType; slug: string; question: string };
+export type KnowledgeCard = { slug: string; outlineNodeId: number; question: string; tags: string[]; learningState: KnowledgeLearningState; answerMarkdown?: string; explanationMarkdown?: string; relations?: KnowledgeRelation[] };
+export type KnowledgeArticle = { id: number; outlineNodeId: number; title: string; bodyMarkdown?: string };
+export type KnowledgePage<T> = { items: T[]; total: number; page: number; pageSize: number };
+export type KnowledgeReviewSummary = { enrolledCount: number; dueCount: number; nextDueAt?: string };
+export const KNOWLEDGE_RELATION_LABELS: Record<KnowledgeRelationType, string> = { prerequisites: '前置知识', followups: '继续追问', contrasts: '对比辨析', related: '相关卡片' };

@@ -291,3 +291,15 @@ sync-frontend:
 clean:
 	$(MAVEN) clean
 	rm -rf frontend/dist frontend/build
+
+# 知识库只通过显式命令导入，不启动 Web 服务或后台任务。
+KNOWLEDGE_DIR ?= knowledge-base
+.PHONY: knowledge-cli-build knowledge-validate knowledge-import
+knowledge-cli-build:
+	$(MAVEN) -pl mentor-api -am -DskipTests clean package
+
+knowledge-validate: knowledge-cli-build
+	java -jar backend/mentor-api/target/mentor-api-0.1.0-SNAPSHOT.jar --knowledge-validate "$(abspath $(KNOWLEDGE_DIR))"
+
+knowledge-import: knowledge-cli-build
+	@POSTGRES_HOST="$(POSTGRES_HOST)" POSTGRES_PORT="$(POSTGRES_PORT)" POSTGRES_DB="$(POSTGRES_DB)" POSTGRES_USER="$(POSTGRES_USER)" POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" java -jar backend/mentor-api/target/mentor-api-0.1.0-SNAPSHOT.jar --knowledge-import "$(abspath $(KNOWLEDGE_DIR))"
