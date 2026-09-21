@@ -34,7 +34,7 @@ Java 基础总览采用平实的讲述方式，用少量直接相关的例子解
 
 “Java 基础”在这里指语言、对象模型和常用标准库，默认 Java 17。集合内部实现、并发、JVM 深入机制、Spring 是相邻分支；本轮完成的是 12 主题大纲、三篇介绍和 8 张卡片，其他主题正文仍待编写。
 
-外部资料仍在 Git 忽略的 `research-sources/` 下：JavaGuide、toBeBetterJavaer、OnJava8 为浅克隆与文本稀疏检出，official 保存官方抽样页面。本版沿用已有快照，按此前要求不做许可筛选。
+外部资料现位于 Git 忽略的 `knowledge-base/references/` 下：JavaGuide、toBeBetterJavaer、OnJava8 为浅克隆与文本稀疏检出，official 保存官方抽样页面。本版沿用已有快照，按此前要求不做许可筛选。
 
 ## 审查时关注的结果
 

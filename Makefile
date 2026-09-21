@@ -294,12 +294,33 @@ clean:
 
 # 知识库只通过显式命令导入，不启动 Web 服务或后台任务。
 KNOWLEDGE_DIR ?= knowledge-base
-.PHONY: knowledge-cli-build knowledge-validate knowledge-import
+KNOWLEDGE_OUTLINE ?=
+KNOWLEDGE_JAR := backend/mentor-api/target/mentor-api-0.1.0-SNAPSHOT.jar
+KNOWLEDGE_BUILD_FORCE ?=
+.PHONY: knowledge-cli-build knowledge-cli-rebuild knowledge-outline-preview knowledge-outline-apply knowledge-outline-check knowledge-tools-test knowledge-validate knowledge-import
 knowledge-cli-build:
-	$(MAVEN) -pl mentor-api -am -DskipTests clean package
+	python3 scripts/knowledge/build_cli.py --jar "$(KNOWLEDGE_JAR)" $(KNOWLEDGE_BUILD_FORCE) -- $(MAVEN) -pl mentor-api -am -DskipTests clean package
 
-knowledge-validate: knowledge-cli-build
-	java -jar backend/mentor-api/target/mentor-api-0.1.0-SNAPSHOT.jar --knowledge-validate "$(abspath $(KNOWLEDGE_DIR))"
+knowledge-cli-rebuild:
+	$(MAKE) knowledge-cli-build KNOWLEDGE_BUILD_FORCE=--force
 
-knowledge-import: knowledge-cli-build
-	@POSTGRES_HOST="$(POSTGRES_HOST)" POSTGRES_PORT="$(POSTGRES_PORT)" POSTGRES_DB="$(POSTGRES_DB)" POSTGRES_USER="$(POSTGRES_USER)" POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" java -jar backend/mentor-api/target/mentor-api-0.1.0-SNAPSHOT.jar --knowledge-import "$(abspath $(KNOWLEDGE_DIR))"
+knowledge-outline-preview:
+	python3 scripts/knowledge/outline.py preview --root "$(KNOWLEDGE_DIR)" $(if $(KNOWLEDGE_OUTLINE),--outline "$(KNOWLEDGE_OUTLINE)")
+
+knowledge-outline-apply:
+	python3 scripts/knowledge/outline.py apply --root "$(KNOWLEDGE_DIR)" $(if $(KNOWLEDGE_OUTLINE),--outline "$(KNOWLEDGE_OUTLINE)")
+
+knowledge-outline-check:
+	python3 scripts/knowledge/outline.py check --root "$(KNOWLEDGE_DIR)"
+
+knowledge-tools-test:
+	python3 -m unittest discover -s scripts/knowledge -p 'test_*.py'
+
+# 顺序执行：路径错误应在构建或连接数据库之前失败，make -j 也遵守此顺序。
+knowledge-validate: knowledge-outline-check
+	$(MAKE) knowledge-cli-build
+	java -jar "$(KNOWLEDGE_JAR)" --knowledge-validate "$(abspath $(KNOWLEDGE_DIR))"
+
+knowledge-import: knowledge-outline-check
+	$(MAKE) knowledge-cli-build
+	@POSTGRES_HOST="$(POSTGRES_HOST)" POSTGRES_PORT="$(POSTGRES_PORT)" POSTGRES_DB="$(POSTGRES_DB)" POSTGRES_USER="$(POSTGRES_USER)" POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" java -jar "$(KNOWLEDGE_JAR)" --knowledge-import "$(abspath $(KNOWLEDGE_DIR))"

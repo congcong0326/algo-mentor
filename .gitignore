@@ -15,8 +15,8 @@ Thumbs.db
 .worktrees/
 data/sources/
 
-# 本地知识资料仓库，仅供调研阅读。
-/research-sources/
+# 本地参考资料仓库与官方网页快照，仅供调研阅读；保留 references 根目录下的维护文档。
+/knowledge-base/references/*/
 
 backend/**/target/
 backend/mentor-api/src/main/resources/static/

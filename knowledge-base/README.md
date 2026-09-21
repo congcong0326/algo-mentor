@@ -31,7 +31,35 @@ knowledge-base/
 - 后缀区分大小写，正式内容不支持符号链接。去掉后缀就会退出导入范围。
 - 节点、文章按文件名称的确定性顺序显示；卡片先按 `order`，同值按问题标题和 slug 排序。
 
-不需要 `_node.yaml`、节点稳定键、来源清单或额外标题字段。现有仓库 `knowledge/` 个人笔记不会自动导入。
+运行时不需要 `_node.yaml`、节点稳定键或额外标题字段。`outline.json` 是可选编辑清单，帮助生成和检查目录，本身不导入。现有仓库 `knowledge/` 个人笔记不会自动导入。
+
+### 大纲维护流程
+
+标题直接使用主题名称，默认不加编号。每个管理大纲的主题只维护一份 README，集中说明范围与 GitHub 固定版本来源；空叶子用 `.gitkeep` 保留在 Git 中。标题中的 `/`、`\`、控制字符和首尾空白会被工具拒绝，例如 `I/O` 应明确写成 `IO` 后再生成。
+
+在已创建的主题 `.node` 目录内维护 `outline.json`，管理该主题的全部后代节点：
+
+```json
+{
+  "version": 1,
+  "children": [
+    {"title": "对象与引用", "children": [{"title": "值传递"}]},
+    {"title": "异常与资源管理"}
+  ]
+}
+```
+
+先预览再生成；预览不写文件，生成只补建目录，不生成卡片或文章：
+
+```sh
+make knowledge-outline-preview KNOWLEDGE_OUTLINE=knowledge-base/Java.node/基础.node/outline.json
+make knowledge-outline-apply KNOWLEDGE_OUTLINE=knowledge-base/Java.node/基础.node/outline.json
+make knowledge-outline-check
+```
+
+预览显示缺少与清单外的完整节点路径。生成前会拒绝非法标题、重复同级节点、符号链接和清单外节点。改名、移动、删除由维护者结合已有内容显式处理，并保留卡片 slug；不能用自动补建代替内容迁移。清单中的数组顺序不控制页面排序，页面仍按目录名排序。
+
+检查会诊断正式 `.node` 内被普通目录隔断的知识内容；根级普通目录继续忽略，正式节点内的 `references/`、`skills/` 也可用于明确存放不导入的参考资料。普通目录不会因此被自动纳入导入范围。直接调用 Java JAR 不读取编辑清单，日常维护请使用 Make 入口。
 
 ## 2. 一张卡片的结构
 
@@ -119,7 +147,20 @@ make knowledge-validate
 make knowledge-import
 ```
 
-命令会构建 Java 制品，然后执行一次性 CLI；不会启动 Vite、Web API 或后台 worker。`knowledge-validate` 只读目录，不连接数据库。`knowledge-import` 先完成相同校验，再执行 Flyway 迁移和事务导入，完成后退出。
+也可以直接在本目录执行一键脚本：
+
+```sh
+cd knowledge-base
+./import.sh
+```
+
+`./import.sh` 会自动定位仓库根目录，并把当前 `knowledge-base` 作为完整快照传给 `make knowledge-import`。只想检查格式而不写数据库时执行 `./import.sh --validate-only`；需要强制重建导入工具时执行 `./import.sh --force-rebuild`。脚本导入成功后会尽量输出卡片状态统计；如果存在 `DRAFT` 卡片，它们已进入数据库，但普通知识库页面默认只展示 `PUBLISHED` 内容。
+
+命令先检查编辑清单与目录，再准备 Java 制品并执行一次性 CLI；不会启动 Vite、Web API 或后台 worker。`knowledge-validate` 只读内容目录，不连接数据库。`knowledge-import` 先完成相同校验，再执行 Flyway 迁移和事务导入，完成后退出。
+
+首次使用或后端源码、资源、POM、Maven 项目配置、构建命令、Java 版本、成品 JAR 变化时重建；仅修改知识库内容时复用已核验的 JAR。缓存位于 `.cache/knowledge-cli/`。需要强制刷新外部依赖或外部 Maven 配置时执行 `make knowledge-cli-rebuild`；不需要手动寻找 JAR 或跳过构建依赖。流程工具的回归检查为 `make knowledge-tools-test`。
+
+`knowledge-outline-preview` 只比较文件目录与编辑清单，不查询数据库。导入仍是全量替换；全库只有目录、没有任何卡片或文章的快照仍会被 Java 导入器拒绝，单个空节点可以随含内容的全库快照导入。
 
 默认路径为 `knowledge-base`，可用 `KNOWLEDGE_DIR=/完整目录` 指定另一份完整快照。此参数不是增量导入范围：指定目录会替换整个共享知识库。
 
@@ -150,11 +191,11 @@ make knowledge-import
 
 导入后自行执行 `make up`，进入“知识库”：
 
-1. Java → 基础：查看值传递卡片，点击“显示答案”，检查核心回答、详情标题、代码和标签。
+1. Java → 基础 → 对象、引用与初始化 → 引用、值传递与对象共享：查看值传递卡片，点击“显示答案”，检查核心回答、详情标题、代码和标签。
 2. 在同一节点打开“对象与引用”文章，检查独立阅读入口。
 3. 在卡片的“相关卡片”中跳到 HashMap 卡片，检查 slug 关系跳转。
 4. Java → 集合 → HashMap：检查嵌套节点及“前置知识”“相关卡片”两种关系。
 5. 评价一张卡，重复执行导入，再确认复习中心仍保留它。
-6. 大纲只包含 Java、基础、集合、HashMap，不包含 skills、references 或 AGENTS。
+6. 展开 Java → 基础，检查 14 个章节及其子主题；尚未补充内容的叶子显示“暂无内容”。Java → 集合 → HashMap 保留原有示例，不包含 skills、references、README 或 AGENTS。
 
-当前 demo 内容只用于验证组织和展示机制，不作为完整知识体系。
+当前两张 demo 卡片和一篇文章只用于验证组织和展示机制。Java 基础已建立 14 章大纲，范围与参考来源见 [Java 基础维护说明](Java.node/基础.node/README.md)，后续再补充内容。

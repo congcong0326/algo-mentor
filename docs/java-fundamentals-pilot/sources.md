@@ -22,11 +22,11 @@
 
 | 代号 | 本地目录 | 分支 | 固定 commit |
 | --- | --- | --- | --- |
-| G | `research-sources/JavaGuide/` | main | `d76264cb4e000416c4adca06770ce014bd309150` |
-| B | `research-sources/toBeBetterJavaer/` | master | `d05a68f8fd8f8de9955b8aa958c555114e24d6eb` |
-| O | `research-sources/OnJava8/` | master | `4e513bb43d49fcdc5e46211c4d0442a29351925b` |
+| G | `knowledge-base/references/JavaGuide/` | main | `d76264cb4e000416c4adca06770ce014bd309150` |
+| B | `knowledge-base/references/toBeBetterJavaer/` | master | `d05a68f8fd8f8de9955b8aa958c555114e24d6eb` |
+| O | `knowledge-base/references/OnJava8/` | master | `4e513bb43d49fcdc5e46211c4d0442a29351925b` |
 
-浅克隆使用 `--depth 1 --filter=blob:none --no-checkout`，随后以 `git sparse-checkout set --no-cone '*.md' '*.java'` 和 `git checkout` 检出文本。可用 `rg --files research-sources/JavaGuide/docs/java/basis` 一类命令定位内容；本轮未安装外部项目依赖。
+浅克隆使用 `--depth 1 --filter=blob:none --no-checkout`，随后以 `git sparse-checkout set --no-cone '*.md' '*.java'` 和 `git checkout` 检出文本。可用 `rg --files knowledge-base/references/JavaGuide/docs/java/basis` 一类命令定位内容；本轮未安装外部项目依赖。
 
 ## 大纲资料入口
 
@@ -76,7 +76,7 @@
 | 字符串 | G 基础中篇 String 部分；B 字符串相等文章 | B 正文仍有“Java 17 是最新 LTS”的时效性表述；只提取有版本依据的语义，不沿用相对时间 |
 | String 作为稳定键 | String、Object API | 本轮自己串联不可变性与哈希契约，不把常量池当作 equals/hashCode 正确工作的必要条件 |
 
-官方抽样快照保存在 `research-sources/official/`：`learn.html`、`jls4.html`、`jls15.html`、`object.html`、`string.html`、`map.html` 及对应纯文本，访问日期均为 2026-09-14。JLS 和 API 固定 SE 17；Dev.java 页面不代表固定 Java 版本。
+官方抽样快照保存在 `knowledge-base/references/official/`：`learn.html`、`jls4.html`、`jls15.html`、`object.html`、`string.html`、`map.html` 及对应纯文本，访问日期均为 2026-09-14。JLS 和 API 固定 SE 17；Dev.java 页面不代表固定 Java 版本。
 
 ## v0.2 介绍正文的来源映射
 
@@ -93,4 +93,3 @@
 日期时间已经由官方 Learn 目录确认有专题，但本轮未完成正文采样；模块强封装、record、sealed、泛型边界和 I/O 也尚未逐卡核实。它们已进入大纲，后续写卡时仍需查版本文档。三个中文来源可能互相引用，多个来源表述一致不等于多份独立验证。
 
 这批样稿验证的是编辑组织能力。资料完整性、全量事实正确性、AI 自动组织效果和实际学习收益，都不能由本次小样本直接推出。
-
