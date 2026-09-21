@@ -51,7 +51,22 @@ const KNOWLEDGE_CARD_PATTERN = /^\/knowledge\/cards\/([a-z0-9]+(?:-[a-z0-9]+)*)$
 
 /** 知识卡列表与详情返回共用的分页、搜索契约。 */
 export const KNOWLEDGE_LIST_QUERY_KEYS = { page: 'page', keyword: 'q' } as const;
+/** 大纲展开项会跨内容页透传，使用户返回时保留原来的阅读上下文。 */
+export const KNOWLEDGE_OUTLINE_QUERY_KEYS = { expanded: 'open' } as const;
+/** history.state 中保存大纲滚动位置的键，仅用于同一浏览会话内的返回体验。 */
+export const KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY = 'knowledgeOutline';
 export const KNOWLEDGE_CARD_PAGE_SIZE = 20;
+const MAX_KNOWLEDGE_OUTLINE_EXPANDED_NODES = 100;
+
+export interface AppNavigationOptions {
+  replace?: boolean;
+  state?: unknown;
+}
+
+export interface KnowledgeOutlineHistoryState {
+  topicId: number;
+  scrollY: number;
+}
 
 export function knowledgeListOptions(search: string) {
   const params = new URLSearchParams(search);
@@ -59,14 +74,82 @@ export function knowledgeListOptions(search: string) {
   return {
     page: Number.isSafeInteger(page) && page > 0 ? page : 1,
     keyword: (params.get(KNOWLEDGE_LIST_QUERY_KEYS.keyword) || '').slice(0, 200),
+    expandedNodeIds: knowledgeOutlineExpandedIdsFromSearch(search),
   };
 }
 
-export function knowledgeListSearch(page: number, keyword: string): string {
+export function knowledgeListSearch(page: number, keyword: string, expandedNodeIds?: readonly number[]): string {
   const params = new URLSearchParams();
   if (page > 1) params.set(KNOWLEDGE_LIST_QUERY_KEYS.page, String(page));
   if (keyword) params.set(KNOWLEDGE_LIST_QUERY_KEYS.keyword, keyword);
+  appendKnowledgeOutlineExpandedQuery(params, expandedNodeIds);
   return params.size ? `?${params}` : '';
+}
+
+/** 从 URL 恢复已展开节点；undefined 表示采用主题根节点的默认展开状态。 */
+export function knowledgeOutlineExpandedIdsFromSearch(search: string): number[] | undefined {
+  const raw = new URLSearchParams(search).get(KNOWLEDGE_OUTLINE_QUERY_KEYS.expanded);
+  if (raw === null) return undefined;
+  if (raw === '') return [];
+  const ids = raw.split(',')
+    .map((value) => positiveSafeInteger(value))
+    .filter((value): value is number => value !== undefined);
+  const unique = [...new Set(ids)].slice(0, MAX_KNOWLEDGE_OUTLINE_EXPANDED_NODES);
+  return unique.length > 0 ? unique : undefined;
+}
+
+export function knowledgeOutlineSearch(expandedNodeIds: readonly number[]): string {
+  const params = new URLSearchParams();
+  appendKnowledgeOutlineExpandedQuery(params, expandedNodeIds);
+  return params.size ? `?${params}` : '';
+}
+
+/** 为 history entry 附加可恢复的大纲滚动位置，同时保留其他路由状态。 */
+export function withKnowledgeOutlineHistoryState(
+  previousState: unknown,
+  topicId: number,
+  scrollY: number,
+): Record<string, unknown> {
+  const base = isRecord(previousState) ? previousState : {};
+  return {
+    ...base,
+    [KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY]: {
+      topicId,
+      scrollY: Number.isFinite(scrollY) && scrollY > 0 ? scrollY : 0,
+    } satisfies KnowledgeOutlineHistoryState,
+  };
+}
+
+/** 只接受当前主题的滚动快照，避免不同知识主题之间串位。 */
+export function knowledgeOutlineScrollFromHistoryState(historyState: unknown, topicId: number): number | undefined {
+  const source = isRecord(historyState) ? historyState : undefined;
+  const state = source?.[KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY];
+  if (!isRecord(state) || state.topicId !== topicId || typeof state.scrollY !== 'number') return undefined;
+  return Number.isFinite(state.scrollY) && state.scrollY >= 0 ? state.scrollY : undefined;
+}
+
+/** 判断当前 history entry 是否携带了从大纲进入内容页的返回上下文。 */
+export function hasKnowledgeOutlineHistoryState(historyState: unknown): boolean {
+  const source = isRecord(historyState) ? historyState : undefined;
+  const state = source?.[KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY];
+  return isRecord(state)
+    && typeof state.topicId === 'number'
+    && Number.isSafeInteger(state.topicId)
+    && state.topicId > 0
+    && typeof state.scrollY === 'number'
+    && Number.isFinite(state.scrollY)
+    && state.scrollY >= 0;
+}
+
+function appendKnowledgeOutlineExpandedQuery(params: URLSearchParams, expandedNodeIds?: readonly number[]) {
+  if (expandedNodeIds === undefined) return;
+  const unique = [...new Set(expandedNodeIds.filter((value) => Number.isSafeInteger(value) && value > 0))]
+    .slice(0, MAX_KNOWLEDGE_OUTLINE_EXPANDED_NODES);
+  params.set(KNOWLEDGE_OUTLINE_QUERY_KEYS.expanded, unique.join(','));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /** Query contract for a code review opened from an evidence citation. */

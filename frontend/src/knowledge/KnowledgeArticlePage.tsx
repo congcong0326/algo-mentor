@@ -1,11 +1,22 @@
 import { ArrowLeft, BookOpen, ChevronRight, FileText } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { APP_ROUTES, knowledgeTopicPath } from '../app/navigation';
+import {
+  APP_ROUTES,
+  hasKnowledgeOutlineHistoryState,
+  knowledgeOutlineExpandedIdsFromSearch,
+  knowledgeOutlineSearch,
+  knowledgeTopicPath,
+  type AppNavigationOptions,
+} from '../app/navigation';
 import MarkdownView from '../components/MarkdownView';
 import { allKnowledgePages, knowledgeApi } from '../services/knowledge';
 import type { KnowledgeArticle, KnowledgeNodeDetail } from '../types/knowledge';
 
-export default function KnowledgeArticlePage({ nodeId, onNavigate }: { nodeId: number; onNavigate: (path: string) => void }) {
+export default function KnowledgeArticlePage({ nodeId, search = '', onNavigate }: {
+  nodeId: number;
+  search?: string;
+  onNavigate: (path: string, options?: AppNavigationOptions) => void;
+}) {
   const [articles, setArticles] = useState<KnowledgeArticle[]>([]);
   const [article, setArticle] = useState<KnowledgeArticle>();
   const [selectedArticleId, setSelectedArticleId] = useState<number>();
@@ -15,6 +26,13 @@ export default function KnowledgeArticlePage({ nodeId, onNavigate }: { nodeId: n
   const [error, setError] = useState('');
   const [reload, setReload] = useState(0);
   const articleRequest = useRef(0);
+  const expandedNodeIds = knowledgeOutlineExpandedIdsFromSearch(search);
+
+  function navigateWithOutlineContext(path: string) {
+    const state = window.history.state;
+    if (hasKnowledgeOutlineHistoryState(state)) onNavigate(path, { state });
+    else onNavigate(path);
+  }
 
   useEffect(() => {
     let active = true;
@@ -54,10 +72,13 @@ export default function KnowledgeArticlePage({ nodeId, onNavigate }: { nodeId: n
   }
 
   const topicId = detail?.breadcrumbs[0]?.id;
-  return <section className="knowledge-page knowledge-article-page" aria-labelledby="knowledge-article-page-title">
+  const outlinePath = topicId
+    ? knowledgeTopicPath(topicId) + (expandedNodeIds === undefined ? '' : knowledgeOutlineSearch(expandedNodeIds))
+    : APP_ROUTES.knowledge;
+  return <section className="knowledge-page knowledge-route-page knowledge-article-page" aria-labelledby="knowledge-article-page-title">
     <header className="knowledge-header">
       <div><p className="knowledge-eyebrow"><BookOpen aria-hidden="true" /> 知识库{detail?.breadcrumbs.map((item) => ` / ${item.title}`).join('')}</p><h1 id="knowledge-article-page-title">{detail?.node.title || '节点文章'}</h1><p className="knowledge-subtitle">阅读当前知识节点下的专题文章。</p></div>
-      <button className="secondary-button compact" onClick={() => onNavigate(topicId ? knowledgeTopicPath(topicId) : APP_ROUTES.knowledge)} type="button"><ArrowLeft aria-hidden="true" /> 返回大纲</button>
+      <button className="secondary-button compact" onClick={() => navigateWithOutlineContext(outlinePath)} type="button"><ArrowLeft aria-hidden="true" /> 返回大纲</button>
     </header>
     {error && <p className="error-text" role="alert">{error} <button className="secondary-button compact" type="button" onClick={() => selectedArticleId ? void openArticle(selectedArticleId) : setReload((value) => value + 1)}>重试</button></p>}
     {loading ? <div className="loading-panel" role="status">正在加载文章…</div> : articles.length === 0 ? !error && <div className="loading-panel">该节点暂无文章。</div> : <div className={`knowledge-article-workspace${articles.length === 1 ? ' single-article' : ''}`}>

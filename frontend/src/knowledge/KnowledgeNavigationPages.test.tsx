@@ -17,6 +17,7 @@ const article: KnowledgeArticle = { id: 21, outlineNodeId: 11, title: '理解值
 const page = <T,>(items: T[]) => ({ items, total: items.length, page: 1, pageSize: 100 });
 
 beforeEach(() => {
+  window.history.replaceState({}, '', '/knowledge');
   vi.spyOn(knowledgeApi, 'topics').mockResolvedValue({ items: [topic] });
   vi.spyOn(knowledgeApi, 'tree').mockResolvedValue({ node: topic, children: [{ node: leaf, children: [] }] });
   vi.spyOn(knowledgeApi, 'node').mockResolvedValue({ node: leaf, breadcrumbs: [{ id: 10, title: 'Java', slug: 'java' }, { id: 11, title: '基础语法', slug: 'basics' }], children: [] });
@@ -44,12 +45,20 @@ describe('知识库分层导航', () => {
     expect(await screen.findByRole('button', { name: /基础语法/ })).toBeInTheDocument();
     expect(screen.queryByText('Java 是值传递吗？')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /基础语法/ }));
-    expect(navigate).toHaveBeenCalledWith('/knowledge/nodes/11/cards');
+    expect(navigate).toHaveBeenCalledWith('/knowledge/nodes/11/cards?open=10', expect.objectContaining({ state: expect.objectContaining({ knowledgeOutline: expect.objectContaining({ topicId: 10 }) }) }));
     fireEvent.click(screen.getByRole('button', { name: '收起Java' }));
     expect(screen.getByRole('button', { name: '展开Java' })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByText('基础语法')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Java' }));
     expect(screen.getByText('基础语法')).toBeInTheDocument();
+  });
+
+  it('从 URL 恢复多层大纲的展开状态', async () => {
+    const branch = { ...leaf, directCardCount: 0, id: 11, title: '语言基础' };
+    const nested = { ...leaf, id: 12, title: '值传递' };
+    vi.mocked(knowledgeApi.tree).mockResolvedValue({ node: topic, children: [{ node: branch, children: [{ node: nested, children: [] }] }] });
+    render(<KnowledgeOutlinePage topicId={10} search="?open=10%2C11" onNavigate={vi.fn()} />);
+    expect(await screen.findByRole('button', { name: '查看值传递的卡片（1张）' })).toBeInTheDocument();
   });
 
   it('按直属内容区分文章、卡片和空节点，父节点也可提供两个入口', async () => {
@@ -67,17 +76,25 @@ describe('知识库分层导航', () => {
     const root = await screen.findByLabelText('Java的内容');
     expect(within(root).getAllByRole('button')).toHaveLength(2);
     fireEvent.click(within(root).getByRole('button', { name: /文章/ }));
-    expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/10/articles');
+    expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/10/articles?open=10', expect.any(Object));
     fireEvent.click(within(root).getByRole('button', { name: /卡片/ }));
-    expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/10/cards');
+    expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/10/cards?open=10', expect.any(Object));
     expect(within(screen.getByLabelText('基础语法的内容')).getAllByRole('button')).toHaveLength(1);
     const reading = screen.getByLabelText('阅读专题的内容');
     expect(within(reading).queryByRole('button', { name: /卡片/ })).not.toBeInTheDocument();
     fireEvent.click(within(reading).getByRole('button', { name: /文章/ }));
-    expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/12/articles');
+    expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/12/articles?open=10', expect.any(Object));
     expect(screen.queryByLabelText('空目录的内容')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('仅含下级卡片的内容')).not.toBeInTheDocument();
     expect(screen.getByText('暂无内容')).toBeInTheDocument();
+  });
+
+  it('卡片列表返回时保留大纲的展开上下文', async () => {
+    const navigate = vi.fn();
+    render(<KnowledgeNodeCardsPage nodeId={11} search="?open=10%2C11" onNavigate={navigate} />);
+    await screen.findByRole('heading', { name: 'Java 是值传递吗？' });
+    fireEvent.click(screen.getByRole('button', { name: '返回大纲' }));
+    expect(navigate).toHaveBeenCalledWith('/knowledge/topics/10?open=10%2C11');
   });
 
   it('文章页直接阅读正文并返回大纲，不请求卡片', async () => {
@@ -192,7 +209,7 @@ describe('知识库分层导航', () => {
     fireEvent.click(screen.getByRole('button', { name: '返回卡片列表' }));
     expect(navigate).toHaveBeenLastCalledWith('/knowledge/nodes/11/cards?page=2&q=Java');
     fireEvent.click(screen.getByRole('button', { name: '关联知识' }));
-    expect(navigate).toHaveBeenLastCalledWith('/knowledge/cards/other-card');
+    expect(navigate).toHaveBeenLastCalledWith('/knowledge/cards/other-card?page=2&q=Java');
   });
 
   it('分页加载失败不展示旧页内容，重试后恢复', async () => {

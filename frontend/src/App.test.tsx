@@ -882,6 +882,33 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/knowledge/nodes/11/articles');
   });
 
+  it('returns from a card list to the previously expanded outline', async () => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    const topic = { id: 10, title: 'Java', directArticleCount: 0, directCardCount: 0, subtreeCardCount: 1, subtreeEnrolledCardCount: 0 };
+    const branch = { id: 11, title: '语言基础', directArticleCount: 0, directCardCount: 0, subtreeCardCount: 1, subtreeEnrolledCardCount: 0 };
+    const leaf = { id: 12, title: '值传递', directArticleCount: 0, directCardCount: 1, subtreeCardCount: 1, subtreeEnrolledCardCount: 0 };
+    const card = { slug: 'java-value', outlineNodeId: 12, question: 'Java 值传递', tags: ['Java'], learningState: { enrolled: false, isDue: false } };
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/knowledge/outline-nodes/10/tree') return Promise.resolve(jsonResponse({ success: true, data: { node: topic, children: [{ node: branch, children: [{ node: leaf, children: [] }] }] } }));
+      if (url === '/api/knowledge/outline-nodes/12') return Promise.resolve(jsonResponse({ success: true, data: { node: leaf, breadcrumbs: [{ id: 10, title: 'Java' }, { id: 11, title: '语言基础' }, { id: 12, title: '值传递' }], children: [] } }));
+      if (url.startsWith('/api/knowledge/outline-nodes/12/cards?')) return Promise.resolve(jsonResponse({ success: true, data: { items: [card], total: 1, page: 1, pageSize: 20 } }));
+      return fallbackFetch(url, init);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/knowledge/topics/10');
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '语言基础' }));
+    await waitFor(() => expect(window.location.search).toBe('?open=10%2C11'));
+    fireEvent.click(screen.getByRole('button', { name: '查看值传递的卡片（1张）' }));
+    expect(await screen.findByRole('heading', { name: '值传递' })).toBeInTheDocument();
+    expect(window.location.pathname + window.location.search).toBe('/knowledge/nodes/12/cards?open=10%2C11');
+
+    fireEvent.click(screen.getByRole('button', { name: '返回大纲' }));
+    expect(await screen.findByRole('button', { name: '收起语言基础' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: '查看值传递的卡片（1张）' })).toBeInTheDocument();
+  });
+
   it('keeps knowledge pagination through card navigation and return', async () => {
     const fallbackFetch = mockAuthenticatedAppFetch();
     const card = { slug: 'java-value', outlineNodeId: 11, question: 'Java 值传递', tags: ['Java'], learningState: { enrolled: false, isDue: false }, answerMarkdown: '完整答案', explanationMarkdown: '## 详情\n\n完整解释' };

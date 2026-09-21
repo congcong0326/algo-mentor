@@ -1,5 +1,6 @@
 import { Moon, Sun } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import HomeDashboard from './HomeDashboard';
 import KnowledgeReviewCenterPage from './KnowledgeReviewCenterPage';
 import KnowledgeReviewListPage from './review-center/KnowledgeReviewListPage';
@@ -59,9 +60,12 @@ import {
   knowledgeNodeIdFromPath,
   knowledgeArticleNodeIdFromPath,
   knowledgeCardSlugFromPath,
+  knowledgeOutlineExpandedIdsFromSearch,
+  knowledgeOutlineSearch,
   knowledgeListOptions,
   knowledgeListSearch,
   knowledgeTopicIdFromPath,
+  type AppNavigationOptions,
 } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
@@ -86,6 +90,9 @@ import type {
 } from './types/api';
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (updateCallback: () => void) => unknown;
+};
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
@@ -174,8 +181,12 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
 function normalizeAuthenticatedSearch(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
   if (knowledgeNodeIdFromPath(pathname) || knowledgeCardSlugFromPath(pathname)) {
-    const { page, keyword } = knowledgeListOptions(search);
-    return knowledgeListSearch(page, keyword);
+    const { page, keyword, expandedNodeIds } = knowledgeListOptions(search);
+    return knowledgeListSearch(page, keyword, expandedNodeIds);
+  }
+  if (knowledgeTopicIdFromPath(pathname) || knowledgeArticleNodeIdFromPath(pathname)) {
+    const expandedNodeIds = knowledgeOutlineExpandedIdsFromSearch(search);
+    return expandedNodeIds === undefined ? '' : knowledgeOutlineSearch(expandedNodeIds);
   }
   if (learningPlanPracticeSubmissionsRouteFromPath(pathname)) {
     const normalized = new URLSearchParams();
@@ -470,7 +481,7 @@ export default function App() {
       setPathname(nextPath);
       setSearch(nextSearch);
       if (`${window.location.pathname}${window.location.search}` !== nextLocation) {
-        window.history.replaceState({}, '', nextLocation);
+        window.history.replaceState(window.history.state ?? {}, '', nextLocation);
       }
     }
 
@@ -490,7 +501,7 @@ export default function App() {
       setPathname(normalizedUrl.pathname);
       setSearch(normalizedUrl.search);
       if (`${window.location.pathname}${window.location.search}` !== normalizedLocation) {
-        window.history.replaceState({}, '', normalizedLocation);
+        window.history.replaceState(window.history.state ?? {}, '', normalizedLocation);
       }
     }
 
@@ -513,7 +524,7 @@ export default function App() {
     }
   }
 
-  function navigateToPath(nextPath: string, options: { replace?: boolean } = {}) {
+  function navigateToPath(nextPath: string, options: AppNavigationOptions = {}) {
     const nextUrl = new URL(nextPath, window.location.origin);
     const normalizedPath = normalizeAuthenticatedPath(nextUrl.pathname, currentUser);
     const nextView = normalizeAuthenticatedView(normalizedPath, currentUser);
@@ -521,17 +532,27 @@ export default function App() {
       ? normalizeAuthenticatedSearch(normalizedPath, nextUrl.search)
       : '';
     const normalizedLocation = `${normalizedPath}${normalizedSearch}`;
-    setActiveView(nextView);
-    setPathname(normalizedPath);
-    setSearch(normalizedSearch);
     if (`${window.location.pathname}${window.location.search}` === normalizedLocation) {
       return;
     }
-    if (options.replace) {
-      window.history.replaceState({}, '', normalizedLocation);
-      return;
+    const applyNavigation = () => {
+      setActiveView(nextView);
+      setPathname(normalizedPath);
+      setSearch(normalizedSearch);
+      const historyState = options.state === undefined ? window.history.state : options.state;
+      if (options.replace) {
+        window.history.replaceState(historyState ?? {}, '', normalizedLocation);
+        return;
+      }
+      window.history.pushState(historyState ?? {}, '', normalizedLocation);
+    };
+    const startViewTransition = (document as ViewTransitionDocument).startViewTransition?.bind(document);
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!options.replace && activeView === 'knowledge' && nextView === 'knowledge' && startViewTransition && !reduceMotion) {
+      startViewTransition(() => { flushSync(applyNavigation); });
+    } else {
+      applyNavigation();
     }
-    window.history.pushState({}, '', normalizedLocation);
   }
 
   async function checkAuthentication(isActive: () => boolean = () => true) {
@@ -811,11 +832,11 @@ export default function App() {
       : knowledgeCardSlugFromPath(pathname)
         ? <KnowledgeCardPage key={pathname} slug={knowledgeCardSlugFromPath(pathname)!} search={search} onNavigate={navigateToPath} />
         : knowledgeArticleNodeIdFromPath(pathname)
-          ? <KnowledgeArticlePage key={pathname} nodeId={knowledgeArticleNodeIdFromPath(pathname)!} onNavigate={navigateToPath} />
+          ? <KnowledgeArticlePage key={pathname} nodeId={knowledgeArticleNodeIdFromPath(pathname)!} search={search} onNavigate={navigateToPath} />
           : knowledgeNodeIdFromPath(pathname)
           ? <KnowledgeNodeCardsPage key={pathname} nodeId={knowledgeNodeIdFromPath(pathname)!} search={search} onNavigate={navigateToPath} />
           : knowledgeTopicIdFromPath(pathname)
-            ? <KnowledgeOutlinePage topicId={knowledgeTopicIdFromPath(pathname)!} onNavigate={navigateToPath} />
+            ? <KnowledgeOutlinePage topicId={knowledgeTopicIdFromPath(pathname)!} search={search} onNavigate={navigateToPath} />
             : <KnowledgeTopicPage onNavigate={navigateToPath} />
     : activeView === 'home'
     ? <TodayPackPage onNavigate={navigateToPath} />
