@@ -4,6 +4,8 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import type { ExtraProps } from 'react-markdown';
 import type { ComponentProps, ReactNode } from 'react';
+import { useEffect, useId, useState } from 'react';
+import mermaid from 'mermaid';
 import SyntaxHighlightedCode from './SyntaxHighlightedCode';
 
 const BOLD_LABEL_WITHOUT_SPACE = /(^|[\s([{"'“‘])\*\*([^*\n]+[:：])\*\*(?=\S)/g;
@@ -16,10 +18,22 @@ const FENCE_MARKER = /^ {0,3}(`{3,}|~{3,})/;
 const INLINE_CODE_SPAN = /(`+)([\s\S]*?)\1/g;
 const INLINE_CODE_SUPERSCRIPT = /<sup>([\s\S]*?)<\/sup>/g;
 const CODE_LANGUAGE_CLASS = /(?:^|\s)language-([^\s]+)/;
+const MERMAID_LANGUAGE = 'mermaid';
+
+mermaid.initialize({
+  startOnLoad: false,
+  securityLevel: 'strict',
+  htmlLabels: false,
+  flowchart: { padding: 32, diagramPadding: 24, useMaxWidth: false },
+});
 
 interface MarkdownViewProps {
   content: string;
   defaultCodeLanguage?: string;
+}
+
+function isMermaidLanguage(className: string): boolean {
+  return className.match(CODE_LANGUAGE_CLASS)?.[1]?.toLowerCase() === MERMAID_LANGUAGE;
 }
 
 export function normalizeMarkdownContent(content: string): string {
@@ -125,6 +139,10 @@ function MarkdownCode({
     return <code {...props}>{renderedChildren}</code>;
   }
 
+  if (isMermaidLanguage(props.className ?? '')) {
+    return <MermaidDiagram source={code.replace(/\n$/, '')} />;
+  }
+
   return (
     <SyntaxHighlightedCode
       {...props}
@@ -132,6 +150,48 @@ function MarkdownCode({
       language={fencedLanguage ?? defaultCodeLanguage}
     />
   );
+}
+
+function MarkdownPre({ children, node, ...props }: ComponentProps<'pre'> & ExtraProps) {
+  const codeNode = node?.children[0];
+  const className = codeNode?.type === 'element' ? codeNode.properties.className : undefined;
+  const codeClassName = Array.isArray(className) ? className.join(' ') : String(className ?? '');
+
+  // 图表不能继承代码块的等宽字体，否则标签宽度与 Mermaid 测量结果不同。
+  if (isMermaidLanguage(codeClassName)) {
+    return <>{children}</>;
+  }
+
+  return <pre {...props}>{children}</pre>;
+}
+
+function MermaidDiagram({ source }: { source: string }) {
+  const id = `mermaid-${useId().replace(/:/g, '')}`;
+  const [svg, setSvg] = useState<string>();
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setSvg(undefined);
+    setFailed(false);
+    void mermaid.render(id, source)
+      .then(({ svg: renderedSvg }) => {
+        if (active) setSvg(renderedSvg);
+      })
+      .catch(() => {
+        if (active) setFailed(true);
+      });
+    return () => { active = false; };
+  }, [id, source]);
+
+  if (failed) {
+    return <pre className="mermaid-fallback"><code>{source}</code></pre>;
+  }
+  if (!svg) {
+    return <div className="mermaid-diagram" role="status">正在绘制图表…</div>;
+  }
+
+  return <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
 function renderInlineCodeSuperscripts(content: string): ReactNode {
@@ -153,6 +213,7 @@ export default function MarkdownView({ content, defaultCodeLanguage }: MarkdownV
       <ReactMarkdown
         components={{
           code: (props) => <MarkdownCode {...props} defaultCodeLanguage={defaultCodeLanguage} />,
+          pre: MarkdownPre,
         }}
         rehypePlugins={[rehypeRaw, rehypeSanitize]}
         remarkPlugins={[remarkGfm]}

@@ -1565,6 +1565,7 @@ button.knowledge-tree-title:hover { color: var(--accent-warm-text); }
   min-height: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
   overflow: visible;
   line-height: 1.55;
@@ -4335,6 +4336,26 @@ textarea[aria-invalid='true'] {
   width: 100%;
   min-height: 260px;
   overflow-x: hidden;
+}
+
+.markdown-view .mermaid-diagram {
+  max-width: 100%;
+  margin: 1rem 0;
+  padding: 8px 12px;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.markdown-view .mermaid-diagram svg {
+  display: block;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+}
+
+.markdown-view .mermaid-fallback {
+  overflow-x: auto;
+  white-space: pre;
 }
 
 .problem-detail-panel .markdown-view {
@@ -7993,6 +8014,7 @@ textarea[aria-invalid='true'] {
   min-height: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
   overflow: hidden;
   line-height: 1.55;

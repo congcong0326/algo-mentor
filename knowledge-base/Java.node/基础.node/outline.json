@@ -2,290 +2,34 @@
   "version": 1,
   "children": [
     {
-      "title": "Java 程序与语言概览",
-      "children": [
-        {
-          "title": "JDK、JRE 与 JVM"
-        },
-        {
-          "title": "编译、字节码与运行"
-        },
-        {
-          "title": "包、import 与类路径"
-        },
-        {
-          "title": "Java 版本与兼容性"
-        }
-      ]
+      "title": "Java 程序与语言概览"
     },
     {
-      "title": "类型、变量与表达式",
-      "children": [
-        {
-          "title": "基本类型、数值范围与精度"
-        },
-        {
-          "title": "包装类、缓存与装箱拆箱"
-        },
-        {
-          "title": "类型转换、提升与类型推断"
-        },
-        {
-          "title": "变量、作用域与初始化规则"
-        },
-        {
-          "title": "运算符、表达式与控制流"
-        }
-      ]
+      "title": "类型、变量与数组"
     },
     {
-      "title": "类、接口与面向对象",
-      "children": [
-        {
-          "title": "封装、访问控制与成员可见性"
-        },
-        {
-          "title": "继承、组合与多态"
-        },
-        {
-          "title": "方法重载、重写与可变参数"
-        },
-        {
-          "title": "接口、抽象类与默认方法"
-        },
-        {
-          "title": "内部类、匿名类与静态嵌套类"
-        },
-        {
-          "title": "枚举、record 与 sealed 类型"
-        }
-      ]
+      "title": "类、接口与面向对象"
     },
     {
-      "title": "对象、引用与初始化",
-      "children": [
-        {
-          "title": "引用、值传递与对象共享"
-        },
-        {
-          "title": "构造方法与初始化顺序"
-        },
-        {
-          "title": "static、final 与对象可变性"
-        },
-        {
-          "title": "浅拷贝、深拷贝与防御性拷贝"
-        },
-        {
-          "title": "不可变对象的设计与边界"
-        }
-      ]
+      "title": "对象、引用与初始化"
     },
     {
-      "title": "Object 与对象契约",
-      "children": [
-        {
-          "title": "对象身份、引用相等与逻辑相等"
-        },
-        {
-          "title": "equals 契约与继承边界"
-        },
-        {
-          "title": "hashCode 契约与键的稳定性"
-        },
-        {
-          "title": "toString 与对象表达"
-        },
-        {
-          "title": "clone、Cloneable 与复制契约"
-        }
-      ]
+      "title": "字符串与文本处理"
     },
     {
-      "title": "字符串与文本处理",
-      "children": [
-        {
-          "title": "String 不可变性与值比较"
-        },
-        {
-          "title": "常量池、intern 与常量表达式"
-        },
-        {
-          "title": "字符串拼接与 StringBuilder"
-        },
-        {
-          "title": "正则表达式、拆分与替换"
-        },
-        {
-          "title": "Unicode、字符编码与文本块"
-        }
-      ]
+      "title": "异常与资源管理"
     },
     {
-      "title": "数组与基础数据操作",
-      "children": [
-        {
-          "title": "数组类型、协变与运行时检查"
-        },
-        {
-          "title": "多维数组与引用共享"
-        },
-        {
-          "title": "数组复制、比较与打印"
-        },
-        {
-          "title": "排序、二分查找与比较器"
-        },
-        {
-          "title": "数组与集合的转换边界"
-        }
-      ]
+      "title": "泛型与类型安全"
     },
     {
-      "title": "异常与资源管理",
-      "children": [
-        {
-          "title": "异常体系、受检与非受检异常"
-        },
-        {
-          "title": "异常传播、转换与处理边界"
-        },
-        {
-          "title": "try、catch、finally 与控制流"
-        },
-        {
-          "title": "AutoCloseable 与自动关闭资源"
-        },
-        {
-          "title": "异常链、关闭顺序与 suppressed 异常"
-        }
-      ]
+      "title": "Lambda、Stream 与 Optional"
     },
     {
-      "title": "泛型与类型安全",
-      "children": [
-        {
-          "title": "泛型类、接口、方法与类型推断"
-        },
-        {
-          "title": "不变性、类型边界与通配符"
-        },
-        {
-          "title": "PECS 与 API 读写约束"
-        },
-        {
-          "title": "类型擦除、桥接方法与泛型签名"
-        },
-        {
-          "title": "原始类型、泛型数组与堆污染"
-        }
-      ]
+      "title": "注解、反射与代理"
     },
     {
-      "title": "Lambda、Stream 与 Optional",
-      "children": [
-        {
-          "title": "函数式接口、Lambda 与方法引用"
-        },
-        {
-          "title": "变量捕获与 effectively final"
-        },
-        {
-          "title": "Stream 流水线、惰性求值与单次消费"
-        },
-        {
-          "title": "映射、扁平化、归约与收集"
-        },
-        {
-          "title": "状态、副作用与执行语义"
-        },
-        {
-          "title": "Optional 与缺失值表达"
-        }
-      ]
-    },
-    {
-      "title": "常用值类型",
-      "children": [
-        {
-          "title": "BigInteger 与整数范围"
-        },
-        {
-          "title": "BigDecimal、精度与舍入"
-        },
-        {
-          "title": "时间点、本地时间与时区"
-        },
-        {
-          "title": "日期时间解析、格式化与计算"
-        },
-        {
-          "title": "值类型、相等性与业务单位"
-        }
-      ]
-    },
-    {
-      "title": "注解与反射",
-      "children": [
-        {
-          "title": "注解声明、元注解与保留策略"
-        },
-        {
-          "title": "编译期处理与运行时读取"
-        },
-        {
-          "title": "Class 与运行时类型信息"
-        },
-        {
-          "title": "反射构造、成员访问与方法调用"
-        },
-        {
-          "title": "泛型信息与反射访问边界"
-        }
-      ]
-    },
-    {
-      "title": "代理与 SPI",
-      "children": [
-        {
-          "title": "代理的职责与静态代理"
-        },
-        {
-          "title": "JDK 动态代理与 InvocationHandler"
-        },
-        {
-          "title": "代理调用、返回值与异常边界"
-        },
-        {
-          "title": "API、SPI 与服务提供者"
-        },
-        {
-          "title": "ServiceLoader 与服务发现"
-        }
-      ]
-    },
-    {
-      "title": "基础 IO 与序列化",
-      "children": [
-        {
-          "title": "字节流、字符流与字符集"
-        },
-        {
-          "title": "缓冲、flush 与资源关闭"
-        },
-        {
-          "title": "Path、Files 与文件操作"
-        },
-        {
-          "title": "大文件处理与流式读写"
-        },
-        {
-          "title": "Serializable、对象图与版本兼容"
-        },
-        {
-          "title": "transient、序列化边界与数据格式"
-        }
-      ]
+      "title": "基础 IO 与序列化"
     }
   ]
 }
