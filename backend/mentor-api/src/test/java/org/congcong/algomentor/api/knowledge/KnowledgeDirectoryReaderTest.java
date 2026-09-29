@@ -109,4 +109,65 @@ class KnowledgeDirectoryReaderTest {
     Files.createSymbolicLink(root.resolve("B.node"), root.resolve("A.node"));
     assertThatThrownBy(() -> reader.read(root)).hasMessageContaining("符号链接");
   }
+
+  @Test
+  void usesOutlineOrderAtEveryManagedLevelAndFilenameOrderElsewhere() throws Exception {
+    write("Java.node/outline.json", """
+        {"version":1,"children":[
+          {"title":"集合","children":[{"title":"HashMap"}]},
+          {"title":"基础","children":[{"title":"乙"},{"title":"甲"}]}
+        ]}
+        """);
+    write("Java.node/基础.node/甲.node/问题.card.md", card("example"));
+    Files.createDirectories(root.resolve("Java.node/基础.node/乙.node"));
+    Files.createDirectories(root.resolve("Java.node/集合.node/HashMap.node"));
+    Files.createDirectories(root.resolve("Z.node/乙.node"));
+    Files.createDirectories(root.resolve("Z.node/甲.node"));
+
+    var source = reader.read(root);
+    assertThat(source.nodes()).filteredOn(n -> n.parentPath().equals("Java.node"))
+        .extracting(n -> n.title() + ":" + n.order())
+        .containsExactlyInAnyOrder("基础:1", "集合:0");
+    assertThat(source.nodes()).filteredOn(n -> n.parentPath().equals("Java.node/基础.node"))
+        .extracting(n -> n.title() + ":" + n.order())
+        .containsExactlyInAnyOrder("甲:1", "乙:0");
+    assertThat(source.nodes()).filteredOn(n -> n.parentPath().equals("Z.node"))
+        .extracting(n -> n.title() + ":" + n.order())
+        .containsExactly("乙:0", "甲:1");
+  }
+
+  @Test
+  void rejectsOutlineMismatchAndOverlappingSpecs() throws Exception {
+    write("Java.node/基础.node/问题.card.md", card("example"));
+    write("Java.node/outline.json", """
+        {"version":1,"children":[{"title":"集合"}]}
+        """);
+    assertThatThrownBy(() -> reader.read(root)).hasMessageContaining("清单外节点");
+
+    write("Java.node/outline.json", """
+        {"version":1,"children":[{"title":"基础"},{"title":"集合"}]}
+        """);
+    assertThatThrownBy(() -> reader.read(root)).hasMessageContaining("目录不存在");
+
+    write("Java.node/outline.json", """
+        {"version":1,"children":[{"title":"基础"}]}
+        """);
+    write("Java.node/基础.node/outline.json", """
+        {"version":1,"children":[{"title":"子目录"}]}
+        """);
+    assertThatThrownBy(() -> reader.read(root)).hasMessageContaining("重复管理");
+  }
+
+  @Test
+  void rejectsInvalidOutlineSchemaAndDuplicateJsonKeys() throws Exception {
+    write("Java.node/问题.card.md", card("example"));
+    write("Java.node/outline.json", """
+        {"version":1,"children":[{"title":"重复"},{"title":"重复"}]}
+        """);
+    assertThatThrownBy(() -> reader.read(root)).hasMessageContaining("同级标题重复");
+    write("Java.node/outline.json", """
+        {"version":1,"version":1,"children":[{"title":"重复"}]}
+        """);
+    assertThatThrownBy(() -> reader.read(root)).hasMessageContaining("JSON 无法解析");
+  }
 }

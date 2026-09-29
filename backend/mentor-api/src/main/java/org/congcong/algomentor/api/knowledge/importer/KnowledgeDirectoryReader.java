@@ -4,6 +4,7 @@ import static org.congcong.algomentor.api.knowledge.model.KnowledgeContract.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.*;
 import org.commonmark.node.Heading;
@@ -25,7 +26,7 @@ public final class KnowledgeDirectoryReader {
     var nodes = new ArrayList<KnowledgeSource.Node>();
     var cards = new ArrayList<KnowledgeSource.Card>();
     var articles = new ArrayList<KnowledgeSource.Article>();
-    scan(root, root, nodes, cards, articles);
+    scan(root, root, null, nodes, cards, articles);
     if (nodes.isEmpty() || cards.isEmpty() && articles.isEmpty())
       throw invalid(root, "没有可导入内容，拒绝空快照");
     var bySlug = new LinkedHashMap<String, KnowledgeSource.Card>();
@@ -46,10 +47,18 @@ public final class KnowledgeDirectoryReader {
   private void scan(
       Path root,
       Path directory,
+      KnowledgeOutlineOrder inheritedOrder,
       List<KnowledgeSource.Node> nodes,
       List<KnowledgeSource.Card> cards,
       List<KnowledgeSource.Article> articles)
       throws IOException {
+    var spec = directory.resolve(KnowledgeOutlineOrder.FILE_NAME);
+    KnowledgeOutlineOrder outlineOrder = inheritedOrder;
+    boolean ownsOutline = !root.equals(directory) && Files.exists(spec, LinkOption.NOFOLLOW_LINKS);
+    if (ownsOutline) {
+      if (inheritedOrder != null) throw invalid(spec, "嵌套大纲清单重复管理同一子树");
+      outlineOrder = KnowledgeOutlineOrder.read(spec);
+    }
     List<Path> entries;
     try (var stream = Files.list(directory)) {
       entries = stream.sorted(Comparator.comparing(p -> p.getFileName().toString())).toList();
@@ -65,10 +74,11 @@ public final class KnowledgeDirectoryReader {
         if (!Files.isDirectory(path)) throw invalid(path, ".node 必须是目录");
         String title = title(path, NODE_SUFFIX, 200);
         if (title.length() > 220) throw invalid(path, "节点名称过长");
+        int nodeOrder = outlineOrder == null ? order++ : outlineOrder.rank(path);
         nodes.add(
             new KnowledgeSource.Node(
-                relative(root, path), relative(root, directory), title, order++));
-        scan(root, path, nodes, cards, articles);
+                relative(root, path), relative(root, directory), title, nodeOrder));
+        scan(root, path, outlineOrder, nodes, cards, articles);
       } else {
         if (root.equals(directory)) throw invalid(path, "卡片和文章必须放在 .node 目录内");
         if (!Files.isRegularFile(path)) throw invalid(path, "内容必须是普通文件");
@@ -83,6 +93,7 @@ public final class KnowledgeDirectoryReader {
         }
       }
     }
+    if (ownsOutline) outlineOrder.verify();
   }
 
   private KnowledgeSource.Card card(Path root, Path path, String content) {

@@ -117,6 +117,25 @@ class OutlineTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "正式 .node"):
             self.execute("apply", external)
 
+    def test_java_level_spec_manages_all_descendants_without_nested_spec(self):
+        self.spec.unlink()
+        parent_spec = self.root / "Java.node/outline.json"
+        parent_spec.write_text(json.dumps({"version": 1, "children": [
+            {"title": "基础", "children": [
+                {"title": "对象", "children": [{"title": "值传递"}]}
+            ]},
+            {"title": "集合", "children": [{"title": "HashMap"}]}
+        ]}))
+        self.execute("apply", parent_spec)
+        self.execute("check")
+        self.assertTrue((self.root / "Java.node/集合.node/HashMap.node").is_dir())
+
+    def test_rejects_overlapping_specs(self):
+        parent_spec = self.root / "Java.node/outline.json"
+        parent_spec.write_text(json.dumps({"version": 1, "children": [{"title": "基础"}]}))
+        with self.assertRaisesRegex(ValueError, "管理范围重叠"):
+            self.execute("check")
+
 
 if __name__ == "__main__":
     unittest.main()

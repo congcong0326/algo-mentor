@@ -42,13 +42,13 @@
 
 ## 大纲清单
 
-完整的 10 个章节维护在 [outline.json](outline.json)，章节下不设子目录。清单只用于编辑和检查，系统仍从 `.node` 目录导入；标题不附加编号，展示按目录名排序，清单数组顺序不代表复习顺序。
+完整的 10 个章节维护在 [Java 主题大纲](../outline.json) 的“基础”节点下，章节下不设子目录。标题不附加编号；同级 `children` 的数组顺序决定页面目录顺序，但不决定卡片复习顺序。
 
 从仓库根目录执行：
 
 ```sh
-make knowledge-outline-preview KNOWLEDGE_OUTLINE=knowledge-base/Java.node/基础.node/outline.json
-make knowledge-outline-apply KNOWLEDGE_OUTLINE=knowledge-base/Java.node/基础.node/outline.json
+make knowledge-outline-preview KNOWLEDGE_OUTLINE=knowledge-base/Java.node/outline.json
+make knowledge-outline-apply KNOWLEDGE_OUTLINE=knowledge-base/Java.node/outline.json
 make knowledge-outline-check
 ```
 

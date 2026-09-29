@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "children": [
+    {
+      "title": "基础",
+      "children": [
+        { "title": "Java 程序与语言概览" },
+        { "title": "Lambda、Stream 与 Optional" },
+        { "title": "基础 IO 与序列化" },
+        { "title": "字符串与文本处理" },
+        { "title": "对象、引用与初始化" },
+        { "title": "异常与资源管理" },
+        { "title": "泛型与类型安全" },
+        { "title": "注解、反射与代理" },
+        { "title": "类、接口与面向对象" },
+        { "title": "类型、变量与数组" }
+      ]
+    },
+    {
+      "title": "集合",
+      "children": [{ "title": "HashMap" }]
+    }
+  ]
+}

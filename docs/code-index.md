@@ -3,8 +3,8 @@
 ## 根目录
 
 - `knowledge-base/README.md`：正式知识库维护手册；`.node` 大纲、单 Markdown 卡片、slug 与元数据关系、全量导入命令及 demo 审查路径。
-- `knowledge-base/Java.node/基础.node/README.md`：面向约五年开发经验的 Java 基础大纲，含 14 章、72 个子主题、范围边界与 GitHub 参考来源；本轮只建大纲，保留既有示例内容。
-- `knowledge-base/Java.node/基础.node/outline.json`：Java 基础可编辑大纲清单，生成和核对对应主题的完整目录路径。
+- `knowledge-base/Java.node/基础.node/README.md`：面向约五年开发经验的 Java 基础大纲，含 10 个章节、范围边界与 GitHub 参考来源。
+- `knowledge-base/Java.node/outline.json`：Java 主题的唯一可编辑大纲清单，生成和核对完整目录路径，并确定各层目录显示顺序。
 - `scripts/knowledge/`：大纲预览、补建、完整性检查及 Java 导入工具构建复用；统一入口为 Makefile 的 `knowledge-*` 命令。
 - `docs/knowledge-outline-maintenance-workflow.md`：大纲维护流程、校验边界和构建复用设计。
 - `docs/product-planning/knowledge-directory-import-v1-design.md`：目录解析、V76 开发期重建迁移、slug API 与用户复习事实保留的实施设计。

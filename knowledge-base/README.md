@@ -15,6 +15,7 @@ knowledge-base/
 │   └── 原始参考资料.md
 └── Java.node/
     ├── AGENTS.md
+    ├── outline.json
     ├── 基础.node/
     │   ├── Java为什么只有值传递.card.md
     │   └── 对象与引用.article.md
@@ -29,22 +30,22 @@ knowledge-base/
 - 其他目录整个子树不扫描，其他文件忽略。例如 `skills/示例.node/示例.card.md` 也不会导入。
 - 根目录不直接存放卡片或文章；`AGENTS.md`、`README.md` 等维护文件可以放在根目录或节点内。
 - 后缀区分大小写，正式内容不支持符号链接。去掉后缀就会退出导入范围。
-- 节点、文章按文件名称的确定性顺序显示；卡片先按 `order`，同值按问题标题和 slug 排序。
+- 有 `outline.json` 的主题按各层 `children` 数组顺序显示后代节点；未由清单管理的节点按文件名称排序。文章按文件名排序；卡片先按 `order`，同值按问题标题和 slug 排序。
 
-运行时不需要 `_node.yaml`、节点稳定键或额外标题字段。`outline.json` 是可选编辑清单，帮助生成和检查目录，本身不导入。现有仓库 `knowledge/` 个人笔记不会自动导入。
+运行时不需要 `_node.yaml`、节点稳定键或额外标题字段。`outline.json` 不作为节点导入，但导入器会读取它来校验目录并确定顺序。现有仓库 `knowledge/` 个人笔记不会自动导入。
 
 ### 大纲维护流程
 
 标题直接使用主题名称，默认不加编号。每个管理大纲的主题只维护一份 README，集中说明范围与 GitHub 固定版本来源；空叶子用 `.gitkeep` 保留在 Git 中。标题中的 `/`、`\`、控制字符和首尾空白会被工具拒绝，例如 `I/O` 应明确写成 `IO` 后再生成。
 
-在已创建的主题 `.node` 目录内维护 `outline.json`，管理该主题的全部后代节点：
+在已创建的主题 `.node` 目录内维护一份 `outline.json`，管理该主题的全部后代节点及各层兄弟节点的显示顺序。同一子树不能再放第二份清单。当前 Java 主题统一维护在 `Java.node/outline.json`，以下只示意嵌套写法，实际清单须列全所有后代目录：
 
 ```json
 {
   "version": 1,
   "children": [
-    {"title": "对象与引用", "children": [{"title": "值传递"}]},
-    {"title": "异常与资源管理"}
+    {"title": "基础", "children": [{"title": "类、接口与面向对象"}, {"title": "泛型与类型安全"}]},
+    {"title": "集合", "children": [{"title": "HashMap"}]}
   ]
 }
 ```
@@ -52,14 +53,14 @@ knowledge-base/
 先预览再生成；预览不写文件，生成只补建目录，不生成卡片或文章：
 
 ```sh
-make knowledge-outline-preview KNOWLEDGE_OUTLINE=knowledge-base/Java.node/基础.node/outline.json
-make knowledge-outline-apply KNOWLEDGE_OUTLINE=knowledge-base/Java.node/基础.node/outline.json
+make knowledge-outline-preview KNOWLEDGE_OUTLINE=knowledge-base/Java.node/outline.json
+make knowledge-outline-apply KNOWLEDGE_OUTLINE=knowledge-base/Java.node/outline.json
 make knowledge-outline-check
 ```
 
-预览显示缺少与清单外的完整节点路径。生成前会拒绝非法标题、重复同级节点、符号链接和清单外节点。改名、移动、删除由维护者结合已有内容显式处理，并保留卡片 slug；不能用自动补建代替内容迁移。清单中的数组顺序不控制页面排序，页面仍按目录名排序。
+预览显示缺少与清单外的完整节点路径。生成前会拒绝非法标题、重复同级节点、符号链接、重叠清单和清单外节点。改名、移动、删除由维护者结合已有内容显式处理，并保留卡片 slug；不能用自动补建代替内容迁移。调整同级 `children` 顺序并重新导入后，页面目录顺序随之变化；卡片顺序和复习调度不受影响。
 
-检查会诊断正式 `.node` 内被普通目录隔断的知识内容；根级普通目录继续忽略，正式节点内的 `references/`、`skills/` 也可用于明确存放不导入的参考资料。普通目录不会因此被自动纳入导入范围。直接调用 Java JAR 不读取编辑清单，日常维护请使用 Make 入口。
+检查会诊断正式 `.node` 内被普通目录隔断的知识内容；根级普通目录继续忽略，正式节点内的 `references/`、`skills/` 也可用于明确存放不导入的参考资料。普通目录不会因此被自动纳入导入范围。Java 导入器也会读取清单并拒绝目录不匹配；日常维护请使用 Make 入口。
 
 ## 2. 一张卡片的结构
 

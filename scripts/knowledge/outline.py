@@ -116,6 +116,10 @@ def run(root, action, spec=None):
     # abspath 不解析符号链接，让检查仍能识别链接本身。
     root = Path(os.path.abspath(root))
     nodes, specs = scan(root)
+    for parent in specs:
+        for child in specs:
+            if parent != child and parent.parent in child.parent.parents:
+                raise ValueError(f"大纲清单管理范围重叠：{parent} 与 {child}")
     if spec is not None:
         spec = Path(os.path.abspath(spec))
         if spec not in specs:
