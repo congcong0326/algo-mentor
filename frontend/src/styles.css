@@ -848,7 +848,6 @@ a {
 .knowledge-topic-meta { color: var(--text-muted); font-size: 12px; }
 .knowledge-topic-meta b { margin: 0 5px; color: var(--border-strong); }
 /* 知识大纲：嵌套分支线跟随实际层级，内容入口独立于目录展开操作。 */
-.knowledge-outline-page { max-width: 1040px; margin-inline: auto; }
 .knowledge-route-page { view-transition-name: knowledge-route-content; }
 .knowledge-outline-page .knowledge-header .button-row { justify-content: flex-end; }
 .knowledge-outline-panel { min-width: 0; padding: 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius-card); background: var(--surface-card); box-shadow: var(--shadow-subtle); }
@@ -892,7 +891,7 @@ button.knowledge-tree-title:hover { color: var(--accent-warm-text); }
 .knowledge-tree-row button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 .knowledge-article-page { max-width: 1120px; margin-inline: auto; }
 .knowledge-article-workspace { display: grid; grid-template-columns: minmax(180px, 240px) minmax(0, 1fr); align-items: start; gap: 24px; }
-.knowledge-article-workspace.single-article { grid-template-columns: minmax(0, 1fr); width: min(860px, 100%); margin-inline: auto; }
+.knowledge-article-workspace.single-article { grid-template-columns: minmax(0, 1fr); }
 .knowledge-article-directory { display: grid; gap: 6px; min-width: 0; padding: 12px; border: 1px solid var(--border-subtle); border-radius: 14px; background: var(--surface-muted); }
 .knowledge-article-directory-heading { display: flex; align-items: center; gap: 7px; padding: 6px 8px 12px; color: var(--text-muted); font-size: 12px; }
 .knowledge-article-directory-heading small { margin-left: auto; }
@@ -992,7 +991,7 @@ button.knowledge-tree-title:hover { color: var(--accent-warm-text); }
 .knowledge-review-actions .button-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 .mistake-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.knowledge-review-page { display: grid; align-content: start; gap: 16px; width: min(960px, 100%); margin: 0 auto; }
+.knowledge-review-page { display: grid; align-content: start; gap: 16px; width: min(1120px, 100%); margin: 0 auto; }
 
 @media (max-width: 760px) {
   .knowledge-header { align-items: flex-start; flex-direction: column; }
@@ -4338,17 +4337,31 @@ textarea[aria-invalid='true'] {
   overflow-x: hidden;
 }
 
+.markdown-view blockquote {
+  margin: 1rem 0;
+  padding: 2px 0 2px 16px;
+  border-left: 3px solid var(--accent-warm);
+  color: var(--text-secondary);
+}
+
+.markdown-view blockquote p {
+  white-space: pre-line;
+}
+
+.markdown-view blockquote > p:last-child {
+  margin-bottom: 0;
+}
+
 .markdown-view .mermaid-diagram {
   max-width: 100%;
   margin: 1rem 0;
   padding: 8px 12px;
-  overflow-x: auto;
   text-align: center;
 }
 
 .markdown-view .mermaid-diagram svg {
   display: block;
-  max-width: none;
+  max-width: 100%;
   height: auto;
   margin: 0 auto;
 }
