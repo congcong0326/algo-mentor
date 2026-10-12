@@ -878,20 +878,36 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([url]) => url.includes('/cards?'))).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: '返回大纲' }));
     fireEvent.click(await screen.findByRole('button', { name: '查看基础语法的文章（1篇）' }));
+    expect(await screen.findByText('参数传递')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/knowledge/topics/10');
+    expect(window.location.search).toBe('?open=10&articles=11');
+    fireEvent.click(screen.getByRole('button', { name: '查看' }));
     expect(await screen.findByText('独立文章正文')).toBeInTheDocument();
     expect(window.location.pathname).toBe('/knowledge/nodes/11/articles');
+    expect(window.location.search).toBe('?open=10&articles=11&article=21');
+    fireEvent.click(screen.getByRole('button', { name: '返回大纲' }));
+    expect(await screen.findByRole('button', { name: '查看' })).toBeInTheDocument();
+    expect(window.location.search).toBe('?open=10&articles=11');
+    const state = window.history.state;
+    fireEvent.click(screen.getByRole('button', { name: '查看' }));
+    await screen.findByText('独立文章正文');
+    window.history.replaceState(state, '', '/knowledge/topics/10?open=10&articles=11');
+    fireEvent(window, new PopStateEvent('popstate', { state }));
+    expect(await screen.findByRole('button', { name: '查看' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '查看基础语法的文章（1篇）' })).toHaveAttribute('aria-expanded', 'true');
   });
 
-  it('returns from a card list to the previously expanded outline', async () => {
+  it('opens cards inside the outline and restores its branches after detail navigation and browser back', async () => {
     const fallbackFetch = mockAuthenticatedAppFetch();
     const topic = { id: 10, title: 'Java', directArticleCount: 0, directCardCount: 0, subtreeCardCount: 1, subtreeEnrolledCardCount: 0 };
     const branch = { id: 11, title: '语言基础', directArticleCount: 0, directCardCount: 0, subtreeCardCount: 1, subtreeEnrolledCardCount: 0 };
     const leaf = { id: 12, title: '值传递', directArticleCount: 0, directCardCount: 1, subtreeCardCount: 1, subtreeEnrolledCardCount: 0 };
-    const card = { slug: 'java-value', outlineNodeId: 12, question: 'Java 值传递', tags: ['Java'], learningState: { enrolled: false, isDue: false } };
+    const card = { slug: 'java-value', outlineNodeId: 12, question: 'Java 值传递', tags: ['Java'], learningState: { enrolled: false, isDue: false }, answerMarkdown: '值传递答案' };
     const fetchMock = vi.fn((url: string, init?: RequestInit) => {
       if (url === '/api/knowledge/outline-nodes/10/tree') return Promise.resolve(jsonResponse({ success: true, data: { node: topic, children: [{ node: branch, children: [{ node: leaf, children: [] }] }] } }));
       if (url === '/api/knowledge/outline-nodes/12') return Promise.resolve(jsonResponse({ success: true, data: { node: leaf, breadcrumbs: [{ id: 10, title: 'Java' }, { id: 11, title: '语言基础' }, { id: 12, title: '值传递' }], children: [] } }));
       if (url.startsWith('/api/knowledge/outline-nodes/12/cards?')) return Promise.resolve(jsonResponse({ success: true, data: { items: [card], total: 1, page: 1, pageSize: 20 } }));
+      if (url === '/api/knowledge/cards/java-value') return Promise.resolve(jsonResponse({ success: true, data: card }));
       return fallbackFetch(url, init);
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -901,12 +917,24 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: '语言基础' }));
     await waitFor(() => expect(window.location.search).toBe('?open=10%2C11'));
     fireEvent.click(screen.getByRole('button', { name: '查看值传递的卡片（1张）' }));
-    expect(await screen.findByRole('heading', { name: '值传递' })).toBeInTheDocument();
-    expect(window.location.pathname + window.location.search).toBe('/knowledge/nodes/12/cards?open=10%2C11');
-
+    expect(await screen.findByText('Java 值传递')).toBeInTheDocument();
+    const returnPath = '/knowledge/topics/10?open=10%2C11&cards=12';
+    expect(window.location.pathname + window.location.search).toBe(returnPath);
+    fireEvent.click(screen.getByRole('button', { name: '查看' }));
+    expect(await screen.findByText('值传递答案')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/knowledge/cards/java-value');
     fireEvent.click(screen.getByRole('button', { name: '返回大纲' }));
+    expect(await screen.findByRole('button', { name: '查看' })).toBeInTheDocument();
+    expect(window.location.pathname + window.location.search).toBe(returnPath);
     expect(await screen.findByRole('button', { name: '收起语言基础' })).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('button', { name: '查看值传递的卡片（1张）' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '查看值传递的卡片（1张）' })).toHaveAttribute('aria-expanded', 'true');
+    const state = window.history.state;
+    fireEvent.click(screen.getByRole('button', { name: '查看' }));
+    await screen.findByText('值传递答案');
+    window.history.replaceState(state, '', returnPath);
+    fireEvent(window, new PopStateEvent('popstate', { state }));
+    expect(await screen.findByRole('button', { name: '查看' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '收起语言基础' })).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('keeps knowledge pagination through card navigation and return', async () => {

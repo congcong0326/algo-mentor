@@ -61,6 +61,9 @@ import {
   knowledgeArticleNodeIdFromPath,
   knowledgeCardSlugFromPath,
   knowledgeOutlineExpandedIdsFromSearch,
+  knowledgeOutlineCardIdsFromSearch,
+  knowledgeOutlineArticleIdsFromSearch,
+  knowledgeArticleSearch,
   knowledgeOutlineSearch,
   knowledgeListOptions,
   knowledgeListSearch,
@@ -184,9 +187,11 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
     const { page, keyword, expandedNodeIds } = knowledgeListOptions(search);
     return knowledgeListSearch(page, keyword, expandedNodeIds);
   }
-  if (knowledgeTopicIdFromPath(pathname) || knowledgeArticleNodeIdFromPath(pathname)) {
+  if (knowledgeArticleNodeIdFromPath(pathname)) return knowledgeArticleSearch(search);
+  if (knowledgeTopicIdFromPath(pathname)) {
     const expandedNodeIds = knowledgeOutlineExpandedIdsFromSearch(search);
-    return expandedNodeIds === undefined ? '' : knowledgeOutlineSearch(expandedNodeIds);
+    const cardNodeIds = knowledgeOutlineCardIdsFromSearch(search);
+    return knowledgeOutlineSearch(expandedNodeIds, cardNodeIds, knowledgeOutlineArticleIdsFromSearch(search));
   }
   if (learningPlanPracticeSubmissionsRouteFromPath(pathname)) {
     const normalized = new URLSearchParams();

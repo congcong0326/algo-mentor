@@ -9,7 +9,7 @@
 - `docs/knowledge-outline-maintenance-workflow.md`：大纲维护流程、校验边界和构建复用设计。
 - `docs/product-planning/knowledge-directory-import-v1-design.md`：目录解析、V76 开发期重建迁移、slug API 与用户复习事实保留的实施设计。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/knowledge/`：model 为内容/接口契约，importer 为解析和独立 CLI，repository/service 为用户查询、FSRS 和按 slug 幂等评价。
-- `frontend/src/services/knowledge.ts` / `types/knowledge.ts`：知识库共享前端契约；`knowledge/` 下按主题、大纲、节点分页列表与独立卡片详情分层导航；大纲按直属内容分别提供文章/卡片按钮，`KnowledgeArticlePage` 承载独立文章阅读与多篇切换，`review-center/` 承载知识卡列表与按 slug 复习，`KnowledgeReviewCenterPage` 仅兼容旧入口跳转；加入/移除复习保留调度和历史。
+- `frontend/src/services/knowledge.ts` / `types/knowledge.ts`：知识库共享前端契约；`knowledge/KnowledgeOutlineCardNodes` 与 `KnowledgeOutlineArticleNodes` 在大纲内分别按需展开直属卡片、文章子节点；卡片提供查看与加入/移除复习，文章提供查看。详情返回恢复目录、两类内容展开状态及滚动位置；独立节点分页列表兼容旧入口。`KnowledgeArticlePage` 按所选文章 ID 阅读 Markdown 并支持多篇切换，`review-center/` 承载知识卡列表与按 slug 复习，`KnowledgeReviewCenterPage` 仅兼容旧入口跳转；加入/移除复习保留调度和历史。
 - `frontend/src/review-center/`：两类卡片共用列表布局、详情弹窗、工作台与评级栏；知识卡适配 ALL/DUE 查询、预览与幂等评级，页面通过 `mode=knowledge` 切换。
 - `docs/product-planning/unified-review-center-design.md`：统一复习中心交互、路由、数据适配及验证范围。
 - `docs/product-planning/knowledge-card-browsing-design.md`：知识卡分页搜索、详情共享 Markdown 排版、复习加入状态 API 与 V77 迁移语义。

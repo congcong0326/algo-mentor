@@ -52,7 +52,9 @@ const KNOWLEDGE_CARD_PATTERN = /^\/knowledge\/cards\/([a-z0-9]+(?:-[a-z0-9]+)*)$
 /** 知识卡列表与详情返回共用的分页、搜索契约。 */
 export const KNOWLEDGE_LIST_QUERY_KEYS = { page: 'page', keyword: 'q' } as const;
 /** 大纲展开项会跨内容页透传，使用户返回时保留原来的阅读上下文。 */
-export const KNOWLEDGE_OUTLINE_QUERY_KEYS = { expanded: 'open' } as const;
+export const KNOWLEDGE_OUTLINE_QUERY_KEYS = { expanded: 'open', cards: 'cards', articles: 'articles' } as const;
+/** 文章阅读页指定所查看的文章，旧链接省略时默认读取第一篇。 */
+export const KNOWLEDGE_ARTICLE_QUERY_KEYS = { article: 'article' } as const;
 /** history.state 中保存大纲滚动位置的键，仅用于同一浏览会话内的返回体验。 */
 export const KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY = 'knowledgeOutline';
 export const KNOWLEDGE_CARD_PAGE_SIZE = 20;
@@ -66,6 +68,8 @@ export interface AppNavigationOptions {
 export interface KnowledgeOutlineHistoryState {
   topicId: number;
   scrollY: number;
+  /** 从大纲直接查看卡片或文章时使用；旧列表入口不设置该字段。 */
+  returnPath?: string;
 }
 
 export function knowledgeListOptions(search: string) {
@@ -88,7 +92,38 @@ export function knowledgeListSearch(page: number, keyword: string, expandedNodeI
 
 /** 从 URL 恢复已展开节点；undefined 表示采用主题根节点的默认展开状态。 */
 export function knowledgeOutlineExpandedIdsFromSearch(search: string): number[] | undefined {
-  const raw = new URLSearchParams(search).get(KNOWLEDGE_OUTLINE_QUERY_KEYS.expanded);
+  return knowledgeOutlineIdsFromSearch(search, KNOWLEDGE_OUTLINE_QUERY_KEYS.expanded);
+}
+
+/** 独立于目录展开状态，记录显示直属卡片的知识点。 */
+export function knowledgeOutlineCardIdsFromSearch(search: string): number[] {
+  return knowledgeOutlineIdsFromSearch(search, KNOWLEDGE_OUTLINE_QUERY_KEYS.cards) ?? [];
+}
+
+/** 独立于目录和卡片展开状态，记录显示直属文章的知识点。 */
+export function knowledgeOutlineArticleIdsFromSearch(search: string): number[] {
+  return knowledgeOutlineIdsFromSearch(search, KNOWLEDGE_OUTLINE_QUERY_KEYS.articles) ?? [];
+}
+
+export function knowledgeArticleIdFromSearch(search: string): number | undefined {
+  return positiveSafeInteger(new URLSearchParams(search).get(KNOWLEDGE_ARTICLE_QUERY_KEYS.article) ?? '');
+}
+
+/** 规范化文章选择与大纲上下文，供路由和查看入口共用。 */
+export function knowledgeArticleSearch(search: string, articleId = knowledgeArticleIdFromSearch(search)): string {
+  const params = new URLSearchParams(knowledgeOutlineSearch(
+    knowledgeOutlineExpandedIdsFromSearch(search),
+    knowledgeOutlineCardIdsFromSearch(search),
+    knowledgeOutlineArticleIdsFromSearch(search),
+  ));
+  if (articleId !== undefined && Number.isSafeInteger(articleId) && articleId > 0) {
+    params.set(KNOWLEDGE_ARTICLE_QUERY_KEYS.article, String(articleId));
+  }
+  return params.size ? `?${params}` : '';
+}
+
+function knowledgeOutlineIdsFromSearch(search: string, key: string): number[] | undefined {
+  const raw = new URLSearchParams(search).get(key);
   if (raw === null) return undefined;
   if (raw === '') return [];
   const ids = raw.split(',')
@@ -98,9 +133,15 @@ export function knowledgeOutlineExpandedIdsFromSearch(search: string): number[] 
   return unique.length > 0 ? unique : undefined;
 }
 
-export function knowledgeOutlineSearch(expandedNodeIds: readonly number[]): string {
+export function knowledgeOutlineSearch(expandedNodeIds: readonly number[] | undefined, cardNodeIds: readonly number[] = [], articleNodeIds: readonly number[] = []): string {
   const params = new URLSearchParams();
   appendKnowledgeOutlineExpandedQuery(params, expandedNodeIds);
+  const cards = [...new Set(cardNodeIds.filter((value) => Number.isSafeInteger(value) && value > 0))]
+    .slice(0, MAX_KNOWLEDGE_OUTLINE_EXPANDED_NODES);
+  if (cards.length) params.set(KNOWLEDGE_OUTLINE_QUERY_KEYS.cards, cards.join(','));
+  const articles = [...new Set(articleNodeIds.filter((value) => Number.isSafeInteger(value) && value > 0))]
+    .slice(0, MAX_KNOWLEDGE_OUTLINE_EXPANDED_NODES);
+  if (articles.length) params.set(KNOWLEDGE_OUTLINE_QUERY_KEYS.articles, articles.join(','));
   return params.size ? `?${params}` : '';
 }
 
@@ -109,6 +150,7 @@ export function withKnowledgeOutlineHistoryState(
   previousState: unknown,
   topicId: number,
   scrollY: number,
+  returnPath?: string,
 ): Record<string, unknown> {
   const base = isRecord(previousState) ? previousState : {};
   return {
@@ -116,8 +158,23 @@ export function withKnowledgeOutlineHistoryState(
     [KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY]: {
       topicId,
       scrollY: Number.isFinite(scrollY) && scrollY > 0 ? scrollY : 0,
+      ...(returnPath ? { returnPath } : {}),
     } satisfies KnowledgeOutlineHistoryState,
   };
+}
+
+/** 只恢复同一主题的大纲路径，禁止使用任意跳转地址。 */
+export function knowledgeOutlineReturnPathFromHistoryState(historyState: unknown): string | undefined {
+  if (!hasKnowledgeOutlineHistoryState(historyState)) return undefined;
+  const state = (historyState as Record<string, KnowledgeOutlineHistoryState>)[KNOWLEDGE_OUTLINE_HISTORY_STATE_KEY];
+  if (typeof state.returnPath !== 'string') return undefined;
+  const [path, search = ''] = state.returnPath.split('?');
+  if (path !== knowledgeTopicPath(state.topicId)) return undefined;
+  return path + knowledgeOutlineSearch(
+    knowledgeOutlineExpandedIdsFromSearch(search) ?? [state.topicId],
+    knowledgeOutlineCardIdsFromSearch(search),
+    knowledgeOutlineArticleIdsFromSearch(search),
+  );
 }
 
 /** 只接受当前主题的滚动快照，避免不同知识主题之间串位。 */

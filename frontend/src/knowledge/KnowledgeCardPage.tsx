@@ -4,6 +4,7 @@ import {
   APP_ROUTES,
   hasKnowledgeOutlineHistoryState,
   knowledgeCardPath,
+  knowledgeOutlineReturnPathFromHistoryState,
   knowledgeListOptions,
   knowledgeListSearch,
   knowledgeNodeCardsPath,
@@ -21,6 +22,7 @@ export default function KnowledgeCardPage({ slug, search = '', onNavigate }: {
   const [loading, setLoading] = useState(true);
   const [reload, setReload] = useState(0);
   const { page, keyword, expandedNodeIds } = knowledgeListOptions(search);
+  const outlineReturnPath = knowledgeOutlineReturnPathFromHistoryState(window.history.state);
 
   function navigateWithOutlineContext(path: string) {
     const state = window.history.state;
@@ -43,7 +45,7 @@ export default function KnowledgeCardPage({ slug, search = '', onNavigate }: {
   return <section className="knowledge-review-page knowledge-route-page knowledge-card-page" aria-labelledby="knowledge-card-title">
     <header className="knowledge-header">
       <div><p className="knowledge-eyebrow"><BookOpen aria-hidden="true" /> 知识卡片</p><h1 id="knowledge-card-title">{card?.question || '卡片详情'}</h1></div>
-      <button className="secondary-button compact" type="button" onClick={() => navigateWithOutlineContext(card ? knowledgeNodeCardsPath(card.outlineNodeId) + knowledgeListSearch(page, keyword, expandedNodeIds) : APP_ROUTES.knowledge)}><ArrowLeft aria-hidden="true" /> {card ? '返回卡片列表' : '返回知识库'}</button>
+      <button className="secondary-button compact" type="button" onClick={() => navigateWithOutlineContext(outlineReturnPath || (card ? knowledgeNodeCardsPath(card.outlineNodeId) + knowledgeListSearch(page, keyword, expandedNodeIds) : APP_ROUTES.knowledge))}><ArrowLeft aria-hidden="true" /> {outlineReturnPath ? '返回大纲' : card ? '返回卡片列表' : '返回知识库'}</button>
     </header>
     {loading ? <div className="loading-panel" role="status">正在加载卡片详情…</div> : error ? <p className="error-text" role="alert">{error} <button className="secondary-button compact" type="button" onClick={() => setReload((value) => value + 1)}>重试</button></p> : card && <>
       <article className="learning-panel knowledge-card-detail">

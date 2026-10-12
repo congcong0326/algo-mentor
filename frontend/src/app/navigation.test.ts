@@ -14,6 +14,14 @@ import {
   reviewCenterReturnTo,
   pathForView,
   viewFromPath,
+  knowledgeOutlineCardIdsFromSearch,
+  knowledgeOutlineArticleIdsFromSearch,
+  knowledgeArticleIdFromSearch,
+  knowledgeArticleSearch,
+  knowledgeOutlineExpandedIdsFromSearch,
+  knowledgeOutlineSearch,
+  knowledgeOutlineReturnPathFromHistoryState,
+  withKnowledgeOutlineHistoryState,
 } from './navigation';
 
 describe('learning plan practice submissions navigation', () => {
@@ -105,6 +113,35 @@ describe('learning plan practice submissions navigation', () => {
   it('maps the fixed knowledge navigation entry to its route', () => {
     expect(viewFromPath('/knowledge')).toBe('knowledge');
     expect(pathForView('knowledge')).toBe('/knowledge');
+  });
+
+  it('restores independent outline and card branches while discarding invalid IDs', () => {
+    const search = '?open=10,11,11,-2,1e3&cards=12,12,13,0,bad&articles=14,14,-1,no';
+    expect(knowledgeOutlineExpandedIdsFromSearch(search)).toEqual([10, 11]);
+    expect(knowledgeOutlineCardIdsFromSearch(search)).toEqual([12, 13]);
+    expect(knowledgeOutlineArticleIdsFromSearch(search)).toEqual([14]);
+    expect(knowledgeOutlineSearch([], [12, 13])).toBe('?open=&cards=12%2C13');
+    expect(knowledgeOutlineSearch(undefined, [12])).toBe('?cards=12');
+    expect(knowledgeOutlineSearch([10], [12], [14])).toBe('?open=10&cards=12&articles=14');
+  });
+
+  it('preserves the selected article and outline context while rejecting invalid article IDs', () => {
+    expect(knowledgeArticleSearch('?open=10&cards=11&articles=11&article=22')).toBe('?open=10&cards=11&articles=11&article=22');
+    expect(knowledgeArticleSearch('?open=10&articles=11', 22)).toBe('?open=10&articles=11&article=22');
+    for (const value of ['0', '-1', '1e3', 'x', '9007199254740992']) {
+      expect(knowledgeArticleIdFromSearch(`?article=${value}`)).toBeUndefined();
+      expect(knowledgeArticleSearch(`?articles=11&article=${value}`)).toBe('?articles=11');
+    }
+  });
+
+  it('accepts only a matching outline return path and clears origin for legacy list navigation', () => {
+    const state = withKnowledgeOutlineHistoryState({ other: true }, 10, 500, '/knowledge/topics/10?open=10&cards=11&articles=11');
+    expect(knowledgeOutlineReturnPathFromHistoryState(state)).toBe('/knowledge/topics/10?open=10&cards=11&articles=11');
+    expect(state.other).toBe(true);
+    for (const path of ['https://example.com/knowledge/topics/10', '//example.com/knowledge/topics/10', '/knowledge/topics/20', '/me']) {
+      expect(knowledgeOutlineReturnPathFromHistoryState(withKnowledgeOutlineHistoryState({}, 10, 0, path))).toBeUndefined();
+    }
+    expect(knowledgeOutlineReturnPathFromHistoryState(withKnowledgeOutlineHistoryState(state, 10, 0))).toBeUndefined();
   });
 
   it('maps the admin users route', () => {
