@@ -1,0 +1,129 @@
+# 个人自部署：PostgreSQL + 单实例 Redis + 一次性数据初始化 + 应用，一条命令启动。
+# 用法见 docs/selfhost-deployment.md；变量来自同目录 .env（由 .env.example 生成）。
+name: algo-mentor-selfhost
+
+# 应用与初始化共用的运行环境。缓存 Redis 与两条实时事件流共用一个 Redis 实例，按 database 隔离。
+x-app-environment: &app-environment
+  SPRING_PROFILES_ACTIVE: local
+  TZ: ${TZ:-Asia/Shanghai}
+  JAVA_TOOL_OPTIONS: ${JAVA_OPTS:--Xms128m -Xmx512m -XX:+ExitOnOutOfMemoryError}
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: ${POSTGRES_DB:-algo_mentor}
+  POSTGRES_USER: ${POSTGRES_USER:-algo_mentor}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在 .env 中设置 POSTGRES_PASSWORD}
+  CACHE_REDIS_HOST: redis
+  CACHE_REDIS_PORT: "6379"
+  CACHE_REDIS_DATABASE: "0"
+  PRACTICE_REALTIME_STREAM_HOST: redis
+  PRACTICE_REALTIME_STREAM_PORT: "6379"
+  PRACTICE_REALTIME_STREAM_DATABASE: "1"
+  LEARNING_PLAN_REALTIME_STREAM_HOST: redis
+  LEARNING_PLAN_REALTIME_STREAM_PORT: "6379"
+  LEARNING_PLAN_REALTIME_STREAM_DATABASE: "2"
+  LEARNER_PROFILE_DOCUMENT_STATEMENT_REF_HMAC_SECRET: ${LEARNER_PROFILE_DOCUMENT_STATEMENT_REF_HMAC_SECRET:?请在 .env 中设置 LEARNER_PROFILE_DOCUMENT_STATEMENT_REF_HMAC_SECRET}
+  AUTH_ADMIN_EMAILS: ${AUTH_ADMIN_EMAILS:-}
+  AUTH_PASSWORD_LOGIN_ENABLED: ${AUTH_PASSWORD_LOGIN_ENABLED:-true}
+  AUTH_PASSWORD_REGISTRATION_ENABLED: ${AUTH_PASSWORD_REGISTRATION_ENABLED:-true}
+  AUTH_ACCOUNT_REGISTRATION_ENABLED: ${AUTH_ACCOUNT_REGISTRATION_ENABLED:-true}
+  AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+  GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-algo_mentor}
+      POSTGRES_USER: ${POSTGRES_USER:-algo_mentor}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在 .env 中设置 POSTGRES_PASSWORD}
+      TZ: ${TZ:-Asia/Shanghai}
+    # 个人使用的小规格参数。
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - effective_cache_size=192MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=32MB
+      - -c
+      - max_connections=40
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    mem_limit: 384m
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    # 缓存和实时事件流的 key 均带 TTL；volatile-ttl 优先淘汰短 TTL 的缓存。
+    # 不做持久化：实时流丢失时应用会回读 PostgreSQL 终态。
+    command:
+      - redis-server
+      - --maxmemory
+      - ${REDIS_MAXMEMORY:-64mb}
+      - --maxmemory-policy
+      - volatile-ttl
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 128m
+
+  # 一次性初始化：执行数据库迁移并导入种子数据；已导入时秒级跳过。
+  init:
+    build:
+      context: ../..
+      dockerfile: deploy/selfhost/Dockerfile
+    image: algo-mentor:selfhost
+    entrypoint: ["/app/init-data.sh"]
+    environment:
+      <<: *app-environment
+      JAVA_TOOL_OPTIONS: ${INIT_JAVA_OPTS:--Xms128m -Xmx768m -XX:+ExitOnOutOfMemoryError}
+      SEED_FORCE: ${SEED_FORCE:-false}
+      SEED_PROBLEM_METADATA: ${SEED_PROBLEM_METADATA:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    image: algo-mentor:selfhost
+    restart: unless-stopped
+    environment: *app-environment
+    ports:
+      - "${APP_BIND:-0.0.0.0}:${APP_PORT:-8080}:18080"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/18080 && printf \"GET /actuator/health HTTP/1.0\\r\\n\\r\\n\" >&3 && grep -q UP <&3'"]
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 5
+    mem_limit: 900m
+
+volumes:
+  postgres-data:

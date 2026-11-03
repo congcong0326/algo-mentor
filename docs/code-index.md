@@ -20,6 +20,7 @@
 - `pyproject.toml` / `uv.lock` / `.python-version`：测试工程 Python 3.12 + uv 环境配置，供后续 smoke/eval runner 使用。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：可选的本地 Docker Compose 应用/PostgreSQL 便利配置；默认开发流程直接运行本机进程和本机 PostgreSQL。
+- `deploy/selfhost/`：个人自部署一键启动编排（多阶段 Dockerfile、PostgreSQL + 单 Redis + 一次性 init 数据导入 + 应用的 compose、`.env` 生成脚本），入口为 Makefile 的 `selfhost-*` 命令；说明见 `docs/selfhost-deployment.md`。
 - `deploy/docker/Dockerfile.preprod`：仅接收已构建 `mentor-api.jar` 的预发布运行镜像定义；不启动数据库或 Redis。
 - `scripts/deploy-preprod.sh`：预发布自动发布入口；无 Flyway 迁移时选择快速发布，发现迁移时阻止误走快速路径。
 - `scripts/deploy-preprod-fast.sh`：预发布无迁移快速发布脚本；构建并校验应用制品、检查目标机运行时变量、替换容器并在健康检查失败时回滚。

@@ -1,0 +1,26 @@
+# 仅作用于 deploy/selfhost/Dockerfile（BuildKit 按 Dockerfile 名称匹配），不影响其他镜像构建。
+**/.git
+**/node_modules
+**/target
+**/.DS_Store
+.m2
+.npm
+.cache
+.venv
+.worktrees
+.env
+**/.env
+frontend/dist
+frontend/build
+backend/mentor-api/src/main/resources/static
+data/sources/**
+# 题目元数据导入会校验该抓取报告的 SHA256，需随镜像一起提供。
+!data/sources/leetcode-api-metadata/problem_metadata_fetch_report.json
+data/index
+data/reports
+data/learning-plan-template-sources
+knowledge-base/references
+docs
+tests
+tools
+scripts

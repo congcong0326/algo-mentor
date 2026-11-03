@@ -2,6 +2,17 @@
 
 `algo-mentor` 是一个 AI 个人学习项目，目标是把算法学习、刷题训练、错题复盘、学习计划和 AI 辅助讲解整合到一个可本地运行、可持续迭代的系统中。
 
+## 个人自部署
+
+只需 Docker，一条命令启动（PostgreSQL + Redis + 应用，首次自动导入题库与知识库）：
+
+```bash
+make selfhost-env    # 生成 deploy/selfhost/.env，并修改 AUTH_ADMIN_EMAILS
+make selfhost-up
+```
+
+启动后访问 `http://<主机>:8080`，用管理员邮箱注册，在管理后台填写自己的 AI Key。详见[个人自部署](docs/selfhost-deployment.md)。
+
 ## 已初始化技术栈
 
 - 后端：JDK 17 + Spring Boot 3.5 + Spring MVC + SSE + Maven 多模块。

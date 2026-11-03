@@ -48,6 +48,33 @@ PREPROD_LOG_DIR ?= /var/log/algo-mentor
 
 .PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev deploy-preprod deploy-preprod-preflight deploy-preprod-fast deploy-preprod-fast-preflight test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed problem-metadata-fetch problem-metadata-seed problem-metadata-validate db-install db-seed db-seed-metadata clean
 
+# 个人自部署（deploy/selfhost）：容器内构建，变量只读取 deploy/selfhost/.env。
+# 使用干净环境调用 compose，避免根目录 .env 被 include/export 后覆盖自部署配置。
+SELFHOST_DIR := deploy/selfhost
+SELFHOST_COMPOSE := env -i PATH="$$PATH" HOME="$$HOME" $${DOCKER_HOST:+DOCKER_HOST="$$DOCKER_HOST"} $${DOCKER_CONTEXT:+DOCKER_CONTEXT="$$DOCKER_CONTEXT"} docker compose -f $(SELFHOST_DIR)/docker-compose.yml --env-file $(SELFHOST_DIR)/.env
+
+.PHONY: selfhost-env selfhost-up selfhost-down selfhost-logs selfhost-ps selfhost-reseed
+
+selfhost-env:
+	@$(SELFHOST_DIR)/init-env.sh
+
+selfhost-up: selfhost-env
+	$(SELFHOST_COMPOSE) up -d --build
+
+selfhost-down:
+	$(SELFHOST_COMPOSE) down
+
+selfhost-logs:
+	$(SELFHOST_COMPOSE) logs -f --tail=200 init app
+
+selfhost-ps:
+	$(SELFHOST_COMPOSE) ps -a
+
+# 强制重新导入种子数据和知识库（幂等 upsert，保留用户学习记录），用于拉取新版本数据后同步。
+selfhost-reseed: selfhost-env
+	$(SELFHOST_COMPOSE) build init
+	$(SELFHOST_COMPOSE) run --rm -e SEED_FORCE=true init
+
 build: backend-build frontend-build
 
 package: frontend-build sync-frontend backend-build
