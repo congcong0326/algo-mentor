@@ -205,6 +205,7 @@ location / {
 
 | 现象 | 处理 |
 | --- | --- |
+| `unknown shorthand flag: 'f' in -f` 或 `未找到 Docker Compose v2 插件` | 没装 Compose v2 插件：Docker 官方源执行 `apt-get install -y docker-compose-plugin`，Ubuntu/Debian 自带的 docker.io 执行 `apt-get install -y docker-compose-v2`；装好后 `docker compose version` 应输出 v2.x |
 | `请在 .env 中设置 POSTGRES_PASSWORD` | 没有生成 `.env`，先执行 `make selfhost-env` |
 | `port is already allocated` | 修改 `.env` 中的 `APP_PORT` 后重新执行 `make selfhost-up` |
 | `service "init" didn't complete successfully` | 执行 `make selfhost-logs` 查看 `init` 的报错；排除问题后重新执行 `make selfhost-up` 即可，导入可以重复执行 |

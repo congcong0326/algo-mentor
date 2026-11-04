@@ -51,27 +51,39 @@ PREPROD_LOG_DIR ?= /var/log/algo-mentor
 # 个人自部署（deploy/selfhost）：容器内构建，变量只读取 deploy/selfhost/.env。
 # 使用干净环境调用 compose，避免根目录 .env 被 include/export 后覆盖自部署配置。
 SELFHOST_DIR := deploy/selfhost
-SELFHOST_COMPOSE := env -i PATH="$$PATH" HOME="$$HOME" $${DOCKER_HOST:+DOCKER_HOST="$$DOCKER_HOST"} $${DOCKER_CONTEXT:+DOCKER_CONTEXT="$$DOCKER_CONTEXT"} docker compose -f $(SELFHOST_DIR)/docker-compose.yml --env-file $(SELFHOST_DIR)/.env
+# 仅保留 Docker CLI 定位守护进程与插件所需的变量（DOCKER_CONFIG 决定 cli-plugins 的查找目录）。
+SELFHOST_ENV := env -i PATH="$$PATH" HOME="$$HOME" $${DOCKER_HOST:+DOCKER_HOST="$$DOCKER_HOST"} $${DOCKER_CONTEXT:+DOCKER_CONTEXT="$$DOCKER_CONTEXT"} $${DOCKER_CONFIG:+DOCKER_CONFIG="$$DOCKER_CONFIG"}
+SELFHOST_COMPOSE := $(SELFHOST_ENV) docker compose -f $(SELFHOST_DIR)/docker-compose.yml --env-file $(SELFHOST_DIR)/.env
 
-.PHONY: selfhost-env selfhost-up selfhost-down selfhost-logs selfhost-ps selfhost-reseed
+.PHONY: selfhost-check selfhost-env selfhost-up selfhost-down selfhost-logs selfhost-ps selfhost-reseed
+
+# 前置检查：需要 Docker Compose v2 插件（docker compose）；缺失时 docker 只会报 "unknown shorthand flag"。
+selfhost-check:
+	@if ! $(SELFHOST_ENV) docker compose version >/dev/null 2>&1; then \
+		echo "未找到 Docker Compose v2 插件（docker compose）。请安装后重试：" >&2; \
+		echo "  Docker 官方源 (docker-ce):     apt-get install -y docker-compose-plugin" >&2; \
+		echo "  Ubuntu/Debian 自带 docker.io: apt-get install -y docker-compose-v2" >&2; \
+		echo "  安装后执行 docker compose version 确认输出 v2.x。" >&2; \
+		exit 1; \
+	fi
 
 selfhost-env:
 	@$(SELFHOST_DIR)/init-env.sh
 
-selfhost-up: selfhost-env
+selfhost-up: selfhost-check selfhost-env
 	$(SELFHOST_COMPOSE) up -d --build
 
-selfhost-down:
+selfhost-down: selfhost-check
 	$(SELFHOST_COMPOSE) down
 
-selfhost-logs:
+selfhost-logs: selfhost-check
 	$(SELFHOST_COMPOSE) logs -f --tail=200 init app
 
-selfhost-ps:
+selfhost-ps: selfhost-check
 	$(SELFHOST_COMPOSE) ps -a
 
 # 强制重新导入种子数据和知识库（幂等 upsert，保留用户学习记录），用于拉取新版本数据后同步。
-selfhost-reseed: selfhost-env
+selfhost-reseed: selfhost-check selfhost-env
 	$(SELFHOST_COMPOSE) build init
 	$(SELFHOST_COMPOSE) run --rm -e SEED_FORCE=true init
 
