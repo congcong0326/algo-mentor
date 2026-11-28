@@ -2,18 +2,19 @@ import { ArrowLeft } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
 
-/** 两类复习卡共用的滚动内容区与固定评级栏。 */
-export default function ReviewWorkbench({ title, subtitle, progress, status, onBack, footer, children }: {
+/** 两类复习卡共用的工作台，移动端可让内容随整页滚动。 */
+export default function ReviewWorkbench({ title, subtitle, progress, status, onBack, pageScroll = false, footer, children }: {
   title: string;
   subtitle?: string;
   progress: string;
   status: string;
   onBack: () => void;
+  pageScroll?: boolean;
   footer: ReactNode;
   children: ReactNode;
 }) {
   const { resources } = useI18n();
-  return <article className="review-card-workbench">
+  return <article className={`review-card-workbench${pageScroll ? ' review-card-workbench-page-scroll' : ''}`}>
     <div className="review-card-scroll">
       <header className="review-workbench-toolbar">
         <button className="secondary-button compact" onClick={onBack} type="button">

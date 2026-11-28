@@ -1,11 +1,28 @@
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2, RefreshCw, Sparkles } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LocaleResources } from '../i18n/locales';
 import type { ReviewIntervalPreview, ReviewRating } from '../types/api';
 
 /** 四档评级与快捷键的公共顺序。 */
 export const REVIEW_RATINGS: ReviewRating[] = ['AGAIN', 'HARD', 'GOOD', 'EASY'];
+
+/** 与复习工作台的移动端 CSS 断点保持一致。 */
+const COMPACT_REVIEW_QUERY = '(max-width: 720px)';
+
+function subscribeToCompactReview(onChange: () => void) {
+  const query = window.matchMedia?.(COMPACT_REVIEW_QUERY);
+  query?.addEventListener('change', onChange);
+  return () => query?.removeEventListener('change', onChange);
+}
+
+function isCompactReview() {
+  return window.matchMedia?.(COMPACT_REVIEW_QUERY).matches ?? false;
+}
+
+export function useCompactReview() {
+  return useSyncExternalStore(subscribeToCompactReview, isCompactReview, () => false);
+}
 
 export function useReviewShortcuts(enabled: boolean, onRate: (rating: ReviewRating) => void) {
   useEffect(() => {
@@ -21,18 +38,26 @@ export function useReviewShortcuts(enabled: boolean, onRate: (rating: ReviewRati
   }, [enabled, onRate]);
 }
 
-export default function ReviewRatingBar({ intervals, submittingRating, selectedRating, disabled = false, retryRating, onRate, onNext }: {
+export default function ReviewRatingBar({ intervals, compact, submittingRating, selectedRating, nextReview, error, disabled = false, retryRating, onRate, onNext }: {
   intervals: ReviewIntervalPreview[];
+  compact: boolean;
   submittingRating?: ReviewRating;
   selectedRating?: ReviewRating;
+  nextReview?: string;
+  error?: string;
   disabled?: boolean;
   retryRating?: ReviewRating;
   onRate: (rating: ReviewRating) => void;
   onNext: () => void;
 }) {
   const { resources } = useI18n();
-  return <footer className="review-rating-bar" aria-label={resources.reviewCenter.ratingAriaLabel}>
-    <div className="review-rating-grid">
+  const showCompactResult = compact && selectedRating;
+  return <footer className={`review-rating-bar${showCompactResult ? ' review-rating-bar-result' : ''}`} aria-label={resources.reviewCenter.ratingAriaLabel}>
+    {error && <p className="review-rating-error error-text" role="alert">{error}</p>}
+    {showCompactResult ? <section className="review-rating-result" aria-label={resources.reviewCenter.resultAriaLabel}>
+      <strong>{resources.reviewCenter.ratingLabels[selectedRating]}</strong>
+      <span>{nextReview}</span>
+    </section> : <div className="review-rating-grid">
       {REVIEW_RATINGS.map((rating, index) => <RatingButton
         key={rating} rating={rating} shortcut={index + 1}
         description={resources.reviewCenter.ratingDescriptions[rating]}
@@ -42,10 +67,10 @@ export default function ReviewRatingBar({ intervals, submittingRating, selectedR
         disabled={disabled || Boolean(submittingRating) || Boolean(retryRating && retryRating !== rating)}
         onClick={() => onRate(rating)}
       />)}
-    </div>
-    <button className="secondary-button review-next-button" disabled={!selectedRating} onClick={onNext} type="button">
+    </div>}
+    {(!compact || selectedRating) && <button className="secondary-button review-next-button" disabled={!selectedRating} onClick={onNext} type="button">
       <ArrowRight aria-hidden="true" /><span>{resources.reviewCenter.nextProblem}</span>
-    </button>
+    </button>}
   </footer>;
 }
 
@@ -92,7 +117,7 @@ function RatingButton({
       onClick={onClick}
       type="button"
     >
-      {loading ? <Loader2 aria-hidden="true" className="review-rating-icon" /> : <Icon aria-hidden="true" className="review-rating-icon" />}
+      {loading ? <Loader2 aria-hidden="true" className="review-rating-icon spin-icon" /> : <Icon aria-hidden="true" className="review-rating-icon" />}
       <span className="review-rating-copy">
         <span className="review-rating-label">{label}</span>
         <small>{intervalLabel}</small>

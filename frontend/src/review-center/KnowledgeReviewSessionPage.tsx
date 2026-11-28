@@ -1,5 +1,5 @@
 import { CheckCircle2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { reviewCenterPath, reviewCenterSearchOptionsFromSearch } from '../app/navigation';
 import KnowledgeCardContent from '../components/knowledge/KnowledgeCardContent';
 import { useI18n } from '../i18n/I18nProvider';
@@ -7,11 +7,12 @@ import { allKnowledgePages, knowledgeApi } from '../services/knowledge';
 import type { KnowledgeCard, KnowledgeReviewPreview, KnowledgeReviewResult } from '../types/knowledge';
 import type { ReviewRating } from '../types/api';
 import { generateClientId } from '../utils/id';
-import ReviewRatingBar, { useReviewShortcuts } from './ReviewRatingBar';
+import ReviewRatingBar, { useCompactReview, useReviewShortcuts } from './ReviewRatingBar';
 import ReviewWorkbench from './ReviewWorkbench';
 
 export default function KnowledgeReviewSessionPage({ onNavigate, search = '' }: { onNavigate: (path: string) => void; search?: string }) {
   const { resources, locale } = useI18n();
+  const compact = useCompactReview();
   const [queue, setQueue] = useState<KnowledgeCard[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,9 @@ export default function KnowledgeReviewSessionPage({ onNavigate, search = '' }: 
   const pending = useRef(false);
   const attempt = useRef<{ slug: string; rating: ReviewRating; id: string } | undefined>(undefined);
   const mounted = useRef(true);
+  const sessionRef = useRef<HTMLElement>(null);
+  const answerRef = useRef<HTMLDivElement>(null);
+  const scrollToQuestion = useRef(false);
   const current = queue[index];
   const back = () => onNavigate(reviewCenterPath({ ...reviewCenterSearchOptionsFromSearch(search), mode: 'knowledge' }));
 
@@ -80,8 +84,23 @@ export default function KnowledgeReviewSessionPage({ onNavigate, search = '' }: 
 
   useReviewShortcuts(Boolean(context && answerVisible && !result && !submittingRating), (rating) => void rate(rating));
 
+  useLayoutEffect(() => {
+    if (!compact || !answerVisible) return;
+    answerRef.current?.focus({ preventScroll: true });
+    answerRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' });
+  }, [compact, answerVisible]);
+
+  useLayoutEffect(() => {
+    if (!scrollToQuestion.current || (current && !context && !detailError)) return;
+    scrollToQuestion.current = false;
+    if (!compact) return;
+    sessionRef.current?.focus({ preventScroll: true });
+    sessionRef.current?.scrollIntoView?.({ block: 'start', behavior: 'instant' });
+  }, [compact, context, current, detailError]);
+
   function next() {
     if (!result) return;
+    scrollToQuestion.current = compact;
     setContext(undefined); setResult(undefined); setAnswerVisible(false);
     setIndex((value) => value + 1);
   }
@@ -90,31 +109,35 @@ export default function KnowledgeReviewSessionPage({ onNavigate, search = '' }: 
   const status = phase && phase in resources.reviewCenter.fsrsStateLabels
     ? resources.reviewCenter.fsrsStateLabels[phase as keyof typeof resources.reviewCenter.fsrsStateLabels]
     : resources.reviewCenter.fsrsStateLabels.LEARNING;
+  const nextReview = result && resources.reviewCenter.nextReview(new Date(result.dueAt).toLocaleString(locale, { hour12: false }));
+  const showAnswerButton = <button className="primary-button" onClick={() => setAnswerVisible(true)} type="button">显示答案</button>;
 
-  return <section className="review-session-page" aria-labelledby="review-session-title">
+  return <section className="review-session-page" aria-labelledby="review-session-title" ref={sessionRef} tabIndex={compact ? -1 : undefined}>
     {loading ? <div className="loading-panel">{resources.reviewCenter.preparingQueue}</div>
       : queueError || detailError ? <div className="loading-panel">
         <p role="alert" className="error-text">{queueError || detailError}</p>
         <button className="secondary-button" onClick={back} type="button">{resources.reviewCenter.backToReviewCenter}</button>
         <button className="primary-button" onClick={() => queueError ? setReload((value) => value + 1) : setDetailReload((value) => value + 1)} type="button">重新加载</button>
       </div>
-        : !current ? <div className="review-complete"><CheckCircle2 aria-hidden="true" /><h2>{resources.reviewCenter.queueCompleted}</h2>
+        : !current ? <div className="review-complete"><CheckCircle2 aria-hidden="true" /><h2 id="review-session-title">{resources.reviewCenter.queueCompleted}</h2>
           <button className="primary-button" onClick={back} type="button">{resources.reviewCenter.backToReviewCenter}</button>
         </div>
           : !context ? <div className="loading-panel">{resources.reviewCenter.loadingDetail}</div>
-            : <ReviewWorkbench title={context.card.question} subtitle="八股文" progress={`${index + 1} / ${queue.length}`} status={status} onBack={back}
-              footer={<ReviewRatingBar intervals={context.preview.options} submittingRating={submittingRating} selectedRating={result?.rating}
-                disabled={!answerVisible} retryRating={retryRating} onRate={(rating) => void rate(rating)} onNext={next} />}>
-              <section className="review-problem-content" aria-label="知识卡题目"><p>{context.card.question}</p>
+            : <ReviewWorkbench title={context.card.question} subtitle="八股文" progress={`${index + 1} / ${queue.length}`} status={status} onBack={back} pageScroll
+              footer={compact && !answerVisible ? <footer className="review-rating-bar">{showAnswerButton}</footer>
+                : <ReviewRatingBar intervals={context.preview.options} compact={compact} submittingRating={submittingRating} selectedRating={result?.rating}
+                  nextReview={nextReview} error={compact ? submitError : undefined} disabled={!answerVisible} retryRating={retryRating}
+                  onRate={(rating) => void rate(rating)} onNext={next} />}>
+              <section className="review-problem-content" aria-label="知识卡题目">{!compact && <p>{context.card.question}</p>}
                 <div className="knowledge-tags">{context.card.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
               </section>
-              {!answerVisible ? <div className="knowledge-answer-gate"><p>先独立回忆，再查看解析。</p>
-                <button className="primary-button" onClick={() => setAnswerVisible(true)} type="button">显示答案</button>
-              </div> : <KnowledgeCardContent card={context.card} />}
-              {submitError && <p className="error-text" role="alert">{submitError}</p>}
-              {result && <section className="review-result" aria-label={resources.reviewCenter.resultAriaLabel}>
+              {answerVisible ? <div ref={answerRef} tabIndex={compact ? -1 : undefined} role="region" aria-label="知识卡答案">
+                <KnowledgeCardContent card={context.card} />
+              </div> : <div className="knowledge-answer-gate"><p>先独立回忆，再查看解析。</p>{!compact && showAnswerButton}</div>}
+              {!compact && submitError && <p className="error-text" role="alert">{submitError}</p>}
+              {!compact && result && <section className="review-result" aria-label={resources.reviewCenter.resultAriaLabel}>
                 <h3>{resources.reviewCenter.ratingLabels[result.rating]}</h3>
-                <p>{resources.reviewCenter.nextReview(new Date(result.dueAt).toLocaleString(locale, { hour12: false }))}</p>
+                <p>{nextReview}</p>
               </section>}
             </ReviewWorkbench>}
   </section>;

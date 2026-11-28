@@ -20,7 +20,7 @@ import type {
 } from '../types/api';
 import { generateClientId } from '../utils/id';
 import ReviewWorkbench from '../review-center/ReviewWorkbench';
-import ReviewRatingBar, { formatDueLabel, useReviewShortcuts } from '../review-center/ReviewRatingBar';
+import ReviewRatingBar, { formatDueLabel, useCompactReview, useReviewShortcuts } from '../review-center/ReviewRatingBar';
 import { reviewProblemStatementMarkdown } from './reviewProblemStatement';
 
 interface ReviewSessionPageProps {
@@ -29,6 +29,7 @@ interface ReviewSessionPageProps {
 
 export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps) {
   const { locale, resources } = useI18n();
+  const compact = useCompactReview();
   const [queue, setQueue] = useState<ReviewCard[]>([]);
   const [index, setIndex] = useState(0);
   const [context, setContext] = useState<ReviewCardContext>();
@@ -41,6 +42,11 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   const [error, setError] = useState('');
 
   const current = queue[index];
+  const nextReview = attempt && resources.reviewCenter.nextReview(formatDueLabel(
+    attempt.schedulingAfter.dueAt,
+    attempt.schedulingAfter.intervalDays,
+    resources.reviewCenter,
+  ));
   const finished = !loading && !error && queue.length === 0;
   const progressLabel = useMemo(() => (
     queue.length > 0 ? `${Math.min(index + 1, queue.length)} / ${queue.length}` : '0 / 0'
@@ -170,8 +176,8 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
           progress={progressLabel}
           status={resources.reviewCenter.fsrsStateLabels[context.card.fsrsState || 'LEARNING']}
           onBack={handleBack}
-          footer={<ReviewRatingBar intervals={context.intervalPreviews} submittingRating={submittingRating}
-            selectedRating={attempt?.rating} onRate={(rating) => void handleRate(rating)} onNext={nextCard} />}
+          footer={<ReviewRatingBar intervals={context.intervalPreviews} compact={compact} submittingRating={submittingRating}
+            selectedRating={attempt?.rating} nextReview={nextReview} onRate={(rating) => void handleRate(rating)} onNext={nextCard} />}
         >
               <section className="review-problem-content" aria-label={resources.reviewCenter.fullStatementAriaLabel}>
                 <MarkdownView content={reviewProblemStatementMarkdown(context.problem)} />
@@ -210,14 +216,10 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
                 )}
               </details>
 
-              {attempt && (
+              {!compact && attempt && (
                 <section className="review-result" aria-label={resources.reviewCenter.resultAriaLabel}>
                   <h3>{resources.reviewCenter.ratingLabels[attempt.rating]}</h3>
-                  <p>{resources.reviewCenter.nextReview(formatDueLabel(
-                    attempt.schedulingAfter.dueAt,
-                    attempt.schedulingAfter.intervalDays,
-                    resources.reviewCenter,
-                  ))}</p>
+                  <p>{nextReview}</p>
                 </section>
               )}
         </ReviewWorkbench>

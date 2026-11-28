@@ -24,7 +24,7 @@ beforeEach(() => {
   vi.spyOn(knowledgeApi, 'review').mockResolvedValue(result);
   vi.spyOn(knowledgeApi, 'setEnrollment').mockResolvedValue({ enrolled: false, isDue: false });
 });
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 function ListHarness() {
   const [search, setSearch] = useState('?mode=knowledge');
@@ -94,6 +94,33 @@ describe('统一知识卡复习列表', () => {
 });
 
 describe('统一知识卡复习工作台', () => {
+  it('窄屏底栏按回忆、评级和下一题切换，并聚焦当前阅读内容', async () => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const nextCard = { ...card, slug: 'second-card', question: 'Java 如何传递对象引用' };
+    vi.mocked(knowledgeApi.queue).mockResolvedValue(pageOf([card, nextCard]));
+    vi.mocked(knowledgeApi.card).mockImplementation(async (slug) => slug === card.slug ? card : nextCard);
+    render(<KnowledgeReviewSessionPage onNavigate={vi.fn()} />);
+
+    const show = await screen.findByRole('button', { name: '显示答案' });
+    expect(show.closest('footer')).toHaveClass('review-rating-bar');
+    expect(screen.queryByRole('button', { name: /^良好，/ })).not.toBeInTheDocument();
+    fireEvent.click(show);
+    const answer = screen.getByRole('region', { name: '知识卡答案' });
+    expect(answer).toHaveFocus();
+    expect(screen.queryByRole('button', { name: '下一题' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^良好，/ }));
+
+    const confirmation = await screen.findByRole('region', { name: '复习确认结果' });
+    expect(confirmation.closest('footer')).toHaveClass('review-rating-bar-result');
+    expect(confirmation).toHaveTextContent('下次复习');
+    expect(screen.queryByRole('button', { name: /^良好，/ })).not.toBeInTheDocument();
+    expect(answer).toHaveTextContent('核心答案');
+    fireEvent.click(screen.getByRole('button', { name: '下一题' }));
+    expect(await screen.findByRole('region', { name: nextCard.question })).toHaveFocus();
+    expect(screen.getByRole('button', { name: '显示答案' })).toBeEnabled();
+    expect(screen.queryByRole('region', { name: '知识卡答案' })).not.toBeInTheDocument();
+  });
+
   it('答案展开前禁用评级，评级后保留内容，最后一张也需下一题确认', async () => {
     const onNavigate = vi.fn();
     render(<KnowledgeReviewSessionPage onNavigate={onNavigate} search="?mode=knowledge&q=Java&page=2" />);
